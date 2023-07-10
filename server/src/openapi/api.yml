@@ -1,0 +1,75 @@
+openapi: 3.0.1
+info:
+  title: Doadify API
+  description: Openapi specs for the doadify api.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:3000'
+    description: Development server
+
+tags:
+  - name: Hello
+
+paths:
+  '/api/hello':
+    get:
+      tags:
+        - Hello
+      summary: Get greetings from doadify
+      operationId: getGreetingsFromDoadify
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hello'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+
+
+components:
+  responses:
+    BadRequest:
+      description: Illegal input for operation.
+    Forbidden:
+      description: Permission denied.
+    NotFound:
+      description: Not found.
+    ServerError:
+      description: Server error.
+    Unauthorized:
+      description: Authentication needed.
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+              path:
+                type: string
+              errorCode:
+                type: string
+    
+    Hello:
+      type: object
+      additionalProperties: false
+      required:
+        - hello
+      properties:
+        hello:
+          type: string

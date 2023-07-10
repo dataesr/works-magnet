@@ -1,0 +1,20 @@
+{
+  "name": "publications-retriever",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "dependencies": {
+    "concurrently": "^8.0.1"
+  },
+  "scripts": {
+    "server": "npm -w server run dev",
+    "client": "npm -w client run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "npm -w client run build -- --mode ${npm_config_mode} --emptyOutDir --outDir ../server/dist",
+    "preview": "npm run build --mode=${npm_config_mode} && npm -w server start"
+  }
+}

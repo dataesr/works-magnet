@@ -1,0 +1,11 @@
+.scroll-top {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  z-index: 10001;
+  border-radius: 99999px !important;
+  @media only screen and (min-width: 1440px) {
+    bottom: 2em;
+    right: 3em;
+  }
+}
