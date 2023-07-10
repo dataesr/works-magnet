@@ -14,7 +14,6 @@ export default function Home() {
     <Container className="fr-my-15w">
       <Title as="h1">publications finder</Title>
       <Text>{isLoading ? 'Chargement...' : data?.hello}</Text>
-
     </Container>
   );
 }
