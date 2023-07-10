@@ -10,7 +10,7 @@ env:
   DEPLOYMENT: <doadify>
   DEPLOYMENT_NAMESPACE: <doadify>
   DEPLOYMENT_URL: <https://doadify.net>
-  MM_NOTIFICATION_CHANNEL: <doadify>
+  MM_NOTIFICATION_CHANNEL: 'publications-finder'
 
 jobs:
   publish-ghcr:
