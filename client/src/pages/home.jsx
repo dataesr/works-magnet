@@ -42,8 +42,7 @@ export default function Home() {
     const getData = async () => {
       const params = {
         method: 'POST',
-        // body: JSON.stringify(getQuery(options)),
-        body: JSON.stringify({}),
+        query: JSON.stringify(getQuery(options)),
         headers: {
           'content-type': 'application/json',
           Authorization: VITE_API_AUTH,
@@ -58,7 +57,7 @@ export default function Home() {
 
   const sendQuery = () => {
     setOptions({
-      datasource: datasources,
+      datasource: 'bso',
       filters: {
         affiliations,
         affiliationsToExclude,
