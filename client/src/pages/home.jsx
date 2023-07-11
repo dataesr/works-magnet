@@ -42,7 +42,7 @@ export default function Home() {
     const getData = async () => {
       const params = {
         method: 'POST',
-        query: JSON.stringify(getQuery(options)),
+        body: JSON.stringify(getQuery(options)),
         headers: {
           'content-type': 'application/json',
           Authorization: VITE_API_AUTH,
@@ -165,7 +165,7 @@ export default function Home() {
           <table>
             <thead>
               <tr>
-                <th>doi</th>
+                <th>DOI</th>
                 <th>Title</th>
                 <th>Authors</th>
                 <th>Year</th>
