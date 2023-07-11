@@ -22,7 +22,7 @@ const {
 //     return "Oops... La requète à l'API n'a pas fonctionné";
 //   });
 // }
-const sources = ['bso', 'openAlex'];
+const sources = ['bso', 'openalex'];
 
 export default function Home() {
   // const { data, isLoading } = useQuery({ queryKey: ['hello'], queryFn: getHello });
@@ -34,7 +34,6 @@ export default function Home() {
   const [authorsToExclude, setAuthorsToExclude] = useState([]);
   const [startYear, setStartYear] = useState();
   const [endYear, setEndYear] = useState();
-
   const [options, setOptions] = useState({});
   const [data, setData] = useState([]);
   const [viewMoreFilters, setViewMoreFilters] = useState(false);
@@ -59,7 +58,7 @@ export default function Home() {
 
   const sendQuery = () => {
     setOptions({
-      datasources,
+      datasource: datasources,
       filters: {
         affiliations,
         affiliationsToExclude,
