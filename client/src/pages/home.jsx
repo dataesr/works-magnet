@@ -9,6 +9,7 @@ import {
 } from '@dataesr/react-dsfr';
 // import { useQuery } from '@tanstack/react-query';
 import TagInput from '../components/tag-input';
+import getQuery from '../utils/queries';
 
 // async function getHello() {
 //   return fetch('/api/hello').then((response) => {
@@ -21,32 +22,34 @@ const sources = ['bso', 'openAlex', 'hal', 'pubMed'];
 export default function Home() {
   // const { data, isLoading } = useQuery({ queryKey: ['hello'], queryFn: getHello });
 
+  const [datasources, setDatasources] = useState(sources);
   const [affiliations, setAffiliations] = useState([]);
   const [affiliationsToExclude, setAffiliationsToExclude] = useState([]);
   const [authors, setAuthors] = useState([]);
+  const [authorsToExclude, setAuthorsToExclude] = useState([]);
   const [startYear, setStartYear] = useState();
   const [endYear, setEndYear] = useState();
-  const [dataSources, setDataSources] = useState(sources);
 
-  const [query, setQuery] = useState({});
+  const [options, setOptions] = useState({});
   const [data, setData] = useState();
   const [viewMoreFilters, setViewMoreFilters] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
-      console.log('query-getData()', query);
+      console.log('query-getData()', getQuery(options));
       setData('data');
     };
-    if (query.query) getData();
-  }, [query]);
+    if (options.filters) getData();
+  }, [options]);
 
   const sendQuery = () => {
-    setQuery({
-      dataSources,
-      query: {
+    setOptions({
+      datasources,
+      filters: {
         affiliations,
         affiliationsToExclude,
         authors,
+        authorsToExclude,
         startYear,
         endYear,
       },
@@ -54,15 +57,15 @@ export default function Home() {
   };
 
   const onCheckBoxChange = (label) => {
-    if (!dataSources.includes(label)) {
-      setDataSources([...dataSources, label]);
+    if (!datasources.includes(label)) {
+      setDatasources([...datasources, label]);
     } else {
-      setDataSources(dataSources.filter((item) => item !== label));
+      setDatasources(datasources.filter((item) => item !== label));
     }
   };
 
   return (
-    <Container className="fr-my-5w">
+    <Container className="fr-my-5w" as="section">
       <Row alignItems="bottom">
         <Col className="text-right">
           <Button
@@ -96,12 +99,28 @@ export default function Home() {
         onTagsChange={(tags) => { setAuthors(tags); }}
         tags={authors}
       />
+      {
+        viewMoreFilters && (
+          <TagInput
+            hint=""
+            label="Authors to exclude"
+            onTagsChange={(tags) => { setAuthorsToExclude(tags); }}
+            tags={authorsToExclude}
+          />
+        )
+      }
       <Row gutters alignItems="bottom">
         <Col n="4">
           <CheckboxGroup isInline>
             {
               sources.map((source) => (
-                <Checkbox label={source} checked={dataSources.includes(source)} size="sm" onChange={() => onCheckBoxChange(source)} />
+                <Checkbox
+                  checked={datasources.includes(source)}
+                  key={source}
+                  label={source}
+                  onChange={() => onCheckBoxChange(source)}
+                  size="sm"
+                />
               ))
             }
           </CheckboxGroup>
