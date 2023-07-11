@@ -11,13 +11,18 @@ import {
 import TagInput from '../components/tag-input';
 import getQuery from '../utils/queries';
 
+const {
+  VITE_API_URL,
+  VITE_API_AUTH,
+} = import.meta.env;
+
 // async function getHello() {
 //   return fetch('/api/hello').then((response) => {
 //     if (response.ok) return response.json();
 //     return "Oops... La requète à l'API n'a pas fonctionné";
 //   });
 // }
-const sources = ['bso', 'openAlex', 'hal', 'pubMed'];
+const sources = ['bso', 'openAlex'];
 
 export default function Home() {
   // const { data, isLoading } = useQuery({ queryKey: ['hello'], queryFn: getHello });
@@ -31,13 +36,23 @@ export default function Home() {
   const [endYear, setEndYear] = useState();
 
   const [options, setOptions] = useState({});
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
   const [viewMoreFilters, setViewMoreFilters] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
-      console.log('query-getData()', getQuery(options));
-      setData('data');
+      const params = {
+        method: 'POST',
+        // body: JSON.stringify(getQuery(options)),
+        body: JSON.stringify({}),
+        headers: {
+          'content-type': 'application/json',
+          Authorization: VITE_API_AUTH,
+        },
+      };
+      const response = await fetch(VITE_API_URL, params);
+      const jsonResponse = await response.json();
+      setData(jsonResponse.hits.hits);
     };
     if (options.filters) getData();
   }, [options]);
@@ -147,7 +162,34 @@ export default function Home() {
           </Button>
         </Col>
       </Row>
-      {/* <Text>{isLoading ? 'Chargement...' : data?.hello}</Text> */}
+      {
+        data && (
+          <table>
+            <thead>
+              <tr>
+                <th>doi</th>
+                <th>Title</th>
+                <th>Authors</th>
+                <th>Year</th>
+                <th>URL</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                data.map((item) => (
+                  <tr key={item._id}>
+                    <td>{item._source.doi}</td>
+                    <td>{item._source.title}</td>
+                    <td>item._source.authors</td>
+                    <td>{item._source.year}</td>
+                    <td>{item._source.url}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        )
+      }
     </Container>
   );
 }
