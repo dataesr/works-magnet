@@ -170,6 +170,7 @@ export default function Home() {
                 <th>Authors</th>
                 <th>Year</th>
                 <th>URL</th>
+                <th>Affiliations</th>
               </tr>
             </thead>
             <tbody>
@@ -181,6 +182,7 @@ export default function Home() {
                     <td>{item._source.authors.map((author) => author.full_name).join(', ')}</td>
                     <td>{item._source.year}</td>
                     <td>{item._source.url}</td>
+                    <td>{item._source.affiliations.map((affiliation) => affiliation.name)}</td>
                   </tr>
                 ))
               }
