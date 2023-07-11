@@ -179,7 +179,7 @@ export default function Home() {
                   <tr key={item._id}>
                     <td>{item._source.doi}</td>
                     <td>{item._source.title}</td>
-                    <td>item._source.authors</td>
+                    <td>{item._source.authors.map((author) => author.full_name).join(', ')}</td>
                     <td>{item._source.year}</td>
                     <td>{item._source.url}</td>
                   </tr>
