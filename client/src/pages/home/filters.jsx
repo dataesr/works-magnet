@@ -19,7 +19,7 @@ export default function Filters({
 }) {
   const [viewMoreFilters, setViewMoreFilters] = useState(false);
   const [datasources, setDatasources] = useState(sources);
-  const [affiliations, setAffiliations] = useState([]);
+  const [affiliations, setAffiliations] = useState(['Ingénierie-Biologie-Santé Lorraine', 'UMS 2008', 'IBSLOR', 'UMS2008', 'UMS CNRS 2008']);
   const [affiliationsToExclude, setAffiliationsToExclude] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [authorsToExclude, setAuthorsToExclude] = useState([]);
