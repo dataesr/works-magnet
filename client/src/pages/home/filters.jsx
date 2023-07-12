@@ -147,6 +147,7 @@ export default function Filters({
               authorsToExclude,
               startYear,
               endYear,
+              datasources,
             })}
             size="sm"
           >
