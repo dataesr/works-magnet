@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 import Layout from './layout';
-import Home from './pages/home';
+import Home from './pages/home/index';
 import Swagger from './pages/swagger';
 
 export default function Router() {
