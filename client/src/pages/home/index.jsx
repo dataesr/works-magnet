@@ -1,12 +1,16 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
-import {
-  Container,
-  Table,
-} from '@dataesr/react-dsfr';
+import { Button, Container } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+
 import Filters from './filters';
 import getQuery from '../../utils/queries';
 import { PageSpinner } from '../../components/spinner';
+
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import 'primereact/resources/primereact.min.css';
 
 const {
   VITE_ES_URL,
@@ -110,6 +114,8 @@ export default function Home() {
       action: actions.find((action) => action.doi === item._source.doi)?.action,
     }));
   }
+  const paginatorLeft = <Button icon="ri-refresh-fill" text>Refresh</Button>;
+  const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
 
   return (
     <Container className="fr-my-5w" as="section">
@@ -121,11 +127,30 @@ export default function Home() {
 
       {
         dataTable && (
-          <Table
-            columns={columns}
-            data={dataTable}
-            rowKey="undefined"
-          />
+          <DataTable
+            value={dataTable}
+            paginator
+            rows={5}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            tableStyle={{ minWidth: '50rem' }}
+            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+            currentPageReportTemplate="{first} to {last} of {totalRecords}"
+            paginatorLeft={paginatorLeft}
+            paginatorRight={paginatorRight}
+          >
+            <Column field="action" header="action" />
+            <Column field="doi" header="doi" />
+            <Column field="title" header="title" />
+            <Column field="authors" header="authors" />
+            <Column field="year" header="year" />
+            <Column field="url" header="url" />
+            <Column field="affiliations" header="affiliations" />
+          </DataTable>
+          // <Table
+          //   columns={columns}
+          //   data={dataTable}
+          //   rowKey="undefined"
+          // />
         )
       }
     </Container>
