@@ -46,19 +46,27 @@ export default function Home() {
   const getAffiliationsField = (item) => {
     if (item.highlight && item.highlight['affiliations.name']) {
       const highlight = item.highlight['affiliations.name'];
-      return highlight[0];
+      return highlight.join(';');
     }
     if (item._source.affiliations === undefined) {
       return '';
     }
-    const { affiliations } = item._source.affiliations;
+    const { affiliations } = item._source;
     const nbAffiliations = affiliations?.length || 0;
     if (nbAffiliations === 0) return '';
     if (nbAffiliations === 1) return affiliations[0].name;
     return `${affiliations[0].name} et al. (${nbAffiliations - 1})`;
   };
 
-  const getAuthorsField = (authors) => {
+  const getAuthorsField = (item) => {
+    if (item.highlight && item.highlight['authors.full_name']) {
+      const highlight = item.highlight['authors.full_name'];
+      return highlight.join(';');
+    }
+    if (item._source.authors === undefined) {
+      return '';
+    }
+    const { authors } = item._source;
     const nbAuthors = authors?.length || 0;
     if (nbAuthors === 0) return '';
     if (nbAuthors === 1) return authors[0].full_name;
@@ -92,7 +100,7 @@ export default function Home() {
   if (data?.hits?.hits) {
     dataTable = data.hits.hits.map((item, index) => ({
       affiliations: getAffiliationsField(item),
-      authors: getAuthorsField(item._source.authors),
+      authors: getAuthorsField(item),
       doi: item._source.doi,
       hal_id: item._source.hal_id,
       id: index,
