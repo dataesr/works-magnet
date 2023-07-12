@@ -88,6 +88,7 @@ export default function Home() {
   const sendQuery = async (filters) => {
     await setOptions({
       datasource: 'bso',
+      identifiers: filters.identifiers,
       filters: {
         affiliations: filters.affiliations,
         affiliationsToExclude: filters.affiliationsToExclude,
@@ -95,6 +96,7 @@ export default function Home() {
         authorsToExclude: filters.authorsToExclude,
         startYear: filters.startYear,
         endYear: filters.endYear,
+        dataidentifiers: filters.dataidentifiers,
       },
     });
     refetch();

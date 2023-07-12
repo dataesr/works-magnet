@@ -13,7 +13,7 @@ import { useState } from 'react';
 import TagInput from '../../components/tag-input';
 
 const sources = ['bso', 'openalex'];
-const identifiers = ['Crossref', 'HAL', 'Datacite'];
+const identifiers = ['crossref', 'hal_id', 'datacite'];
 
 export default function Filters({
   sendQuery,
@@ -147,6 +147,7 @@ export default function Filters({
               authorsToExclude,
               startYear,
               endYear,
+              dataidentifiers,
             })}
             size="sm"
           >
