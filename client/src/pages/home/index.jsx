@@ -113,7 +113,7 @@ export default function Home() {
     });
     refetch();
   };
-  const nbResults = (data?.hits?.total?.value || 0).toString().concat(' résultats');
+
   let dataTable = [];
   if (data) {
     dataTable = data.map((item, index) => ({
@@ -136,7 +136,9 @@ export default function Home() {
       <Filters
         sendQuery={sendQuery}
       />
-      { nbResults }
+      <div>
+        { `${data.length} results` }
+      </div>
       {
         dataTable && (
           <DataTable
