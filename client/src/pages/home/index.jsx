@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
+import './index.scss';
 import { useState } from 'react';
 import { Button, Container } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
@@ -48,7 +49,8 @@ export default function Home() {
   const getAffiliationsField = (item) => {
     if (item.highlight && item.highlight['affiliations.name']) {
       const highlight = item.highlight['affiliations.name'];
-      return highlight.join(';');
+      const desc = highlight.join(';');
+      return (<span dangerouslySetInnerHTML={{ __html: desc }} />)
     }
     if (item._source.affiliations === undefined) {
       return '';
@@ -63,7 +65,8 @@ export default function Home() {
   const getAuthorsField = (item) => {
     if (item.highlight && item.highlight['authors.full_name']) {
       const highlight = item.highlight['authors.full_name'];
-      return highlight.join(';');
+      const desc = highlight.join(';');
+      return (<span dangerouslySetInnerHTML={{ __html: desc }} />)
     }
     if (item._source.authors === undefined) {
       return '';
