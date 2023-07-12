@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import Router from './router';
 import './styles/index.scss';
+// import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 const queryClient = new QueryClient();
 
