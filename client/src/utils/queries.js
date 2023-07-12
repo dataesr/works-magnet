@@ -1,15 +1,15 @@
 const getQuery = ({ datasource, filters }) => {
-  const query = { size: 20, query: { bool: {} } };
+  const query = { size: 10000, query: { bool: {} } };
   switch (datasource) {
   case 'bso':
     if (filters.affiliations.length > 0 || filters.authors.length > 0 || filters?.startYear || filters?.endYear) {
       query.query.bool.must = [];
     }
     filters.affiliations.forEach((affiliation) => {
-      query.query.bool.must.push({ match: { 'affiliations.name': { query: `"${affiliation}"`, operator: 'and' } } });
+      query.query.bool.must.push({ match: { 'affiliations.name': { query: affiliation, operator: 'and' } } });
     });
     filters.authors.forEach((author) => {
-      query.query.bool.must.push({ match: { 'authors.full_name': { query: `"${author}"`, operator: 'and' } } });
+      query.query.bool.must.push({ match: { 'authors.full_name': { query: author, operator: 'and' } } });
     });
     if (filters?.startYear && filters?.endYear) {
       query.query.bool.must.push({ range: { year: { gte: filters.startYear, lte: filters.endYear } } });

@@ -7,7 +7,7 @@ export default function TagInput({ label, hint, tags, onTagsChange }) {
   const [values, setValues] = useState(tags);
 
   const handleKeyDown = (e) => {
-    if ([13, 9, 66].includes(e.keyCode) && input) {
+    if ([9, 13].includes(e.keyCode) && input) {
       e.preventDefault();
       if (values.includes(input.trim())) return;
       const newValues = [...values, input.trim()];

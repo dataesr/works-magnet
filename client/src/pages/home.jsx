@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button,
   CheckboxGroup, Checkbox,
   Container, Row, Col,
   Icon,
-  // Text,
   TextInput,
 } from '@dataesr/react-dsfr';
-// import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+
+import { PageSpinner } from '../components/spinner';
 import TagInput from '../components/tag-input';
 import getQuery from '../utils/queries';
 
@@ -16,47 +17,44 @@ const {
   VITE_API_AUTH,
 } = import.meta.env;
 
-// async function getHello() {
-//   return fetch('/api/hello').then((response) => {
-//     if (response.ok) return response.json();
-//     return "Oops... La requète à l'API n'a pas fonctionné";
-//   });
-// }
+async function getData(options) {
+  const params = {
+    method: 'POST',
+    body: JSON.stringify(getQuery(options)),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: VITE_API_AUTH,
+    },
+  };
+  return fetch(VITE_API_URL, params).then((response) => {
+    if (response.ok) return response.json();
+    return 'Oops... API request did not work';
+  });
+}
+
 const sources = ['bso', 'openalex'];
 
 export default function Home() {
-  // const { data, isLoading } = useQuery({ queryKey: ['hello'], queryFn: getHello });
-
-  const [datasources, setDatasources] = useState(sources);
   const [affiliations, setAffiliations] = useState([]);
   const [affiliationsToExclude, setAffiliationsToExclude] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [authorsToExclude, setAuthorsToExclude] = useState([]);
-  const [startYear, setStartYear] = useState();
+  const [datasources, setDatasources] = useState(sources);
   const [endYear, setEndYear] = useState();
   const [options, setOptions] = useState({});
-  const [data, setData] = useState([]);
+  const [startYear, setStartYear] = useState();
   const [viewMoreFilters, setViewMoreFilters] = useState(false);
 
-  useEffect(() => {
-    const getData = async () => {
-      const params = {
-        method: 'POST',
-        body: JSON.stringify(getQuery(options)),
-        headers: {
-          'content-type': 'application/json',
-          Authorization: VITE_API_AUTH,
-        },
-      };
-      const response = await fetch(VITE_API_URL, params);
-      const jsonResponse = await response.json();
-      setData(jsonResponse.hits.hits);
-    };
-    if (options.filters) getData();
-  }, [options]);
+  const { data, isFetching, refetch } = useQuery({
+    queryKey: ['data'],
+    queryFn: () => getData(options),
+    enabled: false,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
 
-  const sendQuery = () => {
-    setOptions({
+  const sendQuery = async () => {
+    await setOptions({
       datasource: 'bso',
       filters: {
         affiliations,
@@ -67,6 +65,7 @@ export default function Home() {
         endYear,
       },
     });
+    refetch();
   };
 
   const onCheckBoxChange = (label) => {
@@ -160,6 +159,7 @@ export default function Home() {
           </Button>
         </Col>
       </Row>
+      {isFetching && (<Container><PageSpinner /></Container>)}
       {
         data && (
           <table>
@@ -175,14 +175,14 @@ export default function Home() {
             </thead>
             <tbody>
               {
-                data.map((item) => (
+                data.hits.hits.map((item) => (
                   <tr key={item._id}>
                     <td>{item._source.doi}</td>
                     <td>{item._source.title}</td>
                     <td>{item._source.authors.map((author) => author.full_name).join(', ')}</td>
                     <td>{item._source.year}</td>
                     <td>{item._source.url}</td>
-                    <td>{item._source.affiliations.map((affiliation) => affiliation.name)}</td>
+                    <td>{item._source.affiliations.map((affiliation) => affiliation.name).join(', ')}</td>
                   </tr>
                 ))
               }
