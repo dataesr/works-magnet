@@ -95,7 +95,7 @@ export default function Home() {
     });
     refetch();
   };
-
+  const nbResults = (data?.hits?.total?.value || 0).toString().concat(' résultats');
   let dataTable = [];
   if (data?.hits?.hits) {
     dataTable = data.hits.hits.map((item, index) => ({
@@ -117,6 +117,7 @@ export default function Home() {
         sendQuery={sendQuery}
       />
       {isFetching && (<Container><PageSpinner /></Container>)}
+      { nbResults }
 
       {
         dataTable && (
