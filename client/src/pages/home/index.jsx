@@ -6,36 +6,20 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 import Filters from './filters';
-import getBsoQuery from '../../utils/queries';
+import getBsoData from '../../utils/queries';
+import getOpenAlexData from '../../utils/openalex';
 import { PageSpinner } from '../../components/spinner';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 
-const {
-  VITE_ES_URL,
-  VITE_ES_AUTH,
-} = import.meta.env;
-
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
     switch (datasource) {
     case 'bso':
-      // eslint-disable-next-line no-case-declarations
-      const params = {
-        method: 'POST',
-        body: JSON.stringify(getBsoQuery(options)),
-        headers: {
-          'content-type': 'application/json',
-          Authorization: VITE_ES_AUTH,
-        },
-      };
-      return fetch(VITE_ES_URL, params).then((response) => {
-        if (response.ok) return response.json();
-        return 'Oops... API request did not work';
-      });
+      return getBsoData(options);
     case 'openalex':
-      return Promise.resolve();
+      return getOpenAlexData(options);
     default:
       console.error(`Datasoure : ${datasource} is badly formated and shoud be on of bso or openalex`);
       return Promise.resolve();
@@ -137,7 +121,7 @@ export default function Home() {
         sendQuery={sendQuery}
       />
       <div>
-        { `${data.length} results` }
+        { `${data?.length || 0} results` }
       </div>
       {
         dataTable && (
