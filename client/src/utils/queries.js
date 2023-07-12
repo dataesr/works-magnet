@@ -32,6 +32,7 @@ const getQuery = ({ datasource, filters }) => {
     filters.authorsToExclude.forEach((authorToExclude) => {
       query.query.bool.must_not.push({ match: { 'authors.full_name': { query: authorToExclude, operator: 'and' } } });
     });
+    query.highlight = { fields: { 'affiliations.name': {}, 'authors.full_name': {} } };
     break;
   default:
   }
