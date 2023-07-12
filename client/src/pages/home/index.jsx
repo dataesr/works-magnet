@@ -138,12 +138,11 @@ export default function Home() {
             paginatorLeft={paginatorLeft}
             paginatorRight={paginatorRight}
           >
-            <Column field="action" header="action" />
             <Column field="doi" header="doi" />
+            <Column field="hal_id" header="hal_id" />
             <Column field="title" header="title" />
             <Column field="authors" header="authors" />
             <Column field="year" header="year" />
-            <Column field="url" header="url" />
             <Column field="affiliations" header="affiliations" />
           </DataTable>
           // <Table
