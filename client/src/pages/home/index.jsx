@@ -7,7 +7,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 import Filters from './filters';
-import getBsoData from '../../utils/queries';
+import getBsoData from '../../utils/bso';
 import getOpenAlexData from '../../utils/openalex';
 import { PageSpinner } from '../../components/spinner';
 
@@ -35,22 +35,11 @@ export default function Home() {
   const [options, setOptions] = useState({});
   const [actions, setActions] = useState([{ doi: '10.1007/s13595-016-0554-5', action: 'keep' }]);
 
-  const columns = [
-    { label: 'action', name: 'action' },
-    { label: 'doi', name: 'doi' },
-    { label: 'hal_id', name: 'hal_id' },
-    { label: 'Title', name: 'title' },
-    { label: 'Authors', name: 'authors' },
-    { label: 'year', name: 'year' },
-    { label: 'genre', name: 'genre' },
-    { label: 'affiliations', name: 'affiliations' },
-  ];
-
   const getAffiliationsField = (item) => {
     if (item.highlight && item.highlight['affiliations.name']) {
       const highlight = item.highlight['affiliations.name'];
       const desc = highlight.join(';');
-      return (<span dangerouslySetInnerHTML={{ __html: desc }} />)
+      return (<span dangerouslySetInnerHTML={{ __html: desc }} />);
     }
     if (item._source.affiliations === undefined) {
       return '';
@@ -66,7 +55,7 @@ export default function Home() {
     if (item.highlight && item.highlight['authors.full_name']) {
       const highlight = item.highlight['authors.full_name'];
       const desc = highlight.join(';');
-      return (<span dangerouslySetInnerHTML={{ __html: desc }} />)
+      return (<span dangerouslySetInnerHTML={{ __html: desc }} />);
     }
     if (item._source.authors === undefined) {
       return '';
@@ -131,7 +120,7 @@ export default function Home() {
       {
         dataTable && (
           <DataTable
-            style={{ 'font-size': '11px', 'line-height': '15px' }}
+            style={{ fontSize: '11px', lineHeight: '15px' }}
             size="small"
             value={dataTable}
             paginator
@@ -153,11 +142,6 @@ export default function Home() {
             <Column filter filterMatchMode="contains" field="authors" header="authors" style={{ minWidth: '10px' }} />
             <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="title" style={{ minWidth: '10px' }} />
           </DataTable>
-          // <Table
-          //   columns={columns}
-          //   data={dataTable}
-          //   rowKey="undefined"
-          // />
         )
       }
       {isFetching && (<Container><PageSpinner /></Container>)}
