@@ -128,22 +128,27 @@ export default function Home() {
       {
         dataTable && (
           <DataTable
+            style={{ 'font-size': '11px', 'line-height': '15px' }}
+            size="small"
             value={dataTable}
             paginator
-            rows={5}
-            rowsPerPageOptions={[5, 10, 25, 50]}
+            rows={25}
+            rowsPerPageOptions={[25, 50, 100, 200]}
             tableStyle={{ minWidth: '50rem' }}
             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
             currentPageReportTemplate="{first} to {last} of {totalRecords}"
             paginatorLeft={paginatorLeft}
             paginatorRight={paginatorRight}
+            filterDisplay="row"
+            scrollable
+            stripedRows
           >
-            <Column field="doi" header="doi" />
-            <Column field="hal_id" header="hal_id" />
-            <Column field="title" header="title" />
-            <Column field="authors" header="authors" />
-            <Column field="year" header="year" />
-            <Column field="affiliations" header="affiliations" />
+            <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} />
+            <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="doi" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="hal_id" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" field="affiliations" header="affiliations" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" field="authors" header="authors" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="title" style={{ minWidth: '10px' }} />
           </DataTable>
           // <Table
           //   columns={columns}
