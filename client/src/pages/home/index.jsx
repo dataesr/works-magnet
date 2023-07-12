@@ -43,7 +43,15 @@ export default function Home() {
     { label: 'affiliations', name: 'affiliations' },
   ];
 
-  const getAffiliationsField = (affiliations) => {
+  const getAffiliationsField = (item) => {
+    if (item.highlight && item.highlight['affiliations.name']) {
+      const highlight = item.highlight['affiliations.name'];
+      return highlight[0];
+    }
+    if (item._source.affiliations === undefined) {
+      return '';
+    }
+    const { affiliations } = item._source.affiliations;
     const nbAffiliations = affiliations?.length || 0;
     if (nbAffiliations === 0) return '';
     if (nbAffiliations === 1) return affiliations[0].name;
@@ -83,13 +91,13 @@ export default function Home() {
   let dataTable = [];
   if (data?.hits?.hits) {
     dataTable = data.hits.hits.map((item, index) => ({
-      affiliations: getAffiliationsField(item._source.affiliations),
+      affiliations: getAffiliationsField(item),
       authors: getAuthorsField(item._source.authors),
       doi: item._source.doi,
       hal_id: item._source.hal_id,
       id: index,
       title: item._source.title,
-      genre: item._source.genre_raw,
+      genre: item._source.genre_raw || item._source.genre,
       year: item._source.year,
       action: actions.find((action) => action.doi === item._source.doi)?.action,
     }));
