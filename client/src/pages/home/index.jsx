@@ -6,7 +6,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 import Filters from './filters';
-import getQuery from '../../utils/queries';
+import getBsoQuery from '../../utils/queries';
 import { PageSpinner } from '../../components/spinner';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -17,20 +17,34 @@ const {
   VITE_ES_AUTH,
 } = import.meta.env;
 
-async function getData(options) {
-  const params = {
-    method: 'POST',
-    body: JSON.stringify(getQuery(options)),
-    headers: {
-      'content-type': 'application/json',
-      Authorization: VITE_ES_AUTH,
-    },
-  };
-  return fetch(VITE_ES_URL, params).then((response) => {
-    if (response.ok) return response.json();
-    return 'Oops... API request did not work';
+const getData = async (options) => {
+  const promises = options?.datasources.map((datasource) => {
+    switch (datasource) {
+    case 'bso':
+      // eslint-disable-next-line no-case-declarations
+      const params = {
+        method: 'POST',
+        body: JSON.stringify(getBsoQuery(options)),
+        headers: {
+          'content-type': 'application/json',
+          Authorization: VITE_ES_AUTH,
+        },
+      };
+      return fetch(VITE_ES_URL, params).then((response) => {
+        if (response.ok) return response.json();
+        return 'Oops... API request did not work';
+      });
+    case 'openalex':
+      return Promise.resolve();
+    default:
+      console.error(`Datasoure : ${datasource} is badly formated and shoud be on of bso or openalex`);
+      return Promise.resolve();
+    }
   });
-}
+  const results = await Promise.all(promises);
+  const data = results.filter((item) => !!item).map((item) => (item?.hits?.hits ? item.hits.hits : item)).flat();
+  return data;
+};
 
 export default function Home() {
   const [options, setOptions] = useState({});
@@ -87,8 +101,8 @@ export default function Home() {
 
   const sendQuery = async (filters) => {
     await setOptions({
-      datasource: 'bso',
       identifiers: filters.identifiers,
+      datasources: filters.datasources,
       filters: {
         affiliations: filters.affiliations,
         affiliationsToExclude: filters.affiliationsToExclude,
@@ -101,10 +115,10 @@ export default function Home() {
     });
     refetch();
   };
-  const nbResults = (data?.hits?.total?.value || 0).toString().concat(' résultats');
+
   let dataTable = [];
-  if (data?.hits?.hits) {
-    dataTable = data.hits.hits.map((item, index) => ({
+  if (data) {
+    dataTable = data.map((item, index) => ({
       affiliations: getAffiliationsField(item),
       authors: getAuthorsField(item),
       doi: item._source.doi,
@@ -124,9 +138,9 @@ export default function Home() {
       <Filters
         sendQuery={sendQuery}
       />
-      {isFetching && (<Container><PageSpinner /></Container>)}
-      { nbResults }
-
+      <div>
+        { `${data.length} results` }
+      </div>
       {
         dataTable && (
           <DataTable
@@ -155,6 +169,7 @@ export default function Home() {
           // />
         )
       }
+      {isFetching && (<Container><PageSpinner /></Container>)}
     </Container>
   );
 }

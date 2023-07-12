@@ -148,6 +148,7 @@ export default function Filters({
               startYear,
               endYear,
               dataidentifiers,
+              datasources,
             })}
             size="sm"
           >
