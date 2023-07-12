@@ -1,12 +1,15 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   Button,
-  CheckboxGroup, Checkbox,
-  Row, Col,
+  Checkbox,
+  CheckboxGroup,
+  Col,
   Icon,
+  Row,
   TextInput,
 } from '@dataesr/react-dsfr';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+
 import TagInput from '../../components/tag-input';
 
 const sources = ['bso', 'openalex'];

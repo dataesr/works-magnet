@@ -6,7 +6,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import Filters from './filters';
 import getQuery from '../../utils/queries';
-// import { PageSpinner } from '../../components/spinner';
+import { PageSpinner } from '../../components/spinner';
 
 const {
   VITE_API_URL,
@@ -30,7 +30,8 @@ async function getData(options) {
 
 export default function Home() {
   const [options, setOptions] = useState({});
-  const [actions, setActions] = useState([{ doi: '10.1007/s13595-016-0554-5', action: 'keep' }]); // keep || reject
+  const [actions, setActions] = useState([{ doi: '10.1007/s13595-016-0554-5', action: 'keep' }]);
+
   const columns = [
     { label: 'action', name: 'action' },
     { label: 'doi', name: 'doi' },
@@ -40,12 +41,14 @@ export default function Home() {
     { label: 'url', name: 'url' },
     { label: 'affiliations', name: 'affiliations' },
   ];
+
   const getAffiliationsField = (affiliations) => {
     const nbAffiliations = affiliations?.length || 0;
     if (nbAffiliations === 0) return '';
     if (nbAffiliations === 1) return affiliations[0].name;
     return `${affiliations[0].name} et al. (${nbAffiliations - 1})`;
   };
+
   const getAuthorsField = (authors) => {
     const nbAuthors = authors?.length || 0;
     if (nbAuthors === 0) return '';
@@ -95,7 +98,7 @@ export default function Home() {
       <Filters
         sendQuery={sendQuery}
       />
-      {isFetching && (<Container>...</Container>)}
+      {isFetching && (<Container><PageSpinner /></Container>)}
 
       {
         dataTable && (
