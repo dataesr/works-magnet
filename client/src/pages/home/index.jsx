@@ -9,8 +9,8 @@ import getQuery from '../../utils/queries';
 import { PageSpinner } from '../../components/spinner';
 
 const {
-  VITE_API_URL,
-  VITE_API_AUTH,
+  VITE_ES_URL,
+  VITE_ES_AUTH,
 } = import.meta.env;
 
 async function getData(options) {
@@ -19,10 +19,10 @@ async function getData(options) {
     body: JSON.stringify(getQuery(options)),
     headers: {
       'content-type': 'application/json',
-      Authorization: VITE_API_AUTH,
+      Authorization: VITE_ES_AUTH,
     },
   };
-  return fetch(VITE_API_URL, params).then((response) => {
+  return fetch(VITE_ES_URL, params).then((response) => {
     if (response.ok) return response.json();
     return 'Oops... API request did not work';
   });

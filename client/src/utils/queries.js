@@ -1,5 +1,9 @@
+const {
+  VITE_ES_SIZE,
+} = import.meta.env;
+
 const getQuery = ({ datasource, filters }) => {
-  const query = { size: 100, query: { bool: {} } };
+  const query = { size: VITE_ES_SIZE, query: { bool: {} } };
   switch (datasource) {
   case 'bso':
     if (filters.affiliations.length > 0 || filters.authors.length > 0 || filters?.startYear || filters?.endYear) {
