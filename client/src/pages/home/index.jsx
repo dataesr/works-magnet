@@ -35,10 +35,11 @@ export default function Home() {
   const columns = [
     { label: 'action', name: 'action' },
     { label: 'doi', name: 'doi' },
+    { label: 'hal_id', name: 'hal_id' },
     { label: 'Title', name: 'title' },
     { label: 'Authors', name: 'authors' },
     { label: 'year', name: 'year' },
-    { label: 'url', name: 'url' },
+    { label: 'genre', name: 'genre' },
     { label: 'affiliations', name: 'affiliations' },
   ];
 
@@ -85,9 +86,10 @@ export default function Home() {
       affiliations: getAffiliationsField(item._source.affiliations),
       authors: getAuthorsField(item._source.authors),
       doi: item._source.doi,
+      hal_id: item._source.hal_id,
       id: index,
       title: item._source.title,
-      url: item._source.url,
+      genre: item._source.genre_raw,
       year: item._source.year,
       action: actions.find((action) => action.doi === item._source.doi)?.action,
     }));
