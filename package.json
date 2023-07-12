@@ -8,7 +8,8 @@
     "server"
   ],
   "dependencies": {
-    "concurrently": "^8.0.1"
+    "concurrently": "^8.0.1",
+    "primereact": "^9.6.0"
   },
   "scripts": {
     "build": "npm -w client run build -- --mode ${npm_config_mode} --emptyOutDir --outDir ../server/dist",
