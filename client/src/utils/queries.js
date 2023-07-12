@@ -1,5 +1,7 @@
 const {
+  VITE_ES_AUTH,
   VITE_ES_SIZE,
+  VITE_ES_URL,
 } = import.meta.env;
 
 const getBsoQuery = ({ filters }) => {
@@ -32,4 +34,19 @@ const getBsoQuery = ({ filters }) => {
   return query;
 };
 
-export default getBsoQuery;
+const getBsoData = (options) => {
+  const params = {
+    method: 'POST',
+    body: JSON.stringify(getBsoQuery(options)),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: VITE_ES_AUTH,
+    },
+  };
+  return fetch(VITE_ES_URL, params).then((response) => {
+    if (response.ok) return response.json();
+    return 'Oops... API request did not work';
+  });
+};
+
+export default getBsoData;
