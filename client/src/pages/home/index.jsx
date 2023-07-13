@@ -38,7 +38,7 @@ export default function Home() {
   const getAffiliationsField = (item) => {
     if (item.highlight && item.highlight['affiliations.name']) {
       const highlight = item.highlight['affiliations.name'];
-      const desc = highlight.join(';');
+      const desc = highlight.join('<br />');
       return desc;
     }
     if (item._source.affiliations === undefined) {
@@ -47,7 +47,11 @@ export default function Home() {
     const { affiliations } = item._source;
     const nbAffiliations = affiliations?.length || 0;
     if (nbAffiliations === 0) return '';
-    return affiliations[0].name.toString();
+    const affiliationsName = [];
+    affiliations.forEach((aff) => {
+      affiliationsName.push(aff.name);
+    });
+    return affiliationsName.join('<br />');
   };
 
   const getAuthorsField = (item) => {
@@ -91,9 +95,10 @@ export default function Home() {
     refetch();
   };
 
-  let dataTable = [];
+  let publicationsDataTable = [];
+  const affiliationsDataTable = [];
   if (data) {
-    dataTable = data.map((item, index) => ({
+    publicationsDataTable = data.map((item, index) => ({
       affiliations: getAffiliationsField(item),
       authors: getAuthorsField(item),
       doi: item._source.doi,
@@ -124,6 +129,9 @@ export default function Home() {
       }
     });
     dataGroupedByAffiliation.sort((a, b) => b.publications.length - a.publications.length);
+    dataGroupedByAffiliation.forEach((elt) => {
+      affiliationsDataTable.push({ affiliation: elt.name, publicationsNumber: elt.publications.length });
+    });
   }
 
   const affiliationsTemplate = (rowData) => {
@@ -139,15 +147,39 @@ export default function Home() {
       <Filters
         sendQuery={sendQuery}
       />
+      {isFetching && (<Container><PageSpinner /></Container>)}
       <div>
         {`${data?.length || 0} results`}
       </div>
       {
-        dataTable && (
+        affiliationsDataTable && (
           <DataTable
             style={{ fontSize: '11px', lineHeight: '15px' }}
             size="small"
-            value={dataTable}
+            value={affiliationsDataTable}
+            paginator
+            rows={25}
+            rowsPerPageOptions={[25, 50, 100, 200]}
+            tableStyle={{ minWidth: '50rem' }}
+            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+            currentPageReportTemplate="{first} to {last} of {totalRecords}"
+            paginatorLeft={paginatorLeft}
+            paginatorRight={paginatorRight}
+            filterDisplay="row"
+            scrollable
+            stripedRows
+          >
+            <Column filter filterMatchMode="contains" field="affiliation" header="affiliations" style={{ minWidth: '10px' }} />
+            <Column showFilterMenu={false} field="publicationsNumber" header="publicationsNumber" style={{ minWidth: '10px' }} />
+          </DataTable>
+        )
+      }
+      {
+        publicationsDataTable && (
+          <DataTable
+            style={{ fontSize: '11px', lineHeight: '15px' }}
+            size="small"
+            value={publicationsDataTable}
             paginator
             rows={25}
             rowsPerPageOptions={[25, 50, 100, 200]}
@@ -169,7 +201,6 @@ export default function Home() {
           </DataTable>
         )
       }
-      {isFetching && (<Container><PageSpinner /></Container>)}
     </Container>
   );
 }
