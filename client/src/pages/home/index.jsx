@@ -112,16 +112,18 @@ export default function Home() {
   // regroupement par affiliation
   const normaliziedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
   const dataGroupedByAffiliation = [];
-  data.forEach((publication) => {
-    publication._source.affiliations.forEach((affiliation) => {
-      if (dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name))) {
-        dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name)).publications.push(publication._source.id);
-      } else {
-        dataGroupedByAffiliation.push({ name: affiliation.name, publications: [publication._source.id] });
-      }
+  if (data) {
+    data.forEach((publication) => {
+      publication._source.affiliations.forEach((affiliation) => {
+        if (dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name))) {
+          dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name)).publications.push(publication._source.id);
+        } else {
+          dataGroupedByAffiliation.push({ name: affiliation.name, publications: [publication._source.id] });
+        }
+      });
     });
-  });
-  dataGroupedByAffiliation.sort((a, b) => b.publications.length - a.publications.length);
+    dataGroupedByAffiliation.sort((a, b) => b.publications.length - a.publications.length);
+  }
 
   return (
     <Container className="fr-my-5w" as="section">
