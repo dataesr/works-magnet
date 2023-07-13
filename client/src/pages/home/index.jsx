@@ -28,6 +28,7 @@ const getData = async (options) => {
   });
   const results = await Promise.all(promises);
   const data = results.filter((item) => !!item).map((item) => (item?.hits?.hits ? item.hits.hits : item)).flat();
+  // const nbResultsBso = results[0].hits.total.value;
   return data;
 };
 
@@ -114,23 +115,27 @@ export default function Home() {
   const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
 
   // regroupement par affiliation
-  const normaliziedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+  const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
   const dataGroupedByAffiliation = [];
   if (data) {
     data.forEach((publication) => {
-      if (publication._source.affiliations) {
-        publication._source.affiliations.forEach((affiliation) => {
-          if (dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name))) {
-            dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name)).publications.push(publication._source.id);
+      // if (publication._source.affiliations) {
+      if (publication.highlight['affiliations.name']) {
+        // publication._source.affiliations.forEach((affiliation) => {
+        publication.highlight['affiliations.name'].forEach((affiliation) => {
+          // if (dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation.name))) {
+          if (dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation))) {
+            // dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation.name)).publications.push(publication._source.id);
+            dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation)).publications.push(publication._source.id);
           } else {
-            dataGroupedByAffiliation.push({ name: affiliation.name, publications: [publication._source.id] });
+            dataGroupedByAffiliation.push({ name: affiliation, publications: [publication._source.id] });
           }
         });
       }
     });
     dataGroupedByAffiliation.sort((a, b) => b.publications.length - a.publications.length);
     dataGroupedByAffiliation.forEach((elt) => {
-      affiliationsDataTable.push({ affiliation: elt.name, publicationsNumber: elt.publications.length });
+      affiliationsDataTable.push({ affiliations: elt.name, publicationsNumber: elt.publications.length });
     });
   }
 
@@ -169,7 +174,7 @@ export default function Home() {
             scrollable
             stripedRows
           >
-            <Column filter filterMatchMode="contains" field="affiliation" header="affiliations" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliation" header="affiliations" style={{ minWidth: '10px' }} />
             <Column showFilterMenu={false} field="publicationsNumber" header="publicationsNumber" style={{ minWidth: '10px' }} />
           </DataTable>
         )
