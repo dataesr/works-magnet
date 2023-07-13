@@ -39,7 +39,7 @@ export default function Home() {
     if (item.highlight && item.highlight['affiliations.name']) {
       const highlight = item.highlight['affiliations.name'];
       const desc = highlight.join(';');
-      return (<span dangerouslySetInnerHTML={{ __html: desc }} />);
+      return desc;
     }
     if (item._source.affiliations === undefined) {
       return '';
@@ -47,15 +47,14 @@ export default function Home() {
     const { affiliations } = item._source;
     const nbAffiliations = affiliations?.length || 0;
     if (nbAffiliations === 0) return '';
-    if (nbAffiliations === 1) return affiliations[0].name;
-    return `${affiliations[0].name} et al. (${nbAffiliations - 1})`;
+    return affiliations[0].name.toString();
   };
 
   const getAuthorsField = (item) => {
     if (item.highlight && item.highlight['authors.full_name']) {
       const highlight = item.highlight['authors.full_name'];
       const desc = highlight.join(';');
-      return (<span dangerouslySetInnerHTML={{ __html: desc }} />);
+      return desc;
     }
     if (item._source.authors === undefined) {
       return '';
@@ -114,16 +113,26 @@ export default function Home() {
   const dataGroupedByAffiliation = [];
   if (data) {
     data.forEach((publication) => {
-      publication._source.affiliations.forEach((affiliation) => {
-        if (dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name))) {
-          dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name)).publications.push(publication._source.id);
-        } else {
-          dataGroupedByAffiliation.push({ name: affiliation.name, publications: [publication._source.id] });
-        }
-      });
+      if (publication._source.affiliations) {
+        publication._source.affiliations.forEach((affiliation) => {
+          if (dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name))) {
+            dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name)).publications.push(publication._source.id);
+          } else {
+            dataGroupedByAffiliation.push({ name: affiliation.name, publications: [publication._source.id] });
+          }
+        });
+      }
     });
     dataGroupedByAffiliation.sort((a, b) => b.publications.length - a.publications.length);
   }
+
+  const affiliationsTemplate = (rowData) => {
+    return <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
+  };
+  
+  const authorsTemplate = (rowData) => {
+    return <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />;
+  };
 
   return (
     <Container className="fr-my-5w" as="section">
@@ -154,8 +163,8 @@ export default function Home() {
             <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} />
             <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="doi" style={{ minWidth: '10px' }} />
             <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="hal_id" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" field="affiliations" header="affiliations" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" field="authors" header="authors" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="affiliations" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="authors" style={{ minWidth: '10px' }} />
             <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="title" style={{ minWidth: '10px' }} />
           </DataTable>
         )
