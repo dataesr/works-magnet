@@ -17,13 +17,13 @@ import 'primereact/resources/primereact.min.css';
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
     switch (datasource) {
-    case 'bso':
-      return getBsoData(options);
-    case 'openalex':
-      return getOpenAlexData(options);
-    default:
-      console.error(`Datasoure : ${datasource} is badly formated and shoud be on of bso or openalex`);
-      return Promise.resolve();
+      case 'bso':
+        return getBsoData(options);
+      case 'openalex':
+        return getOpenAlexData(options);
+      default:
+        console.error(`Datasoure : ${datasource} is badly formated and shoud be on of bso or openalex`);
+        return Promise.resolve();
     }
   });
   const results = await Promise.all(promises);
@@ -109,13 +109,27 @@ export default function Home() {
   const paginatorLeft = <Button icon="ri-refresh-fill" text>Refresh</Button>;
   const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
 
+  // regroupement par affiliation
+  const normaliziedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+  const dataGroupedByAffiliation = [];
+  data.forEach((publication) => {
+    publication._source.affiliations.forEach((affiliation) => {
+      if (dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name))) {
+        dataGroupedByAffiliation.find((item) => normaliziedName(item.name) === normaliziedName(affiliation.name)).publications.push(publication._source.id);
+      } else {
+        dataGroupedByAffiliation.push({ name: affiliation.name, publications: [publication._source.id] });
+      }
+    });
+  });
+  dataGroupedByAffiliation.sort((a, b) => b.publications.length - a.publications.length);
+
   return (
     <Container className="fr-my-5w" as="section">
       <Filters
         sendQuery={sendQuery}
       />
       <div>
-        { `${data?.length || 0} results` }
+        {`${data?.length || 0} results`}
       </div>
       {
         dataTable && (
