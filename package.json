@@ -1,5 +1,6 @@
 {
   "name": "publications-retriever",
+  "homepage": "https://github.com/dataesr/publications-finder/",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -20,7 +21,6 @@
     "start": "npm run dev",
     "build-client": "npm -w client run build",
     "preview-client": "npm run build-client && npm -w client run preview",
-    "deploy": "gh-pages -d client/dist",
     "build": "vite build"
   }
 }

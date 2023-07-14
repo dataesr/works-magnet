@@ -17,13 +17,13 @@ import 'primereact/resources/primereact.min.css';
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
     switch (datasource) {
-      case 'bso':
-        return getBsoData(options);
-      case 'openalex':
-        return getOpenAlexData(options);
-      default:
-        console.error(`Datasoure : ${datasource} is badly formated and shoud be on of bso or openalex`);
-        return Promise.resolve();
+    case 'bso':
+      return getBsoData(options);
+    case 'openalex':
+      return getOpenAlexData(options);
+    default:
+      console.error(`Datasoure : ${datasource} is badly formated and shoud be on of bso or openalex`);
+      return Promise.resolve();
     }
   });
   const results = await Promise.all(promises);
@@ -139,13 +139,9 @@ export default function Home() {
     });
   }
 
-  const affiliationsTemplate = (rowData) => {
-    return <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
-  };
-  
-  const authorsTemplate = (rowData) => {
-    return <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />;
-  };
+  const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
+
+  const authorsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />;
 
   return (
     <Container className="fr-my-5w" as="section">
