@@ -32,13 +32,14 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
       }
       return response;
     })
-    .then((results) => results.map((result) => ({
-      doi: result.doi.replace('https://doi.org/', ''),
-      title: result.display_name,
-      genre: result.type,
-      year: result.publication_year,
-      authors: result.authorships.map((author) => ({ ...author, full_name: author.author.display_name })),
+    .then((results) => results.map((item) => ({
+      doi: item.doi.replace('https://doi.org/', ''),
+      title: item?.display_name ? item.display_name : item.title,
+      genre: item?.type ? item.type : item.genre,
+      year: item?.publication_year ? item.publication_year : item.year,
+      authors: item?.authorships ? item.authorships.map((author) => ({ ...author, full_name: author.author.display_name })) : item.authors,
       datasource: 'openalex',
+      affiliations: item?.authorships ? item.authorships.map((author) => author.institutions.map((institution) => ({ name: institution.display_name }))) : item.affiliations,
     })));
 };
 
