@@ -17,6 +17,9 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "preview": "npm run build --mode=${npm_config_mode} && npm -w server start",
     "server": "npm -w server run dev",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "build-client": "npm -w client run build",
+    "preview-client": "buil-client && npm -w client run preview",
+    "deploy": "gh-pages -d client/dist"
   }
 }
