@@ -27,9 +27,7 @@ const getData = async (options) => {
     }
   });
   const results = await Promise.all(promises);
-  const data = results.filter((item) => !!item).map((item) => (item?.hits?.hits ? item.hits.hits : item)).flat();
-  // const nbResultsBso = results[0].hits.total.value;
-  return data;
+  return results.flat();
 };
 
 export default function Home() {
@@ -37,38 +35,31 @@ export default function Home() {
   const [actions, setActions] = useState([{ doi: '10.1007/s13595-016-0554-5', action: 'keep' }]);
 
   const getAffiliationsField = (item) => {
-    if (item.highlight && item.highlight['affiliations.name']) {
-      const highlight = item.highlight['affiliations.name'];
-      const desc = highlight.join('<br />');
-      return desc;
+    if (item?.highlight?.['affiliations.name']) {
+      return item.highlight['affiliations.name'].join('<br />');
     }
-    if (item._source.affiliations === undefined) {
+
+    if (item.affiliations === undefined) {
       return '';
     }
-    const { affiliations } = item._source;
-    const nbAffiliations = affiliations?.length || 0;
-    if (nbAffiliations === 0) return '';
-    const affiliationsName = [];
-    affiliations.forEach((aff) => {
-      affiliationsName.push(aff.name);
-    });
-    return affiliationsName.join('<br />');
+
+    const { affiliations = [] } = item;
+    return affiliations.map((affiliation) => affiliation.name).join('<br />');
   };
 
   const getAuthorsField = (item) => {
-    if (item.highlight && item.highlight['authors.full_name']) {
-      const highlight = item.highlight['authors.full_name'];
-      const desc = highlight.join(';');
-      return desc;
+    if (item?.highlight?.['authors.full_name']) {
+      return item.highlight['authors.full_name'].join(';');
     }
-    if (item._source.authors === undefined) {
+
+    if (item.authors === undefined) {
       return '';
     }
-    const { authors } = item._source;
-    const nbAuthors = authors?.length || 0;
-    if (nbAuthors === 0) return '';
-    if (nbAuthors === 1) return authors[0].full_name;
-    return `${authors[0].full_name} et al. (${nbAuthors - 1})`;
+
+    const { authors = [] } = item;
+    if (authors.length === 0) return '';
+    if (authors.length === 1) return authors[0].full_name;
+    return `${authors[0].full_name} et al. (${authors.length - 1})`;
   };
 
   const { data, isFetching, refetch } = useQuery({
@@ -97,18 +88,18 @@ export default function Home() {
   };
 
   let publicationsDataTable = [];
-  const affiliationsDataTable = [];
   if (data) {
     publicationsDataTable = data.map((item, index) => ({
       affiliations: getAffiliationsField(item),
       authors: getAuthorsField(item),
-      doi: item._source.doi,
-      hal_id: item._source.hal_id,
+      doi: item.doi,
+      hal_id: item.hal_id,
       id: index,
-      title: item._source.title,
-      genre: item._source.genre_raw || item._source.genre,
-      year: item._source.year,
-      action: actions.find((action) => action.doi === item._source.doi)?.action,
+      title: item.title,
+      genre: item.genre_raw || item.genre,
+      year: item.year,
+      action: actions.find((action) => action.doi === item.doi)?.action,
+      datasource: item.datasource,
     }));
   }
   const paginatorLeft = <Button icon="ri-refresh-fill" text>Refresh</Button>;
@@ -119,25 +110,19 @@ export default function Home() {
   const dataGroupedByAffiliation = [];
   if (data) {
     data.forEach((publication) => {
-      // if (publication._source.affiliations) {
-      if (publication.highlight['affiliations.name']) {
-        // publication._source.affiliations.forEach((affiliation) => {
+      if (publication?.highlight?.['affiliations.name']) {
         publication.highlight['affiliations.name'].forEach((affiliation) => {
-          // if (dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation.name))) {
           if (dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation))) {
-            // dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation.name)).publications.push(publication._source.id);
-            dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation)).publications.push(publication._source.id);
+            dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation)).publications.push(publication.id);
           } else {
-            dataGroupedByAffiliation.push({ name: affiliation, publications: [publication._source.id] });
+            dataGroupedByAffiliation.push({ name: affiliation, publications: [publication.id] });
           }
         });
       }
     });
     dataGroupedByAffiliation.sort((a, b) => b.publications.length - a.publications.length);
-    dataGroupedByAffiliation.forEach((elt) => {
-      affiliationsDataTable.push({ affiliations: elt.name, publicationsNumber: elt.publications.length });
-    });
   }
+  const affiliationsDataTable = dataGroupedByAffiliation.map((affiliation) => ({ affiliations: affiliation.name, publicationsNumber: affiliation.publications.length }));
 
   const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
 
@@ -194,11 +179,12 @@ export default function Home() {
             stripedRows
           >
             <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="doi" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="hal_id" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="affiliations" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="authors" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="title" style={{ minWidth: '10px' }} />
+            <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
+            <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
+            <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
           </DataTable>
         )
       }

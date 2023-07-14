@@ -19,7 +19,7 @@ export default function Filters({
   sendQuery,
 }) {
   const [viewMoreFilters, setViewMoreFilters] = useState(false);
-  const [datasources, setDatasources] = useState(sources.filter((item) => item !== 'openalex'));
+  const [datasources, setDatasources] = useState(sources);
   const [dataidentifiers, setDataIdentifiers] = useState(identifiers);
   const [affiliations, setAffiliations] = useState(['Ingénierie-Biologie-Santé Lorraine', 'UMS 2008', 'IBSLOR', 'UMS2008', 'UMS CNRS 2008']);
   const [affiliationsToExclude, setAffiliationsToExclude] = useState([]);

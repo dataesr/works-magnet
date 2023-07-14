@@ -1,11 +1,11 @@
 const {
-  VITE_ES_AUTH,
-  VITE_ES_SIZE,
-  VITE_ES_URL,
+  VITE_BSO_AUTH,
+  VITE_BSO_SIZE,
+  VITE_BSO_URL,
 } = import.meta.env;
 
 const getBsoQuery = ({ filters }) => {
-  const query = { size: VITE_ES_SIZE, query: { bool: {} } };
+  const query = { size: VITE_BSO_SIZE, query: { bool: {} } };
   query.query.bool.filter = [];
   query.query.bool.should = [];
   query.query.bool.must_not = [];
@@ -31,6 +31,7 @@ const getBsoQuery = ({ filters }) => {
   query.highlight = { fields: { 'affiliations.name': {}, 'authors.full_name': {} } };
   query.query.bool.filter.push({ terms: { 'external_ids.id_type': filters.dataidentifiers } });
   query.query.bool.minimum_should_match = 1;
+  query._source = ['affiliations', 'authors', 'doi', 'genre', 'hal_id', 'id', 'title', 'year'];
   return query;
 };
 
@@ -40,13 +41,20 @@ const getBsoData = (options) => {
     body: JSON.stringify(getBsoQuery(options)),
     headers: {
       'content-type': 'application/json',
-      Authorization: VITE_ES_AUTH,
+      Authorization: VITE_BSO_AUTH,
     },
   };
-  return fetch(VITE_ES_URL, params).then((response) => {
-    if (response.ok) return response.json();
-    return 'Oops... API request did not work';
-  });
+  return fetch(VITE_BSO_URL, params)
+    .then((response) => {
+      if (response.ok) return response.json();
+      return 'Oops... BSO API request did not work';
+    })
+    .then((response) => response?.hits?.hits || [])
+    .then((results) => results.map((result) => ({
+      ...result._source,
+      highlight: result.highlight,
+      datasource: 'bso',
+    })));
 };
 
 export default getBsoData;
