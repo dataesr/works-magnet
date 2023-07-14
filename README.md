@@ -9,7 +9,7 @@ Doadify is fully functional in development.
 The react client app is served by the node server in production.
 Vite build creates a build in `/dist` folder. This folder has to be moved to the `/server` folder.
 
-## Installation
+## Install app
 
 Run
 
@@ -21,4 +21,8 @@ Run
 
 `npm start`
 
-App available at http://localhost:5173/.
+Web App available at http://localhost:5173/ and API at http://localhost:3000/.
+
+## Build app
+
+`npm run build`

@@ -6,8 +6,17 @@ export default defineConfig({
   base: './',
   build: {
     emptyOutDir: true,
-    outDir: '../dist'
+    outDir: '../server/dist',
   },
   plugins: [react()],
-  root: 'client',
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+    },
+  },
 });
