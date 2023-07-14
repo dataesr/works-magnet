@@ -12,14 +12,15 @@
     "primereact": "^9.6.0"
   },
   "scripts": {
-    "build": "npm -w client run build -- --mode ${npm_config_mode} --emptyOutDir --outDir ../server/dist",
+    "build-fullstack": "npm -w client run build -- --mode ${npm_config_mode} --emptyOutDir --outDir ../server/dist",
     "client": "npm -w client run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "preview": "npm run build --mode=${npm_config_mode} && npm -w server start",
     "server": "npm -w server run dev",
     "start": "npm run dev",
     "build-client": "npm -w client run build",
-    "preview-client": "buil-client && npm -w client run preview",
-    "deploy": "gh-pages -d client/dist"
+    "preview-client": "npm run build-client && npm -w client run preview",
+    "deploy": "gh-pages -d client/dist",
+    "build": "vite build"
   }
 }
