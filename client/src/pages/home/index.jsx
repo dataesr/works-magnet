@@ -109,22 +109,21 @@ export default function Home() {
 
   // regroupement par affiliation
   const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
-  const dataGroupedByAffiliation = [];
+  const dataGroupedByAffiliation = {};
   if (data) {
     data.forEach((publication) => {
-      if (publication?.highlight?.['affiliations.name']) {
-        publication.highlight['affiliations.name'].forEach((affiliation) => {
-          if (dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation))) {
-            dataGroupedByAffiliation.find((item) => normalizedName(item.name) === normalizedName(affiliation)).publications.push(publication.id);
-          } else {
-            dataGroupedByAffiliation.push({ name: affiliation, publications: [publication.id] });
-          }
-        });
-      }
+      (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
+        if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
+          dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0 };
+        }
+        // eslint-disable-next-line no-plusplus
+        dataGroupedByAffiliation[normalizedName(affiliation)].count++;
+      });
     });
-    dataGroupedByAffiliation.sort((a, b) => b.publications.length - a.publications.length);
   }
-  const affiliationsDataTable = dataGroupedByAffiliation.map((affiliation) => ({ affiliations: affiliation.name, publicationsNumber: affiliation.publications.length }));
+  const affiliationsDataTable = Object.values(dataGroupedByAffiliation)
+    .sort((a, b) => b.count - a.count)
+    .map((affiliation) => ({ affiliations: affiliation.name, publicationsNumber: affiliation.count }));
 
   const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
 
