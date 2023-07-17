@@ -49,8 +49,7 @@ const getBsoData = (options) => {
       if (response.ok) return response.json();
       return 'Oops... BSO API request did not work';
     })
-    .then((response) => response?.hits?.hits || [])
-    .then((results) => results.map((result) => ({
+    .then((response) => (response?.hits?.hits ?? []).map((result) => ({
       ...result._source,
       highlight: result.highlight,
       datasource: 'bso',

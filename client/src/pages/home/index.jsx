@@ -4,29 +4,29 @@ import './index.scss';
 import { useState } from 'react';
 import { Button, Container, Icon, Tab, Tabs, Text } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
-import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
 
 import Filters from './filters';
+import AffiliationsView from './views/affiliations';
+import PublicationsView from './views/publications';
+import { PageSpinner } from '../../components/spinner';
 import getBsoData from '../../utils/bso';
 import getOpenAlexData from '../../utils/openalex';
-import { PageSpinner } from '../../components/spinner';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
-import PublicationsView from './views/publications';
-import AffiliationsView from './views/affiliations';
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
     switch (datasource) {
-      case 'bso':
-        return getBsoData(options);
-      case 'openalex':
-        return getOpenAlexData(options);
-      default:
-        console.error(`Datasoure : ${datasource} is badly formatted and shoud be on of bso or openalex`);
-        return Promise.resolve();
+    case 'bso':
+      return getBsoData(options);
+    case 'openalex':
+      return getOpenAlexData(options);
+    default:
+      console.error(`Datasoure : ${datasource} is badly formatted and shoud be on of bso or openalex`);
+      return Promise.resolve();
     }
   });
   const results = await Promise.all(promises);
@@ -40,15 +40,21 @@ export default function Home() {
 
   const getAffiliationsField = (item) => {
     if (item?.highlight?.['affiliations.name']) {
-      return item.highlight['affiliations.name'].join('<br />');
+      let list = '<ul>';
+      list += item.highlight['affiliations.name'].map((affiliation) => `<li>${affiliation}</li>`).join('');
+      list += '</ul>';
+      return list;
     }
 
-    if (item.affiliations === undefined) {
-      return '';
-    }
-
-    const { affiliations = [] } = item;
-    return affiliations.map((affiliation) => affiliation.name).join('<br />');
+    let affiliations = (item?.affiliations ?? [])
+      .map((affiliation) => affiliation.name)
+      .filter((affiliation) => affiliation.length > 0)
+      .flat();
+    affiliations = [...new Set(affiliations)];
+    let list = '<ul>';
+    list += affiliations.map((affiliation) => `<li>${affiliation}</li>`).join('');
+    list += '</ul>';
+    return list;
   };
 
   const getAuthorsField = (item) => {
@@ -115,25 +121,27 @@ export default function Home() {
   if (data) {
     data.forEach((publication) => {
       switch (publication.datasource) {
-        case 'bso':
-          (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
-            if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
-              dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0 };
-            }
-            // eslint-disable-next-line no-plusplus
-            dataGroupedByAffiliation[normalizedName(affiliation)].count++;
-          });
-          break;
-        case 'openalex':
-          (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
-            if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
-              dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0 };
-            }
-            // eslint-disable-next-line no-plusplus
-            dataGroupedByAffiliation[normalizedName(affiliation)].count++;
-          }));
-          break;
-        default:
+      case 'bso':
+        (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
+          if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
+            dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
+          }
+          // eslint-disable-next-line no-plusplus
+          dataGroupedByAffiliation[normalizedName(affiliation)].count++;
+          dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
+        });
+        break;
+      case 'openalex':
+        (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
+          if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
+            dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
+          }
+          // eslint-disable-next-line no-plusplus
+          dataGroupedByAffiliation[normalizedName(affiliation)].count++;
+          dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
+        }));
+        break;
+      default:
       }
     });
   }
