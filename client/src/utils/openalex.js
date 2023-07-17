@@ -15,8 +15,10 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
   } else if (filters?.endYear) {
     url += `,publication_year:-${filters.endYear}`;
   }
-  if (filters.affiliations.length > 0) {
-    url += `,raw_affiliation_string.search:${filters.affiliations.join('|')}`;
+  if (filters.affiliations.length > 0 || filters.affiliationsToExclude.length > 0) {
+    url += ',raw_affiliation_string.search:';
+    if (filters.affiliations.length > 0) url += `(${filters.affiliations.join(' OR ')})`;
+    if (filters.affiliationsToExclude.length > 0) url += `${filters.affiliationsToExclude.map((aff) => ` AND NOT ${aff}`).join('')}`;
   }
   url += '&select=authorships,display_name,doi,id,publication_year,type';
   return fetch(`${url}&page=${page}`)
@@ -38,7 +40,7 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
       datasource: 'openalex',
       doi: item?.doi?.replace('https://doi.org/', '') ?? null,
       genre: item?.type ?? item.genre,
-      id: item?.doi ? `doi${item.doi}` : null,
+      id: item.id,
       title: item?.display_name ?? item.title,
       year: item?.publication_year ?? item.year,
     })));
