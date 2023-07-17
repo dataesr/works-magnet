@@ -224,6 +224,7 @@ export default function Home() {
             size="small"
             value={actions.filter((action) => action.action === 'keep')}
             paginator
+            paginatorPosition="both"
             rows={25}
             rowsPerPageOptions={[25, 50, 100, 200]}
             tableStyle={{ minWidth: '50rem' }}
@@ -248,6 +249,7 @@ export default function Home() {
             size="small"
             value={actions.filter((action) => action.action === 'exclude')}
             paginator
+            paginatorPosition="both"
             rows={25}
             rowsPerPageOptions={[25, 50, 100, 200]}
             tableStyle={{ minWidth: '50rem' }}

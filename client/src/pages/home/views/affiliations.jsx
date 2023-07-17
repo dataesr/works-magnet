@@ -20,6 +20,7 @@ export default function AffiliationsView({
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       paginatorLeft={paginatorLeft}
+      paginatorPosition="both"
       paginatorRight={paginatorRight}
       filterDisplay="row"
       scrollable

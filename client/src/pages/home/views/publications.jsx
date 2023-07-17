@@ -18,6 +18,7 @@ export default function PublicationsView({
       filterDisplay="row" // +
       paginator
       paginatorLeft={paginatorLeft}
+      paginatorPosition="both"
       paginatorRight={paginatorRight}
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
