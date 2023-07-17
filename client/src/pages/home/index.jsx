@@ -20,13 +20,13 @@ import 'primereact/resources/primereact.min.css';
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
     switch (datasource.key) {
-    case 'bso':
-      return getBsoData(options);
-    case 'openalex':
-      return getOpenAlexData(options);
-    default:
-      console.error(`Datasoure : ${datasource.label} is badly formatted and shoud be on of bso or openalex`);
-      return Promise.resolve();
+      case 'bso':
+        return getBsoData(options);
+      case 'openalex':
+        return getOpenAlexData(options);
+      default:
+        console.error(`Datasoure : ${datasource.label} is badly formatted and shoud be on of bso or openalex`);
+        return Promise.resolve();
     }
   });
   const results = await Promise.all(promises);
@@ -107,16 +107,16 @@ export default function Home() {
         authors: getAuthorsField(item),
         doi: item.doi,
         hal_id: item.hal_id,
-        id: index,
+        id: item.id,
         title: item.title,
         genre: item.genre_raw || item.genre,
         year: item.year,
-        action: actions.find((action) => action.doi === item.doi)?.action || undefined,
+        action: actions.find((action) => action.id === item.id)?.action || undefined,
         datasource: item.datasource,
       }))
       .filter((item) => {
         if (viewAllPublications) { return true; }
-        return !actions.map((action) => action.doi).includes(item.doi);
+        return !actions.map((action) => action.id).includes(item.id);
       });
   }
   const paginatorLeft = <Button icon="ri-refresh-fill" text>Refresh</Button>;
@@ -128,27 +128,27 @@ export default function Home() {
   if (data) {
     data.forEach((publication) => {
       switch (publication.datasource) {
-      case 'bso':
-        (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
-          if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
-            dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
-          }
-          // eslint-disable-next-line no-plusplus
-          dataGroupedByAffiliation[normalizedName(affiliation)].count++;
-          dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
-        });
-        break;
-      case 'openalex':
-        (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
-          if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
-            dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
-          }
-          // eslint-disable-next-line no-plusplus
-          dataGroupedByAffiliation[normalizedName(affiliation)].count++;
-          dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
-        }));
-        break;
-      default:
+        case 'bso':
+          (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
+            if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
+              dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
+            }
+            // eslint-disable-next-line no-plusplus
+            dataGroupedByAffiliation[normalizedName(affiliation)].count++;
+            dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
+          });
+          break;
+        case 'openalex':
+          (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
+            if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
+              dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
+            }
+            // eslint-disable-next-line no-plusplus
+            dataGroupedByAffiliation[normalizedName(affiliation)].count++;
+            dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
+          }));
+          break;
+        default:
       }
     });
   }
@@ -161,7 +161,7 @@ export default function Home() {
   const authorsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />;
 
   const tagLines = (lines, action) => {
-    const newActions = lines.map((line) => ({ doi: line.doi, action }));
+    const newActions = lines.map((line) => ({ ...line, action }));
     setActions([...actions, ...newActions]);
   };
 
@@ -245,6 +245,7 @@ export default function Home() {
             scrollable
             stripedRows
           >
+            <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
             <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
             <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
             <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
@@ -270,6 +271,7 @@ export default function Home() {
             scrollable
             stripedRows
           >
+            <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
             <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
             <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
             <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />

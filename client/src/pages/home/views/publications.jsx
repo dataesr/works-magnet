@@ -11,7 +11,6 @@ export default function PublicationsView({
   setSelectedPublications,
   selectedPublications,
 }) {
-  console.log('selectedPublications', selectedPublications.length);
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -38,6 +37,7 @@ export default function PublicationsView({
     >
       <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
+      <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
       <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
       <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
