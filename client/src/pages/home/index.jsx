@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import './index.scss';
 import { useState } from 'react';
-import { Button, Container } from '@dataesr/react-dsfr';
+import { Button, Container, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -13,17 +13,19 @@ import { PageSpinner } from '../../components/spinner';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
+import PublicationsView from './views/publications';
+import AffiliationsView from './views/affiliations';
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
     switch (datasource) {
-    case 'bso':
-      return getBsoData(options);
-    case 'openalex':
-      return getOpenAlexData(options);
-    default:
-      console.error(`Datasoure : ${datasource} is badly formatted and shoud be on of bso or openalex`);
-      return Promise.resolve();
+      case 'bso':
+        return getBsoData(options);
+      case 'openalex':
+        return getOpenAlexData(options);
+      default:
+        console.error(`Datasoure : ${datasource} is badly formatted and shoud be on of bso or openalex`);
+        return Promise.resolve();
     }
   });
   const results = await Promise.all(promises);
@@ -137,57 +139,34 @@ export default function Home() {
       <div>
         {`${data?.length || 0} results`}
       </div>
-      {
-        affiliationsDataTable && (
-          <DataTable
-            style={{ fontSize: '11px', lineHeight: '15px' }}
-            size="small"
-            value={affiliationsDataTable}
-            paginator
-            rows={25}
-            rowsPerPageOptions={[25, 50, 100, 200]}
-            tableStyle={{ minWidth: '50rem' }}
-            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-            currentPageReportTemplate="{first} to {last} of {totalRecords}"
-            paginatorLeft={paginatorLeft}
-            paginatorRight={paginatorRight}
-            filterDisplay="row"
-            scrollable
-            stripedRows
-          >
-            <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliation" header="affiliations" style={{ minWidth: '10px' }} />
-            <Column showFilterMenu={false} field="publicationsNumber" header="publicationsNumber" style={{ minWidth: '10px' }} />
-          </DataTable>
-        )
-      }
-      {
-        publicationsDataTable && (
-          <DataTable
-            style={{ fontSize: '11px', lineHeight: '15px' }}
-            size="small"
-            value={publicationsDataTable}
-            paginator
-            rows={25}
-            rowsPerPageOptions={[25, 50, 100, 200]}
-            tableStyle={{ minWidth: '50rem' }}
-            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-            currentPageReportTemplate="{first} to {last} of {totalRecords}"
-            paginatorLeft={paginatorLeft}
-            paginatorRight={paginatorRight}
-            filterDisplay="row"
-            scrollable
-            stripedRows
-          >
-            <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} />
-            <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
-          </DataTable>
-        )
-      }
+
+      <Tabs>
+        <Tab label="Affiliations view">
+          {
+            affiliationsDataTable && (
+              <AffiliationsView
+                affiliationsTemplate={affiliationsTemplate}
+                paginatorLeft={paginatorLeft}
+                paginatorRight={paginatorRight}
+                affiliationsDataTable={affiliationsDataTable}
+              />
+            )
+          }
+        </Tab>
+        <Tab label="Publications view">
+          {
+            publicationsDataTable && (
+              <PublicationsView
+                affiliationsTemplate={affiliationsTemplate}
+                authorsTemplate={authorsTemplate}
+                paginatorLeft={paginatorLeft}
+                paginatorRight={paginatorRight}
+                publicationsDataTable={publicationsDataTable}
+              />
+            )
+          }
+        </Tab>
+      </Tabs>
     </Container>
   );
 }
