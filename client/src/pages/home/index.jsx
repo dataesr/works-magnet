@@ -19,13 +19,13 @@ import 'primereact/resources/primereact.min.css';
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
-    switch (datasource) {
+    switch (datasource.key) {
     case 'bso':
       return getBsoData(options);
     case 'openalex':
       return getOpenAlexData(options);
     default:
-      console.error(`Datasoure : ${datasource} is badly formatted and shoud be on of bso or openalex`);
+      console.error(`Datasoure : ${datasource.label} is badly formatted and shoud be on of bso or openalex`);
       return Promise.resolve();
     }
   });

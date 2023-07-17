@@ -12,7 +12,7 @@ import { useState } from 'react';
 
 import TagInput from '../../components/tag-input';
 
-const sources = ['bso', 'openalex'];
+const sources = [{ key: 'bso', label: 'BSO' }, { key: 'openalex', label: 'OpenAlex' }];
 const identifiers = ['crossref', 'hal_id', 'datacite'];
 
 export default function Filters({
@@ -29,11 +29,11 @@ export default function Filters({
   const [endYear, setEndYear] = useState();
   const [viewAllPublications, setViewAllPublications] = useState(false);
 
-  const onCheckBoxChange = (label) => {
-    if (!datasources.includes(label)) {
-      setDatasources([...datasources, label]);
+  const onCheckBoxChange = (key) => {
+    if (!datasources.map((datasource) => datasource.key).includes(key)) {
+      setDatasources([...datasources, { key, label: key }]);
     } else {
-      setDatasources(datasources.filter((item) => item !== label));
+      setDatasources(datasources.filter((datasource) => datasource.key !== key));
     }
   };
   const onCheckBoxChangeIdentifier = (label) => {
@@ -45,7 +45,7 @@ export default function Filters({
   };
   return (
     <>
-      <Row alignItems="bottom">
+      <Row>
         <Col className="text-right">
           <Button
             onClick={() => setViewMoreFilters(!viewMoreFilters)}
@@ -95,10 +95,10 @@ export default function Filters({
             {
               sources.map((source) => (
                 <Checkbox
-                  checked={datasources.includes(source)}
-                  key={source}
-                  label={source}
-                  onChange={() => onCheckBoxChange(source)}
+                  checked={datasources.map((datasource) => datasource.key).includes(source.key)}
+                  key={source.key}
+                  label={source.label}
+                  onChange={() => onCheckBoxChange(source.key)}
                   size="sm"
                 />
               ))
