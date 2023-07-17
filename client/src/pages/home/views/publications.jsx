@@ -14,7 +14,7 @@ export default function PublicationsView({
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
-      filterDisplay="row" // +
+      filterDisplay="row"
       paginator
       paginatorLeft={paginatorLeft}
       paginatorPosition="both"
@@ -22,12 +22,11 @@ export default function PublicationsView({
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
-      dataKey="id" //
+      dataKey="id"
       dragSelection
       metaKeySelection={false}
       onSelectionChange={(e) => setSelectedPublications(e.value)}
       selection={selectedPublications}
-      selectionMode="multiple" //
       scrollable
       size="small"
       stripedRows
@@ -38,6 +37,7 @@ export default function PublicationsView({
       sortField="identifier"
       rowGroupMode="rowspan"
     >
+      <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="identifier" header="Identifier" />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />

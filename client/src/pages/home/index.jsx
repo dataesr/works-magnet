@@ -25,7 +25,7 @@ const getData = async (options) => {
       case 'openalex':
         return getOpenAlexData(options);
       default:
-        console.error(`Datasoure : ${datasource.label} is badly formatted and shoud be on of bso or openalex`);
+        console.error(`Datasoure : ${datasource.label} is badly formatted and shoud be one of BSO or OpenAlex`);
         return Promise.resolve();
     }
   });
@@ -200,7 +200,7 @@ export default function Home() {
         Exclude
       </Button>
       <Button icon="ri-save-line">Save</Button>
-      <Tabs>
+      <Tabs defaultActiveTab={1}>
         <Tab label="Affiliations view">
           {
             affiliationsDataTable && (
