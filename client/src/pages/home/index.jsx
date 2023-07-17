@@ -29,8 +29,8 @@ const getData = async (options) => {
         return Promise.resolve();
     }
   });
-  const results = await Promise.all(promises);
-  return results.flat();
+  const publications = await Promise.all(promises);
+  return publications.flat();
 };
 
 export default function Home() {
@@ -102,7 +102,7 @@ export default function Home() {
 
   if (data) {
     publicationsDataTable = data
-      .map((item, index) => ({
+      .map((item) => ({
         affiliations: getAffiliationsField(item),
         authors: getAuthorsField(item),
         doi: item.doi,
@@ -113,6 +113,7 @@ export default function Home() {
         year: item.year,
         action: actions.find((action) => action.id === item.id)?.action || undefined,
         datasource: item.datasource,
+        identifier: item.identifier,
       }))
       .filter((item) => {
         if (viewAllPublications) { return true; }

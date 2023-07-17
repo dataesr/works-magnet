@@ -53,6 +53,7 @@ const getBsoData = (options) => {
       ...result._source,
       highlight: result.highlight,
       datasource: 'bso',
+      identifier: result?._source?.doi ?? result?._source?.hal_id ?? result._source.id,
     })));
 };
 

@@ -34,8 +34,11 @@ export default function PublicationsView({
       style={{ fontSize: '11px', lineHeight: '15px' }}
       tableStyle={{ minWidth: '50rem' }}
       value={publicationsDataTable}
+      groupRowsBy="identifier"
+      sortField="identifier"
+      rowGroupMode="rowspan"
     >
-      <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} />
+      <Column field="identifier" header="Identifier" />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
       <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
@@ -53,7 +56,7 @@ PublicationsView.propTypes = {
   paginatorLeft: PropTypes.node.isRequired,
   paginatorRight: PropTypes.node.isRequired,
   publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
-    verified: PropTypes.bool.isRequired,
+    identifier: PropTypes.string.isRequired,
     datasource: PropTypes.string.isRequired,
     doi: PropTypes.string.isRequired,
     hal_id: PropTypes.string.isRequired,
@@ -64,7 +67,6 @@ PublicationsView.propTypes = {
   setSelectedPublications: PropTypes.func.isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
-    verified: PropTypes.bool.isRequired,
     datasource: PropTypes.string.isRequired,
     doi: PropTypes.string.isRequired,
     hal_id: PropTypes.string.isRequired,

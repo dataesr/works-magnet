@@ -17,7 +17,7 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
   }
   if (filters.affiliations.length > 0 || filters.affiliationsToExclude.length > 0) {
     url += ',raw_affiliation_string.search:';
-    if (filters.affiliations.length > 0) url += `(${filters.affiliations.join(' OR ')})`;
+    if (filters.affiliations.length > 0) url += `(${filters.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
     if (filters.affiliationsToExclude.length > 0) url += `${filters.affiliationsToExclude.map((aff) => ` AND NOT ${aff}`).join('')}`;
   }
   url += '&select=authorships,display_name,doi,id,publication_year,type';
@@ -43,6 +43,7 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
       id: item.id,
       title: item?.display_name ?? item.title,
       year: item?.publication_year ?? item.year,
+      identifier: item?.doi?.replace('https://doi.org/', '') ?? item.id,
     })));
 };
 
