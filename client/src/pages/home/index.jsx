@@ -112,13 +112,27 @@ export default function Home() {
   const dataGroupedByAffiliation = {};
   if (data) {
     data.forEach((publication) => {
-      (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
-        if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
-          dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0 };
-        }
-        // eslint-disable-next-line no-plusplus
-        dataGroupedByAffiliation[normalizedName(affiliation)].count++;
-      });
+      switch (publication.datasource) {
+      case 'bso':
+        (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
+          if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
+            dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0 };
+          }
+          // eslint-disable-next-line no-plusplus
+          dataGroupedByAffiliation[normalizedName(affiliation)].count++;
+        });
+        break;
+      case 'openalex':
+        (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
+          if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
+            dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0 };
+          }
+          // eslint-disable-next-line no-plusplus
+          dataGroupedByAffiliation[normalizedName(affiliation)].count++;
+        }));
+        break;
+      default:
+      }
     });
   }
   const affiliationsDataTable = Object.values(dataGroupedByAffiliation)
