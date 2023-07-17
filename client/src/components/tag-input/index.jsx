@@ -31,7 +31,7 @@ export default function TagInput({ label, hint, tags, onTagsChange }) {
             <TextInput
               type="text"
               value={input}
-              label={label}
+              placeholder={label}
               hint={hint}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

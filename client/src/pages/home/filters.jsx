@@ -27,6 +27,7 @@ export default function Filters({
   const [authorsToExclude, setAuthorsToExclude] = useState([]);
   const [startYear, setStartYear] = useState();
   const [endYear, setEndYear] = useState();
+  const [viewAllPublications, setViewAllPublications] = useState(false);
 
   const onCheckBoxChange = (label) => {
     if (!datasources.includes(label)) {
@@ -87,7 +88,7 @@ export default function Filters({
           />
         )
       }
-      <Row gutters alignItems="bottom">
+      <Row gutters>
         <Col n="4">
           <CheckboxGroup isInline>
             Datasources:
@@ -104,8 +105,6 @@ export default function Filters({
             }
           </CheckboxGroup>
         </Col>
-      </Row>
-      <Row gutters alignItems="bottom">
         <Col n="4">
           <CheckboxGroup isInline>
             Identifiers:
@@ -121,6 +120,14 @@ export default function Filters({
               ))
             }
           </CheckboxGroup>
+        </Col>
+        <Col n="4">
+          <Checkbox
+            checked={viewAllPublications}
+            label="View all publications"
+            onChange={() => setViewAllPublications(!viewAllPublications)}
+            size="sm"
+          />
         </Col>
       </Row>
       <Row>
