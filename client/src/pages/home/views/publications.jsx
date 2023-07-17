@@ -8,23 +8,32 @@ export default function PublicationsView({
   paginatorLeft,
   paginatorRight,
   publicationsDataTable,
+  setSelectedPublications,
+  selectedPublications,
 }) {
+  console.log('selectedPublications', selectedPublications.length);
   return (
     <DataTable
-      style={{ fontSize: '11px', lineHeight: '15px' }}
-      size="small"
-      value={publicationsDataTable}
-      paginator
-      rows={25}
-      rowsPerPageOptions={[25, 50, 100, 200]}
-      tableStyle={{ minWidth: '50rem' }}
-      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      filterDisplay="row" // +
+      paginator
       paginatorLeft={paginatorLeft}
       paginatorRight={paginatorRight}
-      filterDisplay="row"
+      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+      rows={25}
+      rowsPerPageOptions={[25, 50, 100, 200]}
+      dataKey="id" //
+      dragSelection
+      metaKeySelection={false}
+      onSelectionChange={(e) => setSelectedPublications(e.value)}
+      selection={selectedPublications}
+      selectionMode="multiple" //
       scrollable
+      size="small"
       stripedRows
+      style={{ fontSize: '11px', lineHeight: '15px' }}
+      tableStyle={{ minWidth: '50rem' }}
+      value={publicationsDataTable}
     >
       <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
@@ -43,6 +52,17 @@ PublicationsView.propTypes = {
   paginatorLeft: PropTypes.node.isRequired,
   paginatorRight: PropTypes.node.isRequired,
   publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
+    verified: PropTypes.bool.isRequired,
+    datasource: PropTypes.string.isRequired,
+    doi: PropTypes.string.isRequired,
+    hal_id: PropTypes.string.isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    title: PropTypes.string.isRequired,
+  })).isRequired,
+  setSelectedPublications: PropTypes.func.isRequired,
+  selectedPublications: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
     verified: PropTypes.bool.isRequired,
     datasource: PropTypes.string.isRequired,
     doi: PropTypes.string.isRequired,
