@@ -17,6 +17,8 @@ const identifiers = ['crossref', 'hal_id', 'datacite'];
 
 export default function Filters({
   sendQuery,
+  setViewAllPublications,
+  viewAllPublications,
 }) {
   const [viewMoreFilters, setViewMoreFilters] = useState(false);
   const [datasources, setDatasources] = useState(sources);
@@ -27,7 +29,6 @@ export default function Filters({
   const [authorsToExclude, setAuthorsToExclude] = useState([]);
   const [startYear, setStartYear] = useState();
   const [endYear, setEndYear] = useState();
-  const [viewAllPublications, setViewAllPublications] = useState(false);
 
   const onCheckBoxChange = (key) => {
     if (!datasources.map((datasource) => datasource.key).includes(key)) {
@@ -170,4 +171,6 @@ export default function Filters({
 
 Filters.propTypes = {
   sendQuery: PropTypes.func.isRequired,
+  setViewAllPublications: PropTypes.func.isRequired,
+  viewAllPublications: PropTypes.bool.isRequired,
 };

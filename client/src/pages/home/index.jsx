@@ -35,8 +35,9 @@ const getData = async (options) => {
 
 export default function Home() {
   const [options, setOptions] = useState({});
-  const [actions, setActions] = useState([{ doi: '10.1007/s13595-016-0554-5', action: 'keep' }]);
+  const [actions, setActions] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
+  const [viewAllPublications, setViewAllPublications] = useState(false);
 
   const getAffiliationsField = (item) => {
     if (item?.highlight?.['affiliations.name']) {
@@ -98,19 +99,25 @@ export default function Home() {
   };
 
   let publicationsDataTable = [];
+
   if (data) {
-    publicationsDataTable = data.map((item, index) => ({
-      affiliations: getAffiliationsField(item),
-      authors: getAuthorsField(item),
-      doi: item.doi,
-      hal_id: item.hal_id,
-      id: index,
-      title: item.title,
-      genre: item.genre_raw || item.genre,
-      year: item.year,
-      action: actions.find((action) => action.doi === item.doi)?.action,
-      datasource: item.datasource,
-    }));
+    publicationsDataTable = data
+      .map((item, index) => ({
+        affiliations: getAffiliationsField(item),
+        authors: getAuthorsField(item),
+        doi: item.doi,
+        hal_id: item.hal_id,
+        id: index,
+        title: item.title,
+        genre: item.genre_raw || item.genre,
+        year: item.year,
+        action: actions.find((action) => action.doi === item.doi)?.action || undefined,
+        datasource: item.datasource,
+      }))
+      .filter((item) => {
+        if (viewAllPublications) { return true; }
+        return !actions.map((action) => action.doi).includes(item.doi);
+      });
   }
   const paginatorLeft = <Button icon="ri-refresh-fill" text>Refresh</Button>;
   const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
@@ -162,6 +169,8 @@ export default function Home() {
     <Container className="fr-my-5w" as="section">
       <Filters
         sendQuery={sendQuery}
+        viewAllPublications={viewAllPublications}
+        setViewAllPublications={setViewAllPublications}
       />
       {isFetching && (<Container><PageSpinner /></Container>)}
       <div>
