@@ -33,7 +33,7 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
       return response;
     })
     .then((results) => results.map((item) => ({
-      doi: item.doi.replace('https://doi.org/', ''),
+      doi: item?.doi?.replace('https://doi.org/', '') || 'No DOI',
       title: item?.display_name ? item.display_name : item.title,
       genre: item?.type ? item.type : item.genre,
       year: item?.publication_year ? item.publication_year : item.year,

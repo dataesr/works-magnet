@@ -22,7 +22,7 @@ const getData = async (options) => {
     case 'openalex':
       return getOpenAlexData(options);
     default:
-      console.error(`Datasoure : ${datasource} is badly formated and shoud be on of bso or openalex`);
+      console.error(`Datasoure : ${datasource} is badly formatted and shoud be on of bso or openalex`);
       return Promise.resolve();
     }
   });
