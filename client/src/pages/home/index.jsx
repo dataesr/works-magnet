@@ -16,6 +16,7 @@ import getOpenAlexData from '../../utils/openalex';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
+import Actions from './actions';
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
@@ -180,29 +181,10 @@ export default function Home() {
         </div>
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
-        <Row>
-          <Col className="text-right">
-            <Button
-              className="fr-mb-1w"
-              disabled={selectedPublications.length === 0}
-              icon="ri-check-fill"
-              onClick={() => { tagLines(selectedPublications, 'keep'); }}
-              secondary
-            >
-              Keep
-            </Button>
-            <Button
-              className="fr-mb-1w"
-              disabled={selectedPublications.length === 0}
-              onClick={() => { tagLines(selectedPublications, 'exclude'); }}
-              icon="ri-close-fill"
-              secondary
-            >
-              Exclude
-            </Button>
-            <Button icon="ri-save-line">Save</Button>
-          </Col>
-        </Row>
+        <Actions
+          selectedPublications={selectedPublications}
+          tagLines={tagLines}
+        />
         <Tabs defaultActiveTab={1}>
           <Tab label="Affiliations view">
             {
