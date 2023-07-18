@@ -1,3 +1,5 @@
+/* eslint-disable react/no-danger */
+
 const getAffiliationsField = (item) => {
   if (item?.highlight?.['affiliations.name']) {
     let list = '<ul>';
@@ -16,14 +18,10 @@ const getAffiliationsField = (item) => {
   list += '</ul>';
   return list;
 };
-const getAuthorsField = (item) => {
-  if (item?.highlight?.['authors.full_name']) {
-    return item.highlight['authors.full_name'].join(';');
-  }
 
-  if (item.authors === undefined) {
-    return '';
-  }
+const getAuthorsField = (item) => {
+  if (item?.highlight?.['authors.full_name']) return item.highlight['authors.full_name'].join(';');
+  if (item.authors === undefined) return '';
 
   const { authors = [] } = item;
   if (authors.length === 0) return '';
@@ -31,9 +29,15 @@ const getAuthorsField = (item) => {
   return `${authors[0].full_name} et al. (${authors.length - 1})`;
 };
 
-const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
+const affiliationsTemplate = (rowData) => (
+  // <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />
+  rowData.affiliations
+);
 
-const authorsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />;
+const authorsTemplate = (rowData) => (
+  // <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />
+  rowData.authors
+);
 
 export {
   affiliationsTemplate,

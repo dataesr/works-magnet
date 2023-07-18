@@ -5,8 +5,6 @@ import './index.scss';
 import { useState } from 'react';
 import { Container, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
-import { Column } from 'primereact/column';
-import { DataTable } from 'primereact/datatable';
 
 import { PageSpinner } from '../../components/spinner';
 import Actions from './actions';
@@ -17,14 +15,13 @@ import PublicationsView from './views/publications';
 import getBsoData from '../../utils/bso';
 import getOpenAlexData from '../../utils/openalex';
 import {
-  affiliationsTemplate,
-  authorsTemplate,
   getAffiliationsField,
   getAuthorsField,
 } from '../../utils/fields';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
+import ActionsView from './views/actions';
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
@@ -34,6 +31,7 @@ const getData = async (options) => {
       case 'openalex':
         return getOpenAlexData(options);
       default:
+        // eslint-disable-next-line no-console
         console.error(`Datasoure : ${datasource.label} is badly formatted and shoud be one of BSO or OpenAlex`);
         return Promise.resolve();
     }
@@ -100,8 +98,6 @@ export default function Home() {
         return !actions.map((action) => action.id).includes(item.id);
       });
   }
-  // const paginatorLeft = <Button icon="ri-refresh-fill" text>Refresh</Button>;
-  // const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
 
   // regroupement par affiliation
   const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
@@ -163,11 +159,7 @@ export default function Home() {
         <Tabs defaultActiveTab={1}>
           <Tab label="Affiliations view">
             {
-              affiliationsDataTable && (
-                <AffiliationsView
-                  affiliationsDataTable={affiliationsDataTable}
-                />
-              )
+              affiliationsDataTable && <AffiliationsView affiliationsDataTable={affiliationsDataTable} />
             }
           </Tab>
           <Tab label={`Publications to sort (${publicationsDataTable.length})`}>
@@ -182,56 +174,10 @@ export default function Home() {
             }
           </Tab>
           <Tab label={`Keep List (${actions.filter((action) => action.action === 'keep').length})`}>
-            <DataTable
-              style={{ fontSize: '11px', lineHeight: '15px' }}
-              size="small"
-              value={actions.filter((action) => action.action === 'keep')}
-              paginator
-              paginatorPosition="both"
-              rows={25}
-              rowsPerPageOptions={[25, 50, 100, 200]}
-              tableStyle={{ minWidth: '50rem' }}
-              paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-              currentPageReportTemplate="{first} to {last} of {totalRecords}"
-              // paginatorLeft={paginatorLeft}
-              // paginatorRight={paginatorRight}
-              filterDisplay="row"
-              scrollable
-              stripedRows
-            >
-              <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
-              <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
-              <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
-              <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
-              <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
-              <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
-            </DataTable>
+            <ActionsView data={actions.filter((action) => action.action === 'keep')} />
           </Tab>
           <Tab label={`Exclude List (${actions.filter((action) => action.action === 'exclude').length})`}>
-            <DataTable
-              style={{ fontSize: '11px', lineHeight: '15px' }}
-              size="small"
-              value={actions.filter((action) => action.action === 'exclude')}
-              paginator
-              paginatorPosition="both"
-              rows={25}
-              rowsPerPageOptions={[25, 50, 100, 200]}
-              tableStyle={{ minWidth: '50rem' }}
-              paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-              currentPageReportTemplate="{first} to {last} of {totalRecords}"
-              // paginatorLeft={paginatorLeft}
-              // paginatorRight={paginatorRight}
-              filterDisplay="row"
-              scrollable
-              stripedRows
-            >
-              <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
-              <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
-              <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
-              <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
-              <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
-              <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
-            </DataTable>
+            <ActionsView data={actions.filter((action) => action.action === 'exclude')} />
           </Tab>
         </Tabs>
       </Container>
