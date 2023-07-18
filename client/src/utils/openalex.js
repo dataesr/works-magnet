@@ -26,25 +26,29 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
       if (response.ok) return response.json();
       return 'Oops... OpenAlex API request did not work';
     })
-    .then(({ results }) => {
-      const response = [...previousResponse, ...results];
+    .then((response) => {
+      const results = [...previousResponse, ...response.results];
       const nextPage = Number(page) + 1;
-      if (Number(results.length) === Number(VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexData({ filters, page: nextPage, previousResponse: response });
+      if (Number(response.results.length) === Number(VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
+        return getOpenAlexData({ filters, page: nextPage, previousResponse: results });
       }
-      return response;
+      return ({ total: response.meta.count, results });
     })
-    .then((results) => results.map((item) => ({
-      affiliations: item?.authorships?.map((author) => ({ name: author.raw_affiliation_strings })) ?? item.affiliations,
-      authors: item?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? item.authors,
+    .then((response) => ({
       datasource: 'openalex',
-      doi: item?.doi?.replace('https://doi.org/', '') ?? null,
-      genre: item?.type ?? item.genre,
-      id: item.id,
-      title: item?.display_name ?? item.title,
-      year: item?.publication_year ?? item.year,
-      identifier: item?.doi?.replace('https://doi.org/', '') ?? item.id,
-    })));
+      total: response.total,
+      results: response.results.map((item) => ({
+        affiliations: item?.authorships?.map((author) => ({ name: author.raw_affiliation_strings })) ?? item.affiliations,
+        authors: item?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? item.authors,
+        datasource: 'openalex',
+        doi: item?.doi?.replace('https://doi.org/', '') ?? null,
+        genre: item?.type ?? item.genre,
+        id: item.id,
+        title: item?.display_name ?? item.title,
+        year: item?.publication_year ?? item.year,
+        identifier: item?.doi?.replace('https://doi.org/', '') ?? item.id,
+      })),
+    }));
 };
 
 export default getOpenAlexData;

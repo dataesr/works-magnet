@@ -39,7 +39,12 @@ const getData = async (options) => {
     }
   });
   const publications = await Promise.all(promises);
-  return publications.flat();
+  const data = { results: [], total: {} };
+  publications.forEach((publication) => {
+    data.results = [...data.results, ...publication.results];
+    data.total[publication.datasource] = publication.total;
+  });
+  return data;
 };
 
 export default function Home() {
@@ -76,7 +81,7 @@ export default function Home() {
   let publicationsDataTable = [];
 
   if (data) {
-    publicationsDataTable = data
+    publicationsDataTable = data.results
       .map((item) => ({
         affiliations: getAffiliationsField(item),
         authors: getAuthorsField(item),
@@ -102,7 +107,7 @@ export default function Home() {
   const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
   const dataGroupedByAffiliation = {};
   if (data) {
-    data.forEach((publication) => {
+    data.results.forEach((publication) => {
       switch (publication.datasource) {
         case 'bso':
           (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
@@ -145,7 +150,7 @@ export default function Home() {
         />
         {isFetching && (<Container><PageSpinner /></Container>)}
         <div>
-          {`${data?.length || 0} results`}
+          {`${data?.total?.bso ?? 0} results in the BSO // ${data?.total?.openalex ?? 0} results in OpenAlex`}
         </div>
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>

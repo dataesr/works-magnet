@@ -49,12 +49,16 @@ const getBsoData = (options) => {
       if (response.ok) return response.json();
       return 'Oops... BSO API request did not work';
     })
-    .then((response) => (response?.hits?.hits ?? []).map((result) => ({
-      ...result._source,
-      highlight: result.highlight,
+    .then((response) => ({
       datasource: 'bso',
-      identifier: result?._source?.doi ?? result?._source?.hal_id ?? result._source.id,
-    })));
+      total: response?.hits?.total?.value ?? 0,
+      results: (response?.hits?.hits ?? []).map((result) => ({
+        ...result._source,
+        highlight: result.highlight,
+        datasource: 'bso',
+        identifier: result?._source?.doi ?? result?._source?.hal_id ?? result._source.id,
+      })),
+    }));
 };
 
 export default getBsoData;
