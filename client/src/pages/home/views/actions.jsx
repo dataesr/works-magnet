@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Button } from '@dataesr/react-dsfr';
+import { Button, Select } from '@dataesr/react-dsfr';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 
@@ -8,10 +8,20 @@ import {
   authorsTemplate,
 } from '../../../utils/fields';
 
+const options = [
+  { label: 'keep', value: 'keep' },
+  { label: 'exclude', value: 'exclude' },
+  { label: 'to sort', value: null },
+];
+
 export default function ActionsView({
   data,
 }) {
   const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
+
+  const actionsTemplate = (rowData) => (
+    <Select options={options} selected={rowData.action} />
+  );
 
   return (
     <DataTable
@@ -31,9 +41,8 @@ export default function ActionsView({
       scrollable
       stripedRows
     >
-      <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
-      <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
-      <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
+      <Column body={actionsTemplate} showFilterMenu={false} field="action" header="Actions" style={{ minWidth: '130px' }} />
+      <Column filter filterMatchMode="contains" showFilterMenu={false} field="identifier" header="identifier" style={{ minWidth: '10px' }} sortable />
       <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
