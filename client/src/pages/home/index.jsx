@@ -121,8 +121,8 @@ export default function Home() {
         return !actions.map((action) => action.id).includes(item.id);
       });
   }
-  const paginatorLeft = <Button icon="ri-refresh-fill" text>Refresh</Button>;
-  const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
+  // const paginatorLeft = <Button icon="ri-refresh-fill" text>Refresh</Button>;
+  // const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
 
   // regroupement par affiliation
   const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
@@ -191,8 +191,8 @@ export default function Home() {
               affiliationsDataTable && (
                 <AffiliationsView
                   affiliationsTemplate={affiliationsTemplate}
-                  paginatorLeft={paginatorLeft}
-                  paginatorRight={paginatorRight}
+                  // paginatorLeft={paginatorLeft}
+                  // paginatorRight={paginatorRight}
                   affiliationsDataTable={affiliationsDataTable}
                 />
               )
@@ -204,8 +204,8 @@ export default function Home() {
                 <PublicationsView
                   affiliationsTemplate={affiliationsTemplate}
                   authorsTemplate={authorsTemplate}
-                  paginatorLeft={paginatorLeft}
-                  paginatorRight={paginatorRight}
+                  // paginatorLeft={paginatorLeft}
+                  // paginatorRight={paginatorRight}
                   publicationsDataTable={publicationsDataTable}
                   setSelectedPublications={setSelectedPublications}
                   selectedPublications={selectedPublications}
@@ -225,8 +225,8 @@ export default function Home() {
               tableStyle={{ minWidth: '50rem' }}
               paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
               currentPageReportTemplate="{first} to {last} of {totalRecords}"
-              paginatorLeft={paginatorLeft}
-              paginatorRight={paginatorRight}
+              // paginatorLeft={paginatorLeft}
+              // paginatorRight={paginatorRight}
               filterDisplay="row"
               scrollable
               stripedRows
@@ -251,8 +251,8 @@ export default function Home() {
               tableStyle={{ minWidth: '50rem' }}
               paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
               currentPageReportTemplate="{first} to {last} of {totalRecords}"
-              paginatorLeft={paginatorLeft}
-              paginatorRight={paginatorRight}
+              // paginatorLeft={paginatorLeft}
+              // paginatorRight={paginatorRight}
               filterDisplay="row"
               scrollable
               stripedRows
