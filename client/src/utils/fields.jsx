@@ -30,13 +30,11 @@ const getAuthorsField = (item) => {
 };
 
 const affiliationsTemplate = (rowData) => (
-  // <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />
-  rowData.affiliations
+  <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />
 );
 
 const authorsTemplate = (rowData) => (
-  // <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />
-  rowData.authors
+  <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />
 );
 
 export {
