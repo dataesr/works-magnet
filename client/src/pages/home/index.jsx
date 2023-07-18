@@ -182,6 +182,8 @@ export default function Home() {
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
+          viewAllPublications={viewAllPublications}
+          setViewAllPublications={setViewAllPublications}
           selectedPublications={selectedPublications}
           tagLines={tagLines}
         />

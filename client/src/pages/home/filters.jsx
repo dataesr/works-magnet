@@ -15,11 +15,7 @@ import TagInput from '../../components/tag-input';
 const sources = [{ key: 'bso', label: 'BSO' }, { key: 'openalex', label: 'OpenAlex' }];
 const identifiers = ['crossref', 'hal_id', 'datacite'];
 
-export default function Filters({
-  sendQuery,
-  setViewAllPublications,
-  viewAllPublications,
-}) {
+export default function Filters({ sendQuery }) {
   const [viewMoreFilters, setViewMoreFilters] = useState(false);
   const [datasources, setDatasources] = useState(sources);
   const [dataidentifiers, setDataIdentifiers] = useState(identifiers);
@@ -122,14 +118,6 @@ export default function Filters({
             }
           </CheckboxGroup>
         </Col>
-        <Col n="4">
-          <Checkbox
-            checked={viewAllPublications}
-            label="View all publications"
-            onChange={() => setViewAllPublications(!viewAllPublications)}
-            size="sm"
-          />
-        </Col>
       </Row>
       <Row>
         {
@@ -171,6 +159,4 @@ export default function Filters({
 
 Filters.propTypes = {
   sendQuery: PropTypes.func.isRequired,
-  setViewAllPublications: PropTypes.func.isRequired,
-  viewAllPublications: PropTypes.bool.isRequired,
 };

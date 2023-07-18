@@ -1,9 +1,22 @@
 import PropTypes from 'prop-types';
-import { Button, Col, Row } from '@dataesr/react-dsfr';
+import { Button, Checkbox, Col, Row } from '@dataesr/react-dsfr';
 
-export default function Actions({ selectedPublications, tagLines }) {
+export default function Actions({
+  selectedPublications,
+  tagLines,
+  viewAllPublications,
+  setViewAllPublications,
+}) {
   return (
     <Row>
+      <Col n="4">
+        <Checkbox
+          checked={viewAllPublications}
+          label="View all publications"
+          onChange={() => setViewAllPublications(!viewAllPublications)}
+          size="sm"
+        />
+      </Col>
       <Col className="text-right">
         <Button
           className="fr-mb-1w"
@@ -41,4 +54,6 @@ Actions.propTypes = {
     title: PropTypes.string.isRequired,
   })).isRequired,
   tagLines: PropTypes.func.isRequired,
+  viewAllPublications: PropTypes.bool.isRequired,
+  setViewAllPublications: PropTypes.func.isRequired,
 };
