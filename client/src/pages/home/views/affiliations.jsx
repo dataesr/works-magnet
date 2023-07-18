@@ -7,8 +7,6 @@ import {
 } from '../../../utils/fields';
 
 export default function AffiliationsView({
-  paginatorLeft,
-  paginatorRight,
   affiliationsDataTable,
 }) {
   return (
@@ -22,9 +20,7 @@ export default function AffiliationsView({
       tableStyle={{ minWidth: '50rem' }}
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
-      paginatorLeft={paginatorLeft}
       paginatorPosition="both"
-      paginatorRight={paginatorRight}
       filterDisplay="row"
       scrollable
       stripedRows
@@ -36,10 +32,8 @@ export default function AffiliationsView({
 }
 
 AffiliationsView.propTypes = {
-  paginatorLeft: PropTypes.node.isRequired,
-  paginatorRight: PropTypes.node.isRequired,
   affiliationsDataTable: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    affiliations: PropTypes.string.isRequired,
     publicationsNumber: PropTypes.number.isRequired,
   })).isRequired,
 };

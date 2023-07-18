@@ -9,18 +9,18 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (filters?.startYear && filters?.endYear) {
-    url += `,publication_year:${filters.startYear}-${filters?.endYear$}`;
+    url += `,publication_year:${Number(filters.startYear)}-${Number(filters?.endYear)}`;
   } else if (filters?.startYear) {
-    url += `,publication_year:${filters.startYear}-`;
+    url += `,publication_year:${Number(filters.startYear)}-`;
   } else if (filters?.endYear) {
-    url += `,publication_year:-${filters.endYear}`;
+    url += `,publication_year:-${Number(filters.endYear)}`;
   }
   if (filters.affiliations.length > 0 || filters.affiliationsToExclude.length > 0) {
     url += ',raw_affiliation_string.search:';
     if (filters.affiliations.length > 0) url += `(${filters.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
     if (filters.affiliationsToExclude.length > 0) url += `${filters.affiliationsToExclude.map((aff) => ` AND NOT ${aff}`).join('')}`;
   }
-  url += '&select=authorships,display_name,doi,id,publication_year,type';
+  url += '&select=authorships,display_name,doi,id,ids,publication_year,type';
   return fetch(`${url}&page=${page}`)
     .then((response) => {
       if (response.ok) return response.json();
@@ -44,9 +44,10 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
         doi: item?.doi?.replace('https://doi.org/', '') ?? null,
         genre: item?.type ?? item.genre,
         id: item.id,
+        identifier: item?.doi?.replace('https://doi.org/', '') ?? item.id,
+        allIds: item?.ids ? Object.keys(item.ids).map((key) => ({ id_type: key, id_value: item.ids[key] })) : item.allIds,
         title: item?.display_name ?? item.title,
         year: item?.publication_year ?? item.year,
-        identifier: item?.doi?.replace('https://doi.org/', '') ?? item.id,
       })),
     }));
 };

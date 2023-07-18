@@ -1,9 +1,25 @@
 /* eslint-disable react/no-danger */
+const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
+
+const allIdsTemplate = (rowData) => (
+  <ul>
+    {rowData.allIds.map((id) => (
+      <li key={id.id_value}>
+        {id.id_type}
+        :
+        {' '}
+        {id.id_value}
+      </li>
+    ))}
+  </ul>
+);
+
+const authorsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />;
 
 const getAffiliationsField = (item) => {
   if (item?.highlight?.['affiliations.name']) {
     let list = '<ul>';
-    list += item.highlight['affiliations.name'].map((affiliation) => `<li>${affiliation}</li>`).join('');
+    list += item.highlight['affiliations.name'].map((affiliation, index) => `<li key="affiliation-${index}">${affiliation}</li>`).join('');
     list += '</ul>';
     return list;
   }
@@ -14,7 +30,7 @@ const getAffiliationsField = (item) => {
     .flat();
   affiliations = [...new Set(affiliations)];
   let list = '<ul>';
-  list += affiliations.map((affiliation) => `<li>${affiliation}</li>`).join('');
+  list += affiliations.map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
   list += '</ul>';
   return list;
 };
@@ -33,12 +49,9 @@ const getAuthorsField = (item) => {
   }
 };
 
-const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
-
-const authorsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />;
-
 export {
   affiliationsTemplate,
+  allIdsTemplate,
   authorsTemplate,
   getAffiliationsField,
   getAuthorsField,

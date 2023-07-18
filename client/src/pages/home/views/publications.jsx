@@ -4,12 +4,11 @@ import { DataTable } from 'primereact/datatable';
 
 import {
   affiliationsTemplate,
+  allIdsTemplate,
   authorsTemplate,
 } from '../../../utils/fields';
 
 export default function PublicationsView({
-  paginatorLeft,
-  paginatorRight,
   publicationsDataTable,
   setSelectedPublications,
   selectedPublications,
@@ -19,9 +18,7 @@ export default function PublicationsView({
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       filterDisplay="row"
       paginator
-      paginatorLeft={paginatorLeft}
       paginatorPosition="both"
-      paginatorRight={paginatorRight}
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
@@ -39,6 +36,7 @@ export default function PublicationsView({
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="identifier" header="Identifier" />
+      <Column field="allIds" header="Identifiers" body={allIdsTemplate} />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
       {/* <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable /> */}
       {/* <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable /> */}
@@ -51,25 +49,23 @@ export default function PublicationsView({
 }
 
 PublicationsView.propTypes = {
-  paginatorLeft: PropTypes.node.isRequired,
-  paginatorRight: PropTypes.node.isRequired,
   publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
-    identifier: PropTypes.string.isRequired,
+    affiliations: PropTypes.string.isRequired,
+    authors: PropTypes.string.isRequired,
     datasource: PropTypes.string.isRequired,
-    doi: PropTypes.string.isRequired,
-    hal_id: PropTypes.string.isRequired,
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    doi: PropTypes.string,
+    hal_id: PropTypes.string,
+    identifier: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
   })).isRequired,
   setSelectedPublications: PropTypes.func.isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    affiliations: PropTypes.string.isRequired,
+    authors: PropTypes.string.isRequired,
     datasource: PropTypes.string.isRequired,
-    doi: PropTypes.string.isRequired,
-    hal_id: PropTypes.string.isRequired,
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    doi: PropTypes.string,
+    hal_id: PropTypes.string,
+    id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
   })).isRequired,
 };

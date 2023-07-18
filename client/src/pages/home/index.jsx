@@ -100,17 +100,18 @@ export default function Home() {
   if (data) {
     publicationsDataTable = data.results
       .map((item) => ({
+        action: actions.find((action) => action.id === item.id)?.action || undefined,
         affiliations: getAffiliationsField(item),
+        allIds: item.allIds,
         authors: getAuthorsField(item),
+        datasource: item.datasource,
         doi: item.doi,
         hal_id: item.hal_id,
         id: item.id,
+        identifier: item.identifier,
         title: item.title,
         genre: item.genre_raw || item.genre,
         year: item.year,
-        action: actions.find((action) => action.id === item.id)?.action || undefined,
-        datasource: item.datasource,
-        identifier: item.identifier,
       }))
       .filter((item) => {
         if (viewAllPublications) { return true; }

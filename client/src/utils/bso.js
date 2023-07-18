@@ -31,7 +31,7 @@ const getBsoQuery = ({ filters }) => {
   query.highlight = { fields: { 'affiliations.name': {}, 'authors.full_name': {} } };
   query.query.bool.filter.push({ terms: { 'external_ids.id_type': filters.dataidentifiers } });
   query.query.bool.minimum_should_match = 1;
-  query._source = ['affiliations', 'authors', 'doi', 'genre', 'hal_id', 'id', 'title', 'year'];
+  query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'title', 'year'];
   return query;
 };
 
@@ -57,6 +57,7 @@ const getBsoData = (options) => {
         highlight: result.highlight,
         datasource: 'bso',
         identifier: result?._source?.doi ?? result?._source?.hal_id ?? result._source.id,
+        allIds: result?._source?.external_ids ?? [],
       })),
     }));
 };
