@@ -1,22 +1,25 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import './index.scss';
 import { useState } from 'react';
-import { Button, Col, Container, Icon, Row, Tab, Tabs, Text } from '@dataesr/react-dsfr';
+import { Container, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 
-import Filters from './filters';
-import AffiliationsView from './views/affiliations';
-import PublicationsView from './views/publications';
 import { PageSpinner } from '../../components/spinner';
+import Actions from './actions';
+import AffiliationsView from './views/affiliations';
+import Filters from './filters';
+import PublicationsView from './views/publications';
+
 import getBsoData from '../../utils/bso';
 import getOpenAlexData from '../../utils/openalex';
+import { getAffiliationsField, getAuthorsField } from '../../utils/fields';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
-import Actions from './actions';
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
@@ -39,40 +42,6 @@ export default function Home() {
   const [actions, setActions] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [viewAllPublications, setViewAllPublications] = useState(false);
-
-  const getAffiliationsField = (item) => {
-    if (item?.highlight?.['affiliations.name']) {
-      let list = '<ul>';
-      list += item.highlight['affiliations.name'].map((affiliation) => `<li>${affiliation}</li>`).join('');
-      list += '</ul>';
-      return list;
-    }
-
-    let affiliations = (item?.affiliations ?? [])
-      .map((affiliation) => affiliation.name)
-      .filter((affiliation) => affiliation.length > 0)
-      .flat();
-    affiliations = [...new Set(affiliations)];
-    let list = '<ul>';
-    list += affiliations.map((affiliation) => `<li>${affiliation}</li>`).join('');
-    list += '</ul>';
-    return list;
-  };
-
-  const getAuthorsField = (item) => {
-    if (item?.highlight?.['authors.full_name']) {
-      return item.highlight['authors.full_name'].join(';');
-    }
-
-    if (item.authors === undefined) {
-      return '';
-    }
-
-    const { authors = [] } = item;
-    if (authors.length === 0) return '';
-    if (authors.length === 1) return authors[0].full_name;
-    return `${authors[0].full_name} et al. (${authors.length - 1})`;
-  };
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -135,7 +104,6 @@ export default function Home() {
             if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
               dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
             }
-            // eslint-disable-next-line no-plusplus
             dataGroupedByAffiliation[normalizedName(affiliation)].count++;
             dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
           });
@@ -145,7 +113,6 @@ export default function Home() {
             if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
               dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
             }
-            // eslint-disable-next-line no-plusplus
             dataGroupedByAffiliation[normalizedName(affiliation)].count++;
             dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
           }));
