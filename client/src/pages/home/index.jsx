@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import './index.scss';
 import { useState } from 'react';
-import { Button, Container, Icon, Tab, Tabs, Text } from '@dataesr/react-dsfr';
+import { Button, Col, Container, Icon, Row, Tab, Tabs, Text } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -167,120 +167,124 @@ export default function Home() {
   };
 
   return (
-    <Container className="fr-my-5w" as="section">
-      <Filters
-        sendQuery={sendQuery}
-        viewAllPublications={viewAllPublications}
-        setViewAllPublications={setViewAllPublications}
-      />
-      {isFetching && (<Container><PageSpinner /></Container>)}
-      <div>
-        {`${data?.length || 0} results`}
-      </div>
-      <Text>
-        <Icon name="ri-tools-fill" />
-        Actions
-      </Text>
-      <Button
-        className="fr-mb-1w"
-        disabled={selectedPublications.length === 0}
-        icon="ri-check-fill"
-        onClick={() => { tagLines(selectedPublications, 'keep'); }}
-        secondary
-      >
-        Keep
-      </Button>
-      <Button
-        className="fr-mb-1w"
-        disabled={selectedPublications.length === 0}
-        onClick={() => { tagLines(selectedPublications, 'exclude'); }}
-        icon="ri-close-fill"
-        secondary
-      >
-        Exclude
-      </Button>
-      <Button icon="ri-save-line">Save</Button>
-      <Tabs defaultActiveTab={1}>
-        <Tab label="Affiliations view">
-          {
-            affiliationsDataTable && (
-              <AffiliationsView
-                affiliationsTemplate={affiliationsTemplate}
-                paginatorLeft={paginatorLeft}
-                paginatorRight={paginatorRight}
-                affiliationsDataTable={affiliationsDataTable}
-              />
-            )
-          }
-        </Tab>
-        <Tab label={`Publications to sort (${publicationsDataTable.length})`}>
-          {
-            publicationsDataTable && (
-              <PublicationsView
-                affiliationsTemplate={affiliationsTemplate}
-                authorsTemplate={authorsTemplate}
-                paginatorLeft={paginatorLeft}
-                paginatorRight={paginatorRight}
-                publicationsDataTable={publicationsDataTable}
-                setSelectedPublications={setSelectedPublications}
-                selectedPublications={selectedPublications}
-              />
-            )
-          }
-        </Tab>
-        <Tab label={`Keep List (${actions.filter((action) => action.action === 'keep').length})`}>
-          <DataTable
-            style={{ fontSize: '11px', lineHeight: '15px' }}
-            size="small"
-            value={actions.filter((action) => action.action === 'keep')}
-            paginator
-            paginatorPosition="both"
-            rows={25}
-            rowsPerPageOptions={[25, 50, 100, 200]}
-            tableStyle={{ minWidth: '50rem' }}
-            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-            currentPageReportTemplate="{first} to {last} of {totalRecords}"
-            paginatorLeft={paginatorLeft}
-            paginatorRight={paginatorRight}
-            filterDisplay="row"
-            scrollable
-            stripedRows
-          >
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
-          </DataTable>
-        </Tab>
-        <Tab label={`Exclude List (${actions.filter((action) => action.action === 'exclude').length})`}>
-          <DataTable
-            style={{ fontSize: '11px', lineHeight: '15px' }}
-            size="small"
-            value={actions.filter((action) => action.action === 'exclude')}
-            paginator
-            paginatorPosition="both"
-            rows={25}
-            rowsPerPageOptions={[25, 50, 100, 200]}
-            tableStyle={{ minWidth: '50rem' }}
-            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-            currentPageReportTemplate="{first} to {last} of {totalRecords}"
-            paginatorLeft={paginatorLeft}
-            paginatorRight={paginatorRight}
-            filterDisplay="row"
-            scrollable
-            stripedRows
-          >
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
-            <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
-          </DataTable>
-        </Tab>
-      </Tabs>
-    </Container>
+    <>
+      <Container className="fr-my-5w" as="section">
+        <Filters
+          sendQuery={sendQuery}
+          viewAllPublications={viewAllPublications}
+          setViewAllPublications={setViewAllPublications}
+        />
+        {isFetching && (<Container><PageSpinner /></Container>)}
+        <div>
+          {`${data?.length || 0} results`}
+        </div>
+      </Container>
+      <Container className="fr-mx-5w" as="section" fluid>
+        <Row>
+          <Col className="text-right">
+            <Button
+              className="fr-mb-1w"
+              disabled={selectedPublications.length === 0}
+              icon="ri-check-fill"
+              onClick={() => { tagLines(selectedPublications, 'keep'); }}
+              secondary
+            >
+              Keep
+            </Button>
+            <Button
+              className="fr-mb-1w"
+              disabled={selectedPublications.length === 0}
+              onClick={() => { tagLines(selectedPublications, 'exclude'); }}
+              icon="ri-close-fill"
+              secondary
+            >
+              Exclude
+            </Button>
+            <Button icon="ri-save-line">Save</Button>
+          </Col>
+        </Row>
+        <Tabs defaultActiveTab={1}>
+          <Tab label="Affiliations view">
+            {
+              affiliationsDataTable && (
+                <AffiliationsView
+                  affiliationsTemplate={affiliationsTemplate}
+                  paginatorLeft={paginatorLeft}
+                  paginatorRight={paginatorRight}
+                  affiliationsDataTable={affiliationsDataTable}
+                />
+              )
+            }
+          </Tab>
+          <Tab label={`Publications to sort (${publicationsDataTable.length})`}>
+            {
+              publicationsDataTable && (
+                <PublicationsView
+                  affiliationsTemplate={affiliationsTemplate}
+                  authorsTemplate={authorsTemplate}
+                  paginatorLeft={paginatorLeft}
+                  paginatorRight={paginatorRight}
+                  publicationsDataTable={publicationsDataTable}
+                  setSelectedPublications={setSelectedPublications}
+                  selectedPublications={selectedPublications}
+                />
+              )
+            }
+          </Tab>
+          <Tab label={`Keep List (${actions.filter((action) => action.action === 'keep').length})`}>
+            <DataTable
+              style={{ fontSize: '11px', lineHeight: '15px' }}
+              size="small"
+              value={actions.filter((action) => action.action === 'keep')}
+              paginator
+              paginatorPosition="both"
+              rows={25}
+              rowsPerPageOptions={[25, 50, 100, 200]}
+              tableStyle={{ minWidth: '50rem' }}
+              paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+              currentPageReportTemplate="{first} to {last} of {totalRecords}"
+              paginatorLeft={paginatorLeft}
+              paginatorRight={paginatorRight}
+              filterDisplay="row"
+              scrollable
+              stripedRows
+            >
+              <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
+              <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
+              <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
+              <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
+              <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
+              <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
+            </DataTable>
+          </Tab>
+          <Tab label={`Exclude List (${actions.filter((action) => action.action === 'exclude').length})`}>
+            <DataTable
+              style={{ fontSize: '11px', lineHeight: '15px' }}
+              size="small"
+              value={actions.filter((action) => action.action === 'exclude')}
+              paginator
+              paginatorPosition="both"
+              rows={25}
+              rowsPerPageOptions={[25, 50, 100, 200]}
+              tableStyle={{ minWidth: '50rem' }}
+              paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+              currentPageReportTemplate="{first} to {last} of {totalRecords}"
+              paginatorLeft={paginatorLeft}
+              paginatorRight={paginatorRight}
+              filterDisplay="row"
+              scrollable
+              stripedRows
+            >
+              <Column filter filterMatchMode="contains" showFilterMenu={false} field="id" header="ID" style={{ minWidth: '10px' }} sortable />
+              <Column filter filterMatchMode="contains" showFilterMenu={false} field="doi" header="DOI" style={{ minWidth: '10px' }} sortable />
+              <Column filter filterMatchMode="contains" showFilterMenu={false} field="hal_id" header="HAL Id" style={{ minWidth: '10px' }} />
+              <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
+              <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
+              <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
+            </DataTable>
+          </Tab>
+        </Tabs>
+      </Container>
+    </>
   );
 }
