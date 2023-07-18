@@ -120,18 +120,12 @@ export default function Filters({ sendQuery }) {
         </Col>
       </Row>
       <Row>
-        {
-          viewMoreFilters && (
-            <>
-              <Col>
-                <TextInput label="Start year" onChange={(e) => setStartYear(e.target.value)} value={startYear} />
-              </Col>
-              <Col>
-                <TextInput label="End year" onChange={(e) => setEndYear(e.target.value)} value={endYear} />
-              </Col>
-            </>
-          )
-        }
+        <Col>
+          <TextInput label="Start year" onChange={(e) => setStartYear(e.target.value)} value={startYear} />
+        </Col>
+        <Col>
+          <TextInput label="End year" onChange={(e) => setEndYear(e.target.value)} value={endYear} />
+        </Col>
       </Row>
       <Row>
         <Col className="text-right">
