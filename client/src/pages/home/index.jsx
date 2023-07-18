@@ -18,6 +18,7 @@ import {
   getAffiliationsField,
   getAuthorsField,
 } from '../../utils/fields';
+import { mergePublications } from '../../utils/publications';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -42,6 +43,19 @@ const getData = async (options) => {
     data.results = [...data.results, ...publication.results];
     data.total[publication.datasource] = publication.total;
   });
+  // Merge publications by DOI
+  data.total.all = data.results.length;
+  const deduplicatedPublications = {};
+  data.results.forEach((publication) => {
+    const id = publication?.doi ?? publication.id;
+    if (!Object.keys(deduplicatedPublications).includes(id)) {
+      deduplicatedPublications[id] = publication;
+    } else {
+      deduplicatedPublications[id] = mergePublications(deduplicatedPublications[id], publication);
+    }
+  });
+  data.results = Object.values(deduplicatedPublications);
+  data.total.deduplicated = Object.values(deduplicatedPublications).length;
   return data;
 };
 
@@ -146,7 +160,13 @@ export default function Home() {
         />
         {isFetching && (<Container><PageSpinner /></Container>)}
         <div>
-          {`${data?.total?.bso ?? 0} results in the BSO // ${data?.total?.openalex ?? 0} results in OpenAlex`}
+          {`${data?.total?.bso ?? 0} results in the BSO`}
+          {' // '}
+          {`${data?.total?.openalex ?? 0} results in OpenAlex`}
+          {' // '}
+          {`${data?.total?.all ?? 0} results in all`}
+          {' // '}
+          {`${data?.total?.deduplicated ?? 0} results in deduplicated`}
         </div>
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
