@@ -2,9 +2,12 @@ import PropTypes from 'prop-types';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 
-export default function PublicationsView({
+import {
   affiliationsTemplate,
   authorsTemplate,
+} from '../../../utils/fields';
+
+export default function PublicationsView({
   paginatorLeft,
   paginatorRight,
   publicationsDataTable,
@@ -51,8 +54,6 @@ export default function PublicationsView({
 }
 
 PublicationsView.propTypes = {
-  affiliationsTemplate: PropTypes.func.isRequired,
-  authorsTemplate: PropTypes.func.isRequired,
   paginatorLeft: PropTypes.node.isRequired,
   paginatorRight: PropTypes.node.isRequired,
   publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({

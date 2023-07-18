@@ -16,7 +16,12 @@ import PublicationsView from './views/publications';
 
 import getBsoData from '../../utils/bso';
 import getOpenAlexData from '../../utils/openalex';
-import { getAffiliationsField, getAuthorsField } from '../../utils/fields';
+import {
+  affiliationsTemplate,
+  authorsTemplate,
+  getAffiliationsField,
+  getAuthorsField,
+} from '../../utils/fields';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -125,10 +130,6 @@ export default function Home() {
     .sort((a, b) => b.count - a.count)
     .map((affiliation) => ({ affiliations: affiliation.name, publicationsNumber: affiliation.count }));
 
-  const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
-
-  const authorsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />;
-
   const tagLines = (lines, action) => {
     const newActions = lines.map((line) => ({ ...line, action }));
     setActions([...actions, ...newActions]);
@@ -159,9 +160,6 @@ export default function Home() {
             {
               affiliationsDataTable && (
                 <AffiliationsView
-                  affiliationsTemplate={affiliationsTemplate}
-                  // paginatorLeft={paginatorLeft}
-                  // paginatorRight={paginatorRight}
                   affiliationsDataTable={affiliationsDataTable}
                 />
               )
@@ -171,10 +169,6 @@ export default function Home() {
             {
               publicationsDataTable && (
                 <PublicationsView
-                  affiliationsTemplate={affiliationsTemplate}
-                  authorsTemplate={authorsTemplate}
-                  // paginatorLeft={paginatorLeft}
-                  // paginatorRight={paginatorRight}
                   publicationsDataTable={publicationsDataTable}
                   setSelectedPublications={setSelectedPublications}
                   selectedPublications={selectedPublications}
