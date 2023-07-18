@@ -21,12 +21,16 @@ const getAffiliationsField = (item) => {
 
 const getAuthorsField = (item) => {
   if (item?.highlight?.['authors.full_name']) return item.highlight['authors.full_name'].join(';');
-  if (item.authors === undefined) return '';
 
-  const { authors = [] } = item;
-  if (authors.length === 0) return '';
-  if (authors.length === 1) return authors[0].full_name;
-  return `${authors[0].full_name} et al. (${authors.length - 1})`;
+  const authors = (item?.authors ?? []);
+  switch (authors.length) {
+  case 0:
+    return '';
+  case 1:
+    return authors[0].full_name;
+  default:
+    return `${authors[0].full_name} et al. (${authors.length - 1})`;
+  }
 };
 
 const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;

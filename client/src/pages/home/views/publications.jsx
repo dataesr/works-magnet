@@ -36,9 +36,6 @@ export default function PublicationsView({
       style={{ fontSize: '11px', lineHeight: '15px' }}
       tableStyle={{ minWidth: '50rem' }}
       value={publicationsDataTable}
-      groupRowsBy="identifier"
-      sortField="identifier"
-      rowGroupMode="rowspan"
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="identifier" header="Identifier" />

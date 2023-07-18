@@ -19,10 +19,15 @@ import {
   getAuthorsField,
 } from '../../utils/fields';
 import { mergePublications } from '../../utils/publications';
+import ActionsView from './views/actions';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
-import ActionsView from './views/actions';
+
+const {
+  VITE_BSO_SIZE,
+  VITE_OPENALEX_SIZE,
+} = import.meta.env;
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
@@ -164,7 +169,9 @@ export default function Home() {
           {' // '}
           {`${data?.total?.openalex ?? 0} results in OpenAlex`}
           {' // '}
-          {`${data?.total?.all ?? 0} results in all`}
+          {`${Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE)} results displayed in the BSO`}
+          {' // '}
+          {`${Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE)} results displayed in OpenAlex`}
           {' // '}
           {`${data?.total?.deduplicated ?? 0} results in deduplicated`}
         </div>
