@@ -16,11 +16,33 @@ const options = [
 
 export default function ActionsView({
   data,
+  setActions,
 }) {
   const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
 
+  const changePublicationsActions = (e, rowData) => {
+    const { value } = e.target;
+    if (value === rowData.action) return;
+    if (!value || value === 'to sort') {
+      const newData = data.filter((row) => row.identifier !== rowData.identifier);
+      setActions(newData);
+    } else {
+      const newData = data.map((row) => {
+        if (row.identifier === rowData.identifier) {
+          return { ...row, action: value };
+        }
+        return row;
+      });
+      setActions(newData);
+    }
+  };
+
   const actionsTemplate = (rowData) => (
-    <Select options={options} selected={rowData.action} />
+    <Select
+      onChange={(e) => changePublicationsActions(e, rowData)}
+      options={options}
+      selected={rowData.action}
+    />
   );
 
   return (
@@ -61,4 +83,5 @@ ActionsView.propTypes = {
     authors: PropTypes.arrayOf(PropTypes.string).isRequired,
     title: PropTypes.string.isRequired,
   })).isRequired,
+  setActions: PropTypes.func.isRequired,
 };
