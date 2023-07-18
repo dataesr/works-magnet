@@ -166,15 +166,15 @@ export default function Home() {
         />
         {isFetching && (<Container><PageSpinner /></Container>)}
         <div>
-          {`${data?.total?.bso ?? 0} results in the BSO`}
+          {`${data?.total?.bso ?? 0} publications in the BSO`}
           {' // '}
-          {`${data?.total?.openalex ?? 0} results in OpenAlex`}
+          {`${data?.total?.openalex ?? 0} publications in OpenAlex`}
           {' // '}
-          {`${Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE)} results displayed in the BSO`}
+          {`${Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE)} publications collected from the BSO`}
           {' // '}
-          {`${Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE)} results displayed in OpenAlex`}
+          {`${Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE)} publications collected from OpenAlex`}
           {' // '}
-          {`${data?.total?.deduplicated ?? 0} results in deduplicated`}
+          {`${data?.total?.deduplicated ?? 0} publications after deduplication`}
         </div>
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
