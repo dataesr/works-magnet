@@ -23,8 +23,8 @@ export default function Filters({ sendQuery }) {
   const [affiliationsToExclude, setAffiliationsToExclude] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [authorsToExclude, setAuthorsToExclude] = useState([]);
-  const [startYear, setStartYear] = useState(2013);
-  const [endYear, setEndYear] = useState(2023);
+  const [startYear, setStartYear] = useState(2021);
+  const [endYear, setEndYear] = useState(2021);
 
   const onCheckBoxChange = (key) => {
     if (!datasources.map((datasource) => datasource.key).includes(key)) {
