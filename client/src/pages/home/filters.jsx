@@ -119,7 +119,7 @@ export default function Filters({ sendQuery }) {
           </CheckboxGroup>
         </Col>
       </Row>
-      <Row>
+      <Row gutters>
         <Col>
           <TextInput label="Start year" onChange={(e) => setStartYear(e.target.value)} value={startYear} />
         </Col>
@@ -127,7 +127,7 @@ export default function Filters({ sendQuery }) {
           <TextInput label="End year" onChange={(e) => setEndYear(e.target.value)} value={endYear} />
         </Col>
       </Row>
-      <Row>
+      <Row gutters>
         <Col className="text-right">
           <Button
             onClick={() => sendQuery({
