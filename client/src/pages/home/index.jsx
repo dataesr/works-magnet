@@ -198,6 +198,7 @@ export default function Home() {
           options={options}
           selectedAffiliations={selectedAffiliations}
           selectedPublications={selectedPublications}
+          setActions={setActions}
           setOptions={setOptions}
           setViewAllPublications={setViewAllPublications}
           tagAffiliation={tagAffiliation}

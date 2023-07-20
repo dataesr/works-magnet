@@ -7,12 +7,13 @@ const export2json = (actions, options) => {
   document.body.removeChild(link);
 };
 
-const importJson = (e, setOptions) => {
+const importJson = (e, setActions, setOptions) => {
   const fileReader = new FileReader();
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {
     const { actions, options } = JSON.parse(f.target.result);
     options.restoreFromFile = true;
+    setActions(actions);
     setOptions(options);
   };
 };

@@ -9,6 +9,7 @@ export default function Actions({
   options,
   selectedAffiliations,
   selectedPublications,
+  setActions,
   setOptions,
   setViewAllPublications,
   tagAffiliation,
@@ -86,7 +87,7 @@ export default function Actions({
             accept=".json"
             hint="Select JSON file to restore from previous state"
             label="JSON file"
-            onChange={(e) => importJson(e, setOptions)}
+            onChange={(e) => importJson(e, setActions, setOptions)}
           />
         )}
       </Col>
