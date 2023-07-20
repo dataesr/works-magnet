@@ -142,8 +142,10 @@ const getOpenAlexData = (options, page = '1', previousResponse = []) => {
 const mergePublications = (publi1, publi2) => ({
   ...[publi1, publi2].find((publi) => publi.datasource === 'bso'),
   affiliations: [...publi1.affiliations, ...publi2.affiliations],
-  allIds: [...publi1.allIds, ...publi2.allIds],
-  authors: [...publi1.authors, ...publi2.authors],
+  // Filter ids by uniq values
+  allIds: Object.values([...publi1.allIds, ...publi2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
+  // Filter authors by uniq full_name
+  authors: Object.values([...publi1.authors, ...publi2.authors].reduce((acc, obj) => ({ ...acc, [obj.full_name]: obj }), {})),
   datasource: 'bso, openalex',
 });
 

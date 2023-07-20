@@ -10,7 +10,8 @@
   ],
   "dependencies": {
     "concurrently": "^8.0.1",
-    "primereact": "^9.6.0"
+    "primereact": "^9.6.0",
+    "react-tooltip": "^5.18.1"
   },
   "scripts": {
     "build-fullstack": "npm -w client run build -- --mode ${npm_config_mode}",

@@ -1,4 +1,5 @@
 import { Link } from '@dataesr/react-dsfr';
+import { Tooltip } from 'react-tooltip';
 
 import { getIdentifierLink } from './publications';
 
@@ -25,13 +26,32 @@ const allIdsTemplate = (rowData) => (
 );
 
 const authorsTemplate = (rowData) => (
-  <ul>
-    {rowData.authors.slice(0, 3).map((author, index) => (
-      <li key={`author-${index}`}>
-        {author.full_name}
-      </li>
-    ))}
-  </ul>
+  <>
+    <ul data-tooltip-id={rowData.id}>
+      {rowData.authors.slice(0, 3).map((author, index) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <li key={`${rowData.id}_${index}`}>
+          {author.full_name}
+        </li>
+      ))}
+      {(rowData.authors.length > 3) && (
+        <li>
+          et al. (
+          {rowData.authors.length - 3}
+          )
+        </li>
+      )}
+    </ul>
+    <Tooltip id={rowData.id} place="right">
+      <ul>
+        {rowData.authors.map((author) => (
+          <li key={`author-all-${author.full_name}`}>
+            {author.full_name}
+          </li>
+        ))}
+      </ul>
+    </Tooltip>
+  </>
 );
 
 const getAffiliationsField = (item) => {

@@ -59,12 +59,6 @@ const getData = async (options) => {
   });
   data.results = Object.values(deduplicatedPublications);
   data.total.deduplicated = Object.values(deduplicatedPublications).length;
-  // Set uniq identifier by value
-  data.results.map((publication) => {
-    // eslint-disable-next-line no-param-reassign
-    publication.allIds = Object.values(publication.allIds.reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {}));
-    return publication;
-  });
   return data;
 };
 
