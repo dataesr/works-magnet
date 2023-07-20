@@ -88,19 +88,7 @@ export default function Home() {
   });
 
   const sendQuery = async (filters) => {
-    await setOptions({
-      identifiers: filters.identifiers,
-      datasources: filters.datasources,
-      filters: {
-        affiliations: filters.affiliations,
-        affiliationsToExclude: filters.affiliationsToExclude,
-        authors: filters.authors,
-        authorsToExclude: filters.authorsToExclude,
-        dataIdentifiers: filters.dataIdentifiers,
-        endYear: filters.endYear,
-        startYear: filters.startYear,
-      },
-    });
+    await setOptions(filters);
     refetch();
   };
 

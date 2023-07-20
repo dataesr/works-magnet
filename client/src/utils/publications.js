@@ -8,7 +8,7 @@ const {
 
 const VITE_OPENALEX_MAX_PAGE = Math.floor(VITE_OPENALEX_SIZE / VITE_OPENALEX_PER_PAGE);
 
-const getBsoQuery = ({ filters }) => {
+const getBsoQuery = (filters) => {
   const query = { size: VITE_BSO_SIZE, query: { bool: {} } };
   query.query.bool.filter = [];
   query.query.bool.should = [];
@@ -91,7 +91,7 @@ const getIdentifierLink = (type, identifier) => {
   return (prefix !== null) ? `${prefix}${identifier}` : false;
 };
 
-const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
+const getOpenAlexData = (filters, page = '1', previousResponse = []) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (filters?.startYear && filters?.endYear) {
@@ -116,7 +116,7 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
       const results = [...previousResponse, ...response.results];
       const nextPage = Number(page) + 1;
       if (Number(response.results.length) === Number(VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexData({ filters, page: nextPage, previousResponse: results });
+        return getOpenAlexData(filters, nextPage, results);
       }
       return ({ total: response.meta.count, results });
     })
