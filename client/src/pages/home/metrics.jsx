@@ -18,10 +18,13 @@ export default function Metrics({ data }) {
       <div className="jauge jauge-totBso" style={{ width: `${totBso}%` }} />
       {`${Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE)} publications collected from the BSO`}
       <div className="jauge jauge-collectedBso" style={{ width: `${totCollectedBso}%` }} />
+      <hr />
+
       {`${data?.total?.openalex ?? 0} publications in OpenAlex`}
       <div className="jauge jauge-totOpenAlex" style={{ width: `${totOpenalex}%` }} />
       {`${Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE)} publications collected from OpenAlex`}
       <div className="jauge jauge-collectedOpenAlex" style={{ width: `${totCollectedOpenalex}%` }} />
+      <hr />
       {`${data?.total?.deduplicated ?? 0} publications after deduplication`}
       <div className="jauge jauge-deduplicated" style={{ width: `${totCollectedOpenalex}%` }} />
 

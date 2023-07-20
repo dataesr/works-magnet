@@ -2,7 +2,7 @@ import { Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-export default function TagInput({ hint, label, onTagsChange, tags }) {
+export default function TagInput({ hint, label, onTagsChange, placeholder, tags }) {
   const [input, setInput] = useState('');
   const [values, setValues] = useState(tags);
 
@@ -37,6 +37,7 @@ export default function TagInput({ hint, label, onTagsChange, tags }) {
               onKeyDown={handleKeyDown}
               type="text"
               value={input}
+              placeholder={placeholder}
             />
           </Col>
         </Row>
@@ -66,9 +67,11 @@ TagInput.propTypes = {
   label: PropTypes.string.isRequired,
   onTagsChange: PropTypes.func.isRequired,
   tags: PropTypes.arrayOf(PropTypes.string),
+  placeholder: PropTypes.string,
 };
 
 TagInput.defaultProps = {
   hint: 'Valider votre ajout avec la touche "Entrée"',
   tags: [],
+  placeholder: '',
 };
