@@ -51,7 +51,7 @@ const getData = async (options) => {
     data.total[publication.datasource] = publication.total;
   });
 
-  // Merge publications by DOI
+  // Deduplicate publications by DOI
   data.total.all = data.results.length;
   const deduplicatedPublications = {};
   data.results.forEach((publication) => {
@@ -64,6 +64,12 @@ const getData = async (options) => {
   });
   data.results = Object.values(deduplicatedPublications);
   data.total.deduplicated = Object.values(deduplicatedPublications).length;
+  // Set uniq identifier by value
+  data.results.map((publication) => {
+    // eslint-disable-next-line no-param-reassign
+    publication.allIds = Object.values(publication.allIds.reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {}));
+    return publication;
+  });
   return data;
 };
 
