@@ -42,7 +42,7 @@ export default function Filters({ sendQuery }) {
   };
   return (
     <>
-      <Row>
+      <Row gutters>
         <Col className="text-right">
           <Button
             onClick={() => setViewMoreFilters(!viewMoreFilters)}
@@ -53,36 +53,44 @@ export default function Filters({ sendQuery }) {
           </Button>
         </Col>
       </Row>
-      <TagInput
-        hint=""
-        label="Affiliations"
-        onTagsChange={(tags) => { setAffiliations(tags); }}
-        tags={affiliations}
-      />
-      {
-        viewMoreFilters && (
+      <Row gutters>
+        <Col n="6">
           <TagInput
             hint=""
-            label="Affiliations to exclude"
-            onTagsChange={(tags) => { setAffiliationsToExclude(tags); }}
-            tags={affiliationsToExclude}
+            label="Affiliations"
+            onTagsChange={(tags) => { setAffiliations(tags); }}
+            tags={affiliations}
           />
-        )
-      }
-      <TagInput
-        hint=""
-        label="Authors"
-        onTagsChange={(tags) => { setAuthors(tags); }}
-        tags={authors}
-      />
-      {
-        viewMoreFilters && (
+        </Col>
+        <Col n="6">
           <TagInput
             hint=""
-            label="Authors to exclude"
-            onTagsChange={(tags) => { setAuthorsToExclude(tags); }}
-            tags={authorsToExclude}
+            label="Authors"
+            onTagsChange={(tags) => { setAuthors(tags); }}
+            tags={authors}
           />
+        </Col>
+      </Row>
+      {
+        viewMoreFilters && (
+          <Row gutters>
+            <Col n="6">
+              <TagInput
+                hint=""
+                label="Affiliations to exclude"
+                onTagsChange={(tags) => { setAffiliationsToExclude(tags); }}
+                tags={affiliationsToExclude}
+              />
+            </Col>
+            <Col n="6">
+              <TagInput
+                hint=""
+                label="Authors to exclude"
+                onTagsChange={(tags) => { setAuthorsToExclude(tags); }}
+                tags={authorsToExclude}
+              />
+            </Col>
+          </Row>
         )
       }
       <Row gutters>
