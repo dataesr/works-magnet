@@ -7,8 +7,8 @@ const {
 } = import.meta.env;
 
 export default function Metrics({ data }) {
-  const totBso = 100;
-  const totOpenalex = 100;
+  const totBso = data?.total?.bso ? 100 : 0;
+  const totOpenalex = data?.total?.openalex ? 100 : 0;
   const totCollectedBso = Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE) * (100) / (data?.total?.bso ?? 1);
   const totCollectedOpenalex = Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE) * (100) / (data?.total?.openalex ?? 1);
 
