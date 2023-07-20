@@ -1,7 +1,7 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { Container, Tab, Tabs } from '@dataesr/react-dsfr';
+import { Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -24,11 +24,7 @@ import {
 import './index.scss';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
-
-const {
-  VITE_BSO_SIZE,
-  VITE_OPENALEX_SIZE,
-} = import.meta.env;
+import Metrics from './metrics';
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
@@ -182,24 +178,26 @@ export default function Home() {
 
   return (
     <>
-      <Container className="fr-my-5w" as="section">
-        <Filters
-          options={options}
-          sendQuery={sendQuery}
-        />
-        {isFetching && (<Container as="section"><PageSpinner /></Container>)}
-        <div>
-          {`${data?.total?.bso ?? 0} publications in the BSO`}
-          {' // '}
-          {`${data?.total?.openalex ?? 0} publications in OpenAlex`}
-          {' // '}
-          {`${Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE)} publications collected from the BSO`}
-          {' // '}
-          {`${Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE)} publications collected from OpenAlex`}
-          {' // '}
-          {`${data?.total?.deduplicated ?? 0} publications after deduplication`}
-        </div>
+      <Container className="fr-my-5w" as="section" fluid>
+        <Row className="fr-px-5w">
+          <Col n="9">
+            <Filters
+              options={options}
+              sendQuery={sendQuery}
+            />
+          </Col>
+          <Col n="3">
+            <Metrics data={data} />
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {isFetching && (<Container as="section"><PageSpinner /></Container>)}
+
+          </Col>
+        </Row>
       </Container>
+
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
           actions={actions}

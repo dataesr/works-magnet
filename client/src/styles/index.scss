@@ -1,3 +1,38 @@
 .text-right {
     text-align: right;
 }
+
+.jauges {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 25px;
+}
+
+.jauge {
+    // width: 100%;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.jauge-totBso {
+    background-color: #334476;
+}
+
+.jauge-collectedBso {
+    background-color: #D5DBEF;
+}
+
+.jauge-totOpenAlex {
+    background-color: #22a498;
+}
+
+.jauge-collectedOpenAlex {
+    background-color: #73d6cc;
+}
+
+.jauge-deduplicated {
+    background-color: #2faf41a4;
+}
