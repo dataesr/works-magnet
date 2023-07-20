@@ -1,17 +1,16 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import './index.scss';
-import { useState } from 'react';
 import { Container, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
-import { PageSpinner } from '../../components/spinner';
 import Actions from './actions';
-import AffiliationsView from './views/affiliations';
 import Filters from './filters';
+import ActionsView from './views/actions';
+import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
-
+import { PageSpinner } from '../../components/spinner';
 import {
   getAffiliationsField,
   getAuthorsField,
@@ -21,8 +20,8 @@ import {
   getOpenAlexData,
   mergePublications,
 } from '../../utils/publications';
-import ActionsView from './views/actions';
 
+import './index.scss';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 
@@ -133,7 +132,6 @@ export default function Home() {
   const dataGroupedByAffiliation = {};
   if (data) {
     data.results.forEach((publication) => {
-      console.log(publication);
       switch (publication.datasource) {
         case 'bso':
           (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
@@ -169,7 +167,6 @@ export default function Home() {
       }
     });
   }
-  console.log(dataGroupedByAffiliation);
   const affiliationsDataTable = Object.values(dataGroupedByAffiliation)
     .sort((a, b) => b.count - a.count)
     .map((affiliation, index) => ({
@@ -191,7 +188,6 @@ export default function Home() {
   };
 
   const tagAffiliation = (affiliation, action) => {
-    console.log(affiliation.publications, action);
     const newActions = affiliation.publications.map((publication) => ({ ...publication, action }));
     setActions([...actions, ...newActions]);
   };

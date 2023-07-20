@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import PropTypes from 'prop-types';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -9,8 +8,6 @@ import {
 
 export default function AffiliationsView({
   affiliationsDataTable,
-  // paginatorLeft,
-  // paginatorRight,
   selectedAffiliations,
   setSelectedAffiliations,
 }) {
@@ -20,14 +17,12 @@ export default function AffiliationsView({
       paginatorPosition="both"
       filterDisplay="row"
       paginator
-      // paginatorLeft={paginatorLeft}
-      // paginatorRight={paginatorRight}
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
       dataKey="id"
       metaKeySelection
-      onSelectionChange={(e) => { console.log(e.value); setSelectedAffiliations(e.value); }}
+      onSelectionChange={(e) => setSelectedAffiliations(e.value)}
       selection={selectedAffiliations}
       scrollable
       size="small"
@@ -38,8 +33,8 @@ export default function AffiliationsView({
     >
       <Column selectionMode="single" headerStyle={{ width: '3rem' }} />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
-      <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliation" header="affiliations" style={{ minWidth: '10px' }} />
-      <Column showFilterMenu={false} field="publicationsNumber" header="publicationsNumber" style={{ minWidth: '10px' }} />
+      <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliation" header="Affiliations" style={{ minWidth: '10px' }} />
+      <Column showFilterMenu={false} field="publicationsNumber" header="Number of publications" style={{ minWidth: '10px' }} />
     </DataTable>
   );
 }
