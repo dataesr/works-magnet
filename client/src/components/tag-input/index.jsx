@@ -1,6 +1,6 @@
 import { Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function TagInput({ hint, label, onTagsChange, tags }) {
   const [input, setInput] = useState('');
@@ -22,6 +22,8 @@ export default function TagInput({ hint, label, onTagsChange, tags }) {
     setValues(newValues);
     onTagsChange(newValues);
   };
+
+  useEffect(() => setValues(tags), [tags]);
 
   return (
     <div>

@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import Actions from './actions';
-import Options from './filters';
+import Filters from './filters';
 import ActionsView from './views/actions';
 import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
@@ -183,7 +183,8 @@ export default function Home() {
   return (
     <>
       <Container className="fr-my-5w" as="section">
-        <Options
+        <Filters
+          options={options}
           sendQuery={sendQuery}
         />
         {isFetching && (<Container as="section"><PageSpinner /></Container>)}

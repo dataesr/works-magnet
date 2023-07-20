@@ -12,6 +12,7 @@ const importJson = (e, setOptions) => {
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {
     const { actions, options } = JSON.parse(f.target.result);
+    options.restoreFromFile = true;
     setOptions(options);
   };
 };

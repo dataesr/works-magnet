@@ -7,14 +7,14 @@ import {
   TextInput,
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import TagInput from '../../components/tag-input';
 
 const sources = [{ key: 'bso', label: 'BSO' }, { key: 'openalex', label: 'OpenAlex' }];
 const identifiers = ['crossref', 'hal_id', 'datacite'];
 
-export default function Options({ sendQuery }) {
+export default function Filters({ options, sendQuery }) {
   const [affiliations, setAffiliations] = useState(['Ingénierie-Biologie-Santé Lorraine', 'UMS 2008', 'IBSLOR', 'UMS2008', 'UMS CNRS 2008']);
   const [affiliationsToExclude, setAffiliationsToExclude] = useState([]);
   const [affiliationsToInclude, setAffiliationsToInclude] = useState([]);
@@ -25,6 +25,22 @@ export default function Options({ sendQuery }) {
   const [endYear, setEndYear] = useState(2021);
   const [moreOptions, setMoreOptions] = useState(false);
   const [startYear, setStartYear] = useState(2021);
+
+  useEffect(() => {
+    if (options?.restoreFromFile ?? false) {
+      setAffiliations(options.affiliations);
+      setAffiliationsToExclude(options.affiliationsToExclude);
+      setAffiliationsToInclude(options.affiliationsToInclude);
+      setAuthors(options.authors);
+      setAuthorsToExclude(options.authorsToExclude);
+      setDataIdentifiers(options.dataIdentifiers);
+      setDatasources(options.datasources);
+      setEndYear(options.endYear);
+      setMoreOptions(options.moreOptions);
+      setStartYear(options.startYear);
+      sendQuery(options);
+    }
+  }, [options]);
 
   const onDatasourcesChange = (key) => {
     if (!datasources.map((datasource) => datasource.key).includes(key)) {
@@ -77,7 +93,7 @@ export default function Options({ sendQuery }) {
             <Row gutters>
               <Col n="6">
                 <TagInput
-                  hint="None of these affiliations msut be present, AND operator"
+                  hint="None of these affiliations must be present, AND operator"
                   label="Affiliations to exclude"
                   onTagsChange={(tags) => { setAffiliationsToExclude(tags); }}
                   tags={affiliationsToExclude}
@@ -85,7 +101,7 @@ export default function Options({ sendQuery }) {
               </Col>
               <Col n="6">
                 <TagInput
-                  hint="None of these authors msut be present, AND operator"
+                  hint="None of these authors must be present, AND operator"
                   label="Authors to exclude"
                   onTagsChange={(tags) => { setAuthorsToExclude(tags); }}
                   tags={authorsToExclude}
@@ -173,6 +189,10 @@ export default function Options({ sendQuery }) {
   );
 }
 
-Options.propTypes = {
+Filters.propTypes = {
+  options: PropTypes.object,
   sendQuery: PropTypes.func.isRequired,
+};
+Filters.defaultProps = {
+  options: {},
 };
