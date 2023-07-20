@@ -55,7 +55,7 @@ const getBsoData = (options) => {
       results: (response?.hits?.hits ?? []).map((result) => ({
         ...result._source,
         allIds: result?._source?.external_ids ?? [],
-        authors: result?._source?.authos ?? [],
+        authors: result?._source?.authors ?? [],
         datasource: 'bso',
         highlight: result.highlight,
         identifier: result?._source?.doi ?? result?._source?.hal_id ?? result._source.id,
