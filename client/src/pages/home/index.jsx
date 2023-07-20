@@ -233,13 +233,13 @@ export default function Home() {
               )
             }
           </Tab>
-          <Tab label={`Keep List (${actions.filter((action) => action.action === 'keep').length})`}>
+          <Tab label={`Publications to keep (${actions.filter((action) => action.action === 'keep').length})`}>
             <ActionsView
               data={actions.filter((action) => action.action === 'keep')}
               setActions={setActions}
             />
           </Tab>
-          <Tab label={`Exclude List (${actions.filter((action) => action.action === 'exclude').length})`}>
+          <Tab label={`Publications to exclude (${actions.filter((action) => action.action === 'exclude').length})`}>
             <ActionsView
               data={actions.filter((action) => action.action === 'exclude')}
               setActions={setActions}

@@ -1,10 +1,11 @@
-import PropTypes from 'prop-types';
-import { Button, Select } from '@dataesr/react-dsfr';
+import { Select } from '@dataesr/react-dsfr';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
+import PropTypes from 'prop-types';
 
 import {
   affiliationsTemplate,
+  allIdsTemplate,
   authorsTemplate,
 } from '../../../utils/fields';
 
@@ -60,8 +61,9 @@ export default function ActionsView({
       stripedRows
     >
       <Column body={actionsTemplate} showFilterMenu={false} field="action" header="Actions" style={{ minWidth: '130px' }} />
-      <Column filter filterMatchMode="contains" showFilterMenu={false} field="identifier" header="identifier" style={{ minWidth: '10px' }} sortable />
-      <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '10px' }} />
+      <Column field="allIds" header="Identifiers" body={allIdsTemplate} />
+      <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
+      <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '500px' }} />
       <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
     </DataTable>
