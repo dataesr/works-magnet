@@ -32,8 +32,8 @@ export default function Actions({
         </Button>
         <Button
           className="fr-mb-1w"
-          disabled={selectedPublications.length === 0}
-          onClick={() => { tagLines(selectedPublications, 'exclude'); }}
+          disabled={selectedAffiliations.length === 0}
+          onClick={() => { tagAffiliation(selectedAffiliations, 'exclude'); }}
           icon="ri-close-fill"
           secondary
         >
