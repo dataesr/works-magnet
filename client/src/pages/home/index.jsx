@@ -199,7 +199,7 @@ export default function Home() {
           viewAllPublications={viewAllPublications}
           setViewAllPublications={setViewAllPublications}
         />
-        {isFetching && (<Container><PageSpinner /></Container>)}
+        {isFetching && (<Container as="section"><PageSpinner /></Container>)}
         <div>
           {`${data?.total?.bso ?? 0} publications in the BSO`}
           {' // '}
