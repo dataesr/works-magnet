@@ -14,7 +14,6 @@ export default function AffiliationsView({
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
-      paginatorPosition="both"
       filterDisplay="row"
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"

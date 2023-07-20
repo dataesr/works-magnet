@@ -95,7 +95,7 @@ export default function Home() {
         action: actions.find((action) => action.id === item.id)?.action || undefined,
         affiliations: getAffiliationsField(item),
         allIds: item.allIds,
-        authors: getAuthorsField(item),
+        authors: item.authors,
         datasource: item.datasource,
         doi: item.doi,
         hal_id: item.hal_id,

@@ -50,7 +50,6 @@ export default function ActionsView({
       size="small"
       value={data}
       paginator
-      paginatorPosition="both"
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
       tableStyle={{ minWidth: '50rem' }}

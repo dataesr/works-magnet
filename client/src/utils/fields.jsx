@@ -24,7 +24,15 @@ const allIdsTemplate = (rowData) => (
   </ul>
 );
 
-const authorsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.authors }} />;
+const authorsTemplate = (rowData) => (
+  <ul>
+    {rowData.authors.slice(0, 3).map((author, index) => (
+      <li key={`author-${index}`}>
+        {author.full_name}
+      </li>
+    ))}
+  </ul>
+);
 
 const getAffiliationsField = (item) => {
   if (item?.highlight?.['affiliations.name']) {
