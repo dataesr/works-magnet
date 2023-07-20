@@ -12,13 +12,15 @@ import AffiliationsView from './views/affiliations';
 import Filters from './filters';
 import PublicationsView from './views/publications';
 
-import getBsoData from '../../utils/bso';
-import getOpenAlexData from '../../utils/openalex';
 import {
   getAffiliationsField,
   getAuthorsField,
 } from '../../utils/fields';
-import { mergePublications } from '../../utils/publications';
+import {
+  getBsoData,
+  getOpenAlexData,
+  mergePublications,
+} from '../../utils/publications';
 import ActionsView from './views/actions';
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
