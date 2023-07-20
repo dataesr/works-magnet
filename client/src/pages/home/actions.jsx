@@ -6,6 +6,9 @@ export default function Actions({
   tagLines,
   viewAllPublications,
   setViewAllPublications,
+  selectedAffiliations,
+  tagAffiliation,
+
 }) {
   return (
     <Row>
@@ -16,6 +19,26 @@ export default function Actions({
           onChange={() => setViewAllPublications(!viewAllPublications)}
           size="sm"
         />
+      </Col>
+      <Col className="text-right">
+        <Button
+          className="fr-mb-1w"
+          disabled={selectedAffiliations.length === 0}
+          icon="ri-check-fill"
+          onClick={() => { tagAffiliation(selectedAffiliations, 'keep'); }}
+          secondary
+        >
+          Keep all
+        </Button>
+        <Button
+          className="fr-mb-1w"
+          disabled={selectedPublications.length === 0}
+          onClick={() => { tagLines(selectedPublications, 'exclude'); }}
+          icon="ri-close-fill"
+          secondary
+        >
+          Exclude all
+        </Button>
       </Col>
       <Col className="text-right">
         <Button
@@ -56,4 +79,10 @@ Actions.propTypes = {
   tagLines: PropTypes.func.isRequired,
   viewAllPublications: PropTypes.bool.isRequired,
   setViewAllPublications: PropTypes.func.isRequired,
+  selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    publicationsNumber: PropTypes.number.isRequired,
+    publications: PropTypes.arrayOf(PropTypes.string).isRequired,
+  })).isRequired,
+  tagAffiliation: PropTypes.func.isRequired,
 };

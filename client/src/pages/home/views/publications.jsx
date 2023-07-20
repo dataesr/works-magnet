@@ -23,7 +23,6 @@ export default function PublicationsView({
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
       dataKey="id"
-      dragSelection
       metaKeySelection={false}
       onSelectionChange={(e) => setSelectedPublications(e.value)}
       selection={selectedPublications}

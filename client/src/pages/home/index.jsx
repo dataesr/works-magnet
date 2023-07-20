@@ -78,6 +78,7 @@ export default function Home() {
   const [actions, setActions] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [viewAllPublications, setViewAllPublications] = useState(false);
+  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -132,38 +133,68 @@ export default function Home() {
   const dataGroupedByAffiliation = {};
   if (data) {
     data.results.forEach((publication) => {
+      console.log(publication);
       switch (publication.datasource) {
         case 'bso':
           (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
             if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
-              dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
+              dataGroupedByAffiliation[normalizedName(affiliation)] = {
+                name: affiliation,
+                count: 0,
+                publications: [],
+                datasource: 'bso',
+              };
             }
             dataGroupedByAffiliation[normalizedName(affiliation)].count++;
-            dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
+            dataGroupedByAffiliation[normalizedName(affiliation)].datasource = 'bso';
+            dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication);
           });
           break;
         case 'openalex':
           (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
             if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
-              dataGroupedByAffiliation[normalizedName(affiliation)] = { name: affiliation, count: 0, publications: [] };
+              dataGroupedByAffiliation[normalizedName(affiliation)] = {
+                name: affiliation,
+                count: 0,
+                publications: [],
+                datasource: 'openalex',
+              };
             }
             dataGroupedByAffiliation[normalizedName(affiliation)].count++;
-            dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication.id);
+            dataGroupedByAffiliation[normalizedName(affiliation)].datasource = 'openalex';
+            dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication);
           }));
           break;
         default:
       }
     });
   }
+  console.log(dataGroupedByAffiliation);
   const affiliationsDataTable = Object.values(dataGroupedByAffiliation)
     .sort((a, b) => b.count - a.count)
-    .map((affiliation) => ({ affiliations: affiliation.name, publicationsNumber: affiliation.count }));
+    .map((affiliation, index) => ({
+      affiliations: affiliation.name,
+      publicationsNumber: affiliation.count,
+      publications: affiliation.publications.map((publication) => (
+        {
+          ...publication,
+          authors: getAuthorsField(publication),
+          affiliations: getAffiliationsField(publication),
+        })),
+      id: index,
+      datasource: affiliation.datasource,
+    }));
 
   const tagLines = (lines, action) => {
     const newActions = lines.map((line) => ({ ...line, action }));
     setActions([...actions, ...newActions]);
   };
 
+  const tagAffiliation = (affiliation, action) => {
+    console.log(affiliation.publications, action);
+    const newActions = affiliation.publications.map((publication) => ({ ...publication, action }));
+    setActions([...actions, ...newActions]);
+  };
   return (
     <>
       <Container className="fr-my-5w" as="section">
@@ -187,15 +218,23 @@ export default function Home() {
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
-          viewAllPublications={viewAllPublications}
-          setViewAllPublications={setViewAllPublications}
+          selectedAffiliations={selectedAffiliations}
           selectedPublications={selectedPublications}
+          setViewAllPublications={setViewAllPublications}
           tagLines={tagLines}
+          viewAllPublications={viewAllPublications}
+          tagAffiliation={tagAffiliation}
         />
         <Tabs defaultActiveTab={1}>
           <Tab label="Affiliations view">
             {
-              affiliationsDataTable && <AffiliationsView affiliationsDataTable={affiliationsDataTable} />
+              affiliationsDataTable && (
+                <AffiliationsView
+                  affiliationsDataTable={affiliationsDataTable}
+                  selectedAffiliations={selectedAffiliations}
+                  setSelectedAffiliations={setSelectedAffiliations}
+                />
+              )
             }
           </Tab>
           <Tab label={`Publications to sort (${publicationsDataTable.length})`}>
@@ -203,8 +242,8 @@ export default function Home() {
               publicationsDataTable && (
                 <PublicationsView
                   publicationsDataTable={publicationsDataTable}
-                  setSelectedPublications={setSelectedPublications}
                   selectedPublications={selectedPublications}
+                  setSelectedPublications={setSelectedPublications}
                 />
               )
             }
