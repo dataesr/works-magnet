@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { export2json, importJson } from '../../utils/file';
 
 export default function Actions({
+  actions,
   options,
-  publicationsDataTable,
   selectedAffiliations,
   selectedPublications,
   setOptions,
@@ -66,7 +66,10 @@ export default function Actions({
         >
           Exclude
         </Button>
-        <Button icon="ri-save-line" onClick={() => export2json(options, publicationsDataTable)}>
+        <Button
+          icon="ri-save-line"
+          onClick={() => export2json(actions, options)}
+        >
           Save
         </Button>
         <Button

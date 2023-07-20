@@ -26,11 +26,11 @@ export default function ScrollToTop() {
   return (
     <Button
       className={styles['scroll-top']}
-      title="Revenir en haut de la page"
-      size="lg"
-      rounded
       icon="ri-arrow-up-line"
       onClick={scrollToTop}
+      rounded
+      size="lg"
+      title="Revenir en haut de la page"
     />
 
   );

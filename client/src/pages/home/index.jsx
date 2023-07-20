@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import Actions from './actions';
-import Options from './options';
+import Options from './filters';
 import ActionsView from './views/actions';
 import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
@@ -179,13 +179,12 @@ export default function Home() {
     const newActions = affiliation.publications.map((publication) => ({ ...publication, action }));
     setActions([...actions, ...newActions]);
   };
+
   return (
     <>
       <Container className="fr-my-5w" as="section">
         <Options
           sendQuery={sendQuery}
-          setViewAllPublications={setViewAllPublications}
-          viewAllPublications={viewAllPublications}
         />
         {isFetching && (<Container as="section"><PageSpinner /></Container>)}
         <div>
@@ -202,8 +201,8 @@ export default function Home() {
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
+          actions={actions}
           options={options}
-          publicationsDataTable={publicationsDataTable}
           selectedAffiliations={selectedAffiliations}
           selectedPublications={selectedPublications}
           setOptions={setOptions}

@@ -3,7 +3,6 @@ import {
   Checkbox,
   CheckboxGroup,
   Col,
-  Icon,
   Row,
   TextInput,
 } from '@dataesr/react-dsfr';
@@ -152,6 +151,7 @@ export default function Options({ sendQuery }) {
             {moreOptions ? 'Less options' : 'More options'}
           </Button>
           <Button
+            icon="ri-search-line"
             onClick={() => sendQuery({
               affiliations,
               affiliationsToExclude,
@@ -165,7 +165,6 @@ export default function Options({ sendQuery }) {
             })}
             size="sm"
           >
-            <Icon name="ri-search-line" />
             Search
           </Button>
         </Col>
