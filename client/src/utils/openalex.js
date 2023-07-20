@@ -1,3 +1,5 @@
+import { getIdentifierValue } from './publications';
+
 const {
   VITE_OPENALEX_SIZE,
   VITE_OPENALEX_PER_PAGE,
@@ -41,11 +43,11 @@ const getOpenAlexData = ({ filters, page = '1', previousResponse = [] }) => {
         affiliations: item?.authorships?.map((author) => ({ name: author.raw_affiliation_strings })) ?? item.affiliations,
         authors: item?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? item.authors,
         datasource: 'openalex',
-        doi: item?.doi?.replace('https://doi.org/', '') ?? null,
+        doi: getIdentifierValue(item?.doi),
         genre: item?.type ?? item.genre,
         id: item.id,
-        identifier: item?.doi?.replace('https://doi.org/', '') ?? item.id,
-        allIds: item?.ids ? Object.keys(item.ids).map((key) => ({ id_type: key, id_value: item.ids[key] })) : item.allIds,
+        identifier: item?.doi ? getIdentifierValue(item.doi) : item.id,
+        allIds: item?.ids ? Object.keys(item.ids).map((key) => ({ id_type: key, id_value: getIdentifierValue(item.ids[key]) })) : item.allIds,
         title: item?.display_name ?? item.title,
         year: item?.publication_year ?? item.year,
       })),

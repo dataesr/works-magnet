@@ -1,3 +1,7 @@
+import { Link } from '@dataesr/react-dsfr';
+
+import { getIdentifierLink } from './publications';
+
 /* eslint-disable react/no-danger */
 const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
 
@@ -8,7 +12,13 @@ const allIdsTemplate = (rowData) => (
         {id.id_type}
         :
         {' '}
-        {id.id_value}
+        {getIdentifierLink(id.id_type, id.id_value)
+          ? (
+            <Link target="_blank" href={getIdentifierLink(id.id_type, id.id_value)}>
+              {id.id_value}
+            </Link>
+          )
+          : <span>{id.id_value}</span>}
       </li>
     ))}
   </ul>
