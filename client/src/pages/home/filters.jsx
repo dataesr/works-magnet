@@ -86,9 +86,9 @@ export default function Filters({ sendQuery }) {
         )
       }
       <Row gutters>
-        <Col n="4">
+        <Col n="3">
+          Datasources:
           <CheckboxGroup isInline>
-            Datasources:
             {
               sources.map((source) => (
                 <Checkbox
@@ -102,9 +102,9 @@ export default function Filters({ sendQuery }) {
             }
           </CheckboxGroup>
         </Col>
-        <Col n="4">
+        <Col n="3">
+          Identifiers:
           <CheckboxGroup isInline>
-            Identifiers:
             {
               identifiers.map((identifier) => (
                 <Checkbox
@@ -118,12 +118,10 @@ export default function Filters({ sendQuery }) {
             }
           </CheckboxGroup>
         </Col>
-      </Row>
-      <Row gutters>
-        <Col>
+        <Col n="3">
           <TextInput label="Start year" onChange={(e) => setStartYear(e.target.value)} value={startYear} />
         </Col>
-        <Col>
+        <Col n="3">
           <TextInput label="End year" onChange={(e) => setEndYear(e.target.value)} value={endYear} />
         </Col>
       </Row>
