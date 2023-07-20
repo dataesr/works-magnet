@@ -67,6 +67,7 @@ export default function Actions({
           Exclude
         </Button>
         <Button
+          disabled={actions.length === 0}
           icon="ri-save-line"
           onClick={() => export2json(actions, options)}
         >
