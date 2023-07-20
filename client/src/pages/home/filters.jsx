@@ -111,20 +111,26 @@ export default function Filters({ sendQuery }) {
           </CheckboxGroup>
         </Col>
         <Col n="3">
-          Identifiers:
-          <CheckboxGroup isInline>
-            {
-              identifiers.map((identifier) => (
-                <Checkbox
-                  checked={dataIdentifiers.includes(identifier)}
-                  key={identifier}
-                  label={identifier}
-                  onChange={() => onCheckBoxChangeIdentifier(identifier)}
-                  size="sm"
-                />
-              ))
-            }
-          </CheckboxGroup>
+          {
+            datasources.map((datasource) => datasource.key).includes('bso') && (
+              <>
+                BSO Identifiers:
+                <CheckboxGroup isInline>
+                  {
+                    identifiers.map((identifier) => (
+                      <Checkbox
+                        checked={dataIdentifiers.includes(identifier)}
+                        key={identifier}
+                        label={identifier}
+                        onChange={() => onCheckBoxChangeIdentifier(identifier)}
+                        size="sm"
+                      />
+                    ))
+                  }
+                </CheckboxGroup>
+              </>
+            )
+          }
         </Col>
         <Col n="3">
           <TextInput label="Start year" onChange={(e) => setStartYear(e.target.value)} value={startYear} />
