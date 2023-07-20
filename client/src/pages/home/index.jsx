@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import Actions from './actions';
-import Filters from './filters';
+import Options from './options';
 import ActionsView from './views/actions';
 import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
@@ -87,8 +87,8 @@ export default function Home() {
     cacheTime: Infinity,
   });
 
-  const sendQuery = async (filters) => {
-    await setOptions(filters);
+  const sendQuery = async (_options) => {
+    await setOptions(_options);
     refetch();
   };
 
@@ -182,10 +182,10 @@ export default function Home() {
   return (
     <>
       <Container className="fr-my-5w" as="section">
-        <Filters
+        <Options
           sendQuery={sendQuery}
-          viewAllPublications={viewAllPublications}
           setViewAllPublications={setViewAllPublications}
+          viewAllPublications={viewAllPublications}
         />
         {isFetching && (<Container as="section"><PageSpinner /></Container>)}
         <div>

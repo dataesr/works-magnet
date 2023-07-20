@@ -15,7 +15,7 @@ import TagInput from '../../components/tag-input';
 const sources = [{ key: 'bso', label: 'BSO' }, { key: 'openalex', label: 'OpenAlex' }];
 const identifiers = ['crossref', 'hal_id', 'datacite'];
 
-export default function Filters({ sendQuery }) {
+export default function Options({ sendQuery }) {
   const [affiliations, setAffiliations] = useState(['Ingénierie-Biologie-Santé Lorraine', 'UMS 2008', 'IBSLOR', 'UMS2008', 'UMS CNRS 2008']);
   const [affiliationsToExclude, setAffiliationsToExclude] = useState([]);
   const [affiliationsToInclude, setAffiliationsToInclude] = useState([]);
@@ -174,6 +174,6 @@ export default function Filters({ sendQuery }) {
   );
 }
 
-Filters.propTypes = {
+Options.propTypes = {
   sendQuery: PropTypes.func.isRequired,
 };
