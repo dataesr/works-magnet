@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
+import PropTypes from 'prop-types';
 
 import {
   affiliationsTemplate,
@@ -10,23 +10,23 @@ import {
 
 export default function PublicationsView({
   publicationsDataTable,
-  setSelectedPublications,
   selectedPublications,
+  setSelectedPublications,
 }) {
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      dataKey="id"
       filterDisplay="row"
+      metaKeySelection={false}
+      onSelectionChange={(e) => setSelectedPublications(e.value)}
       paginator
       paginatorPosition="both"
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
-      dataKey="id"
-      metaKeySelection={false}
-      onSelectionChange={(e) => setSelectedPublications(e.value)}
-      selection={selectedPublications}
       scrollable
+      selection={selectedPublications}
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '15px' }}

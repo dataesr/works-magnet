@@ -73,11 +73,11 @@ const getData = async (options) => {
 };
 
 export default function Home() {
-  const [options, setOptions] = useState({});
   const [actions, setActions] = useState([]);
+  const [options, setOptions] = useState({});
+  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [viewAllPublications, setViewAllPublications] = useState(false);
-  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -115,7 +115,7 @@ export default function Home() {
       });
   }
 
-  // regroupement par affiliation
+  // Group by affiliation
   const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
   const dataGroupedByAffiliation = {};
   if (data) {
@@ -202,12 +202,14 @@ export default function Home() {
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
+          options={options}
+          publicationsDataTable={publicationsDataTable}
           selectedAffiliations={selectedAffiliations}
           selectedPublications={selectedPublications}
           setViewAllPublications={setViewAllPublications}
+          tagAffiliation={tagAffiliation}
           tagLines={tagLines}
           viewAllPublications={viewAllPublications}
-          tagAffiliation={tagAffiliation}
         />
         <Tabs defaultActiveTab={1}>
           <Tab label="Affiliations view">

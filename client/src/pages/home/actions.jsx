@@ -1,14 +1,17 @@
-import PropTypes from 'prop-types';
 import { Button, Checkbox, Col, Row } from '@dataesr/react-dsfr';
+import PropTypes from 'prop-types';
+
+import export2json from '../../utils/export';
 
 export default function Actions({
+  options,
+  publicationsDataTable,
+  selectedAffiliations,
   selectedPublications,
+  setViewAllPublications,
+  tagAffiliation,
   tagLines,
   viewAllPublications,
-  setViewAllPublications,
-  selectedAffiliations,
-  tagAffiliation,
-
 }) {
   return (
     <Row>
@@ -33,8 +36,8 @@ export default function Actions({
         <Button
           className="fr-mb-1w"
           disabled={selectedAffiliations.length === 0}
-          onClick={() => { tagAffiliation(selectedAffiliations, 'exclude'); }}
           icon="ri-close-fill"
+          onClick={() => { tagAffiliation(selectedAffiliations, 'exclude'); }}
           secondary
         >
           Exclude all
@@ -53,36 +56,38 @@ export default function Actions({
         <Button
           className="fr-mb-1w"
           disabled={selectedPublications.length === 0}
-          onClick={() => { tagLines(selectedPublications, 'exclude'); }}
           icon="ri-close-fill"
+          onClick={() => { tagLines(selectedPublications, 'exclude'); }}
           secondary
         >
           Exclude
         </Button>
-        <Button icon="ri-save-line">Save</Button>
+        <Button icon="ri-save-line" onClick={() => export2json(options, publicationsDataTable)}>
+          Save
+        </Button>
       </Col>
     </Row>
   );
 }
 
 Actions.propTypes = {
-  selectedPublications: PropTypes.arrayOf(PropTypes.shape({
-    identifier: PropTypes.string.isRequired,
-    datasource: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
-    doi: PropTypes.string.isRequired,
-    hal_id: PropTypes.string.isRequired,
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
-    title: PropTypes.string.isRequired,
-  })).isRequired,
-  tagLines: PropTypes.func.isRequired,
-  viewAllPublications: PropTypes.bool.isRequired,
-  setViewAllPublications: PropTypes.func.isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
-    publicationsNumber: PropTypes.number.isRequired,
     publications: PropTypes.arrayOf(PropTypes.string).isRequired,
+    publicationsNumber: PropTypes.number.isRequired,
   })).isRequired,
+  selectedPublications: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    datasource: PropTypes.string.isRequired,
+    doi: PropTypes.string.isRequired,
+    hal_id: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    identifier: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+  })).isRequired,
+  setViewAllPublications: PropTypes.func.isRequired,
   tagAffiliation: PropTypes.func.isRequired,
+  tagLines: PropTypes.func.isRequired,
+  viewAllPublications: PropTypes.bool.isRequired,
 };

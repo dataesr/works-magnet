@@ -18,8 +18,6 @@ export default function ActionsView({
   data,
   setActions,
 }) {
-  const paginatorRight = <Button icon="ri-download-fill" text>Download</Button>;
-
   const changePublicationsActions = (e, rowData) => {
     const { value } = e.target;
     if (value === rowData.action) return;
@@ -57,8 +55,6 @@ export default function ActionsView({
       tableStyle={{ minWidth: '50rem' }}
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
-      // paginatorLeft={paginatorLeft}
-      paginatorRight={paginatorRight}
       filterDisplay="row"
       scrollable
       stripedRows
@@ -74,13 +70,13 @@ export default function ActionsView({
 
 ActionsView.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
-    identifier: PropTypes.string.isRequired,
-    datasource: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
-    doi: PropTypes.string.isRequired,
-    hal_id: PropTypes.string.isRequired,
     affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    datasource: PropTypes.string.isRequired,
+    doi: PropTypes.string.isRequired,
+    hal_id: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    identifier: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
   })).isRequired,
   setActions: PropTypes.func.isRequired,
