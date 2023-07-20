@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react-dsfr';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 export default function TagInput({ hint, label, onTagsChange, tags }) {
   const [input, setInput] = useState('');
@@ -30,9 +30,9 @@ export default function TagInput({ hint, label, onTagsChange, tags }) {
           <Col>
             <TextInput
               hint={hint}
+              label={label}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={label}
               type="text"
               value={input}
             />
