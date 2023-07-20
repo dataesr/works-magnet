@@ -33,7 +33,7 @@ const getBsoQuery = ({ filters }) => {
     query.query.bool.filter.push({ range: { year: { lte: filters.endYear } } });
   }
   query.highlight = { fields: { 'affiliations.name': {}, 'authors.full_name': {} } };
-  query.query.bool.filter.push({ terms: { 'external_ids.id_type': filters.dataidentifiers } });
+  query.query.bool.filter.push({ terms: { 'external_ids.id_type': filters.dataIdentifiers } });
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'title', 'year'];
   return query;

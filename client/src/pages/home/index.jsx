@@ -97,9 +97,9 @@ export default function Home() {
         affiliationsToExclude: filters.affiliationsToExclude,
         authors: filters.authors,
         authorsToExclude: filters.authorsToExclude,
-        startYear: filters.startYear,
+        dataIdentifiers: filters.dataIdentifiers,
         endYear: filters.endYear,
-        dataidentifiers: filters.dataidentifiers,
+        startYear: filters.startYear,
       },
     });
     refetch();
