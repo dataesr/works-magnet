@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react-dsfr';
 
-export default function TagInput({ label, hint, tags, onTagsChange }) {
+export default function TagInput({ hint, label, onTagsChange, tags }) {
   const [input, setInput] = useState('');
   const [values, setValues] = useState(tags);
 
@@ -29,12 +29,12 @@ export default function TagInput({ label, hint, tags, onTagsChange }) {
         <Row alignItems="bottom">
           <Col>
             <TextInput
-              type="text"
-              value={input}
-              placeholder={label}
               hint={hint}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
+              placeholder={label}
+              type="text"
+              value={input}
             />
           </Col>
         </Row>
@@ -43,8 +43,8 @@ export default function TagInput({ label, hint, tags, onTagsChange }) {
             <TagGroup>
               {values.map((tag) => (
                 <Tag
-                  key={tag}
                   className="fr-mr-1w"
+                  key={tag}
                   onClick={() => handleDeleteClick(tag)}
                 >
                   {tag}
@@ -62,8 +62,8 @@ export default function TagInput({ label, hint, tags, onTagsChange }) {
 TagInput.propTypes = {
   hint: PropTypes.string,
   label: PropTypes.string.isRequired,
-  tags: PropTypes.arrayOf(PropTypes.string),
   onTagsChange: PropTypes.func.isRequired,
+  tags: PropTypes.arrayOf(PropTypes.string),
 };
 
 TagInput.defaultProps = {

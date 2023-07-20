@@ -47,7 +47,7 @@ export default function Options({ sendQuery }) {
       <Row gutters>
         <Col n="6">
           <TagInput
-            hint=""
+            hint="At least one of these affiliations should be present, OR operator"
             label="Affiliations"
             onTagsChange={(tags) => { setAffiliations(tags); }}
             tags={affiliations}
@@ -55,7 +55,7 @@ export default function Options({ sendQuery }) {
         </Col>
         <Col n="6">
           <TagInput
-            hint=""
+            hint="At least one of these authors should be present, OR operator. This option won't work on OpenAlex"
             label="Authors"
             onTagsChange={(tags) => { setAuthors(tags); }}
             tags={authors}
@@ -68,7 +68,7 @@ export default function Options({ sendQuery }) {
             <Row gutters>
               <Col n="6">
                 <TagInput
-                  hint=""
+                  hint="All these affiliations must be present, AND operator"
                   label="Affiliations to include mandatory"
                   onTagsChange={(tags) => { setAffiliationsToInclude(tags); }}
                   tags={affiliationsToInclude}
@@ -78,7 +78,7 @@ export default function Options({ sendQuery }) {
             <Row gutters>
               <Col n="6">
                 <TagInput
-                  hint=""
+                  hint="None of these affiliations msut be present, AND operator"
                   label="Affiliations to exclude"
                   onTagsChange={(tags) => { setAffiliationsToExclude(tags); }}
                   tags={affiliationsToExclude}
@@ -86,7 +86,7 @@ export default function Options({ sendQuery }) {
               </Col>
               <Col n="6">
                 <TagInput
-                  hint=""
+                  hint="None of these authors msut be present, AND operator"
                   label="Authors to exclude"
                   onTagsChange={(tags) => { setAuthorsToExclude(tags); }}
                   tags={authorsToExclude}
@@ -165,7 +165,7 @@ export default function Options({ sendQuery }) {
             })}
             size="sm"
           >
-            <Icon name="ri-search-fill" />
+            <Icon name="ri-search-line" />
             Search
           </Button>
         </Col>

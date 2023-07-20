@@ -1,18 +1,22 @@
-import { Button, Checkbox, Col, Row } from '@dataesr/react-dsfr';
+import { Button, Checkbox, Col, File, Row } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
-import export2json from '../../utils/export';
+import { export2json, importJson } from '../../utils/file';
 
 export default function Actions({
   options,
   publicationsDataTable,
   selectedAffiliations,
   selectedPublications,
+  setOptions,
   setViewAllPublications,
   tagAffiliation,
   tagLines,
   viewAllPublications,
 }) {
+  const [displayFileUpload, setDisplayFileUpload] = useState(false);
+
   return (
     <Row>
       <Col n="4">
@@ -65,6 +69,22 @@ export default function Actions({
         <Button icon="ri-save-line" onClick={() => export2json(options, publicationsDataTable)}>
           Save
         </Button>
+        <Button
+          className="fr-mb-1w"
+          icon="ri-file-upload-line"
+          onClick={() => setDisplayFileUpload(true)}
+          secondary
+        >
+          Restore from file
+        </Button>
+        {displayFileUpload && (
+          <File
+            accept=".json"
+            hint="Select JSON file to restore from previous state"
+            label="JSON file"
+            onChange={(e) => importJson(e, setOptions)}
+          />
+        )}
       </Col>
     </Row>
   );

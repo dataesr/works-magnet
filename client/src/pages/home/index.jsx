@@ -206,6 +206,7 @@ export default function Home() {
           publicationsDataTable={publicationsDataTable}
           selectedAffiliations={selectedAffiliations}
           selectedPublications={selectedPublications}
+          setOptions={setOptions}
           setViewAllPublications={setViewAllPublications}
           tagAffiliation={tagAffiliation}
           tagLines={tagLines}
