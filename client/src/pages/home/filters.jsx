@@ -16,43 +16,34 @@ const sources = [{ key: 'bso', label: 'BSO' }, { key: 'openalex', label: 'OpenAl
 const identifiers = ['crossref', 'hal_id', 'datacite'];
 
 export default function Filters({ sendQuery }) {
-  const [viewMoreFilters, setViewMoreFilters] = useState(false);
-  const [datasources, setDatasources] = useState(sources);
-  const [dataIdentifiers, setDataIdentifiers] = useState(identifiers);
   const [affiliations, setAffiliations] = useState(['Ingénierie-Biologie-Santé Lorraine', 'UMS 2008', 'IBSLOR', 'UMS2008', 'UMS CNRS 2008']);
   const [affiliationsToExclude, setAffiliationsToExclude] = useState([]);
+  const [affiliationsToInclude, setAffiliationsToInclude] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [authorsToExclude, setAuthorsToExclude] = useState([]);
-  const [startYear, setStartYear] = useState(2021);
+  const [dataIdentifiers, setDataIdentifiers] = useState(identifiers);
+  const [datasources, setDatasources] = useState(sources);
   const [endYear, setEndYear] = useState(2021);
+  const [moreOptions, setMoreOptions] = useState(false);
+  const [startYear, setStartYear] = useState(2021);
 
-  const onCheckBoxChange = (key) => {
+  const onDatasourcesChange = (key) => {
     if (!datasources.map((datasource) => datasource.key).includes(key)) {
       setDatasources([...datasources, { key, label: key }]);
     } else {
       setDatasources(datasources.filter((datasource) => datasource.key !== key));
     }
   };
-  const onCheckBoxChangeIdentifier = (label) => {
+  const onIdentifiersChange = (label) => {
     if (!dataIdentifiers.includes(label)) {
       setDataIdentifiers([...dataIdentifiers, label]);
     } else {
       setDataIdentifiers(dataIdentifiers.filter((item) => item !== label));
     }
   };
+
   return (
     <>
-      <Row gutters>
-        <Col className="text-right">
-          <Button
-            onClick={() => setViewMoreFilters(!viewMoreFilters)}
-            secondary
-            size="sm"
-          >
-            {viewMoreFilters ? 'Less filters' : 'More filters'}
-          </Button>
-        </Col>
-      </Row>
       <Row gutters>
         <Col n="6">
           <TagInput
@@ -72,25 +63,37 @@ export default function Filters({ sendQuery }) {
         </Col>
       </Row>
       {
-        viewMoreFilters && (
-          <Row gutters>
-            <Col n="6">
-              <TagInput
-                hint=""
-                label="Affiliations to exclude"
-                onTagsChange={(tags) => { setAffiliationsToExclude(tags); }}
-                tags={affiliationsToExclude}
-              />
-            </Col>
-            <Col n="6">
-              <TagInput
-                hint=""
-                label="Authors to exclude"
-                onTagsChange={(tags) => { setAuthorsToExclude(tags); }}
-                tags={authorsToExclude}
-              />
-            </Col>
-          </Row>
+        moreOptions && (
+          <>
+            <Row gutters>
+              <Col n="6">
+                <TagInput
+                  hint=""
+                  label="Affiliations to include mandatory"
+                  onTagsChange={(tags) => { setAffiliationsToInclude(tags); }}
+                  tags={affiliationsToInclude}
+                />
+              </Col>
+            </Row>
+            <Row gutters>
+              <Col n="6">
+                <TagInput
+                  hint=""
+                  label="Affiliations to exclude"
+                  onTagsChange={(tags) => { setAffiliationsToExclude(tags); }}
+                  tags={affiliationsToExclude}
+                />
+              </Col>
+              <Col n="6">
+                <TagInput
+                  hint=""
+                  label="Authors to exclude"
+                  onTagsChange={(tags) => { setAuthorsToExclude(tags); }}
+                  tags={authorsToExclude}
+                />
+              </Col>
+            </Row>
+          </>
         )
       }
       <Row gutters>
@@ -103,7 +106,7 @@ export default function Filters({ sendQuery }) {
                   checked={datasources.map((datasource) => datasource.key).includes(source.key)}
                   key={source.key}
                   label={source.label}
-                  onChange={() => onCheckBoxChange(source.key)}
+                  onChange={() => onDatasourcesChange(source.key)}
                   size="sm"
                 />
               ))
@@ -122,7 +125,7 @@ export default function Filters({ sendQuery }) {
                         checked={dataIdentifiers.includes(identifier)}
                         key={identifier}
                         label={identifier}
-                        onChange={() => onCheckBoxChangeIdentifier(identifier)}
+                        onChange={() => onIdentifiersChange(identifier)}
                         size="sm"
                       />
                     ))
@@ -142,9 +145,17 @@ export default function Filters({ sendQuery }) {
       <Row gutters>
         <Col className="text-right">
           <Button
+            onClick={() => setMoreOptions(!moreOptions)}
+            secondary
+            size="sm"
+          >
+            {moreOptions ? 'Less options' : 'More options'}
+          </Button>
+          <Button
             onClick={() => sendQuery({
               affiliations,
               affiliationsToExclude,
+              affiliationsToInclude,
               authors,
               authorsToExclude,
               dataIdentifiers,

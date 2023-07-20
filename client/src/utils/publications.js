@@ -8,32 +8,32 @@ const {
 
 const VITE_OPENALEX_MAX_PAGE = Math.floor(VITE_OPENALEX_SIZE / VITE_OPENALEX_PER_PAGE);
 
-const getBsoQuery = (filters) => {
-  const query = { size: VITE_BSO_SIZE, query: { bool: {} } };
-  query.query.bool.filter = [];
-  query.query.bool.should = [];
-  query.query.bool.must_not = [];
-  filters.affiliations.forEach((affiliation) => {
+const getBsoQuery = (options) => {
+  const query = { size: VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
+  options.affiliations.forEach((affiliation) => {
     query.query.bool.should.push({ match: { 'affiliations.name': { query: `"${affiliation}"`, operator: 'and' } } });
   });
-  filters.authors.forEach((author) => {
+  options.authors.forEach((author) => {
     query.query.bool.should.push({ match: { 'authors.full_name': { query: `"${author}"`, operator: 'and' } } });
   });
-  filters.affiliationsToExclude.forEach((affiliationToExclude) => {
+  options.affiliationsToExclude.forEach((affiliationToExclude) => {
     query.query.bool.must_not.push({ match: { 'affiliations.name': { query: affiliationToExclude, operator: 'and' } } });
   });
-  filters.authorsToExclude.forEach((authorToExclude) => {
+  options.authorsToExclude.forEach((authorToExclude) => {
     query.query.bool.must_not.push({ match: { 'authors.full_name': { query: authorToExclude, operator: 'and' } } });
   });
-  if (filters?.startYear && filters?.endYear) {
-    query.query.bool.filter.push({ range: { year: { gte: filters.startYear, lte: filters.endYear } } });
-  } else if (filters?.startYear) {
-    query.query.bool.filter.push({ range: { year: { gte: filters.startYear } } });
-  } else if (filters?.endYear) {
-    query.query.bool.filter.push({ range: { year: { lte: filters.endYear } } });
+  options.affiliationsToInclude.forEach((affiliationToInclude) => {
+    query.query.bool.must.push({ match: { 'affiliations.name': { query: `"${affiliationToInclude}"`, operator: 'and' } } });
+  });
+  if (options?.startYear && options?.endYear) {
+    query.query.bool.filter.push({ range: { year: { gte: options.startYear, lte: options.endYear } } });
+  } else if (options?.startYear) {
+    query.query.bool.filter.push({ range: { year: { gte: options.startYear } } });
+  } else if (options?.endYear) {
+    query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
   }
   query.highlight = { fields: { 'affiliations.name': {}, 'authors.full_name': {} } };
-  query.query.bool.filter.push({ terms: { 'external_ids.id_type': filters.dataIdentifiers } });
+  query.query.bool.filter.push({ terms: { 'external_ids.id_type': options.dataIdentifiers } });
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'title', 'year'];
   return query;
@@ -91,20 +91,21 @@ const getIdentifierLink = (type, identifier) => {
   return (prefix !== null) ? `${prefix}${identifier}` : false;
 };
 
-const getOpenAlexData = (filters, page = '1', previousResponse = []) => {
+const getOpenAlexData = (options, page = '1', previousResponse = []) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
-  if (filters?.startYear && filters?.endYear) {
-    url += `,publication_year:${Number(filters.startYear)}-${Number(filters?.endYear)}`;
-  } else if (filters?.startYear) {
-    url += `,publication_year:${Number(filters.startYear)}-`;
-  } else if (filters?.endYear) {
-    url += `,publication_year:-${Number(filters.endYear)}`;
+  if (options?.startYear && options?.endYear) {
+    url += `,publication_year:${Number(options.startYear)}-${Number(options?.endYear)}`;
+  } else if (options?.startYear) {
+    url += `,publication_year:${Number(options.startYear)}-`;
+  } else if (options?.endYear) {
+    url += `,publication_year:-${Number(options.endYear)}`;
   }
-  if (filters.affiliations.length > 0 || filters.affiliationsToExclude.length > 0) {
+  if (options.affiliations.length > 0 || options.affiliationsToExclude.length > 0) {
     url += ',raw_affiliation_string.search:';
-    if (filters.affiliations.length > 0) url += `(${filters.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
-    if (filters.affiliationsToExclude.length > 0) url += `${filters.affiliationsToExclude.map((aff) => ` AND NOT ${aff}`).join('')}`;
+    if (options.affiliations.length > 0) url += `(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
+    if (options.affiliationsToExclude.length > 0) url += `${options.affiliationsToExclude.map((aff) => ` AND NOT ${aff}`).join('')}`;
+    if (options.affiliationsToInclude.length > 0) url += `${options.affiliationsToInclude.map((aff) => ` AND "${aff}"`).join('')}`;
   }
   url += '&select=authorships,display_name,doi,id,ids,publication_year,type';
   return fetch(`${url}&page=${page}`)
@@ -116,7 +117,7 @@ const getOpenAlexData = (filters, page = '1', previousResponse = []) => {
       const results = [...previousResponse, ...response.results];
       const nextPage = Number(page) + 1;
       if (Number(response.results.length) === Number(VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexData(filters, nextPage, results);
+        return getOpenAlexData(options, nextPage, results);
       }
       return ({ total: response.meta.count, results });
     })
