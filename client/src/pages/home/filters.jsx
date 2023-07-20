@@ -163,6 +163,7 @@ export default function Filters({ options, sendQuery }) {
             onClick={() => setMoreOptions(!moreOptions)}
             secondary
             size="sm"
+            icon="ri-filter-line"
           >
             {moreOptions ? 'Less options' : 'More options'}
           </Button>
