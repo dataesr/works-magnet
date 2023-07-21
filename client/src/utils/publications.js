@@ -58,7 +58,8 @@ const getBsoData = (options) => {
       total: response?.hits?.total?.value ?? 0,
       results: (response?.hits?.hits ?? []).map((result) => ({
         ...result._source,
-        allIds: result?._source?.external_ids ?? [],
+        // Filter ids by uniq values
+        allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: result?._source?.authors ?? [],
         datasource: 'bso',
         highlight: result.highlight,

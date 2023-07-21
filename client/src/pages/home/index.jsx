@@ -65,7 +65,7 @@ const getData = async (options) => {
 export default function Home() {
   const [actions, setActions] = useState([]);
   const [options, setOptions] = useState({});
-  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
+  const [selectedAffiliations, setSelectedAffiliations] = useState({});
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [viewAllPublications, setViewAllPublications] = useState(false);
 
@@ -153,7 +153,6 @@ export default function Home() {
       publications: affiliation.publications.map((publication) => (
         {
           ...publication,
-          authors: getAuthorsField(publication),
           affiliations: getAffiliationsField(publication),
         })),
       id: index,
@@ -181,13 +180,12 @@ export default function Home() {
             />
           </Col>
           <Col n="3">
-            <Metrics data={data} />
+            {data && (<Metrics data={data} />)}
           </Col>
         </Row>
         <Row>
           <Col>
             {isFetching && (<Container as="section"><PageSpinner /></Container>)}
-
           </Col>
         </Row>
       </Container>

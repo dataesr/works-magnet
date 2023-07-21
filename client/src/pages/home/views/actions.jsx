@@ -10,9 +10,9 @@ import {
 } from '../../../utils/fields';
 
 const options = [
-  { label: 'keep', value: 'keep' },
-  { label: 'exclude', value: 'exclude' },
-  { label: 'to sort', value: null },
+  { label: 'To keep', value: 'keep' },
+  { label: 'To exclude', value: 'exclude' },
+  { label: 'To sort', value: 'sort' },
 ];
 
 export default function ActionsView({
@@ -22,7 +22,7 @@ export default function ActionsView({
   const changePublicationsActions = (e, rowData) => {
     const { value } = e.target;
     if (value === rowData.action) return;
-    if (!value || value === 'to sort') {
+    if (value === 'sort') {
       const newData = data.filter((row) => row.identifier !== rowData.identifier);
       setActions(newData);
     } else {
@@ -71,11 +71,11 @@ export default function ActionsView({
 
 ActionsView.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    affiliations: PropTypes.string.isRequired,
+    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
-    doi: PropTypes.string.isRequired,
-    hal_id: PropTypes.string.isRequired,
+    doi: PropTypes.string,
+    hal_id: PropTypes.string,
     id: PropTypes.string.isRequired,
     identifier: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,

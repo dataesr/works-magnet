@@ -46,14 +46,14 @@ PublicationsView.propTypes = {
   publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.string.isRequired,
     allIds: PropTypes.array.isRequired,
-    authors: PropTypes.string.isRequired,
+    authors: PropTypes.array.isRequired,
     datasource: PropTypes.string.isRequired,
     identifier: PropTypes.string.isRequired,
   })).isRequired,
   setSelectedPublications: PropTypes.func.isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.string.isRequired,
-    authors: PropTypes.string.isRequired,
+    authors: PropTypes.array.isRequired,
     datasource: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
   })).isRequired,

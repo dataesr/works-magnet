@@ -96,14 +96,14 @@ export default function Actions({
 }
 
 Actions.propTypes = {
-  selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
-    publications: PropTypes.arrayOf(PropTypes.string).isRequired,
-    publicationsNumber: PropTypes.number.isRequired,
-  })).isRequired,
+  selectedAffiliations: PropTypes.shape({
+    affiliations: PropTypes.string,
+    publications: PropTypes.arrayOf(PropTypes.object),
+    publicationsNumber: PropTypes.number,
+  }).isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    affiliations: PropTypes.string.isRequired,
+    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     doi: PropTypes.string.isRequired,
     hal_id: PropTypes.string.isRequired,
