@@ -99,7 +99,6 @@ Actions.propTypes = {
   selectedAffiliations: PropTypes.shape({
     affiliations: PropTypes.string,
     publications: PropTypes.arrayOf(PropTypes.object),
-    publicationsNumber: PropTypes.number,
   }).isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.string.isRequired,

@@ -11,10 +11,7 @@ import ActionsView from './views/actions';
 import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
 import { PageSpinner } from '../../components/spinner';
-import {
-  getAffiliationsField,
-  getAuthorsField,
-} from '../../utils/fields';
+import { getAffiliationsField } from '../../utils/fields';
 import {
   getBsoData,
   getOpenAlexData,
@@ -113,32 +110,28 @@ export default function Home() {
       switch (publication.datasource) {
         case 'bso':
           (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
-            if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
-              dataGroupedByAffiliation[normalizedName(affiliation)] = {
-                name: affiliation,
-                count: 0,
-                publications: [],
+            const affiliatioName = normalizedName(affiliation);
+            if (!Object.keys(dataGroupedByAffiliation).includes(affiliatioName)) {
+              dataGroupedByAffiliation[affiliatioName] = {
                 datasource: 'bso',
+                name: affiliation,
+                publications: [],
               };
             }
-            dataGroupedByAffiliation[normalizedName(affiliation)].count++;
-            dataGroupedByAffiliation[normalizedName(affiliation)].datasource = 'bso';
-            dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication);
+            dataGroupedByAffiliation[affiliatioName].publications.push(publication);
           });
           break;
         case 'openalex':
           (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
-            if (!Object.keys(dataGroupedByAffiliation).includes(normalizedName(affiliation))) {
+            const affiliatioName = normalizedName(affiliation);
+            if (!Object.keys(dataGroupedByAffiliation).includes(affiliatioName)) {
               dataGroupedByAffiliation[normalizedName(affiliation)] = {
-                name: affiliation,
-                count: 0,
-                publications: [],
                 datasource: 'openalex',
+                name: affiliation,
+                publications: [],
               };
             }
-            dataGroupedByAffiliation[normalizedName(affiliation)].count++;
-            dataGroupedByAffiliation[normalizedName(affiliation)].datasource = 'openalex';
-            dataGroupedByAffiliation[normalizedName(affiliation)].publications.push(publication);
+            dataGroupedByAffiliation[affiliatioName].publications.push(publication);
           }));
           break;
         default:
@@ -146,10 +139,9 @@ export default function Home() {
     });
   }
   const affiliationsDataTable = Object.values(dataGroupedByAffiliation)
-    .sort((a, b) => b.count - a.count)
+    .sort((a, b) => b.publications.length - a.publications.length)
     .map((affiliation, index) => ({
       affiliations: affiliation.name,
-      publicationsNumber: affiliation.count,
       publications: affiliation.publications.map((publication) => (
         {
           ...publication,

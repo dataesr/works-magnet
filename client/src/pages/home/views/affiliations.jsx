@@ -32,8 +32,8 @@ export default function AffiliationsView({
     >
       <Column selectionMode="single" headerStyle={{ width: '3rem' }} />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
-      <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliation" header="Affiliations" style={{ minWidth: '10px' }} />
-      <Column showFilterMenu={false} field="publicationsNumber" header="Number of publications" style={{ minWidth: '10px' }} />
+      <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliation" header="Affiliation" style={{ minWidth: '10px' }} />
+      <Column showFilterMenu={false} field="publications" body={(rowData) => rowData.publications.length} header="Number of publications" style={{ minWidth: '10px' }} />
     </DataTable>
   );
 }
@@ -41,11 +41,9 @@ export default function AffiliationsView({
 AffiliationsView.propTypes = {
   affiliationsDataTable: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.string.isRequired,
-    publicationsNumber: PropTypes.number.isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.shape({
     affiliations: PropTypes.string,
-    publicationsNumber: PropTypes.number,
     publications: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,
