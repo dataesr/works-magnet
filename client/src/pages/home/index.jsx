@@ -11,8 +11,8 @@ import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
 import { PageSpinner } from '../../components/spinner';
 import {
-  getBsoData,
-  getOpenAlexData,
+  getBsoPublications,
+  getOpenAlexPublications,
   mergePublications,
 } from '../../utils/publications';
 
@@ -25,9 +25,9 @@ const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
     switch (datasource.key) {
       case 'bso':
-        return getBsoData(options);
+        return getBsoPublications(options);
       case 'openalex':
-        return getOpenAlexData(options);
+        return getOpenAlexPublications(options);
       default:
         // eslint-disable-next-line no-console
         console.error(`Datasoure : ${datasource.label} is badly formatted and shoud be one of BSO or OpenAlex`);

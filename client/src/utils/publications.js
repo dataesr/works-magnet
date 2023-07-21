@@ -39,7 +39,7 @@ const getBsoQuery = (options) => {
   return query;
 };
 
-const getBsoData = (options) => {
+const getBsoPublications = (options) => {
   const params = {
     method: 'POST',
     body: JSON.stringify(getBsoQuery(options)),
@@ -93,7 +93,7 @@ const getIdentifierLink = (type, identifier) => {
   return (prefix !== null) ? `${prefix}${identifier}` : false;
 };
 
-const getOpenAlexData = (options, page = '1', previousResponse = []) => {
+const getOpenAlexPublications = (options, page = '1', previousResponse = []) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (options?.startYear && options?.endYear) {
@@ -119,7 +119,7 @@ const getOpenAlexData = (options, page = '1', previousResponse = []) => {
       const results = [...previousResponse, ...response.results];
       const nextPage = Number(page) + 1;
       if (Number(response.results.length) === Number(VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexData(options, nextPage, results);
+        return getOpenAlexPublications(options, nextPage, results);
       }
       return ({ total: response.meta.count, results });
     })
@@ -152,9 +152,9 @@ const mergePublications = (publi1, publi2) => ({
 });
 
 export {
-  getBsoData,
+  getBsoPublications,
   getIdentifierLink,
   getIdentifierValue,
-  getOpenAlexData,
+  getOpenAlexPublications,
   mergePublications,
 };
