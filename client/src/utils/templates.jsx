@@ -8,12 +8,20 @@ import { getIdentifierLink } from './publications';
 const affiliationTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
 
 const affiliationsTemplate = (rowData) => {
-  if (rowData?.highlight?.['affiliations.name']) {
+  const highlights = [
+    ...(rowData?.highlight?.['affiliations.grid'] ?? []),
+    ...(rowData?.highlight?.['affiliations.name'] ?? []),
+    ...(rowData?.highlight?.['affiliations.rnsr'] ?? []),
+    ...(rowData?.highlight?.['affiliations.ror'] ?? []),
+    ...(rowData?.highlight?.['affiliations.structId'] ?? []),
+    ...(rowData?.highlight?.['affiliations.viaf'] ?? []),
+  ];
+  if (highlights.length > 0) {
     return (
       <ul>
-        {rowData.highlight['affiliations.name'].map((affiliation, index) => (
-          <li key={`affiliation-${index}`}>
-            <span dangerouslySetInnerHTML={{ __html: affiliation }} />
+        {highlights.map((highlight, index) => (
+          <li key={`highlight-${index}`}>
+            <span dangerouslySetInnerHTML={{ __html: highlight }} />
           </li>
         ))}
       </ul>
@@ -60,18 +68,19 @@ const authorsTemplate = (rowData) => {
     return (
       <ul>
         {rowData?.highlight?.['authors.full_name'].slice(0, 3).map((author, index) => (
-          <li key={`author-${rowData.id}-${index}`}>
+          <li key={`author-${rowData.identifier}-${index}`}>
             <span dangerouslySetInnerHTML={{ __html: author }} />
           </li>
         ))}
       </ul>
     );
   }
+
   return (
     <>
-      <ul data-tooltip-id={`tooltip-author-${rowData.id}`}>
+      <ul data-tooltip-id={`tooltip-author-${rowData.identifier}`}>
         {rowData.authors.slice(0, 3).map((author, index) => (
-          <li key={`author-${rowData.id}-${index}`}>
+          <li key={`author-${rowData.identifier}-${index}`}>
             {author.full_name}
           </li>
         ))}
@@ -83,7 +92,7 @@ const authorsTemplate = (rowData) => {
           </li>
         )}
       </ul>
-      <Tooltip id={`tooltip-author-${rowData.id}`} place="right">
+      <Tooltip id={`tooltip-author-${rowData.identifier}`} place="right">
         <ul>
           {rowData.authors.map((author) => (
             <li key={`author-all-${author.full_name}`}>

@@ -10,20 +10,21 @@ const VITE_OPENALEX_MAX_PAGE = Math.floor(VITE_OPENALEX_SIZE / VITE_OPENALEX_PER
 
 const getBsoQuery = (options) => {
   const query = { size: VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
+  const affiliationsFields = ['affiliations.grid', 'affiliations.name', 'affiliations.rnsr', 'affiliations.ror', 'affiliations.structId', 'affiliations.viaf'];
   options.affiliations.forEach((affiliation) => {
-    query.query.bool.should.push({ match: { 'affiliations.name': { query: `"${affiliation}"`, operator: 'and' } } });
+    query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
   });
   options.authors.forEach((author) => {
     query.query.bool.should.push({ match: { 'authors.full_name': { query: `"${author}"`, operator: 'and' } } });
   });
   options.affiliationsToExclude.forEach((affiliationToExclude) => {
-    query.query.bool.must_not.push({ match: { 'affiliations.name': { query: affiliationToExclude, operator: 'and' } } });
+    query.query.bool.must_not.push({ multi_match: { fields: affiliationsFields, query: affiliationToExclude, operator: 'and' } });
   });
   options.authorsToExclude.forEach((authorToExclude) => {
     query.query.bool.must_not.push({ match: { 'authors.full_name': { query: authorToExclude, operator: 'and' } } });
   });
   options.affiliationsToInclude.forEach((affiliationToInclude) => {
-    query.query.bool.must.push({ match: { 'affiliations.name': { query: `"${affiliationToInclude}"`, operator: 'and' } } });
+    query.query.bool.must.push({ multi_match: { fields: affiliationsFields, query: `"${affiliationToInclude}"`, operator: 'and' } });
   });
   if (options?.startYear && options?.endYear) {
     query.query.bool.filter.push({ range: { year: { gte: options.startYear, lte: options.endYear } } });
@@ -32,7 +33,15 @@ const getBsoQuery = (options) => {
   } else if (options?.endYear) {
     query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
   }
-  query.highlight = { fields: { 'affiliations.name': {}, 'authors.full_name': {} } };
+  query.highlight = { fields: {
+    'affiliations.grid': {},
+    'affiliations.name': {},
+    'affiliations.rnsr': {},
+    'affiliations.ror': {},
+    'affiliations.structId': {},
+    'affiliations.viaf': {},
+    'authors.full_name': {},
+  } };
   query.query.bool.filter.push({ terms: { 'external_ids.id_type': options.dataIdentifiers } });
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'title', 'year'];
