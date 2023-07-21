@@ -16,23 +16,26 @@ const options = [
 ];
 
 export default function ActionsView({
-  data,
-  setActions,
+  setSortedPublications,
+  sortedPublications,
+  type,
 }) {
   const changePublicationsActions = (e, rowData) => {
     const { value } = e.target;
     if (value === rowData.action) return;
+    const newActions = [...sortedPublications];
+
     if (value === 'sort') {
-      const newData = data.filter((row) => row.identifier !== rowData.identifier);
-      setActions(newData);
+      const newData = newActions.filter((row) => row.identifier !== rowData.identifier);
+      setSortedPublications(newData);
     } else {
-      const newData = data.map((row) => {
+      const newData = newActions.map((row) => {
         if (row.identifier === rowData.identifier) {
           return { ...row, action: value };
         }
         return row;
       });
-      setActions(newData);
+      setSortedPublications(newData);
     }
   };
 
@@ -48,7 +51,7 @@ export default function ActionsView({
     <DataTable
       style={{ fontSize: '11px', lineHeight: '15px' }}
       size="small"
-      value={data}
+      value={sortedPublications.filter((action) => action.action === type)}
       paginator
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
@@ -70,15 +73,10 @@ export default function ActionsView({
 }
 
 ActionsView.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.string.isRequired,
-    doi: PropTypes.string,
-    hal_id: PropTypes.string,
-    id: PropTypes.string.isRequired,
-    identifier: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
+  setSortedPublications: PropTypes.func.isRequired,
+  sortedPublications: PropTypes.arrayOf(PropTypes.shape({
+    action: PropTypes.string,
+    identifier: PropTypes.string,
   })).isRequired,
-  setActions: PropTypes.func.isRequired,
+  type: PropTypes.string.isRequired,
 };

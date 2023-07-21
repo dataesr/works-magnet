@@ -5,10 +5,10 @@ import { useState } from 'react';
 import { export2json, importJson } from '../../utils/file';
 
 export default function Actions({
-  actions,
   options,
-  setActions,
   setOptions,
+  setSortedPublications,
+  sortedPublications,
 }) {
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
 
@@ -28,13 +28,13 @@ export default function Actions({
             accept=".json"
             hint="Select JSON file to restore from previous state"
             label="JSON file"
-            onChange={(e) => importJson(e, setActions, setOptions)}
+            onChange={(e) => importJson(e, setSortedPublications, setOptions)}
           />
         )}
         <Button
-          disabled={actions.length === 0}
+          disabled={sortedPublications.length === 0}
           icon="ri-save-line"
-          onClick={() => export2json(actions, options)}
+          onClick={() => export2json(sortedPublications, options)}
           size="sm"
           colors={['success']}
         >
@@ -46,11 +46,11 @@ export default function Actions({
 }
 
 Actions.propTypes = {
-  actions: PropTypes.arrayOf(PropTypes.shape({
+  options: PropTypes.object.isRequired,
+  setSortedPublications: PropTypes.func.isRequired,
+  setOptions: PropTypes.func.isRequired,
+  sortedPublications: PropTypes.arrayOf(PropTypes.shape({
     action: PropTypes.string,
     identifier: PropTypes.string,
   })).isRequired,
-  options: PropTypes.object.isRequired,
-  setActions: PropTypes.func.isRequired,
-  setOptions: PropTypes.func.isRequired,
 };

@@ -7,7 +7,7 @@ import { useState } from 'react';
 import Actions from './actions';
 import Filters from './filters';
 import Metrics from './metrics';
-import ActionsView from './views/actions';
+import SortedView from './views/sorted';
 import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
 import { PageSpinner } from '../../components/spinner';
@@ -68,7 +68,7 @@ const getData = async (options) => {
 };
 
 export default function Home() {
-  const [actions, setActions] = useState([]);
+  const [sortedPublications, setSortedPublications] = useState([]);
   const [options, setOptions] = useState({});
   const [selectedAffiliation, setSelectedAffiliation] = useState({});
   const [selectedPublications, setSelectedPublications] = useState([]);
@@ -92,11 +92,11 @@ export default function Home() {
     publicationsDataTable = data.results
       .map((publication) => ({
         ...publication,
-        action: actions.find((action) => action.id === publication.id)?.action || 'sort',
+        action: sortedPublications.find((action) => action.id === publication.id)?.action || 'sort',
       }))
       .filter((item) => {
         if (viewAllPublications) { return true; }
-        return !actions.map((action) => action.id).includes(item.id);
+        return !sortedPublications.map((action) => action.id).includes(item.id);
       });
   }
 
@@ -146,21 +146,21 @@ export default function Home() {
     }));
 
   const tagLines = (lines, action) => {
-    const newLines = lines.filter((line) => !actions.map((item) => item.id).includes(line.id));
+    const newLines = lines.filter((line) => !sortedPublications.map((item) => item.id).includes(line.id));
     const newActions = newLines.map((line) => ({ ...line, action }));
-    setActions([...actions, ...newActions]);
+    setSortedPublications([...sortedPublications, ...newActions]);
   };
 
   const tagAffiliation = (affiliation, action) => {
     // list of keeped publications from actions
-    const keepedPublications = actions.filter((item) => item.action === 'keep').map((item) => item.id);
+    const keepedPublications = sortedPublications.filter((item) => item.action === 'keep').map((item) => item.id);
     // if exclude, don't add keeped publications
     const publicationToAdd = affiliation.publications.filter((publication) => (action === 'exclude' ? !keepedPublications.includes(publication.id) : true));
 
     // if already add, don't add again
-    const newActions = publicationToAdd.filter((publication) => !actions.map((item) => item.id).includes(publication.id)).map((publication) => ({ ...publication, action }));
+    const newActions = publicationToAdd.filter((publication) => !sortedPublications.map((item) => item.id).includes(publication.id)).map((publication) => ({ ...publication, action }));
 
-    setActions([...actions, ...newActions]);
+    setSortedPublications([...sortedPublications, ...newActions]);
   };
 
   const checkSelectedAffiliation = () => {
@@ -196,9 +196,9 @@ export default function Home() {
 
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
-          actions={actions}
+          sortedPublications={sortedPublications}
           options={options}
-          setActions={setActions}
+          setSortedPublications={setSortedPublications}
           setOptions={setOptions}
         />
         <Tabs defaultActiveTab={1}>
@@ -280,16 +280,18 @@ export default function Home() {
               )
             }
           </Tab>
-          <Tab label={`Publications to keep (${actions.filter((action) => action.action === 'keep').length})`}>
-            <ActionsView
-              data={actions.filter((action) => action.action === 'keep')}
-              setActions={setActions}
+          <Tab label={`Publications to keep (${sortedPublications.filter((action) => action.action === 'keep').length})`}>
+            <SortedView
+              setSortedPublications={setSortedPublications}
+              sortedPublications={sortedPublications}
+              type="keep"
             />
           </Tab>
-          <Tab label={`Publications to exclude (${actions.filter((action) => action.action === 'exclude').length})`}>
-            <ActionsView
-              data={actions.filter((action) => action.action === 'exclude')}
-              setActions={setActions}
+          <Tab label={`Publications to exclude (${sortedPublications.filter((action) => action.action === 'exclude').length})`}>
+            <SortedView
+              setSortedPublications={setSortedPublications}
+              sortedPublications={sortedPublications}
+              type="exclude"
             />
           </Tab>
         </Tabs>
