@@ -4,15 +4,16 @@ import {
   CheckboxGroup,
   Col,
   Row,
-  TextInput,
+  Select,
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
 import TagInput from '../../components/tag-input';
 
-const sources = [{ key: 'bso', label: 'BSO' }, { key: 'openalex', label: 'OpenAlex' }];
 const identifiers = ['crossref', 'hal_id', 'datacite'];
+const sources = [{ key: 'bso', label: 'BSO' }, { key: 'openalex', label: 'OpenAlex' }];
+const years = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'].map((year) => ({ label: year, value: year }));
 
 export default function Filters({ options, sendQuery }) {
   const [affiliations, setAffiliations] = useState(['Ingénierie-Biologie-Santé Lorraine', 'UMS 2008', 'IBSLOR', 'UMS2008', 'UMS CNRS 2008']);
@@ -22,9 +23,9 @@ export default function Filters({ options, sendQuery }) {
   const [authorsToExclude, setAuthorsToExclude] = useState([]);
   const [dataIdentifiers, setDataIdentifiers] = useState(identifiers);
   const [datasources, setDatasources] = useState(sources);
-  const [endYear, setEndYear] = useState(2021);
+  const [endYear, setEndYear] = useState('2021');
   const [moreOptions, setMoreOptions] = useState(false);
-  const [startYear, setStartYear] = useState(2021);
+  const [startYear, setStartYear] = useState('2021');
 
   useEffect(() => {
     if (options?.restoreFromFile ?? false) {
@@ -131,10 +132,10 @@ export default function Filters({ options, sendQuery }) {
         <Col n="5">
           <Row gutters>
             <Col>
-              <TextInput label="Start year" onChange={(e) => setStartYear(e.target.value)} value={startYear} />
+              <Select label="Start year" options={years} selected={startYear} onChange={(e) => setStartYear(e.target.value)} />
             </Col>
             <Col>
-              <TextInput label="End year" onChange={(e) => setEndYear(e.target.value)} value={endYear} />
+              <Select label="End year" options={years} selected={endYear} onChange={(e) => setEndYear(e.target.value)} />
             </Col>
           </Row>
         </Col>
