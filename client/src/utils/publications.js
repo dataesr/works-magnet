@@ -112,15 +112,20 @@ const getIdentifierLink = (type, identifier) => {
     prefix = 'https://openalex.org/';
     break;
   case 'pmcid':
+    prefix = 'https://www.ncbi.nlm.nih.gov/pmc/articles/';
+    break;
   case 'pmid':
-    prefix = '';
+    prefix = 'https://pubmed.ncbi.nlm.nih.gov/';
     break;
   default:
   }
   return (prefix !== null) ? `${prefix}${identifier}` : false;
 };
 
-const getIdentifierValue = (identifier) => (identifier ? identifier.replace('https://doi.org/', '').replace('https://openalex.org/', '') : null);
+const getIdentifierValue = (identifier) => (identifier
+  ? identifier.replace('https://doi.org/', '').replace('https://openalex.org/', '').replace('https://pubmed.ncbi.nlm.nih.gov/', '').replace('https://www.ncbi.nlm.nih.gov/pmc/articles/', '')
+  : null
+);
 
 const getOpenAlexPublications = (options, page = '1', previousResponse = []) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
