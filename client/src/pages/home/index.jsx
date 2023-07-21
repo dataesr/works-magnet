@@ -180,7 +180,7 @@ export default function Home() {
           viewAllPublications={viewAllPublications}
         />
         <Tabs defaultActiveTab={1}>
-          <Tab label="Affiliations view">
+          <Tab label={`Affiliations view (${affiliationsDataTable.length})`}>
             {
               affiliationsDataTable && (
                 <AffiliationsView
