@@ -45,15 +45,15 @@ export default function PublicationsView({
 PublicationsView.propTypes = {
   publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
-    allIds: PropTypes.array.isRequired,
-    authors: PropTypes.array.isRequired,
+    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     identifier: PropTypes.string.isRequired,
   })).isRequired,
   setSelectedPublications: PropTypes.func.isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.array.isRequired,
+    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
   })).isRequired,
