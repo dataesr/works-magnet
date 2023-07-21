@@ -55,11 +55,11 @@ const getData = async (options) => {
     data.total.bso = count;
   }
 
-  // Deduplicate publications by DOI
+  // Deduplicate publications by DOI or by hal_id
   data.total.all = data.results.length;
   const deduplicatedPublications = {};
   data.results.forEach((publication) => {
-    const id = publication?.doi ?? publication.id;
+    const id = publication?.doi ?? publication?.primary_location?.landing_page_url?.split('/')?.pop() ?? publication.id;
     if (!Object.keys(deduplicatedPublications).includes(id)) {
       deduplicatedPublications[id] = publication;
     } else {
