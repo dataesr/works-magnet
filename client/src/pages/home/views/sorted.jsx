@@ -62,13 +62,13 @@ export default function ActionsView({
       scrollable
       stripedRows
     >
-      <Column body={actionsTemplate} showFilterMenu={false} field="action" header="Actions" style={{ minWidth: '130px' }} />
-      <Column field="allIds" header="Identifiers" body={allIdsTemplate} />
+      <Column field="action" header="Actions" body={actionsTemplate} showFilterMenu={false} style={{ minWidth: '130px' }} />
+      <Column field="allIdsHtml" header="Identifiers" body={allIdsTemplate} filter filterMatchMode="contains" />
       <Column field="datasource" header="Source" style={{ minWidth: '10px' }} />
       <Column field="type" header="Type" style={{ minWidth: '10px' }} />
-      <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '500px' }} />
-      <Column filter filterMatchMode="contains" body={authorsTemplate} field="authorsHtml" header="Authors" style={{ minWidth: '10px' }} />
-      <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
+      <Column field="affiliations" header="Affiliations" body={affiliationsTemplate} filter filterMatchMode="contains" style={{ minWidth: '500px' }} />
+      <Column field="authorsHtml" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" style={{ minWidth: '10px' }} />
+      <Column field="title" header="Title" filter filterMatchMode="contains" showFilterMenu={false} style={{ minWidth: '10px' }} />
     </DataTable>
   );
 }

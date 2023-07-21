@@ -18,6 +18,7 @@ import {
   mergePublications,
 } from '../../utils/publications';
 import {
+  getAllIdsHtmlField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 } from '../../utils/templates';
@@ -98,6 +99,7 @@ export default function Home() {
       .map((publication) => ({
         ...publication,
         action: sortedPublications.find((action) => action.id === publication.id)?.action || 'sort',
+        allIdsHtml: getAllIdsHtmlField(publication),
         authorsHtml: getAuthorsHtmlField(publication),
         authorsTooltip: getAuthorsTooltipField(publication),
       }))

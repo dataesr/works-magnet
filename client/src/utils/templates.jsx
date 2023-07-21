@@ -44,24 +44,7 @@ const affiliationsTemplate = (rowData) => {
   );
 };
 
-const allIdsTemplate = (rowData) => (
-  <ul>
-    {rowData.allIds.map((id) => (
-      <li key={id.id_value}>
-        {id.id_type}
-        :
-        {' '}
-        {getIdentifierLink(id.id_type, id.id_value)
-          ? (
-            <Link target="_blank" href={getIdentifierLink(id.id_type, id.id_value)}>
-              {id.id_value}
-            </Link>
-          )
-          : <span>{id.id_value}</span>}
-      </li>
-    ))}
-  </ul>
-);
+const allIdsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.allIdsHtml }} />;
 
 const authorsTemplate = (rowData) => (
   <>
@@ -71,6 +54,26 @@ const authorsTemplate = (rowData) => (
     </Tooltip>
   </>
 );
+
+const getAllIdsHtmlField = (rowData) => {
+  let html = '<ul>';
+  rowData.allIds.forEach((id) => {
+    html += `<li key="${id.id_value}">`;
+    html += id.id_type;
+    html += ': ';
+    const identifierLink = getIdentifierLink(id.id_type, id.id_value);
+    if (identifierLink) {
+      html += `<a target="_blank" href="${identifierLink}">`;
+      html += id.id_value;
+      html += '</a>';
+    } else {
+      html += `<span>${id.id_value}</span>`;
+    }
+    html += '</li>';
+  });
+  html += '</ul>';
+  return html;
+};
 
 const getAuthorsHtmlField = (rowData) => {
   if (rowData?.highlight?.['authors.full_name']) {
@@ -126,6 +129,7 @@ export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  getAllIdsHtmlField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 };
