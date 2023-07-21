@@ -136,7 +136,8 @@ export default function Home() {
     }));
 
   const tagLines = (lines, action) => {
-    const newActions = lines.map((line) => ({ ...line, action }));
+    const newLines = lines.filter((line) => !actions.map((item) => item.id).includes(line.id));
+    const newActions = newLines.map((line) => ({ ...line, action }));
     setActions([...actions, ...newActions]);
   };
 
