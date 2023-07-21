@@ -71,7 +71,7 @@ export default function ActionsView({
 
 ActionsView.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.string.isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     doi: PropTypes.string,

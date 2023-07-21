@@ -3,7 +3,7 @@ import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 
 import {
-  affiliationsTemplate,
+  affiliationTemplate,
 } from '../../../utils/fields';
 
 export default function AffiliationsView({
@@ -32,7 +32,7 @@ export default function AffiliationsView({
     >
       <Column selectionMode="single" headerStyle={{ width: '3rem' }} />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
-      <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliation" header="Affiliation" style={{ minWidth: '10px' }} />
+      <Column filter filterMatchMode="contains" body={affiliationTemplate} field="affiliation" header="Affiliation" style={{ minWidth: '10px' }} />
       <Column showFilterMenu={false} field="publications" body={(rowData) => rowData.publications.length} header="Number of publications" style={{ minWidth: '10px' }} />
     </DataTable>
   );

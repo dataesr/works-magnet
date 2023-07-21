@@ -3,8 +3,27 @@ import { Tooltip } from 'react-tooltip';
 
 import { getIdentifierLink } from './publications';
 
-/* eslint-disable react/no-danger */
-const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
+// eslint-disable-next-line react/no-danger
+const affiliationTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
+
+const affiliationsTemplate = (rowData) => {
+  if (rowData?.highlight?.['affiliations.name']) {
+    let list = '<ul>';
+    list += rowData.highlight['affiliations.name'].map((affiliation, index) => `<li key="affiliation-${index}">${affiliation}</li>`).join('');
+    list += '</ul>';
+    return list;
+  }
+
+  let affiliations = (rowData?.affiliations ?? [])
+    .map((affiliation) => affiliation.name)
+    .filter((affiliation) => affiliation.length > 0)
+    .flat();
+  affiliations = [...new Set(affiliations)];
+  let list = '<ul>';
+  list += affiliations.map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
+  list += '</ul>';
+  return list;
+};
 
 const allIdsTemplate = (rowData) => (
   <ul>
@@ -27,10 +46,11 @@ const allIdsTemplate = (rowData) => (
 
 const authorsTemplate = (rowData) => (
   <>
-    <ul data-tooltip-id={rowData.id}>
+    {/* {if (item?.highlight?.['authors.full_name']) return item.highlight['authors.full_name'].join(';');} */}
+    <ul data-tooltip-id={`tooltip-author-${rowData.id}`}>
       {rowData.authors.slice(0, 3).map((author, index) => (
         // eslint-disable-next-line react/no-array-index-key
-        <li key={`${rowData.id}_${index}`}>
+        <li key={`author-${rowData.id}-${index}`}>
           {author.full_name}
         </li>
       ))}
@@ -42,7 +62,7 @@ const authorsTemplate = (rowData) => (
         </li>
       )}
     </ul>
-    <Tooltip id={rowData.id} place="right">
+    <Tooltip id={`tooltip-author-${rowData.id}`} place="right">
       <ul>
         {rowData.authors.map((author) => (
           <li key={`author-all-${author.full_name}`}>
@@ -54,43 +74,9 @@ const authorsTemplate = (rowData) => (
   </>
 );
 
-const getAffiliationsField = (item) => {
-  if (item?.highlight?.['affiliations.name']) {
-    let list = '<ul>';
-    list += item.highlight['affiliations.name'].map((affiliation, index) => `<li key="affiliation-${index}">${affiliation}</li>`).join('');
-    list += '</ul>';
-    return list;
-  }
-
-  let affiliations = (item?.affiliations ?? [])
-    .map((affiliation) => affiliation.name)
-    .filter((affiliation) => affiliation.length > 0)
-    .flat();
-  affiliations = [...new Set(affiliations)];
-  let list = '<ul>';
-  list += affiliations.map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
-  list += '</ul>';
-  return list;
-};
-
-const getAuthorsField = (item) => {
-  if (item?.highlight?.['authors.full_name']) return item.highlight['authors.full_name'].join(';');
-
-  const authors = (item?.authors ?? []);
-  switch (authors.length) {
-  case 0:
-    return '';
-  case 1:
-    return authors[0].full_name;
-  default:
-    return `${authors[0].full_name} et al. (${authors.length - 1})`;
-  }
-};
-
 export {
+  affiliationTemplate,
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
-  getAffiliationsField,
-  getAuthorsField,
 };

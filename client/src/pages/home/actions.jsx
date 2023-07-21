@@ -101,7 +101,7 @@ Actions.propTypes = {
     publications: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.string.isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     doi: PropTypes.string.isRequired,

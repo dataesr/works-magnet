@@ -60,10 +60,11 @@ const getBsoData = (options) => {
         ...result._source,
         // Filter ids by uniq values
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
-        authors: result?._source?.authors ?? [],
+        authors: result._source?.authors ?? [],
         datasource: 'bso',
+        genre: result._source?.genre_raw ?? result._source.genre,
         highlight: result.highlight,
-        identifier: result?._source?.doi ?? result?._source?.hal_id ?? result._source.id,
+        identifier: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
       })),
     }));
 };

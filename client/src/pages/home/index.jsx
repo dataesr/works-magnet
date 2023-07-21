@@ -1,4 +1,3 @@
-/* eslint-disable no-plusplus */
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
@@ -11,7 +10,6 @@ import ActionsView from './views/actions';
 import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
 import { PageSpinner } from '../../components/spinner';
-import { getAffiliationsField } from '../../utils/fields';
 import {
   getBsoData,
   getOpenAlexData,
@@ -82,19 +80,9 @@ export default function Home() {
   let publicationsDataTable = [];
   if (data) {
     publicationsDataTable = data.results
-      .map((item) => ({
-        action: actions.find((action) => action.id === item.id)?.action || undefined,
-        affiliations: getAffiliationsField(item),
-        allIds: item.allIds,
-        authors: item.authors,
-        datasource: item.datasource,
-        doi: item.doi,
-        hal_id: item.hal_id,
-        id: item.id,
-        identifier: item.identifier,
-        title: item.title,
-        genre: item.genre_raw || item.genre,
-        year: item.year,
+      .map((publication) => ({
+        ...publication,
+        action: actions.find((action) => action.id === publication.id)?.action || 'sort',
       }))
       .filter((item) => {
         if (viewAllPublications) { return true; }
@@ -110,28 +98,28 @@ export default function Home() {
       switch (publication.datasource) {
         case 'bso':
           (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
-            const affiliatioName = normalizedName(affiliation);
-            if (!Object.keys(dataGroupedByAffiliation).includes(affiliatioName)) {
-              dataGroupedByAffiliation[affiliatioName] = {
+            const affiliationName = normalizedName(affiliation);
+            if (!Object.keys(dataGroupedByAffiliation).includes(affiliationName)) {
+              dataGroupedByAffiliation[affiliationName] = {
                 datasource: 'bso',
                 name: affiliation,
                 publications: [],
               };
             }
-            dataGroupedByAffiliation[affiliatioName].publications.push(publication);
+            dataGroupedByAffiliation[affiliationName].publications.push(publication);
           });
           break;
         case 'openalex':
           (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
-            const affiliatioName = normalizedName(affiliation);
-            if (!Object.keys(dataGroupedByAffiliation).includes(affiliatioName)) {
+            const affiliationName = normalizedName(affiliation);
+            if (!Object.keys(dataGroupedByAffiliation).includes(affiliationName)) {
               dataGroupedByAffiliation[normalizedName(affiliation)] = {
                 datasource: 'openalex',
                 name: affiliation,
                 publications: [],
               };
             }
-            dataGroupedByAffiliation[affiliatioName].publications.push(publication);
+            dataGroupedByAffiliation[affiliationName].publications.push(publication);
           }));
           break;
         default:
@@ -142,11 +130,7 @@ export default function Home() {
     .sort((a, b) => b.publications.length - a.publications.length)
     .map((affiliation, index) => ({
       affiliations: affiliation.name,
-      publications: affiliation.publications.map((publication) => (
-        {
-          ...publication,
-          affiliations: getAffiliationsField(publication),
-        })),
+      publications: affiliation.publications,
       id: index,
       datasource: affiliation.datasource,
     }));

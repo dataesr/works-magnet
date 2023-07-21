@@ -44,7 +44,7 @@ export default function PublicationsView({
 
 PublicationsView.propTypes = {
   publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.string.isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.array.isRequired,
     authors: PropTypes.array.isRequired,
     datasource: PropTypes.string.isRequired,
@@ -52,7 +52,7 @@ PublicationsView.propTypes = {
   })).isRequired,
   setSelectedPublications: PropTypes.func.isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.string.isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.array.isRequired,
     datasource: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
