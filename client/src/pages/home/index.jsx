@@ -17,6 +17,10 @@ import {
   getOpenAlexPublications,
   mergePublications,
 } from '../../utils/publications';
+import {
+  getAuthorsHtmlField,
+  getAuthorsTooltipField,
+} from '../../utils/templates';
 
 import './index.scss';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -94,6 +98,8 @@ export default function Home() {
       .map((publication) => ({
         ...publication,
         action: sortedPublications.find((action) => action.id === publication.id)?.action || 'sort',
+        authorsHtml: getAuthorsHtmlField(publication),
+        authorsTooltip: getAuthorsTooltipField(publication),
       }))
       .filter((item) => {
         if (viewAllPublications) { return true; }

@@ -63,46 +63,62 @@ const allIdsTemplate = (rowData) => (
   </ul>
 );
 
-const authorsTemplate = (rowData) => {
-  if (rowData?.highlight?.['authors.full_name']) {
-    return (
-      <ul>
-        {rowData?.highlight?.['authors.full_name'].slice(0, 3).map((author, index) => (
-          <li key={`author-${rowData.identifier}-${index}`}>
-            <span dangerouslySetInnerHTML={{ __html: author }} />
-          </li>
-        ))}
-      </ul>
-    );
-  }
+const authorsTemplate = (rowData) => (
+  <>
+    <span dangerouslySetInnerHTML={{ __html: rowData.authorsHtml }} />
+    <Tooltip id={`tooltip-author-${rowData.identifier}`} place="right">
+      <span dangerouslySetInnerHTML={{ __html: rowData.authorsTooltip }} />
+    </Tooltip>
+  </>
+);
 
-  return (
-    <>
-      <ul data-tooltip-id={`tooltip-author-${rowData.identifier}`}>
-        {rowData.authors.slice(0, 3).map((author, index) => (
-          <li key={`author-${rowData.identifier}-${index}`}>
-            {author.full_name}
-          </li>
-        ))}
-        {(rowData.authors.length > 3) && (
-          <li>
-            et al. (
-            {rowData.authors.length - 3}
-            )
-          </li>
-        )}
-      </ul>
-      <Tooltip id={`tooltip-author-${rowData.identifier}`} place="right">
-        <ul>
-          {rowData.authors.map((author) => (
-            <li key={`author-all-${author.full_name}`}>
-              {author.full_name}
-            </li>
-          ))}
-        </ul>
-      </Tooltip>
-    </>
-  );
+const getAuthorsHtmlField = (rowData) => {
+  if (rowData?.highlight?.['authors.full_name']) {
+    const authors = rowData.highlight['authors.full_name'];
+    let html = `<ul data-tooltip-id="tooltip-author-${rowData.identifier}">`;
+    authors.slice(0, 3).forEach((author, index) => {
+      html += `<li key="author-${rowData.identifier}-${index}">`;
+      html += author;
+      html += '</li>';
+    });
+    if (authors.length > 3) {
+      html += `<li>et al. (${authors.length - 3})</li>`;
+    }
+    html += '</ul>';
+    return html;
+  }
+  let html = `<ul data-tooltip-id="tooltip-author-${rowData.identifier}">`;
+  rowData.authors.slice(0, 3).forEach((author, index) => {
+    html += `<li key="author-${rowData.identifier}-${index}">`;
+    html += author.full_name;
+    html += '</li>';
+  });
+  if (rowData.authors.length > 3) {
+    html += `<li>et al. (${rowData.authors.length - 3})</li>`;
+  }
+  html += '</ul>';
+  return html;
+};
+
+const getAuthorsTooltipField = (rowData) => {
+  if (rowData?.highlight?.['authors.full_name']) {
+    let html = '<ul>';
+    rowData.highlight['authors.full_name'].forEach((author, index) => {
+      html += `<li key="tooltip-author-${rowData.identifier}-${index}">`;
+      html += author;
+      html += '</li>';
+    });
+    html += '</ul>';
+    return html;
+  }
+  let html = '<ul>';
+  rowData.authors.forEach((author, index) => {
+    html += `<li key="tooltip-author-${rowData.identifier}-${index}">`;
+    html += author.full_name;
+    html += '</li>';
+  });
+  html += '</ul>';
+  return html;
 };
 
 export {
@@ -110,4 +126,6 @@ export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  getAuthorsHtmlField,
+  getAuthorsTooltipField,
 };

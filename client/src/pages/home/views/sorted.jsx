@@ -67,7 +67,7 @@ export default function ActionsView({
       <Column field="datasource" header="Source" style={{ minWidth: '10px' }} />
       <Column field="type" header="Type" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '500px' }} />
-      <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
+      <Column filter filterMatchMode="contains" body={authorsTemplate} field="authorsHtml" header="Authors" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
     </DataTable>
   );
