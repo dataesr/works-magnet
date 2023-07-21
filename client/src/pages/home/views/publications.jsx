@@ -35,6 +35,7 @@ export default function PublicationsView({
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="allIds" header="Identifiers" body={allIdsTemplate} />
       <Column field="datasource" header="Source" style={{ minWidth: '10px' }} />
+      <Column field="type" header="Type" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" body={affiliationsTemplate} field="affiliations" header="Affiliations" style={{ minWidth: '500px' }} />
       <Column filter filterMatchMode="contains" body={authorsTemplate} field="authors" header="Authors" style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" showFilterMenu={false} field="title" header="Title" style={{ minWidth: '10px' }} />
@@ -49,6 +50,7 @@ PublicationsView.propTypes = {
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     identifier: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
   })).isRequired,
   setSelectedPublications: PropTypes.func.isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
@@ -56,5 +58,6 @@ PublicationsView.propTypes = {
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
   })).isRequired,
 };

@@ -91,9 +91,9 @@ const getBsoPublications = (options) => {
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: result._source?.authors ?? [],
         datasource: 'bso',
-        genre: result._source?.genre_raw ?? result._source.genre,
         highlight: result.highlight,
         identifier: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
+        type: result._source?.genre_raw ?? result._source.genre,
       })),
     }));
 };
@@ -157,14 +157,14 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
       total: response.total,
       results: response.results.map((item) => ({
         affiliations: item?.authorships?.map((author) => ({ name: author.raw_affiliation_strings })) ?? item.affiliations,
+        allIds: item?.ids ? Object.keys(item.ids).map((key) => ({ id_type: key, id_value: getIdentifierValue(item.ids[key]) })) : item.allIds,
         authors: item?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? item.authors,
         datasource: 'openalex',
         doi: getIdentifierValue(item?.doi),
-        genre: item?.type ?? item.genre,
         id: item.id,
         identifier: item?.doi ? getIdentifierValue(item.doi) : item.id,
-        allIds: item?.ids ? Object.keys(item.ids).map((key) => ({ id_type: key, id_value: getIdentifierValue(item.ids[key]) })) : item.allIds,
         title: item?.display_name ?? item.title,
+        type: item.type,
         year: item?.publication_year ?? item.year,
       })),
     }));
