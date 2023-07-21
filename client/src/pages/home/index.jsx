@@ -152,7 +152,14 @@ export default function Home() {
   };
 
   const tagAffiliation = (affiliation, action) => {
-    const newActions = affiliation.publications.map((publication) => ({ ...publication, action }));
+    // list of keeped publications from actions
+    const keepedPublications = actions.filter((item) => item.action === 'keep').map((item) => item.id);
+    // if exclude, don't add keeped publications
+    const publicationToAdd = affiliation.publications.filter((publication) => (action === 'exclude' ? !keepedPublications.includes(publication.id) : true));
+
+    // if already add, don't add again
+    const newActions = publicationToAdd.filter((publication) => !actions.map((item) => item.id).includes(publication.id)).map((publication) => ({ ...publication, action }));
+
     setActions([...actions, ...newActions]);
   };
 
