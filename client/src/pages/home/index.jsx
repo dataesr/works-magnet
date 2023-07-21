@@ -73,6 +73,7 @@ export default function Home() {
   const [selectedAffiliation, setSelectedAffiliation] = useState({});
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [viewAllPublications, setViewAllPublications] = useState(false);
+  const [viewAllAffiliations, setViewAllAffiliations] = useState(false);
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -136,6 +137,7 @@ export default function Home() {
       }
     });
   }
+
   const affiliationsDataTable = Object.values(dataGroupedByAffiliation)
     .sort((a, b) => b.publications.length - a.publications.length)
     .map((affiliation, index) => ({
@@ -143,7 +145,16 @@ export default function Home() {
       publications: affiliation.publications,
       id: index,
       datasource: affiliation.datasource,
-    }));
+    })).filter((affiliation) => {
+      if (viewAllAffiliations) { return true; }
+      const allPublicationsIds = affiliation.publications.map((publication) => publication.identifier);
+      const allPublicationsIdsFromSelectedPublications = sortedPublications.map((publication) => publication.identifier);
+      // if all publications are already selected, don't display
+      if (allPublicationsIds.every((id) => allPublicationsIdsFromSelectedPublications.includes(id))) {
+        return false;
+      }
+      return true;
+    });
 
   const tagLines = (lines, action) => {
     const newLines = lines.filter((line) => !sortedPublications.map((item) => item.id).includes(line.id));
@@ -207,6 +218,14 @@ export default function Home() {
               affiliationsDataTable && (
                 <>
                   <Row>
+                    <Col>
+                      <Checkbox
+                        checked={viewAllAffiliations}
+                        label="View all affiliations"
+                        onChange={() => setViewAllAffiliations(!viewAllAffiliations)}
+                        size="sm"
+                      />
+                    </Col>
                     <Col className="text-right">
                       <Button
                         className="fr-mr-1w"
