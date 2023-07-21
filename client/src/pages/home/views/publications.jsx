@@ -36,7 +36,7 @@ export default function PublicationsView({
       <Column field="allIdsHtml" header="Identifiers" body={allIdsTemplate} filter filterMatchMode="contains" />
       <Column field="datasource" header="Source" style={{ minWidth: '10px' }} />
       <Column field="type" header="Type" style={{ minWidth: '10px' }} />
-      <Column field="affiliations" header="Affiliations" body={affiliationsTemplate} filter filterMatchMode="contains" style={{ minWidth: '500px' }} />
+      <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} filter filterMatchMode="contains" style={{ minWidth: '500px' }} />
       <Column field="authorsHtml" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" style={{ minWidth: '10px' }} />
       <Column field="title" header="Title" filter filterMatchMode="contains" showFilterMenu={false} style={{ minWidth: '10px' }} />
     </DataTable>

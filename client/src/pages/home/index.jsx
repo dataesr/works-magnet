@@ -19,6 +19,7 @@ import {
 } from '../../utils/publications';
 import {
   getAllIdsHtmlField,
+  getAffiliationsHtmlField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 } from '../../utils/templates';
@@ -99,6 +100,7 @@ export default function Home() {
       .map((publication) => ({
         ...publication,
         action: sortedPublications.find((action) => action.id === publication.id)?.action || 'sort',
+        affiliationsHtml: getAffiliationsHtmlField(publication),
         allIdsHtml: getAllIdsHtmlField(publication),
         authorsHtml: getAuthorsHtmlField(publication),
         authorsTooltip: getAuthorsTooltipField(publication),

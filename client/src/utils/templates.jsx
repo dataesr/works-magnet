@@ -1,48 +1,12 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
-import { Link } from '@dataesr/react-dsfr';
 import { Tooltip } from 'react-tooltip';
 
 import { getIdentifierLink } from './publications';
 
 const affiliationTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
 
-const affiliationsTemplate = (rowData) => {
-  const highlights = [
-    ...(rowData?.highlight?.['affiliations.grid'] ?? []),
-    ...(rowData?.highlight?.['affiliations.name'] ?? []),
-    ...(rowData?.highlight?.['affiliations.rnsr'] ?? []),
-    ...(rowData?.highlight?.['affiliations.ror'] ?? []),
-    ...(rowData?.highlight?.['affiliations.structId'] ?? []),
-    ...(rowData?.highlight?.['affiliations.viaf'] ?? []),
-  ];
-  if (highlights.length > 0) {
-    return (
-      <ul>
-        {highlights.map((highlight, index) => (
-          <li key={`highlight-${index}`}>
-            <span dangerouslySetInnerHTML={{ __html: highlight }} />
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
-  let affiliations = (rowData?.affiliations ?? [])
-    .map((affiliation) => affiliation.name)
-    .filter((affiliation) => affiliation.length > 0)
-    .flat();
-  affiliations = [...new Set(affiliations)];
-  return (
-    <ul>
-      {affiliations.map((affiliation, index) => (
-        <li key={`affilition-${index}`}>
-          {affiliation}
-        </li>
-      ))}
-    </ul>
-  );
-};
+const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliationsHtml }} />;
 
 const allIdsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.allIdsHtml }} />;
 
@@ -54,6 +18,41 @@ const authorsTemplate = (rowData) => (
     </Tooltip>
   </>
 );
+
+const getAffiliationsHtmlField = (rowData) => {
+  const highlights = [
+    ...(rowData?.highlight?.['affiliations.grid'] ?? []),
+    ...(rowData?.highlight?.['affiliations.name'] ?? []),
+    ...(rowData?.highlight?.['affiliations.rnsr'] ?? []),
+    ...(rowData?.highlight?.['affiliations.ror'] ?? []),
+    ...(rowData?.highlight?.['affiliations.structId'] ?? []),
+    ...(rowData?.highlight?.['affiliations.viaf'] ?? []),
+  ];
+  if (highlights.length > 0) {
+    let html = '<ul>';
+    highlights.forEach((highlight, index) => {
+      html += `<li key="highlight-${index}">`;
+      html += highlight;
+      html += '</li>';
+    });
+    html += '</ul>';
+    return html;
+  }
+
+  let affiliations = (rowData?.affiliations ?? [])
+    .map((affiliation) => affiliation.name)
+    .filter((affiliation) => affiliation.length > 0)
+    .flat();
+  affiliations = [...new Set(affiliations)];
+  let html = '<ul>';
+  affiliations.forEach((affiliation, index) => {
+    html += `<li key=affilition-${index}>`;
+    html += affiliation;
+    html += '</li>';
+  });
+  html += '</ul>';
+  return html;
+};
 
 const getAllIdsHtmlField = (rowData) => {
   let html = '<ul>';
@@ -129,6 +128,7 @@ export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  getAffiliationsHtmlField,
   getAllIdsHtmlField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
