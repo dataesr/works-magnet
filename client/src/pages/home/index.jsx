@@ -62,7 +62,7 @@ const getData = async (options) => {
 export default function Home() {
   const [actions, setActions] = useState([]);
   const [options, setOptions] = useState({});
-  const [selectedAffiliations, setSelectedAffiliations] = useState({});
+  const [selectedAffiliation, setSelectedAffiliation] = useState({});
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [viewAllPublications, setViewAllPublications] = useState(false);
 
@@ -186,7 +186,7 @@ export default function Home() {
         <Actions
           actions={actions}
           options={options}
-          selectedAffiliations={selectedAffiliations}
+          selectedAffiliation={selectedAffiliation}
           selectedPublications={selectedPublications}
           setActions={setActions}
           setOptions={setOptions}
@@ -201,8 +201,8 @@ export default function Home() {
               affiliationsDataTable && (
                 <AffiliationsView
                   affiliationsDataTable={affiliationsDataTable}
-                  selectedAffiliations={selectedAffiliations}
-                  setSelectedAffiliations={setSelectedAffiliations}
+                  selectedAffiliation={selectedAffiliation}
+                  setSelectedAffiliation={setSelectedAffiliation}
                 />
               )
             }

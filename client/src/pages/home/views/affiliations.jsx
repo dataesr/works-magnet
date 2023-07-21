@@ -8,8 +8,8 @@ import {
 
 export default function AffiliationsView({
   affiliationsDataTable,
-  selectedAffiliations,
-  setSelectedAffiliations,
+  selectedAffiliation,
+  setSelectedAffiliation,
 }) {
   return (
     <DataTable
@@ -21,8 +21,8 @@ export default function AffiliationsView({
       rowsPerPageOptions={[25, 50, 100, 200]}
       dataKey="id"
       metaKeySelection
-      onSelectionChange={(e) => setSelectedAffiliations(e.value)}
-      selection={selectedAffiliations}
+      onSelectionChange={(e) => setSelectedAffiliation(e.value)}
+      selection={selectedAffiliation}
       scrollable
       size="small"
       stripedRows
@@ -42,9 +42,9 @@ AffiliationsView.propTypes = {
   affiliationsDataTable: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.string.isRequired,
   })).isRequired,
-  selectedAffiliations: PropTypes.shape({
+  selectedAffiliation: PropTypes.shape({
     affiliations: PropTypes.string,
     publications: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
-  setSelectedAffiliations: PropTypes.func.isRequired,
+  setSelectedAffiliation: PropTypes.func.isRequired,
 };

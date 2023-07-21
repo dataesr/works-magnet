@@ -7,7 +7,7 @@ import { export2json, importJson } from '../../utils/file';
 export default function Actions({
   actions,
   options,
-  selectedAffiliations,
+  selectedAffiliation,
   selectedPublications,
   setActions,
   setOptions,
@@ -31,18 +31,18 @@ export default function Actions({
       <Col className="text-right">
         <Button
           className="fr-mb-1w"
-          disabled={selectedAffiliations.length === 0}
+          disabled={selectedAffiliation.length === 0}
           icon="ri-check-fill"
-          onClick={() => { tagAffiliation(selectedAffiliations, 'keep'); }}
+          onClick={() => { tagAffiliation(selectedAffiliation, 'keep'); }}
           secondary
         >
           Keep all
         </Button>
         <Button
           className="fr-mb-1w"
-          disabled={selectedAffiliations.length === 0}
+          disabled={selectedAffiliation.length === 0}
           icon="ri-close-fill"
-          onClick={() => { tagAffiliation(selectedAffiliations, 'exclude'); }}
+          onClick={() => { tagAffiliation(selectedAffiliation, 'exclude'); }}
           secondary
         >
           Exclude all
@@ -96,7 +96,7 @@ export default function Actions({
 }
 
 Actions.propTypes = {
-  selectedAffiliations: PropTypes.shape({
+  selectedAffiliation: PropTypes.shape({
     affiliations: PropTypes.string,
     publications: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
