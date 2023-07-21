@@ -4,7 +4,7 @@ import { DataTable } from 'primereact/datatable';
 
 import {
   affiliationTemplate,
-} from '../../../utils/fields';
+} from '../../../utils/templates';
 
 export default function AffiliationsView({
   affiliationsDataTable,

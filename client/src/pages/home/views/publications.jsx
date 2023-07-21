@@ -6,7 +6,7 @@ import {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
-} from '../../../utils/fields';
+} from '../../../utils/templates';
 
 export default function PublicationsView({
   publicationsDataTable,

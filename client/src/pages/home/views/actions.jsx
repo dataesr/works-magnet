@@ -7,7 +7,7 @@ import {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
-} from '../../../utils/fields';
+} from '../../../utils/templates';
 
 const options = [
   { label: 'To keep', value: 'keep' },
