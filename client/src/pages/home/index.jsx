@@ -6,11 +6,13 @@ import { useState } from 'react';
 
 import Actions from './actions';
 import Filters from './filters';
+import Metrics from './metrics';
 import ActionsView from './views/actions';
 import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
 import { PageSpinner } from '../../components/spinner';
 import {
+  getBsoCount,
   getBsoPublications,
   getOpenAlexPublications,
   mergePublications,
@@ -19,7 +21,10 @@ import {
 import './index.scss';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
-import Metrics from './metrics';
+
+const {
+  VITE_BSO_MAX_SIZE,
+} = import.meta.env;
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
@@ -40,6 +45,11 @@ const getData = async (options) => {
     data.results = [...data.results, ...publication.results];
     data.total[publication.datasource] = publication.total;
   });
+  // Correct BSO total if maximum is reached
+  if (Number(data.total.bso) === Number(VITE_BSO_MAX_SIZE)) {
+    const { count } = await getBsoCount(options);
+    data.total.bso = count;
+  }
 
   // Deduplicate publications by DOI
   data.total.all = data.results.length;

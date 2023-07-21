@@ -39,6 +39,26 @@ const getBsoQuery = (options) => {
   return query;
 };
 
+const getBsoCount = (options) => {
+  const body = getBsoQuery(options);
+  delete body._source;
+  delete body.highlight;
+  delete body.size;
+  const params = {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: VITE_BSO_AUTH,
+    },
+  };
+  return fetch(`${VITE_BSO_URL}/_count`, params)
+    .then((response) => {
+      if (response.ok) return response.json();
+      return 'Oops... BSO API request did not work';
+    });
+};
+
 const getBsoPublications = (options) => {
   const params = {
     method: 'POST',
@@ -48,7 +68,7 @@ const getBsoPublications = (options) => {
       Authorization: VITE_BSO_AUTH,
     },
   };
-  return fetch(VITE_BSO_URL, params)
+  return fetch(`${VITE_BSO_URL}/_search`, params)
     .then((response) => {
       if (response.ok) return response.json();
       return 'Oops... BSO API request did not work';
@@ -68,8 +88,6 @@ const getBsoPublications = (options) => {
       })),
     }));
 };
-
-const getIdentifierValue = (identifier) => (identifier ? identifier.replace('https://doi.org/', '').replace('https://openalex.org/', '') : null);
 
 const getIdentifierLink = (type, identifier) => {
   let prefix = null;
@@ -92,6 +110,8 @@ const getIdentifierLink = (type, identifier) => {
   }
   return (prefix !== null) ? `${prefix}${identifier}` : false;
 };
+
+const getIdentifierValue = (identifier) => (identifier ? identifier.replace('https://doi.org/', '').replace('https://openalex.org/', '') : null);
 
 const getOpenAlexPublications = (options, page = '1', previousResponse = []) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
@@ -152,6 +172,7 @@ const mergePublications = (publi1, publi2) => ({
 });
 
 export {
+  getBsoCount,
   getBsoPublications,
   getIdentifierLink,
   getIdentifierValue,
