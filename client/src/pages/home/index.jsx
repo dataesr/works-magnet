@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
+import { Button, Checkbox, Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -145,6 +145,16 @@ export default function Home() {
     setActions([...actions, ...newActions]);
   };
 
+  const checkSelectedAffiliation = () => {
+    if (!selectedAffiliation) {
+      return true;
+    }
+    if (Object.keys(selectedAffiliation)?.length === 0 && selectedAffiliation?.constructor === Object) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <>
       <Container className="fr-my-5w" as="section" fluid>
@@ -170,35 +180,85 @@ export default function Home() {
         <Actions
           actions={actions}
           options={options}
-          selectedAffiliation={selectedAffiliation}
-          selectedPublications={selectedPublications}
           setActions={setActions}
           setOptions={setOptions}
-          setViewAllPublications={setViewAllPublications}
-          tagAffiliation={tagAffiliation}
-          tagLines={tagLines}
-          viewAllPublications={viewAllPublications}
         />
         <Tabs defaultActiveTab={1}>
           <Tab label={`Affiliations view (${affiliationsDataTable.length})`}>
             {
               affiliationsDataTable && (
-                <AffiliationsView
-                  affiliationsDataTable={affiliationsDataTable}
-                  selectedAffiliation={selectedAffiliation}
-                  setSelectedAffiliation={setSelectedAffiliation}
-                />
+                <>
+                  <Row>
+                    <Col className="text-right">
+                      <Button
+                        className="fr-mr-1w"
+                        disabled={checkSelectedAffiliation()}
+                        icon="ri-check-fill"
+                        onClick={() => { tagAffiliation(selectedAffiliation, 'keep'); }}
+                        size="sm"
+                      >
+                        Keep all
+                      </Button>
+                      <Button
+                        className="fr-mb-1w"
+                        disabled={checkSelectedAffiliation()}
+                        icon="ri-close-fill"
+                        onClick={() => { tagAffiliation(selectedAffiliation, 'exclude'); }}
+                        size="sm"
+                      >
+                        Exclude all
+                      </Button>
+                    </Col>
+                  </Row>
+                  <AffiliationsView
+                    affiliationsDataTable={affiliationsDataTable}
+                    selectedAffiliation={selectedAffiliation}
+                    setSelectedAffiliation={setSelectedAffiliation}
+                  />
+                </>
               )
             }
           </Tab>
           <Tab label={`Publications to sort (${publicationsDataTable.length})`}>
             {
               publicationsDataTable && (
-                <PublicationsView
-                  publicationsDataTable={publicationsDataTable}
-                  selectedPublications={selectedPublications}
-                  setSelectedPublications={setSelectedPublications}
-                />
+                <>
+                  <Row>
+                    <Col>
+                      <Checkbox
+                        checked={viewAllPublications}
+                        label="View all publications"
+                        onChange={() => setViewAllPublications(!viewAllPublications)}
+                        size="sm"
+                      />
+                    </Col>
+                    <Col className="text-right">
+                      <Button
+                        className="fr-mr-1w"
+                        disabled={selectedPublications.length === 0}
+                        icon="ri-check-fill"
+                        onClick={() => { tagLines(selectedPublications, 'keep'); }}
+                        size="sm"
+                      >
+                        Keep
+                      </Button>
+                      <Button
+                        className="fr-mb-1w"
+                        disabled={selectedPublications.length === 0}
+                        icon="ri-close-fill"
+                        onClick={() => { tagLines(selectedPublications, 'exclude'); }}
+                        size="sm"
+                      >
+                        Exclude
+                      </Button>
+                    </Col>
+                  </Row>
+                  <PublicationsView
+                    publicationsDataTable={publicationsDataTable}
+                    selectedPublications={selectedPublications}
+                    setSelectedPublications={setSelectedPublications}
+                  />
+                </>
               )
             }
           </Tab>

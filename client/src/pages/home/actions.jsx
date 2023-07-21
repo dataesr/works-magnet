@@ -1,4 +1,4 @@
-import { Button, Checkbox, Col, File, Row } from '@dataesr/react-dsfr';
+import { Button, Col, File, Row } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
@@ -7,78 +7,19 @@ import { export2json, importJson } from '../../utils/file';
 export default function Actions({
   actions,
   options,
-  selectedAffiliation,
-  selectedPublications,
   setActions,
   setOptions,
-  setViewAllPublications,
-  tagAffiliation,
-  tagLines,
-  viewAllPublications,
 }) {
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
 
   return (
     <Row>
-      <Col n="4">
-        <Checkbox
-          checked={viewAllPublications}
-          label="View all publications"
-          onChange={() => setViewAllPublications(!viewAllPublications)}
-          size="sm"
-        />
-      </Col>
       <Col className="text-right">
         <Button
-          className="fr-mb-1w"
-          disabled={selectedAffiliation.length === 0}
-          icon="ri-check-fill"
-          onClick={() => { tagAffiliation(selectedAffiliation, 'keep'); }}
-          secondary
-        >
-          Keep all
-        </Button>
-        <Button
-          className="fr-mb-1w"
-          disabled={selectedAffiliation.length === 0}
-          icon="ri-close-fill"
-          onClick={() => { tagAffiliation(selectedAffiliation, 'exclude'); }}
-          secondary
-        >
-          Exclude all
-        </Button>
-      </Col>
-      <Col className="text-right">
-        <Button
-          className="fr-mb-1w"
-          disabled={selectedPublications.length === 0}
-          icon="ri-check-fill"
-          onClick={() => { tagLines(selectedPublications, 'keep'); }}
-          secondary
-        >
-          Keep
-        </Button>
-        <Button
-          className="fr-mb-1w"
-          disabled={selectedPublications.length === 0}
-          icon="ri-close-fill"
-          onClick={() => { tagLines(selectedPublications, 'exclude'); }}
-          secondary
-        >
-          Exclude
-        </Button>
-        <Button
-          disabled={actions.length === 0}
-          icon="ri-save-line"
-          onClick={() => export2json(actions, options)}
-        >
-          Save
-        </Button>
-        <Button
-          className="fr-mb-1w"
           icon="ri-file-upload-line"
           onClick={() => setDisplayFileUpload(true)}
           secondary
+          size="sm"
         >
           Restore from file
         </Button>
@@ -90,28 +31,26 @@ export default function Actions({
             onChange={(e) => importJson(e, setActions, setOptions)}
           />
         )}
+        <Button
+          disabled={actions.length === 0}
+          icon="ri-save-line"
+          onClick={() => export2json(actions, options)}
+          size="sm"
+          colors={['success']}
+        >
+          Save
+        </Button>
       </Col>
     </Row>
   );
 }
 
 Actions.propTypes = {
-  selectedAffiliation: PropTypes.shape({
-    affiliations: PropTypes.string,
-    publications: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
-  selectedPublications: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.string.isRequired,
-    doi: PropTypes.string.isRequired,
-    hal_id: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
-    identifier: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
+  actions: PropTypes.arrayOf(PropTypes.shape({
+    action: PropTypes.string,
+    identifier: PropTypes.string,
   })).isRequired,
-  setViewAllPublications: PropTypes.func.isRequired,
-  tagAffiliation: PropTypes.func.isRequired,
-  tagLines: PropTypes.func.isRequired,
-  viewAllPublications: PropTypes.bool.isRequired,
+  options: PropTypes.object.isRequired,
+  setActions: PropTypes.func.isRequired,
+  setOptions: PropTypes.func.isRequired,
 };
