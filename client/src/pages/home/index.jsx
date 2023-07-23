@@ -1,5 +1,6 @@
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable no-case-declarations */
 import { Button, Checkbox, Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -32,20 +33,51 @@ const {
   VITE_BSO_MAX_SIZE,
 } = import.meta.env;
 
+const getRorAffiliations = (affiliations) => {
+  const notRorAffiliations = [];
+  const rorAffiliations = [];
+  const regexp = /^(https:\/\/ror\.org\/|ror\.org\/){0,1}0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
+  affiliations.forEach((affiliation) => {
+    // eslint-disable-next-line no-unused-expressions
+    affiliation.match(regexp) ? rorAffiliations.push(affiliation) : notRorAffiliations.push(affiliation);
+  });
+  return { notRorAffiliations, rorAffiliations };
+};
+
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
     switch (datasource.key) {
       case 'bso':
         return getBsoPublications(options);
       case 'openalex':
-        return getOpenAlexPublications(options);
+        const { notRorAffiliations, rorAffiliations } = getRorAffiliations(options.affiliations);
+        const { notRorAffiliations: notRorAffiliationsToExclude, rorAffiliations: rorAffiliationsToExclude } = getRorAffiliations(options.affiliationsToExclude);
+        const { notRorAffiliations: notRorAffiliationsToInclude, rorAffiliations: rorAffiliationsToInclude } = getRorAffiliations(options.affiliationsToInclude);
+        const p = [];
+        if (notRorAffiliations.length || notRorAffiliationsToExclude.length || notRorAffiliationsToInclude.length) {
+          p.push(getOpenAlexPublications({
+            ...options,
+            affiliations: notRorAffiliations,
+            affiliationsToExclude: notRorAffiliationsToExclude,
+            affiliationsToInclude: notRorAffiliationsToInclude,
+          }, false));
+        }
+        if (rorAffiliations.length || rorAffiliationsToExclude.length || rorAffiliationsToInclude.length) {
+          p.push(getOpenAlexPublications({
+            ...options,
+            affiliations: rorAffiliations,
+            affiliationsToExclude: rorAffiliationsToExclude,
+            affiliationsToInclude: rorAffiliationsToInclude,
+          }, true));
+        }
+        return p;
       default:
         // eslint-disable-next-line no-console
         console.error(`Datasoure : ${datasource.label} is badly formatted and shoud be one of BSO or OpenAlex`);
         return Promise.resolve();
     }
   });
-  const publications = await Promise.all(promises);
+  const publications = await Promise.all(promises.flat());
   const data = { results: [], total: {} };
   publications.forEach((publication) => {
     data.results = [...data.results, ...publication.results];

@@ -33,15 +33,17 @@ const getBsoQuery = (options) => {
   } else if (options?.endYear) {
     query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
   }
-  query.highlight = { fields: {
-    'affiliations.grid': {},
-    'affiliations.name': {},
-    'affiliations.rnsr': {},
-    'affiliations.ror': {},
-    'affiliations.structId': {},
-    'affiliations.viaf': {},
-    'authors.full_name': {},
-  } };
+  query.highlight = {
+    fields: {
+      'affiliations.grid': {},
+      'affiliations.name': {},
+      'affiliations.rnsr': {},
+      'affiliations.ror': {},
+      'affiliations.structId': {},
+      'affiliations.viaf': {},
+      'authors.full_name': {},
+    },
+  };
   query.query.bool.filter.push({ terms: { 'external_ids.id_type': options.dataIdentifiers } });
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'title', 'year'];
@@ -127,7 +129,7 @@ const getIdentifierValue = (identifier) => (identifier
   : null
 );
 
-const getOpenAlexPublications = (options, page = '1', previousResponse = []) => {
+const getOpenAlexPublications = (options, isRor = false, page = '1', previousResponse = []) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (options?.startYear && options?.endYear) {
@@ -137,11 +139,18 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
   } else if (options?.endYear) {
     url += `,publication_year:-${Number(options.endYear)}`;
   }
-  if (options.affiliations.length > 0 || options.affiliationsToExclude.length > 0) {
-    url += ',raw_affiliation_string.search:';
-    if (options.affiliations.length > 0) url += `(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
-    if (options.affiliationsToExclude.length > 0) url += `${options.affiliationsToExclude.map((aff) => ` AND NOT ${aff}`).join('')}`;
-    if (options.affiliationsToInclude.length > 0) url += `${options.affiliationsToInclude.map((aff) => ` AND "${aff}"`).join('')}`;
+  if (options.affiliations.length || options.affiliationsToExclude.length || options.affiliationsToInclude.length) {
+    if (isRor) {
+      url += '';
+      if (options.affiliations.length) url += `,institutions.ror:${options.affiliations.join('|')}`;
+      if (options.affiliationsToExclude.length) url += options.affiliationsToExclude.map((affiliation) => `,institutions.ror:!${affiliation}`).join('');
+      if (options.affiliationsToInclude.length) url += options.affiliationsToInclude.map((affiliation) => `,institutions.ror:${affiliation}`).join('');
+    } else {
+      url += ',raw_affiliation_string.search:';
+      if (options.affiliations.length) url += `(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
+      if (options.affiliationsToExclude.length) url += `${options.affiliationsToExclude.map((aff) => ` AND NOT ${aff}`).join('')}`;
+      if (options.affiliationsToInclude.length) url += `${options.affiliationsToInclude.map((aff) => ` AND "${aff}"`).join('')}`;
+    }
   }
   url += '&select=authorships,display_name,doi,id,ids,publication_year,type';
   return fetch(`${url}&page=${page}`)
@@ -153,7 +162,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
       const results = [...previousResponse, ...response.results];
       const nextPage = Number(page) + 1;
       if (Number(response.results.length) === Number(VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexPublications(options, nextPage, results);
+        return getOpenAlexPublications(options, isRor, nextPage, results);
       }
       return ({ total: response.meta.count, results });
     })
