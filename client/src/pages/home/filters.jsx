@@ -8,6 +8,7 @@ import {
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import TagInput from '../../components/tag-input';
 
@@ -15,39 +16,39 @@ const identifiers = ['crossref', 'hal_id', 'datacite'];
 const sources = [{ key: 'bso', label: 'BSO' }, { key: 'openalex', label: 'OpenAlex' }];
 const years = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'].map((year) => ({ label: year, value: year }));
 
-export default function Filters({ options, sendQuery }) {
-  const [affiliations, setAffiliations] = useState(['Ingénierie-Biologie-Santé Lorraine', 'UMS 2008', 'IBSLOR', 'UMS2008', 'UMS CNRS 2008']);
-  const [affiliationsToExclude, setAffiliationsToExclude] = useState([]);
-  const [affiliationsToInclude, setAffiliationsToInclude] = useState([]);
-  const [authors, setAuthors] = useState([]);
-  const [authorsToExclude, setAuthorsToExclude] = useState([]);
-  const [dataIdentifiers, setDataIdentifiers] = useState(identifiers);
-  const [datasources, setDatasources] = useState(sources);
-  const [endYear, setEndYear] = useState('2021');
-  const [moreOptions, setMoreOptions] = useState(false);
-  const [startYear, setStartYear] = useState('2021');
+export default function Filters({ sendQuery }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [affiliations, setAffiliations] = useState(searchParams.size ? searchParams.getAll('affiliations') : ['Ingénierie-Biologie-Santé Lorraine', 'UMS 2008', 'IBSLOR', 'UMS2008', 'UMS CNRS 2008']);
+  const [affiliationsToExclude, setAffiliationsToExclude] = useState(searchParams.size ? searchParams.getAll('affiliationsToExclude') : []);
+  const [affiliationsToInclude, setAffiliationsToInclude] = useState(searchParams.size ? searchParams.getAll('affiliationsToInclude') : []);
+  const [authors, setAuthors] = useState(searchParams.size ? searchParams.getAll('authors') : []);
+  const [authorsToExclude, setAuthorsToExclude] = useState(searchParams.size ? searchParams.getAll('authorsToExclude') : []);
+  const [dataIdentifiers, setDataIdentifiers] = useState(searchParams.size ? searchParams.getAll('dataIdentifiers') : identifiers);
+  const [datasources, setDatasources] = useState(searchParams.size ? searchParams.getAll('datasources') : sources.map((source) => source.key));
+  const [endYear, setEndYear] = useState(searchParams.size ? searchParams.getAll('endYear')?.[0] : '2021');
+  const [moreOptions, setMoreOptions] = useState(searchParams.size ? searchParams.getAll('moreOptions')?.[0] : false);
+  const [startYear, setStartYear] = useState(searchParams.size ? searchParams.getAll('startYear')?.[0] : '2021');
 
   useEffect(() => {
-    if (options?.restoreFromFile ?? false) {
-      setAffiliations(options.affiliations);
-      setAffiliationsToExclude(options.affiliationsToExclude);
-      setAffiliationsToInclude(options.affiliationsToInclude);
-      setAuthors(options.authors);
-      setAuthorsToExclude(options.authorsToExclude);
-      setDataIdentifiers(options.dataIdentifiers);
-      setDatasources(options.datasources);
-      setEndYear(options.endYear);
-      setMoreOptions(options.moreOptions);
-      setStartYear(options.startYear);
-      sendQuery(options);
-    }
-  }, [options]);
+    setSearchParams({
+      affiliations,
+      affiliationsToExclude,
+      affiliationsToInclude,
+      authors,
+      authorsToExclude,
+      dataIdentifiers,
+      datasources,
+      endYear,
+      moreOptions,
+      startYear,
+    });
+  }, [affiliations, affiliationsToExclude, affiliationsToInclude, authors, authorsToExclude, dataIdentifiers, datasources, endYear, moreOptions, setSearchParams, startYear]);
 
   const onDatasourcesChange = (key) => {
-    if (!datasources.map((datasource) => datasource.key).includes(key)) {
-      setDatasources([...datasources, { key, label: key }]);
+    if (datasources.includes(key)) {
+      setDatasources(datasources.filter((datasource) => datasource !== key));
     } else {
-      setDatasources(datasources.filter((datasource) => datasource.key !== key));
+      setDatasources([...datasources, key]);
     }
   };
   const onIdentifiersChange = (label) => {
@@ -83,7 +84,7 @@ export default function Filters({ options, sendQuery }) {
             {
               sources.map((source) => (
                 <Checkbox
-                  checked={datasources.map((datasource) => datasource.key).includes(source.key)}
+                  checked={datasources.includes(source.key)}
                   key={source.key}
                   label={source.label}
                   onChange={() => onDatasourcesChange(source.key)}
@@ -143,7 +144,7 @@ export default function Filters({ options, sendQuery }) {
           moreOptions && (
             <Col n="3">
               {
-                datasources.map((datasource) => datasource.key).includes('bso') && (
+                datasources.includes('bso') && (
                   <>
                     BSO Identifiers:
                     <CheckboxGroup isInline>
@@ -199,9 +200,5 @@ export default function Filters({ options, sendQuery }) {
 }
 
 Filters.propTypes = {
-  options: PropTypes.object,
   sendQuery: PropTypes.func.isRequired,
-};
-Filters.defaultProps = {
-  options: {},
 };

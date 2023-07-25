@@ -46,7 +46,7 @@ const getRorAffiliations = (affiliations) => {
 
 const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
-    switch (datasource.key) {
+    switch (datasource) {
       case 'bso':
         return getBsoPublications(options);
       case 'openalex':
@@ -73,7 +73,7 @@ const getData = async (options) => {
         return p;
       default:
         // eslint-disable-next-line no-console
-        console.error(`Datasoure : ${datasource.label} is badly formatted and shoud be one of BSO or OpenAlex`);
+        console.error(`Datasoure : ${datasource} is badly formatted and shoud be one of BSO or OpenAlex`);
         return Promise.resolve();
     }
   });
@@ -106,26 +106,26 @@ const getData = async (options) => {
 };
 
 export default function Home() {
-  const [sortedPublications, setSortedPublications] = useState([]);
-  const [options, setOptions] = useState({});
+  const [formOptions, setFormOptions] = useState({});
   const [selectedAffiliation, setSelectedAffiliation] = useState({});
   const [selectedPublications, setSelectedPublications] = useState([]);
-  const [viewAllPublications, setViewAllPublications] = useState(false);
+  const [sortedPublications, setSortedPublications] = useState([]);
   const [viewAllAffiliations, setViewAllAffiliations] = useState(false);
+  const [viewAllPublications, setViewAllPublications] = useState(false);
 
   const [publicationsDataTable, setPublicationsDataTable] = useState([]);
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
-    queryFn: () => getData(options),
+    queryFn: () => getData(formOptions),
     enabled: false,
     staleTime: Infinity,
     cacheTime: Infinity,
   });
 
   const sendQuery = async (_options) => {
-    await setOptions(_options);
+    await setFormOptions(_options);
     refetch();
   };
 
@@ -246,7 +246,6 @@ export default function Home() {
         <Row className="fr-px-5w">
           <Col n="9">
             <Filters
-              options={options}
               sendQuery={sendQuery}
             />
           </Col>
@@ -264,9 +263,9 @@ export default function Home() {
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
           sortedPublications={sortedPublications}
-          options={options}
+          options={formOptions}
           setSortedPublications={setSortedPublications}
-          setOptions={setOptions}
+          setOptions={setFormOptions}
         />
         <Tabs defaultActiveTab={1}>
           <Tab label={`Affiliations view (${affiliationsDataTable.length})`}>
