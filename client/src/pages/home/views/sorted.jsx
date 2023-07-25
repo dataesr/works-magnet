@@ -18,7 +18,6 @@ const options = [
 export default function ActionsView({
   setSortedPublications,
   sortedPublications,
-  type,
 }) {
   const changePublicationsActions = (e, rowData) => {
     const { value } = e.target;
@@ -51,7 +50,7 @@ export default function ActionsView({
     <DataTable
       style={{ fontSize: '11px', lineHeight: '15px' }}
       size="small"
-      value={sortedPublications.filter((action) => action.action === type)}
+      value={sortedPublications}
       paginator
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
@@ -79,5 +78,4 @@ ActionsView.propTypes = {
     action: PropTypes.string,
     identifier: PropTypes.string,
   })).isRequired,
-  type: PropTypes.string.isRequired,
 };

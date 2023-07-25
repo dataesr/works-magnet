@@ -3,7 +3,7 @@
 /* eslint-disable no-case-declarations */
 import { Button, Checkbox, Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Actions from './actions';
 import Filters from './filters';
@@ -113,6 +113,9 @@ export default function Home() {
   const [viewAllPublications, setViewAllPublications] = useState(false);
   const [viewAllAffiliations, setViewAllAffiliations] = useState(false);
 
+  const [publicationsDataTable, setPublicationsDataTable] = useState([]);
+  const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
+
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(options),
@@ -126,77 +129,85 @@ export default function Home() {
     refetch();
   };
 
-  let publicationsDataTable = [];
-  if (data) {
-    publicationsDataTable = data.results
-      .map((publication) => ({
-        ...publication,
-        action: sortedPublications.find((action) => action.id === publication.id)?.action || 'sort',
-        affiliationsHtml: getAffiliationsHtmlField(publication),
-        allIdsHtml: getAllIdsHtmlField(publication),
-        authorsHtml: getAuthorsHtmlField(publication),
-        authorsTooltip: getAuthorsTooltipField(publication),
-      }))
-      .filter((item) => {
-        if (viewAllPublications) { return true; }
-        return !sortedPublications.map((action) => action.id).includes(item.id);
+  useEffect(() => {
+    let publicationsDataTableTmp = [];
+    if (data) {
+      publicationsDataTableTmp = data.results
+        .map((publication) => ({
+          ...publication,
+          action: sortedPublications.find((action) => action.id === publication.id)?.action || 'sort',
+          affiliationsHtml: getAffiliationsHtmlField(publication),
+          allIdsHtml: getAllIdsHtmlField(publication),
+          authorsHtml: getAuthorsHtmlField(publication),
+          authorsTooltip: getAuthorsTooltipField(publication),
+        }))
+        .filter((item) => {
+          if (viewAllPublications) { return true; }
+          return !sortedPublications.map((action) => action.id).includes(item.id);
+        });
+    }
+
+    setPublicationsDataTable(publicationsDataTableTmp);
+  }, [data, sortedPublications, viewAllPublications]);
+
+  useEffect(() => {
+    // Group by affiliation
+    const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+    const dataGroupedByAffiliation = {};
+    if (data) {
+      data.results.forEach((publication) => {
+        switch (publication.datasource) {
+          case 'bso':
+            (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
+              const affiliationName = normalizedName(affiliation);
+              if (!Object.keys(dataGroupedByAffiliation).includes(affiliationName)) {
+                dataGroupedByAffiliation[affiliationName] = {
+                  datasource: 'bso',
+                  name: affiliation,
+                  publications: [],
+                };
+              }
+              dataGroupedByAffiliation[affiliationName].publications.push(publication);
+            });
+            break;
+          case 'openalex':
+            (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
+              const affiliationName = normalizedName(affiliation);
+              if (!Object.keys(dataGroupedByAffiliation).includes(affiliationName)) {
+                dataGroupedByAffiliation[normalizedName(affiliation)] = {
+                  datasource: 'openalex',
+                  name: affiliation,
+                  publications: [],
+                };
+              }
+              dataGroupedByAffiliation[affiliationName].publications.push(publication);
+            }));
+            break;
+          default:
+        }
       });
-  }
+    }
 
-  // Group by affiliation
-  const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
-  const dataGroupedByAffiliation = {};
-  if (data) {
-    data.results.forEach((publication) => {
-      switch (publication.datasource) {
-        case 'bso':
-          (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
-            const affiliationName = normalizedName(affiliation);
-            if (!Object.keys(dataGroupedByAffiliation).includes(affiliationName)) {
-              dataGroupedByAffiliation[affiliationName] = {
-                datasource: 'bso',
-                name: affiliation,
-                publications: [],
-              };
-            }
-            dataGroupedByAffiliation[affiliationName].publications.push(publication);
-          });
-          break;
-        case 'openalex':
-          (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
-            const affiliationName = normalizedName(affiliation);
-            if (!Object.keys(dataGroupedByAffiliation).includes(affiliationName)) {
-              dataGroupedByAffiliation[normalizedName(affiliation)] = {
-                datasource: 'openalex',
-                name: affiliation,
-                publications: [],
-              };
-            }
-            dataGroupedByAffiliation[affiliationName].publications.push(publication);
-          }));
-          break;
-        default:
-      }
-    });
-  }
+    const affiliationsDataTableTmp = Object.values(dataGroupedByAffiliation)
+      .sort((a, b) => b.publications.length - a.publications.length)
+      .map((affiliation, index) => ({
+        affiliations: affiliation.name,
+        publications: affiliation.publications,
+        id: index,
+        datasource: affiliation.datasource,
+      })).filter((affiliation) => {
+        if (viewAllAffiliations) { return true; }
+        const allPublicationsIds = affiliation.publications.map((publication) => publication.identifier);
+        const allPublicationsIdsFromSelectedPublications = sortedPublications.map((publication) => publication.identifier);
+        // if all publications are already selected, don't display
+        if (allPublicationsIds.every((id) => allPublicationsIdsFromSelectedPublications.includes(id))) {
+          return false;
+        }
+        return true;
+      });
 
-  const affiliationsDataTable = Object.values(dataGroupedByAffiliation)
-    .sort((a, b) => b.publications.length - a.publications.length)
-    .map((affiliation, index) => ({
-      affiliations: affiliation.name,
-      publications: affiliation.publications,
-      id: index,
-      datasource: affiliation.datasource,
-    })).filter((affiliation) => {
-      if (viewAllAffiliations) { return true; }
-      const allPublicationsIds = affiliation.publications.map((publication) => publication.identifier);
-      const allPublicationsIdsFromSelectedPublications = sortedPublications.map((publication) => publication.identifier);
-      // if all publications are already selected, don't display
-      if (allPublicationsIds.every((id) => allPublicationsIdsFromSelectedPublications.includes(id))) {
-        return false;
-      }
-      return true;
-    });
+    setAffiliationsDataTable(affiliationsDataTableTmp);
+  }, [data, sortedPublications, viewAllAffiliations]);
 
   const tagLines = (lines, action) => {
     const newLines = lines.filter((line) => !sortedPublications.map((item) => item.id).includes(line.id));
@@ -225,6 +236,9 @@ export default function Home() {
     }
     return false;
   };
+
+  const keepedData = sortedPublications.filter((action) => action.action === 'keep');
+  const excludedData = sortedPublications.filter((action) => action.action === 'exclude');
 
   return (
     <>
@@ -341,18 +355,16 @@ export default function Home() {
               )
             }
           </Tab>
-          <Tab label={`Publications to keep (${sortedPublications.filter((action) => action.action === 'keep').length})`}>
+          <Tab label={`Publications to keep (${keepedData.length})`}>
             <SortedView
               setSortedPublications={setSortedPublications}
-              sortedPublications={sortedPublications}
-              type="keep"
+              sortedPublications={keepedData}
             />
           </Tab>
-          <Tab label={`Publications to exclude (${sortedPublications.filter((action) => action.action === 'exclude').length})`}>
+          <Tab label={`Publications to exclude (${excludedData.length})`}>
             <SortedView
               setSortedPublications={setSortedPublications}
-              sortedPublications={sortedPublications}
-              type="exclude"
+              sortedPublications={excludedData}
             />
           </Tab>
         </Tabs>
