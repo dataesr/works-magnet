@@ -144,8 +144,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    let publicationsDataTableTmp = [];
     console.time('publicationsDataTableTmp');
+    let publicationsDataTableTmp = [];
     if (data) {
       publicationsDataTableTmp = data.results
         .map((publication) => ({
@@ -163,18 +163,18 @@ export default function Home() {
     }
     console.timeEnd('publicationsDataTableTmp');
     setPublicationsDataTable(publicationsDataTableTmp);
-  }, [data, sortedPublications, viewAllPublications]);
+  }, [data]);
 
   useEffect(() => {
     if (!viewAllPublications) {
       const publicationsDataTableTmp = publicationsDataTable.filter((item) => !sortedPublications.map((action) => action.id).includes(item.id));
       setPublicationsDataTable(publicationsDataTableTmp);
     }
-  }, [viewAllPublications]);
+  }, [publicationsDataTable, sortedPublications, viewAllPublications]);
 
   useEffect(() => {
     // Group by affiliation
-    const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+    const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '').replace('<em>', '').replace('</em>', '');
     let affiliationsDataTableTmp = {};
     console.time('dataGroupedByAffiliation');
     if (data) {
@@ -253,15 +253,8 @@ export default function Home() {
     return ret;
   };
 
-  const filterSortedPublications = (action) => {
-    console.time('filterSortedPublications');
-    const sortedData = sortedPublications.filter((item) => item.action === action);
-    console.timeEnd('filterSortedPublications');
-    return sortedData;
-  };
-
-  const keptData = filterSortedPublications('keep');
-  const excludedData = filterSortedPublications('exclude');
+  const keptData = sortedPublications.filter((item) => item.action === 'keep');
+  const excludedData = sortedPublications.filter((item) => item.action === 'exclude');
 
   return (
     <>
