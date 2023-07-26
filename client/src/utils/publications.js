@@ -94,13 +94,14 @@ const getBsoPublications = (options) => {
         authors: result._source?.authors ?? [],
         datasource: 'bso',
         highlight: result.highlight,
-        identifier: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
+        id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
+        original: result,
         type: result._source?.genre_raw ?? result._source.genre,
       })),
     }));
 };
 
-const getIdentifierLink = (type, identifier) => {
+const getIdLink = (type, id) => {
   let prefix = null;
   switch (type) {
   case 'crossref':
@@ -121,12 +122,13 @@ const getIdentifierLink = (type, identifier) => {
     break;
   default:
   }
-  return (prefix !== null) ? `${prefix}${identifier}` : false;
+  return (prefix !== null) ? `${prefix}${id}` : false;
 };
 
-const getIdentifierValue = (identifier) => (identifier
-  ? identifier.replace('https://doi.org/', '').replace('https://openalex.org/', '').replace('https://pubmed.ncbi.nlm.nih.gov/', '').replace('https://www.ncbi.nlm.nih.gov/pmc/articles/', '')
-  : null
+const getIdValue = (id) => (
+  id
+    ? id.replace('https://doi.org/', '').replace('https://openalex.org/', '').replace('https://pubmed.ncbi.nlm.nih.gov/', '').replace('https://www.ncbi.nlm.nih.gov/pmc/articles/', '')
+    : null
 );
 
 const getOpenAlexPublications = (options, isRor = false, page = '1', previousResponse = []) => {
@@ -169,36 +171,40 @@ const getOpenAlexPublications = (options, isRor = false, page = '1', previousRes
     .then((response) => ({
       datasource: 'openalex',
       total: response.total,
-      results: response.results.map((item) => ({
-        affiliations: item?.authorships?.map((author) => ({ name: author.raw_affiliation_strings })) ?? item.affiliations,
-        allIds: item?.ids ? Object.keys(item.ids).map((key) => ({ id_type: key, id_value: getIdentifierValue(item.ids[key]) })) : item.allIds,
-        authors: item?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? item.authors,
+      results: response.results.map((result) => ({
+        affiliations: result?.authorships?.map((author) => ({ name: author.raw_affiliation_strings })) ?? result.affiliations,
+        allIds: result?.ids ? Object.keys(result.ids).map((key) => ({ id_type: key, id_value: getIdValue(result.ids[key]) })) : result.allIds,
+        authors: result?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? result.authors,
         datasource: 'openalex',
-        doi: getIdentifierValue(item?.doi),
-        id: item.id,
-        identifier: item?.doi ? getIdentifierValue(item.doi) : item.id,
-        title: item?.display_name ?? item.title,
-        type: item.type,
-        year: item?.publication_year ?? item.year,
+        doi: getIdValue(result?.doi),
+        id: result?.doi ? getIdValue(result.doi) : result.id,
+        original: result,
+        title: result?.display_name ?? result.title,
+        type: result.type,
+        year: result?.publication_year ?? result.year,
       })),
     }));
 };
 
-const mergePublications = (publi1, publi2) => ({
-  ...[publi1, publi2].find((publi) => publi.datasource === 'bso'),
-  affiliations: [...publi1.affiliations, ...publi2.affiliations],
-  // Filter ids by uniq values
-  allIds: Object.values([...publi1.allIds, ...publi2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
-  // Filter authors by uniq full_name
-  authors: Object.values([...publi1.authors, ...publi2.authors].reduce((acc, obj) => ({ ...acc, [obj.full_name]: obj }), {})),
-  datasource: 'bso, openalex',
-});
+const mergePublications = (publi1, publi2) => {
+  const priorityPublication = [publi1, publi2].some((publi) => publi.datasource === 'bso')
+    ? [publi1, publi2].find((publi) => publi.datasource === 'bso')
+    : publi1;
+  return ({
+    ...priorityPublication,
+    affiliations: [...publi1.affiliations, ...publi2.affiliations],
+    // Filter ids by uniq values
+    allIds: Object.values([...publi1.allIds, ...publi2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
+    // Filter authors by uniq full_name
+    authors: Object.values([...publi1.authors, ...publi2.authors].reduce((acc, obj) => ({ ...acc, [obj.full_name]: obj }), {})),
+    datasource: 'bso, openalex',
+  });
+};
 
 export {
   getBsoCount,
   getBsoPublications,
-  getIdentifierLink,
-  getIdentifierValue,
+  getIdLink,
   getOpenAlexPublications,
   mergePublications,
 };

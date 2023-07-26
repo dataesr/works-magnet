@@ -2,7 +2,7 @@
 /* eslint-disable react/no-array-index-key */
 import { Tooltip } from 'react-tooltip';
 
-import { getIdentifierLink } from './publications';
+import { getIdLink } from './publications';
 
 const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliationsHtml }} />;
 
@@ -11,7 +11,7 @@ const allIdsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: row
 const authorsTemplate = (rowData) => (
   <>
     <span dangerouslySetInnerHTML={{ __html: rowData.authorsHtml }} />
-    <Tooltip id={`tooltip-author-${rowData.identifier}`} place="right">
+    <Tooltip id={`tooltip-author-${rowData.id}`} place="right">
       <span dangerouslySetInnerHTML={{ __html: rowData.authorsTooltip }} />
     </Tooltip>
   </>
@@ -58,9 +58,9 @@ const getAllIdsHtmlField = (rowData) => {
     html += `<li key="${id.id_value}">`;
     html += id.id_type;
     html += ': ';
-    const identifierLink = getIdentifierLink(id.id_type, id.id_value);
-    if (identifierLink) {
-      html += `<a target="_blank" href="${identifierLink}">`;
+    const idLink = getIdLink(id.id_type, id.id_value);
+    if (idLink) {
+      html += `<a target="_blank" href="${idLink}">`;
       html += id.id_value;
       html += '</a>';
     } else {
@@ -75,9 +75,9 @@ const getAllIdsHtmlField = (rowData) => {
 const getAuthorsHtmlField = (rowData) => {
   if (rowData?.highlight?.['authors.full_name']) {
     const authors = rowData.highlight['authors.full_name'];
-    let html = `<ul data-tooltip-id="tooltip-author-${rowData.identifier}">`;
+    let html = `<ul data-tooltip-id="tooltip-author-${rowData.id}">`;
     authors.slice(0, 3).forEach((author, index) => {
-      html += `<li key="author-${rowData.identifier}-${index}">`;
+      html += `<li key="author-${rowData.id}-${index}">`;
       html += author;
       html += '</li>';
     });
@@ -87,9 +87,9 @@ const getAuthorsHtmlField = (rowData) => {
     html += '</ul>';
     return html;
   }
-  let html = `<ul data-tooltip-id="tooltip-author-${rowData.identifier}">`;
+  let html = `<ul data-tooltip-id="tooltip-author-${rowData.id}">`;
   rowData.authors.slice(0, 3).forEach((author, index) => {
-    html += `<li key="author-${rowData.identifier}-${index}">`;
+    html += `<li key="author-${rowData.id}-${index}">`;
     html += author.full_name;
     html += '</li>';
   });
@@ -104,7 +104,7 @@ const getAuthorsTooltipField = (rowData) => {
   if (rowData?.highlight?.['authors.full_name']) {
     let html = '<ul>';
     rowData.highlight['authors.full_name'].forEach((author, index) => {
-      html += `<li key="tooltip-author-${rowData.identifier}-${index}">`;
+      html += `<li key="tooltip-author-${rowData.id}-${index}">`;
       html += author;
       html += '</li>';
     });
@@ -113,7 +113,7 @@ const getAuthorsTooltipField = (rowData) => {
   }
   let html = '<ul>';
   rowData.authors.forEach((author, index) => {
-    html += `<li key="tooltip-author-${rowData.identifier}-${index}">`;
+    html += `<li key="tooltip-author-${rowData.id}-${index}">`;
     html += author.full_name;
     html += '</li>';
   });

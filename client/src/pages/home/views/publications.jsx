@@ -33,7 +33,7 @@ export default function PublicationsView({
       value={publicationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-      <Column field="allIdsHtml" header="Identifiers" body={allIdsTemplate} filter filterMatchMode="contains" />
+      <Column field="allIdsHtml" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" />
       <Column field="datasource" header="Source" style={{ minWidth: '10px' }} />
       <Column field="type" header="Type" style={{ minWidth: '10px' }} />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} filter filterMatchMode="contains" style={{ minWidth: '500px' }} />
@@ -49,15 +49,18 @@ PublicationsView.propTypes = {
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
-    identifier: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
   setSelectedPublications: PropTypes.func,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })),
 };
