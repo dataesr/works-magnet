@@ -150,33 +150,21 @@ export default function Home() {
       publicationsDataTableTmp = data.results
         .map((publication) => ({
           ...publication,
-          // action: sortedPublications.find((action) => action.id === publication.id)?.action || 'sort',
           affiliationsHtml: getAffiliationsHtmlField(publication),
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
           authorsTooltip: getAuthorsTooltipField(publication),
         }));
-      // .filter((item) => {
-      //   if (viewAllPublications) { return true; }
-      //   return !sortedPublications.map((action) => action.id).includes(item.id);
-      // });
     }
-    console.timeEnd('publicationsDataTableTmp');
     setPublicationsDataTable(publicationsDataTableTmp);
+    console.timeEnd('publicationsDataTableTmp');
   }, [data]);
 
   useEffect(() => {
-    if (!viewAllPublications) {
-      const publicationsDataTableTmp = publicationsDataTable.filter((item) => !sortedPublications.map((action) => action.id).includes(item.id));
-      setPublicationsDataTable(publicationsDataTableTmp);
-    }
-  }, [publicationsDataTable, sortedPublications, viewAllPublications]);
-
-  useEffect(() => {
     // Group by affiliation
+    console.time('dataGroupedByAffiliation');
     const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '').replace('<em>', '').replace('</em>', '');
     let affiliationsDataTableTmp = {};
-    console.time('dataGroupedByAffiliation');
     if (data) {
       data.results.forEach((publication) => {
         switch (publication.datasource) {
@@ -223,8 +211,8 @@ export default function Home() {
     console.time('tagPublications');
     const newLines = lines.filter((line) => !sortedPublications.map((item) => item.id).includes(line.id));
     const newActions = newLines.map((line) => ({ ...line, action }));
-    console.timeEnd('tagPublications');
     setSortedPublications([...sortedPublications, ...newActions]);
+    console.timeEnd('tagPublications');
   };
 
   const tagAffiliation = (affiliation, action) => {
@@ -370,6 +358,8 @@ export default function Home() {
                       publicationsDataTable={publicationsDataTable}
                       selectedPublications={selectedPublications}
                       setSelectedPublications={setSelectedPublications}
+                      sortedPublications={sortedPublications}
+                      viewAllPublications={viewAllPublications}
                     />
                   </Profiler>
                 </>
