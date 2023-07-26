@@ -104,17 +104,15 @@ const getData = async (options) => {
 };
 
 export default function Home() {
+  const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
   const [formOptions, setFormOptions] = useState({});
+  const [publicationsDataTable, setPublicationsDataTable] = useState([]);
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedPublicationIds1, setSelectedPublicationIds1] = useState([]);
   const [selectedPublicationIds2, setSelectedPublicationIds2] = useState([]);
   const [selectedPublicationIds3, setSelectedPublicationIds3] = useState([]);
-  const [sortedPublications, setSortedPublications] = useState([]);
   const [viewAllAffiliations, setViewAllAffiliations] = useState(false);
   const [viewAllPublications, setViewAllPublications] = useState(false);
-
-  const [publicationsDataTable, setPublicationsDataTable] = useState([]);
-  const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -237,10 +235,10 @@ export default function Home() {
 
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
-          sortedPublications={sortedPublications}
           options={formOptions}
-          setSortedPublications={setSortedPublications}
+          publicationsDataTable={publicationsDataTable}
           setOptions={setFormOptions}
+          setPublicationsDataTable={setPublicationsDataTable}
         />
         <Tabs defaultActiveTab={0}>
           <Tab label={`Affiliations view (${affiliationsDataTable.filter((affiliation) => affiliation.display).length})`}>

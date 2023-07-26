@@ -174,7 +174,7 @@ export default function Filters({ sendQuery }) {
             size="sm"
             icon="ri-filter-line"
           >
-            {moreOptions ? 'Less options' : 'More options'}
+            {moreOptions ? 'Less filters' : 'More filters'}
           </Button>
           <Button
             icon="ri-search-line"
@@ -187,6 +187,7 @@ export default function Filters({ sendQuery }) {
               dataIdentifiers,
               datasources,
               endYear,
+              moreOptions,
               startYear,
             })}
             size="sm"

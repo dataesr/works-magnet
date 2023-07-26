@@ -6,9 +6,9 @@ import { export2json, importJson } from '../../utils/file';
 
 export default function Actions({
   options,
+  publicationsDataTable,
   setOptions,
-  setSortedPublications,
-  sortedPublications,
+  setPublicationsDataTable,
 }) {
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
 
@@ -28,13 +28,13 @@ export default function Actions({
             accept=".json"
             hint="Select JSON file to restore from previous state"
             label="JSON file"
-            onChange={(e) => importJson(e, setSortedPublications, setOptions)}
+            onChange={(e) => importJson(e, setPublicationsDataTable, setOptions)}
           />
         )}
         <Button
-          disabled={sortedPublications.length === 0}
+          disabled={publicationsDataTable.length === 0}
           icon="ri-save-line"
-          onClick={() => export2json(sortedPublications, options)}
+          onClick={() => export2json(options, publicationsDataTable)}
           size="sm"
           colors={['success']}
         >
@@ -47,10 +47,15 @@ export default function Actions({
 
 Actions.propTypes = {
   options: PropTypes.object.isRequired,
-  setSortedPublications: PropTypes.func.isRequired,
-  setOptions: PropTypes.func.isRequired,
-  sortedPublications: PropTypes.arrayOf(PropTypes.shape({
-    action: PropTypes.string,
-    identifier: PropTypes.string,
+  publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    datasource: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
   })).isRequired,
+  setOptions: PropTypes.func.isRequired,
+  setPublicationsDataTable: PropTypes.func.isRequired,
 };
