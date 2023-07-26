@@ -229,10 +229,10 @@ export default function Home() {
 
   const tagAffiliation = (affiliation, action) => {
     console.time('tagAffiliation');
-    // list of keeped publications from actions
-    const keepedPublications = sortedPublications.filter((item) => item.action === 'keep').map((item) => item.id);
-    // if exclude, don't add keeped publications
-    const publicationToAdd = affiliation.publications.filter((publication) => (action === 'exclude' ? !keepedPublications.includes(publication.id) : true));
+    // list of kept publications from actions
+    const keptPublications = sortedPublications.filter((item) => item.action === 'keep').map((item) => item.id);
+    // if exclude, don't add kept publications
+    const publicationToAdd = affiliation.publications.filter((publication) => (action === 'exclude' ? !keptPublications.includes(publication.id) : true));
 
     // if already add, don't add again
     const newActions = publicationToAdd.filter((publication) => !sortedPublications.map((item) => item.id).includes(publication.id)).map((publication) => ({ ...publication, action }));
@@ -260,7 +260,7 @@ export default function Home() {
     return sortedData;
   };
 
-  const keepedData = filterSortedPublications('keep');
+  const keptData = filterSortedPublications('keep');
   const excludedData = filterSortedPublications('exclude');
 
   return (
@@ -383,16 +383,16 @@ export default function Home() {
               )
             }
           </Tab>
-          <Tab label={`Publications to keep (${keepedData.length})`}>
-            <Profiler id="SortedView Keeped" onRender={onRender}>
+          <Tab label={`Publications to keep (${keptData.length})`}>
+            <Profiler id="SortedView kept" onRender={onRender}>
               <SortedView
                 setSortedPublications={setSortedPublications}
-                sortedPublications={keepedData}
+                sortedPublications={keptData}
               />
             </Profiler>
           </Tab>
           <Tab label={`Publications to exclude (${excludedData.length})`}>
-            <Profiler id="SortedView Excluded" onRender={onRender}>
+            <Profiler id="SortedView excluded" onRender={onRender}>
               <SortedView
                 setSortedPublications={setSortedPublications}
                 sortedPublications={excludedData}
