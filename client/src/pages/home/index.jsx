@@ -130,8 +130,6 @@ export default function Home() {
   const [publicationsDataTable, setPublicationsDataTable] = useState([]);
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
 
-  const [dataGroupedByAffiliation, setDataGroupedByAffiliation] = useState({});
-
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(formOptions),
@@ -177,7 +175,7 @@ export default function Home() {
   useEffect(() => {
     // Group by affiliation
     const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
-    const dataGroupedByAffiliationTmp = {};
+    let affiliationsDataTableTmp = {};
     console.time('dataGroupedByAffiliation');
     if (data) {
       data.results.forEach((publication) => {
@@ -185,59 +183,41 @@ export default function Home() {
           case 'bso':
             (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
               const affiliationName = normalizedName(affiliation);
-              if (!Object.keys(dataGroupedByAffiliationTmp).includes(affiliationName)) {
-                dataGroupedByAffiliationTmp[affiliationName] = {
+              if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
+                affiliationsDataTableTmp[affiliationName] = {
                   datasource: 'bso',
+                  display: true,
                   name: affiliation,
                   publications: [],
                 };
               }
-              dataGroupedByAffiliationTmp[affiliationName].publications.push(publication);
+              affiliationsDataTableTmp[affiliationName].publications.push(publication);
             });
             break;
           case 'openalex':
             (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
               const affiliationName = normalizedName(affiliation);
-              if (!Object.keys(dataGroupedByAffiliationTmp).includes(affiliationName)) {
-                dataGroupedByAffiliationTmp[normalizedName(affiliation)] = {
+              if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
+                affiliationsDataTableTmp[affiliationName] = {
                   datasource: 'openalex',
+                  display: true,
                   name: affiliation,
                   publications: [],
                 };
               }
-              dataGroupedByAffiliationTmp[affiliationName].publications.push(publication);
+              affiliationsDataTableTmp[affiliationName].publications.push(publication);
             }));
             break;
           default:
         }
       });
     }
-    console.timeEnd('dataGroupedByAffiliation');
-    setDataGroupedByAffiliation(dataGroupedByAffiliationTmp);
-  }, [data]);
-
-  useEffect(() => {
-    console.time('affiliationsDataTableTmp');
-    const affiliationsDataTableTmp = Object.values(dataGroupedByAffiliation)
+    affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
       .sort((a, b) => b.publications.length - a.publications.length)
-      .map((affiliation, index) => ({
-        affiliations: affiliation.name,
-        publications: affiliation.publications,
-        id: index,
-        datasource: affiliation.datasource,
-      })).filter((affiliation) => {
-        if (viewAllAffiliations) { return true; }
-        const allPublicationsIds = affiliation.publications.map((publication) => publication.identifier);
-        const allPublicationsIdsFromSelectedPublications = sortedPublications.map((publication) => publication.identifier);
-        // if all publications are already selected, don't display
-        if (allPublicationsIds.every((id) => allPublicationsIdsFromSelectedPublications.includes(id))) {
-          return false;
-        }
-        return true;
-      });
-    console.timeEnd('affiliationsDataTableTmp');
+      .map((affiliation, index) => ({ ...affiliation, id: index.toString() }));
     setAffiliationsDataTable(affiliationsDataTableTmp);
-  }, [dataGroupedByAffiliation, sortedPublications, viewAllAffiliations]);
+    console.timeEnd('dataGroupedByAffiliation');
+  }, [data]);
 
   const tagLines = (lines, action) => {
     console.time('tagLines');
@@ -256,8 +236,9 @@ export default function Home() {
 
     // if already add, don't add again
     const newActions = publicationToAdd.filter((publication) => !sortedPublications.map((item) => item.id).includes(publication.id)).map((publication) => ({ ...publication, action }));
-    console.time('tagAffiliation');
     setSortedPublications([...sortedPublications, ...newActions]);
+    affiliation.display = false;
+    console.timeEnd('tagAffiliation');
   };
 
   const checkSelectedAffiliation = () => {
@@ -349,6 +330,7 @@ export default function Home() {
                       affiliationsDataTable={affiliationsDataTable}
                       selectedAffiliation={selectedAffiliation}
                       setSelectedAffiliation={setSelectedAffiliation}
+                      viewAllAffiliations={viewAllAffiliations}
                     />
                   </Profiler>
                 </>

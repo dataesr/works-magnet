@@ -2,14 +2,13 @@ import PropTypes from 'prop-types';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 
-import {
-  affiliationTemplate,
-} from '../../../utils/templates';
+import { nameTemplate } from '../../../utils/templates';
 
 export default function AffiliationsView({
   affiliationsDataTable,
   selectedAffiliation,
   setSelectedAffiliation,
+  viewAllAffiliations,
 }) {
   return (
     <DataTable
@@ -28,11 +27,11 @@ export default function AffiliationsView({
       stripedRows
       style={{ fontSize: '11px', lineHeight: '15px' }}
       tableStyle={{ minWidth: '50rem' }}
-      value={affiliationsDataTable}
+      value={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.display)}
     >
       <Column selectionMode="single" headerStyle={{ width: '3rem' }} />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
-      <Column filter filterMatchMode="contains" body={affiliationTemplate} field="affiliation" header="Affiliation" style={{ minWidth: '10px' }} />
+      <Column filter filterMatchMode="contains" body={nameTemplate} field="affiliation" header="Affiliation" style={{ minWidth: '10px' }} filterPlaceholder="Search by affiliation" />
       <Column showFilterMenu={false} field="publications" body={(rowData) => rowData.publications.length} header="Number of publications" style={{ minWidth: '10px' }} />
     </DataTable>
   );
@@ -40,11 +39,17 @@ export default function AffiliationsView({
 
 AffiliationsView.propTypes = {
   affiliationsDataTable: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.string.isRequired,
+    datasource: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   })).isRequired,
   selectedAffiliation: PropTypes.shape({
-    affiliations: PropTypes.string,
+    datasource: PropTypes.string,
+    id: PropTypes.string,
+    name: PropTypes.string,
     publications: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
   setSelectedAffiliation: PropTypes.func.isRequired,
+  viewAllAffiliations: PropTypes.bool.isRequired,
 };

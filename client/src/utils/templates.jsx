@@ -4,8 +4,6 @@ import { Tooltip } from 'react-tooltip';
 
 import { getIdentifierLink } from './publications';
 
-const affiliationTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliations }} />;
-
 const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliationsHtml }} />;
 
 const allIdsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.allIdsHtml }} />;
@@ -123,8 +121,9 @@ const getAuthorsTooltipField = (rowData) => {
   return html;
 };
 
+const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.name }} />;
+
 export {
-  affiliationTemplate,
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
@@ -132,4 +131,5 @@ export {
   getAllIdsHtmlField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
+  nameTemplate,
 };
