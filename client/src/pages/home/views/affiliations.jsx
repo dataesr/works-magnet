@@ -8,7 +8,6 @@ export default function AffiliationsView({
   affiliationsDataTable,
   selectedAffiliation,
   setSelectedAffiliation,
-  viewAllAffiliations,
 }) {
   return (
     <DataTable
@@ -27,7 +26,7 @@ export default function AffiliationsView({
       stripedRows
       style={{ fontSize: '11px', lineHeight: '15px' }}
       tableStyle={{ minWidth: '50rem' }}
-      value={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.display)}
+      value={affiliationsDataTable}
     >
       <Column selectionMode="single" headerStyle={{ width: '3rem' }} />
       <Column field="datasource" header="Datasource" style={{ minWidth: '10px' }} />
@@ -51,5 +50,4 @@ AffiliationsView.propTypes = {
     publications: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
   setSelectedAffiliation: PropTypes.func.isRequired,
-  viewAllAffiliations: PropTypes.bool.isRequired,
 };

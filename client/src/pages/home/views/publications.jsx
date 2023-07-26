@@ -12,8 +12,6 @@ export default function PublicationsView({
   publicationsDataTable,
   selectedPublications,
   setSelectedPublications,
-  sortedPublications,
-  viewAllPublications,
 }) {
   return (
     <DataTable
@@ -32,7 +30,7 @@ export default function PublicationsView({
       stripedRows
       style={{ fontSize: '11px', lineHeight: '15px' }}
       tableStyle={{ minWidth: '50rem' }}
-      value={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => !sortedPublications.map((action) => action.id).includes(item.id))}
+      value={publicationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="allIdsHtml" header="Identifiers" body={allIdsTemplate} filter filterMatchMode="contains" />
@@ -62,6 +60,4 @@ PublicationsView.propTypes = {
     id: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  sortedPublications: PropTypes.array.isRequired,
-  viewAllPublications: PropTypes.bool.isRequired,
 };

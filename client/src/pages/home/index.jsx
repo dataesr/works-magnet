@@ -308,10 +308,9 @@ export default function Home() {
                   </Row>
                   <Profiler id="AffiliationsView" onRender={onRender}>
                     <AffiliationsView
-                      affiliationsDataTable={affiliationsDataTable}
+                      affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.display)}
                       selectedAffiliation={selectedAffiliation}
                       setSelectedAffiliation={setSelectedAffiliation}
-                      viewAllAffiliations={viewAllAffiliations}
                     />
                   </Profiler>
                 </>
@@ -355,11 +354,9 @@ export default function Home() {
                   <Profiler id="PublicationsView" onRender={onRender}>
 
                     <PublicationsView
-                      publicationsDataTable={publicationsDataTable}
+                      publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => !sortedPublications.map((action) => action.id).includes(item.id))}
                       selectedPublications={selectedPublications}
                       setSelectedPublications={setSelectedPublications}
-                      sortedPublications={sortedPublications}
-                      viewAllPublications={viewAllPublications}
                     />
                   </Profiler>
                 </>
