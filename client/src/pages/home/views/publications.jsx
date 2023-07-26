@@ -52,12 +52,17 @@ PublicationsView.propTypes = {
     identifier: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  setSelectedPublications: PropTypes.func.isRequired,
+  setSelectedPublications: PropTypes.func,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-  })).isRequired,
+  })),
+};
+
+PublicationsView.defaultProps = {
+  setSelectedPublications: () => {},
+  selectedPublications: [],
 };

@@ -8,7 +8,6 @@ import { Profiler, useEffect, useState } from 'react';
 import Actions from './actions';
 import Filters from './filters';
 import Metrics from './metrics';
-import SortedView from './views/sorted';
 import AffiliationsView from './views/affiliations';
 import PublicationsView from './views/publications';
 import { PageSpinner } from '../../components/spinner';
@@ -154,6 +153,7 @@ export default function Home() {
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
           authorsTooltip: getAuthorsTooltipField(publication),
+          status: 'sort',
         }));
     }
     setPublicationsDataTable(publicationsDataTableTmp);
@@ -206,22 +206,24 @@ export default function Home() {
 
   const tagPublications = (publications, action) => {
     console.time('tagPublications');
-    const newLines = publications.filter((publication) => !sortedPublications.map((item) => item.id).includes(publication.id));
-    const newActions = newLines.map((line) => ({ ...line, action }));
-    setSortedPublications([...sortedPublications, ...newActions]);
+    const publicationsDataTableTmp = [...publicationsDataTable];
+    const publicationIds = publications.map((publication) => publication.id);
+    publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
+    setPublicationsDataTable(publicationsDataTableTmp);
+    setSelectedPublications([]);
     console.timeEnd('tagPublications');
   };
 
   const tagAffiliation = (affiliation, action) => {
     console.time('tagAffiliation');
-    // list of kept publications from actions
-    const keptPublications = sortedPublications.filter((item) => item.action === 'keep').map((item) => item.id);
-    // if exclude, don't add kept publications
-    const publicationToAdd = affiliation.publications.filter((publication) => (action === 'exclude' ? !keptPublications.includes(publication.id) : true));
-    // if already add, don't add again
-    const newActions = publicationToAdd.filter((publication) => !sortedPublications.map((item) => item.id).includes(publication.id)).map((publication) => ({ ...publication, action }));
-    setSortedPublications([...sortedPublications, ...newActions]);
-    affiliation.display = false;
+    const publicationsDataTableTmp = [...publicationsDataTable];
+    const publicationIds = affiliation.publications.map((publication) => publication.id);
+    publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
+    setPublicationsDataTable(publicationsDataTableTmp);
+    const affiliationsDataTableTmp = [...affiliationsDataTable];
+    affiliationsDataTableTmp.find((aff) => aff.id === affiliation.id).display = false;
+    setAffiliationsDataTable(affiliationsDataTableTmp);
+    setSelectedAffiliation({});
     console.timeEnd('tagAffiliation');
   };
 
@@ -235,9 +237,6 @@ export default function Home() {
     console.timeEnd('checkSelectedAffiliation');
     return ret;
   };
-
-  const keptData = sortedPublications.filter((item) => item.action === 'keep');
-  const excludedData = sortedPublications.filter((item) => item.action === 'exclude');
 
   return (
     <>
@@ -267,7 +266,7 @@ export default function Home() {
           setOptions={setFormOptions}
         />
         <Tabs defaultActiveTab={0}>
-          <Tab label={`Affiliations view (${affiliationsDataTable.length})`}>
+          <Tab label={`Affiliations view (${affiliationsDataTable.filter((affiliation) => affiliation.display).length})`}>
             {
               affiliationsDataTable && (
                 <>
@@ -312,7 +311,7 @@ export default function Home() {
               )
             }
           </Tab>
-          <Tab label={`Publications to sort (${publicationsDataTable.length})`}>
+          <Tab label={`Publications to sort (${publicationsDataTable.filter((item) => item.status === 'sort').length})`}>
             {
               publicationsDataTable && (
                 <>
@@ -347,9 +346,8 @@ export default function Home() {
                     </Col>
                   </Row>
                   <Profiler id="PublicationsView" onRender={onRender}>
-
                     <PublicationsView
-                      publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => !sortedPublications.map((action) => action.id).includes(item.id))}
+                      publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => item.status === 'sort')}
                       selectedPublications={selectedPublications}
                       setSelectedPublications={setSelectedPublications}
                     />
@@ -358,19 +356,17 @@ export default function Home() {
               )
             }
           </Tab>
-          <Tab label={`Publications to keep (${keptData.length})`}>
+          <Tab label={`Publications to keep (${publicationsDataTable.filter((item) => item.status === 'keep').length})`}>
             <Profiler id="SortedView kept" onRender={onRender}>
-              <SortedView
-                setSortedPublications={setSortedPublications}
-                sortedPublications={keptData}
+              <PublicationsView
+                publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => item.status === 'keep')}
               />
             </Profiler>
           </Tab>
-          <Tab label={`Publications to exclude (${excludedData.length})`}>
+          <Tab label={`Publications to exclude (${publicationsDataTable.filter((item) => item.status === 'exclude').length})`}>
             <Profiler id="SortedView excluded" onRender={onRender}>
-              <SortedView
-                setSortedPublications={setSortedPublications}
-                sortedPublications={excludedData}
+              <PublicationsView
+                publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => item.status === 'exclude')}
               />
             </Profiler>
           </Tab>
