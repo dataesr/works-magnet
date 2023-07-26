@@ -48,18 +48,19 @@ export default function ActionsView({
 
   return (
     <DataTable
-      style={{ fontSize: '11px', lineHeight: '15px' }}
-      size="small"
-      value={sortedPublications}
+      currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      dataKey="id"
+      filterDisplay="row"
       paginator
+      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
-      tableStyle={{ minWidth: '50rem' }}
-      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-      currentPageReportTemplate="{first} to {last} of {totalRecords}"
-      filterDisplay="row"
       scrollable
+      size="small"
       stripedRows
+      style={{ fontSize: '11px', lineHeight: '15px' }}
+      tableStyle={{ minWidth: '50rem' }}
+      value={sortedPublications}
     >
       <Column field="action" header="Actions" body={actionsTemplate} showFilterMenu={false} style={{ minWidth: '130px' }} />
       <Column field="allIdsHtml" header="Identifiers" body={allIdsTemplate} filter filterMatchMode="contains" />
