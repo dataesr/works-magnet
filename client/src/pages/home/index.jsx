@@ -152,20 +152,27 @@ export default function Home() {
       publicationsDataTableTmp = data.results
         .map((publication) => ({
           ...publication,
-          action: sortedPublications.find((action) => action.id === publication.id)?.action || 'sort',
+          // action: sortedPublications.find((action) => action.id === publication.id)?.action || 'sort',
           affiliationsHtml: getAffiliationsHtmlField(publication),
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
           authorsTooltip: getAuthorsTooltipField(publication),
-        }))
-        .filter((item) => {
-          if (viewAllPublications) { return true; }
-          return !sortedPublications.map((action) => action.id).includes(item.id);
-        });
+        }));
+      // .filter((item) => {
+      //   if (viewAllPublications) { return true; }
+      //   return !sortedPublications.map((action) => action.id).includes(item.id);
+      // });
     }
     console.timeEnd('publicationsDataTableTmp');
     setPublicationsDataTable(publicationsDataTableTmp);
   }, [data, sortedPublications, viewAllPublications]);
+
+  useEffect(() => {
+    if (!viewAllPublications) {
+      const publicationsDataTableTmp = publicationsDataTable.filter((item) => !sortedPublications.map((action) => action.id).includes(item.id));
+      setPublicationsDataTable(publicationsDataTableTmp);
+    }
+  }, [viewAllPublications]);
 
   useEffect(() => {
     // Group by affiliation
