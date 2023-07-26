@@ -32,16 +32,7 @@ const {
   VITE_BSO_MAX_SIZE,
 } = import.meta.env;
 
-const onRender = (id, phase, actualTime, baseTime, startTime, endTime) => {
-  console.log(`>>>>> ${id} / ${phase} => ${actualTime} ms`);
-  // console.log(`Actual time: ${actualTime}`);
-  // console.log(`Base time: ${baseTime}`);
-  // console.log(`Start time: ${startTime}`);
-  // console.log(`End time: ${endTime}`);
-};
-
 const getRorAffiliations = (affiliations) => {
-  console.time('getRorAffiliations');
   const notRorAffiliations = [];
   const rorAffiliations = [];
   const regexp = /^(https:\/\/ror\.org\/|ror\.org\/){0,1}0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
@@ -49,13 +40,10 @@ const getRorAffiliations = (affiliations) => {
     // eslint-disable-next-line no-unused-expressions
     affiliation.match(regexp) ? rorAffiliations.push(affiliation) : notRorAffiliations.push(affiliation);
   });
-  console.timeEnd('getRorAffiliations');
   return { notRorAffiliations, rorAffiliations };
 };
 
 const getData = async (options) => {
-  console.time('getData');
-
   const promises = options?.datasources.map((datasource) => {
     switch (datasource) {
       case 'bso':
@@ -99,7 +87,6 @@ const getData = async (options) => {
     const { count } = await getBsoCount(options);
     data.total.bso = count;
   }
-
   // Deduplicate publications by DOI or by hal_id
   data.total.all = data.results.length;
   const deduplicatedPublications = {};
@@ -113,8 +100,6 @@ const getData = async (options) => {
   });
   data.results = Object.values(deduplicatedPublications);
   data.total.deduplicated = Object.values(deduplicatedPublications).length;
-  console.timeEnd('getData');
-
   return data;
 };
 
@@ -145,7 +130,6 @@ export default function Home() {
   };
 
   useEffect(() => {
-    console.time('publicationsDataTableTmp');
     let publicationsDataTableTmp = [];
     if (data) {
       publicationsDataTableTmp = data.results
@@ -159,9 +143,7 @@ export default function Home() {
         }));
     }
     setPublicationsDataTable(publicationsDataTableTmp);
-    console.timeEnd('publicationsDataTableTmp');
     // Group by affiliation
-    console.time('dataGroupedByAffiliation');
     const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '').replace('<em>', '').replace('</em>', '');
     let affiliationsDataTableTmp = {};
     if (data) {
@@ -203,21 +185,17 @@ export default function Home() {
       .sort((a, b) => b.publications.length - a.publications.length)
       .map((affiliation, index) => ({ ...affiliation, id: index.toString() }));
     setAffiliationsDataTable(affiliationsDataTableTmp);
-    console.timeEnd('dataGroupedByAffiliation');
   }, [data]);
 
   const tagPublications = (publications, action, setSelectedPublications) => {
-    console.time('tagPublications');
     const publicationsDataTableTmp = [...publicationsDataTable];
     const publicationIds = publications.map((publication) => publication.id);
     publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
     setPublicationsDataTable(publicationsDataTableTmp);
     setSelectedPublications([]);
-    console.timeEnd('tagPublications');
   };
 
   const tagAffiliations = (affiliations, action) => {
-    console.time('tagAffiliations');
     const publicationsDataTableTmp = [...publicationsDataTable];
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
     const publicationIds = affiliations.map((affiliation) => affiliation.publications.map((publication) => publication.id)).flat();
@@ -227,17 +205,14 @@ export default function Home() {
     affiliationsDataTableTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.display = false);
     setAffiliationsDataTable(affiliationsDataTableTmp);
     setSelectedAffiliations([]);
-    console.timeEnd('tagAffiliations');
   };
 
   const checkSelectedAffiliation = () => {
-    console.time('checkSelectedAffiliation');
     let ret = false;
     if (!selectedAffiliations) ret = true;
     if (Object.keys(selectedAffiliations)?.length === 0 && selectedAffiliations?.constructor === Object) {
       ret = true;
     }
-    console.timeEnd('checkSelectedAffiliation');
     return ret;
   };
 
