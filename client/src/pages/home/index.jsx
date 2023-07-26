@@ -158,9 +158,6 @@ export default function Home() {
     }
     setPublicationsDataTable(publicationsDataTableTmp);
     console.timeEnd('publicationsDataTableTmp');
-  }, [data]);
-
-  useEffect(() => {
     // Group by affiliation
     console.time('dataGroupedByAffiliation');
     const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '').replace('<em>', '').replace('</em>', '');
@@ -207,9 +204,9 @@ export default function Home() {
     console.timeEnd('dataGroupedByAffiliation');
   }, [data]);
 
-  const tagPublications = (lines, action) => {
+  const tagPublications = (publications, action) => {
     console.time('tagPublications');
-    const newLines = lines.filter((line) => !sortedPublications.map((item) => item.id).includes(line.id));
+    const newLines = publications.filter((publication) => !sortedPublications.map((item) => item.id).includes(publication.id));
     const newActions = newLines.map((line) => ({ ...line, action }));
     setSortedPublications([...sortedPublications, ...newActions]);
     console.timeEnd('tagPublications');
@@ -221,7 +218,6 @@ export default function Home() {
     const keptPublications = sortedPublications.filter((item) => item.action === 'keep').map((item) => item.id);
     // if exclude, don't add kept publications
     const publicationToAdd = affiliation.publications.filter((publication) => (action === 'exclude' ? !keptPublications.includes(publication.id) : true));
-
     // if already add, don't add again
     const newActions = publicationToAdd.filter((publication) => !sortedPublications.map((item) => item.id).includes(publication.id)).map((publication) => ({ ...publication, action }));
     setSortedPublications([...sortedPublications, ...newActions]);
@@ -237,7 +233,6 @@ export default function Home() {
       ret = true;
     }
     console.timeEnd('checkSelectedAffiliation');
-
     return ret;
   };
 
