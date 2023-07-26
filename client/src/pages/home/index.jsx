@@ -3,7 +3,7 @@
 /* eslint-disable no-case-declarations */
 import { Button, Checkbox, Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { Profiler, useEffect, useState } from 'react';
 
 import Actions from './actions';
 import Filters from './filters';
@@ -33,7 +33,16 @@ const {
   VITE_BSO_MAX_SIZE,
 } = import.meta.env;
 
+const onRender = (id, phase, actualTime, baseTime, startTime, endTime) => {
+  console.log(`>>>>> ${id} / ${phase} => ${actualTime} ms`);
+  // console.log(`Actual time: ${actualTime}`);
+  // console.log(`Base time: ${baseTime}`);
+  // console.log(`Start time: ${startTime}`);
+  // console.log(`End time: ${endTime}`);
+};
+
 const getRorAffiliations = (affiliations) => {
+  console.time('getRorAffiliations');
   const notRorAffiliations = [];
   const rorAffiliations = [];
   const regexp = /^(https:\/\/ror\.org\/|ror\.org\/){0,1}0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
@@ -41,10 +50,13 @@ const getRorAffiliations = (affiliations) => {
     // eslint-disable-next-line no-unused-expressions
     affiliation.match(regexp) ? rorAffiliations.push(affiliation) : notRorAffiliations.push(affiliation);
   });
+  console.timeEnd('getRorAffiliations');
   return { notRorAffiliations, rorAffiliations };
 };
 
 const getData = async (options) => {
+  console.time('getData');
+
   const promises = options?.datasources.map((datasource) => {
     switch (datasource) {
       case 'bso':
@@ -102,6 +114,8 @@ const getData = async (options) => {
   });
   data.results = Object.values(deduplicatedPublications);
   data.total.deduplicated = Object.values(deduplicatedPublications).length;
+  console.timeEnd('getData');
+
   return data;
 };
 
@@ -115,6 +129,8 @@ export default function Home() {
 
   const [publicationsDataTable, setPublicationsDataTable] = useState([]);
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
+
+  const [dataGroupedByAffiliation, setDataGroupedByAffiliation] = useState({});
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -131,6 +147,7 @@ export default function Home() {
 
   useEffect(() => {
     let publicationsDataTableTmp = [];
+    console.time('publicationsDataTableTmp');
     if (data) {
       publicationsDataTableTmp = data.results
         .map((publication) => ({
@@ -146,48 +163,54 @@ export default function Home() {
           return !sortedPublications.map((action) => action.id).includes(item.id);
         });
     }
-
+    console.timeEnd('publicationsDataTableTmp');
     setPublicationsDataTable(publicationsDataTableTmp);
   }, [data, sortedPublications, viewAllPublications]);
 
   useEffect(() => {
     // Group by affiliation
     const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
-    const dataGroupedByAffiliation = {};
+    const dataGroupedByAffiliationTmp = {};
+    console.time('dataGroupedByAffiliation');
     if (data) {
       data.results.forEach((publication) => {
         switch (publication.datasource) {
           case 'bso':
             (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
               const affiliationName = normalizedName(affiliation);
-              if (!Object.keys(dataGroupedByAffiliation).includes(affiliationName)) {
-                dataGroupedByAffiliation[affiliationName] = {
+              if (!Object.keys(dataGroupedByAffiliationTmp).includes(affiliationName)) {
+                dataGroupedByAffiliationTmp[affiliationName] = {
                   datasource: 'bso',
                   name: affiliation,
                   publications: [],
                 };
               }
-              dataGroupedByAffiliation[affiliationName].publications.push(publication);
+              dataGroupedByAffiliationTmp[affiliationName].publications.push(publication);
             });
             break;
           case 'openalex':
             (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
               const affiliationName = normalizedName(affiliation);
-              if (!Object.keys(dataGroupedByAffiliation).includes(affiliationName)) {
-                dataGroupedByAffiliation[normalizedName(affiliation)] = {
+              if (!Object.keys(dataGroupedByAffiliationTmp).includes(affiliationName)) {
+                dataGroupedByAffiliationTmp[normalizedName(affiliation)] = {
                   datasource: 'openalex',
                   name: affiliation,
                   publications: [],
                 };
               }
-              dataGroupedByAffiliation[affiliationName].publications.push(publication);
+              dataGroupedByAffiliationTmp[affiliationName].publications.push(publication);
             }));
             break;
           default:
         }
       });
     }
+    console.timeEnd('dataGroupedByAffiliation');
+    setDataGroupedByAffiliation(dataGroupedByAffiliationTmp);
+  }, [data]);
 
+  useEffect(() => {
+    console.time('affiliationsDataTableTmp');
     const affiliationsDataTableTmp = Object.values(dataGroupedByAffiliation)
       .sort((a, b) => b.publications.length - a.publications.length)
       .map((affiliation, index) => ({
@@ -205,17 +228,20 @@ export default function Home() {
         }
         return true;
       });
-
+    console.timeEnd('affiliationsDataTableTmp');
     setAffiliationsDataTable(affiliationsDataTableTmp);
-  }, [data, sortedPublications, viewAllAffiliations]);
+  }, [dataGroupedByAffiliation, sortedPublications, viewAllAffiliations]);
 
   const tagLines = (lines, action) => {
+    console.time('tagLines');
     const newLines = lines.filter((line) => !sortedPublications.map((item) => item.id).includes(line.id));
     const newActions = newLines.map((line) => ({ ...line, action }));
+    console.timeEnd('tagLines');
     setSortedPublications([...sortedPublications, ...newActions]);
   };
 
   const tagAffiliation = (affiliation, action) => {
+    console.time('tagAffiliation');
     // list of keeped publications from actions
     const keepedPublications = sortedPublications.filter((item) => item.action === 'keep').map((item) => item.id);
     // if exclude, don't add keeped publications
@@ -223,22 +249,31 @@ export default function Home() {
 
     // if already add, don't add again
     const newActions = publicationToAdd.filter((publication) => !sortedPublications.map((item) => item.id).includes(publication.id)).map((publication) => ({ ...publication, action }));
-
+    console.time('tagAffiliation');
     setSortedPublications([...sortedPublications, ...newActions]);
   };
 
   const checkSelectedAffiliation = () => {
-    if (!selectedAffiliation) {
-      return true;
-    }
+    console.time('checkSelectedAffiliation');
+    let ret = false;
+    if (!selectedAffiliation) ret = true;
     if (Object.keys(selectedAffiliation)?.length === 0 && selectedAffiliation?.constructor === Object) {
-      return true;
+      ret = true;
     }
-    return false;
+    console.timeEnd('checkSelectedAffiliation');
+
+    return ret;
   };
 
-  const keepedData = sortedPublications.filter((action) => action.action === 'keep');
-  const excludedData = sortedPublications.filter((action) => action.action === 'exclude');
+  const filterSortedPublications = (action) => {
+    console.time('filterSortedPublications');
+    const sortedData = sortedPublications.filter((item) => item.action === action);
+    console.timeEnd('filterSortedPublications');
+    return sortedData;
+  };
+
+  const keepedData = filterSortedPublications('keep');
+  const excludedData = filterSortedPublications('exclude');
 
   return (
     <>
@@ -267,7 +302,7 @@ export default function Home() {
           setSortedPublications={setSortedPublications}
           setOptions={setFormOptions}
         />
-        <Tabs defaultActiveTab={1}>
+        <Tabs defaultActiveTab={0}>
           <Tab label={`Affiliations view (${affiliationsDataTable.length})`}>
             {
               affiliationsDataTable && (
@@ -302,11 +337,13 @@ export default function Home() {
                       </Button>
                     </Col>
                   </Row>
-                  <AffiliationsView
-                    affiliationsDataTable={affiliationsDataTable}
-                    selectedAffiliation={selectedAffiliation}
-                    setSelectedAffiliation={setSelectedAffiliation}
-                  />
+                  <Profiler id="AffiliationsView" onRender={onRender}>
+                    <AffiliationsView
+                      affiliationsDataTable={affiliationsDataTable}
+                      selectedAffiliation={selectedAffiliation}
+                      setSelectedAffiliation={setSelectedAffiliation}
+                    />
+                  </Profiler>
                 </>
               )
             }
@@ -345,26 +382,33 @@ export default function Home() {
                       </Button>
                     </Col>
                   </Row>
-                  <PublicationsView
-                    publicationsDataTable={publicationsDataTable}
-                    selectedPublications={selectedPublications}
-                    setSelectedPublications={setSelectedPublications}
-                  />
+                  <Profiler id="PublicationsView" onRender={onRender}>
+
+                    <PublicationsView
+                      publicationsDataTable={publicationsDataTable}
+                      selectedPublications={selectedPublications}
+                      setSelectedPublications={setSelectedPublications}
+                    />
+                  </Profiler>
                 </>
               )
             }
           </Tab>
           <Tab label={`Publications to keep (${keepedData.length})`}>
-            <SortedView
-              setSortedPublications={setSortedPublications}
-              sortedPublications={keepedData}
-            />
+            <Profiler id="SortedView Keeped" onRender={onRender}>
+              <SortedView
+                setSortedPublications={setSortedPublications}
+                sortedPublications={keepedData}
+              />
+            </Profiler>
           </Tab>
           <Tab label={`Publications to exclude (${excludedData.length})`}>
-            <SortedView
-              setSortedPublications={setSortedPublications}
-              sortedPublications={excludedData}
-            />
+            <Profiler id="SortedView Excluded" onRender={onRender}>
+              <SortedView
+                setSortedPublications={setSortedPublications}
+                sortedPublications={excludedData}
+              />
+            </Profiler>
           </Tab>
         </Tabs>
       </Container>
