@@ -43,11 +43,11 @@ AffiliationsView.propTypes = {
     name: PropTypes.string.isRequired,
     publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   })).isRequired,
-  selectedAffiliation: PropTypes.arrayOf(PropTypes.shape({
+  selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     datasource: PropTypes.string,
     id: PropTypes.string,
     name: PropTypes.string,
     publications: PropTypes.arrayOf(PropTypes.object),
   })).isRequired,
-  setSelectedAffiliation: PropTypes.func.isRequired,
+  setSelectedAffiliations: PropTypes.func.isRequired,
 };
