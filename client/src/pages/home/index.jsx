@@ -304,8 +304,8 @@ export default function Home() {
                   <Profiler id="AffiliationsView" onRender={onRender}>
                     <AffiliationsView
                       affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.display)}
-                      selectedAffiliation={selectedAffiliations}
-                      setSelectedAffiliation={setSelectedAffiliations}
+                      selectedAffiliations={selectedAffiliations}
+                      setSelectedAffiliations={setSelectedAffiliations}
                     />
                   </Profiler>
                 </>
