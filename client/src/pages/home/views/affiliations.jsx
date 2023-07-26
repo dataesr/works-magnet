@@ -6,8 +6,8 @@ import { nameTemplate } from '../../../utils/templates';
 
 export default function AffiliationsView({
   affiliationsDataTable,
-  selectedAffiliation,
-  setSelectedAffiliation,
+  selectedAffiliations,
+  setSelectedAffiliations,
 }) {
   return (
     <DataTable
@@ -19,8 +19,8 @@ export default function AffiliationsView({
       rowsPerPageOptions={[25, 50, 100, 200]}
       dataKey="id"
       metaKeySelection
-      onSelectionChange={(e) => setSelectedAffiliation(e.value)}
-      selection={selectedAffiliation}
+      onSelectionChange={(e) => setSelectedAffiliations(e.value)}
+      selection={selectedAffiliations}
       scrollable
       size="small"
       stripedRows

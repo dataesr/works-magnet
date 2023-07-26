@@ -120,7 +120,7 @@ const getData = async (options) => {
 
 export default function Home() {
   const [formOptions, setFormOptions] = useState({});
-  const [selectedAffiliation, setSelectedAffiliation] = useState([]);
+  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [sortedPublications, setSortedPublications] = useState([]);
   const [viewAllAffiliations, setViewAllAffiliations] = useState(false);
@@ -214,25 +214,25 @@ export default function Home() {
     console.timeEnd('tagPublications');
   };
 
-  const tagAffiliation = (affiliation, action) => {
-    console.time('tagAffiliation');
+  const tagAffiliations = (affiliations, action) => {
+    console.time('tagAffiliations');
     const publicationsDataTableTmp = [...publicationsDataTable];
-    const affiliationIds = affiliation.map((aff) => aff.id);
-    const publicationIds = affiliation.map((aff) => aff.publications.map((publication) => publication.id)).flat();
+    const affiliationIds = affiliations.map((affiliation) => affiliation.id);
+    const publicationIds = affiliations.map((affiliation) => affiliation.publications.map((publication) => publication.id)).flat();
     publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
     setPublicationsDataTable(publicationsDataTableTmp);
     const affiliationsDataTableTmp = [...affiliationsDataTable];
-    affiliationsDataTableTmp.filter((aff) => affiliationIds.includes(aff.id)).map((aff) => aff.display = false);
+    affiliationsDataTableTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.display = false);
     setAffiliationsDataTable(affiliationsDataTableTmp);
-    setSelectedAffiliation([]);
-    console.timeEnd('tagAffiliation');
+    setSelectedAffiliations([]);
+    console.timeEnd('tagAffiliations');
   };
 
   const checkSelectedAffiliation = () => {
     console.time('checkSelectedAffiliation');
     let ret = false;
-    if (!selectedAffiliation) ret = true;
-    if (Object.keys(selectedAffiliation)?.length === 0 && selectedAffiliation?.constructor === Object) {
+    if (!selectedAffiliations) ret = true;
+    if (Object.keys(selectedAffiliations)?.length === 0 && selectedAffiliations?.constructor === Object) {
       ret = true;
     }
     console.timeEnd('checkSelectedAffiliation');
@@ -285,7 +285,7 @@ export default function Home() {
                         className="fr-mr-1w"
                         disabled={checkSelectedAffiliation()}
                         icon="ri-check-fill"
-                        onClick={() => { tagAffiliation(selectedAffiliation, 'keep'); }}
+                        onClick={() => { tagAffiliations(selectedAffiliations, 'keep'); }}
                         size="sm"
                       >
                         Keep all
@@ -294,7 +294,7 @@ export default function Home() {
                         className="fr-mb-1w"
                         disabled={checkSelectedAffiliation()}
                         icon="ri-close-fill"
-                        onClick={() => { tagAffiliation(selectedAffiliation, 'exclude'); }}
+                        onClick={() => { tagAffiliations(selectedAffiliations, 'exclude'); }}
                         size="sm"
                       >
                         Exclude all
@@ -304,8 +304,8 @@ export default function Home() {
                   <Profiler id="AffiliationsView" onRender={onRender}>
                     <AffiliationsView
                       affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.display)}
-                      selectedAffiliation={selectedAffiliation}
-                      setSelectedAffiliation={setSelectedAffiliation}
+                      selectedAffiliation={selectedAffiliations}
+                      setSelectedAffiliation={setSelectedAffiliations}
                     />
                   </Profiler>
                 </>
