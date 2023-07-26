@@ -158,7 +158,7 @@ export default function Home() {
                   publications: [],
                 };
               }
-              affiliationsDataTableTmp[affiliationName].publications.push(publication);
+              affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
             });
             break;
           case 'openalex':
@@ -172,7 +172,7 @@ export default function Home() {
                   publications: [],
                 };
               }
-              affiliationsDataTableTmp[affiliationName].publications.push(publication);
+              affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
             }));
             break;
           default:
@@ -195,7 +195,7 @@ export default function Home() {
   const tagAffiliations = (affiliations, action) => {
     const publicationsDataTableTmp = [...publicationsDataTable];
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
-    const publicationIds = affiliations.map((affiliation) => affiliation.publications.map((publication) => publication.id)).flat();
+    const publicationIds = affiliations.map((affiliation) => affiliation.publications).flat();
     publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
     setPublicationsDataTable(publicationsDataTableTmp);
     const affiliationsDataTableTmp = [...affiliationsDataTable];

@@ -15,7 +15,7 @@ export default function AffiliationsView({
       dataKey="id"
       filterDisplay="row"
       metaKeySelection
-      onSelectionChange={(e) => setSelectedAffiliations(e.value)}
+      onSelectionChange={(e) => setSelectedAffiliations(e.value.map((affiliation) => ({ id: affiliation.id, publications: affiliation.publications })))}
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
@@ -41,13 +41,11 @@ AffiliationsView.propTypes = {
     datasource: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    publications: PropTypes.arrayOf(PropTypes.object).isRequired,
+    publications: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
-    datasource: PropTypes.string,
     id: PropTypes.string,
-    name: PropTypes.string,
-    publications: PropTypes.arrayOf(PropTypes.object),
+    publications: PropTypes.arrayOf(PropTypes.string),
   })).isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,
 };

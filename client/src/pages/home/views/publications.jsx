@@ -19,7 +19,7 @@ export default function PublicationsView({
       dataKey="id"
       filterDisplay="row"
       metaKeySelection={false}
-      onSelectionChange={(e) => setSelectedPublicationIds(e.value.map((item) => item.id))}
+      onSelectionChange={(e) => setSelectedPublicationIds(e.value.map((publication) => publication.id))}
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
@@ -33,12 +33,12 @@ export default function PublicationsView({
       value={publicationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-      <Column field="allIdsHtml" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" />
+      <Column field="allIdsHtml" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by id" />
       <Column field="datasource" header="Source" style={{ minWidth: '10px' }} />
       <Column field="type" header="Type" style={{ minWidth: '10px' }} />
-      <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} filter filterMatchMode="contains" style={{ minWidth: '500px' }} />
-      <Column field="authorsHtml" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" style={{ minWidth: '10px' }} />
-      <Column field="title" header="Title" filter filterMatchMode="contains" showFilterMenu={false} style={{ minWidth: '10px' }} />
+      <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by affiliation" style={{ minWidth: '500px' }} />
+      <Column field="authorsHtml" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by author" style={{ minWidth: '10px' }} />
+      <Column field="title" header="Title" filter filterMatchMode="contains" showFilterMenu={false} filterPlaceholder="Search by title" style={{ minWidth: '10px' }} />
     </DataTable>
   );
 }

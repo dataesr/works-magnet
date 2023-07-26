@@ -26,7 +26,7 @@ export default function Filters({ sendQuery }) {
   const [dataIdentifiers, setDataIdentifiers] = useState(searchParams.size ? searchParams.getAll('dataIdentifiers') : identifiers);
   const [datasources, setDatasources] = useState(searchParams.size ? searchParams.getAll('datasources') : sources.map((source) => source.key));
   const [endYear, setEndYear] = useState(searchParams.size ? searchParams.getAll('endYear')?.[0] : '2021');
-  const [moreOptions, setMoreOptions] = useState(searchParams.size ? searchParams.getAll('moreOptions')?.[0] : false);
+  const [moreOptions, setMoreOptions] = useState(searchParams.size ? searchParams.getAll('moreOptions')?.[0] === 'true' : false);
   const [startYear, setStartYear] = useState(searchParams.size ? searchParams.getAll('startYear')?.[0] : '2021');
 
   useEffect(() => {
