@@ -106,9 +106,9 @@ const getData = async (options) => {
 export default function Home() {
   const [formOptions, setFormOptions] = useState({});
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
-  const [selectedPublications1, setSelectedPublications1] = useState([]);
-  const [selectedPublications2, setSelectedPublications2] = useState([]);
-  const [selectedPublications3, setSelectedPublications3] = useState([]);
+  const [selectedPublicationIds1, setSelectedPublicationIds1] = useState([]);
+  const [selectedPublicationIds2, setSelectedPublicationIds2] = useState([]);
+  const [selectedPublicationIds3, setSelectedPublicationIds3] = useState([]);
   const [sortedPublications, setSortedPublications] = useState([]);
   const [viewAllAffiliations, setViewAllAffiliations] = useState(false);
   const [viewAllPublications, setViewAllPublications] = useState(false);
@@ -187,9 +187,8 @@ export default function Home() {
     setAffiliationsDataTable(affiliationsDataTableTmp);
   }, [data]);
 
-  const tagPublications = (publications, action, setSelectedPublications) => {
+  const tagPublications = (publicationIds, action, setSelectedPublications) => {
     const publicationsDataTableTmp = [...publicationsDataTable];
-    const publicationIds = publications.map((publication) => publication.id);
     publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
     setPublicationsDataTable(publicationsDataTableTmp);
     setSelectedPublications([]);
@@ -298,18 +297,18 @@ export default function Home() {
               <Col className="text-right">
                 <Button
                   className="fr-mr-1w"
-                  disabled={selectedPublications1.length === 0}
+                  disabled={selectedPublicationIds1.length === 0}
                   icon="ri-check-fill"
-                  onClick={() => { tagPublications(selectedPublications1, 'keep', setSelectedPublications1); }}
+                  onClick={() => { tagPublications(selectedPublicationIds1, 'keep', setSelectedPublicationIds1); }}
                   size="sm"
                 >
                   Keep
                 </Button>
                 <Button
                   className="fr-mb-1w"
-                  disabled={selectedPublications1.length === 0}
+                  disabled={selectedPublicationIds1.length === 0}
                   icon="ri-close-fill"
-                  onClick={() => { tagPublications(selectedPublications1, 'exclude', setSelectedPublications1); }}
+                  onClick={() => { tagPublications(selectedPublicationIds1, 'exclude', setSelectedPublicationIds1); }}
                   size="sm"
                 >
                   Exclude
@@ -320,8 +319,8 @@ export default function Home() {
               <Col>
                 <PublicationsView
                   publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => item.status === 'sort')}
-                  selectedPublications={selectedPublications1}
-                  setSelectedPublications={setSelectedPublications1}
+                  selectedPublicationIds={selectedPublicationIds1}
+                  setSelectedPublicationIds={setSelectedPublicationIds1}
                 />
               </Col>
             </Row>
@@ -339,18 +338,18 @@ export default function Home() {
               <Col className="text-right">
                 <Button
                   className="fr-mr-1w"
-                  disabled={selectedPublications2.length === 0}
+                  disabled={selectedPublicationIds2.length === 0}
                   icon="ri-check-fill"
-                  onClick={() => { tagPublications(selectedPublications2, 'sort', setSelectedPublications2); }}
+                  onClick={() => { tagPublications(selectedPublicationIds2, 'sort', setSelectedPublicationIds2); }}
                   size="sm"
                 >
                   Sort
                 </Button>
                 <Button
                   className="fr-mb-1w"
-                  disabled={selectedPublications2.length === 0}
+                  disabled={selectedPublicationIds2.length === 0}
                   icon="ri-close-fill"
-                  onClick={() => { tagPublications(selectedPublications2, 'exclude', setSelectedPublications2); }}
+                  onClick={() => { tagPublications(selectedPublicationIds2, 'exclude', setSelectedPublicationIds2); }}
                   size="sm"
                 >
                   Exclude
@@ -361,8 +360,8 @@ export default function Home() {
               <Col>
                 <PublicationsView
                   publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => item.status === 'keep')}
-                  selectedPublications={selectedPublications2}
-                  setSelectedPublications={setSelectedPublications2}
+                  selectedPublicationIds={selectedPublicationIds2}
+                  setSelectedPublicationIds={setSelectedPublicationIds2}
                 />
               </Col>
             </Row>
@@ -380,18 +379,18 @@ export default function Home() {
               <Col className="text-right">
                 <Button
                   className="fr-mr-1w"
-                  disabled={selectedPublications3.length === 0}
+                  disabled={selectedPublicationIds3.length === 0}
                   icon="ri-check-fill"
-                  onClick={() => { tagPublications(selectedPublications3, 'sort', setSelectedPublications3); }}
+                  onClick={() => { tagPublications(selectedPublicationIds3, 'sort', setSelectedPublicationIds3); }}
                   size="sm"
                 >
                   Sort
                 </Button>
                 <Button
                   className="fr-mb-1w"
-                  disabled={selectedPublications3.length === 0}
+                  disabled={selectedPublicationIds3.length === 0}
                   icon="ri-close-fill"
-                  onClick={() => { tagPublications(selectedPublications3, 'keep', setSelectedPublications3); }}
+                  onClick={() => { tagPublications(selectedPublicationIds3, 'keep', setSelectedPublicationIds3); }}
                   size="sm"
                 >
                   Keep
@@ -402,8 +401,8 @@ export default function Home() {
               <Col>
                 <PublicationsView
                   publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => item.status === 'exclude')}
-                  selectedPublications={selectedPublications3}
-                  setSelectedPublications={setSelectedPublications3}
+                  selectedPublicationIds={selectedPublicationIds3}
+                  setSelectedPublicationIds={setSelectedPublicationIds3}
                 />
               </Col>
             </Row>
