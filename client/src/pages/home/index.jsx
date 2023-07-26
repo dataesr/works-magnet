@@ -219,11 +219,11 @@ export default function Home() {
     console.timeEnd('dataGroupedByAffiliation');
   }, [data]);
 
-  const tagLines = (lines, action) => {
-    console.time('tagLines');
+  const tagPublications = (lines, action) => {
+    console.time('tagPublications');
     const newLines = lines.filter((line) => !sortedPublications.map((item) => item.id).includes(line.id));
     const newActions = newLines.map((line) => ({ ...line, action }));
-    console.timeEnd('tagLines');
+    console.timeEnd('tagPublications');
     setSortedPublications([...sortedPublications, ...newActions]);
   };
 
@@ -355,7 +355,7 @@ export default function Home() {
                         className="fr-mr-1w"
                         disabled={selectedPublications.length === 0}
                         icon="ri-check-fill"
-                        onClick={() => { tagLines(selectedPublications, 'keep'); }}
+                        onClick={() => { tagPublications(selectedPublications, 'keep'); }}
                         size="sm"
                       >
                         Keep
@@ -364,7 +364,7 @@ export default function Home() {
                         className="fr-mb-1w"
                         disabled={selectedPublications.length === 0}
                         icon="ri-close-fill"
-                        onClick={() => { tagLines(selectedPublications, 'exclude'); }}
+                        onClick={() => { tagPublications(selectedPublications, 'exclude'); }}
                         size="sm"
                       >
                         Exclude
