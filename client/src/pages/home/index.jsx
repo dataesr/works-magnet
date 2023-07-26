@@ -142,7 +142,13 @@ export default function Home() {
     }
     setPublicationsDataTable(publicationsDataTableTmp);
     // Group by affiliation
-    const normalizedName = (name) => name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '').replace('<em>', '').replace('</em>', '');
+    const normalizedName = (name) => name
+      .toLowerCase()
+      .replaceAll('<em>', '')
+      .replaceAll('</em>', '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]/g, '');
     let affiliationsDataTableTmp = {};
     if (data) {
       data.results.forEach((publication) => {
@@ -152,7 +158,6 @@ export default function Home() {
               const affiliationName = normalizedName(affiliation);
               if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
                 affiliationsDataTableTmp[affiliationName] = {
-                  datasource: 'bso',
                   display: true,
                   name: affiliation,
                   publications: [],
@@ -166,7 +171,6 @@ export default function Home() {
               const affiliationName = normalizedName(affiliation);
               if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
                 affiliationsDataTableTmp[affiliationName] = {
-                  datasource: 'openalex',
                   display: true,
                   name: affiliation,
                   publications: [],
