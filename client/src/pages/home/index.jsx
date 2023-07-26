@@ -120,7 +120,7 @@ const getData = async (options) => {
 
 export default function Home() {
   const [formOptions, setFormOptions] = useState({});
-  const [selectedAffiliation, setSelectedAffiliation] = useState({});
+  const [selectedAffiliation, setSelectedAffiliation] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [sortedPublications, setSortedPublications] = useState([]);
   const [viewAllAffiliations, setViewAllAffiliations] = useState(false);
@@ -217,13 +217,14 @@ export default function Home() {
   const tagAffiliation = (affiliation, action) => {
     console.time('tagAffiliation');
     const publicationsDataTableTmp = [...publicationsDataTable];
-    const publicationIds = affiliation.publications.map((publication) => publication.id);
+    const affiliationIds = affiliation.map((aff) => aff.id);
+    const publicationIds = affiliation.map((aff) => aff.publications.map((publication) => publication.id)).flat();
     publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
     setPublicationsDataTable(publicationsDataTableTmp);
     const affiliationsDataTableTmp = [...affiliationsDataTable];
-    affiliationsDataTableTmp.find((aff) => aff.id === affiliation.id).display = false;
+    affiliationsDataTableTmp.filter((aff) => affiliationIds.includes(aff.id)).map((aff) => aff.display = false);
     setAffiliationsDataTable(affiliationsDataTableTmp);
-    setSelectedAffiliation({});
+    setSelectedAffiliation([]);
     console.timeEnd('tagAffiliation');
   };
 
