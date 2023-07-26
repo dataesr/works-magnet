@@ -84,7 +84,7 @@ const getData = async (options) => {
         return p;
       default:
         // eslint-disable-next-line no-console
-        console.error(`Datasoure : ${datasource} is badly formatted and shoud be one of BSO or OpenAlex`);
+        console.error(`Datasoure : ${datasource} is badly formatted and should be one of BSO or OpenAlex`);
         return Promise.resolve();
     }
   });

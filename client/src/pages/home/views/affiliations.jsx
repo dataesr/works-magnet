@@ -12,16 +12,16 @@ export default function AffiliationsView({
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      dataKey="id"
       filterDisplay="row"
+      metaKeySelection
+      onSelectionChange={(e) => setSelectedAffiliations(e.value)}
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
-      dataKey="id"
-      metaKeySelection
-      onSelectionChange={(e) => setSelectedAffiliations(e.value)}
-      selection={selectedAffiliations}
       scrollable
+      selection={selectedAffiliations}
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '15px' }}
