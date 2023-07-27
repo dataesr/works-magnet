@@ -6,6 +6,8 @@ import {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  statusFilterTemplate,
+  statusTemplate,
 } from '../../../utils/templates';
 
 export default function PublicationsView({
@@ -33,6 +35,7 @@ export default function PublicationsView({
       value={publicationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
+      <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
       <Column field="allIdsHtml" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by id" />
       <Column field="datasource" header="Source" style={{ minWidth: '10px' }} />
       <Column field="type" header="Type" style={{ minWidth: '10px' }} />

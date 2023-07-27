@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
-import { Button, Checkbox, Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
+import { Button, Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 

@@ -1,6 +1,8 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
+import { Badge } from '@dataesr/react-dsfr';
 import { Tooltip } from 'react-tooltip';
+import { Dropdown } from 'primereact/dropdown';
 
 import { getIdLink } from './publications';
 
@@ -123,6 +125,37 @@ const getAuthorsTooltipField = (rowData) => {
 
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.name }} />;
 
+const getStatusType = (status) => {
+  let type;
+  switch (status) {
+  case 'keep':
+    type = 'success';
+    break;
+  case 'exclude':
+    type = 'error';
+    break;
+  default:
+    type = 'info';
+    break;
+  }
+  return type;
+};
+
+const statusTemplate = (rowData) => <Badge text={rowData?.status ?? rowData} type={getStatusType(rowData?.status ?? rowData)} />;
+
+const statusFilterTemplate = (options) => (
+  <Dropdown
+    className="p-column-filter"
+    itemTemplate={statusTemplate}
+    onChange={(e) => options.filterApplyCallback(e.value)}
+    options={['exclude', 'keep', 'sort']}
+    placeholder="Select One"
+    showClear
+    style={{ minWidth: '12rem' }}
+    value={options.value}
+  />
+);
+
 export {
   affiliationsTemplate,
   allIdsTemplate,
@@ -132,4 +165,6 @@ export {
   getAuthorsHtmlField,
   getAuthorsTooltipField,
   nameTemplate,
+  statusFilterTemplate,
+  statusTemplate,
 };

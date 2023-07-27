@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 
-import { nameTemplate } from '../../../utils/templates';
+import {
+  nameTemplate,
+  statusFilterTemplate,
+  statusTemplate,
+} from '../../../utils/templates';
 
 export default function AffiliationsView({
   affiliationsDataTable,
@@ -29,7 +33,7 @@ export default function AffiliationsView({
       value={affiliationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-      <Column field="status" header="Status" style={{ minWidth: '10px' }} />
+      <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" body={nameTemplate} field="name" header="Affiliation" style={{ minWidth: '10px' }} filterField="nameTxt" filterPlaceholder="Search by affiliation" />
       <Column showFilterMenu={false} field="publications" body={(rowData) => rowData.publications.length} header="Number of publications" style={{ minWidth: '10px' }} />
     </DataTable>
@@ -42,12 +46,14 @@ AffiliationsView.propTypes = {
     name: PropTypes.string.isRequired,
     nameTxt: PropTypes.string.isRequired,
     publications: PropTypes.arrayOf(PropTypes.string).isRequired,
+    status: PropTypes.string.isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     nameTxt: PropTypes.string.isRequired,
     publications: PropTypes.arrayOf(PropTypes.string).isRequired,
+    status: PropTypes.string.isRequired,
   })).isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,
 };
