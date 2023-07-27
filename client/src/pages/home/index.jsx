@@ -362,7 +362,7 @@ export default function Home() {
                 <Button
                   className="fr-mr-1w"
                   disabled={selectedPublications2.length === 0}
-                  icon="ri-check-fill"
+                  icon="ri-question-mark"
                   onClick={() => tagPublications(selectedPublications2, 'sort', setSelectedPublications2)}
                   size="sm"
                 >
@@ -403,7 +403,7 @@ export default function Home() {
                 <Button
                   className="fr-mr-1w"
                   disabled={selectedPublications3.length === 0}
-                  icon="ri-check-fill"
+                  icon="ri-question-mark"
                   onClick={() => tagPublications(selectedPublications3, 'sort', setSelectedPublications3)}
                   size="sm"
                 >
@@ -412,7 +412,7 @@ export default function Home() {
                 <Button
                   className="fr-mb-1w"
                   disabled={selectedPublications3.length === 0}
-                  icon="ri-close-fill"
+                  icon="ri-check-fill"
                   onClick={() => tagPublications(selectedPublications3, 'keep', setSelectedPublications3)}
                   size="sm"
                 >
