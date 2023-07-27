@@ -106,6 +106,7 @@ const getData = async (options) => {
 export default function Home() {
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
   const [formOptions, setFormOptions] = useState({});
+  const [isLoadingAffiliations, setIsLoadingAffiliations] = useState(false);
   const [publicationsDataTable, setPublicationsDataTable] = useState([]);
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedPublications1, setSelectedPublications1] = useState([]);
@@ -127,6 +128,54 @@ export default function Home() {
     refetch();
   };
 
+  const groupByAffiliations = (publications) => {
+    setIsLoadingAffiliations(true);
+    const normalizedName = (name) => name
+      .toLowerCase()
+      .replaceAll('<em>', '')
+      .replaceAll('</em>', '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]/g, '');
+    let affiliationsDataTableTmp = {};
+    publications.filter((publication) => publication.status === 'sort').forEach((publication) => {
+      switch (publication.datasource) {
+        case 'bso':
+          (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
+            const affiliationName = normalizedName(affiliation);
+            if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
+              affiliationsDataTableTmp[affiliationName] = {
+                name: affiliation,
+                publications: [],
+                status: 'sort',
+              };
+            }
+            affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
+          });
+          break;
+        case 'openalex':
+          (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
+            const affiliationName = normalizedName(affiliation);
+            if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
+              affiliationsDataTableTmp[affiliationName] = {
+                name: affiliation,
+                publications: [],
+                status: 'sort',
+              };
+            }
+            affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
+          }));
+          break;
+        default:
+      }
+    });
+    affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
+      .sort((a, b) => b.publications.length - a.publications.length)
+      .map((affiliation, index) => ({ ...affiliation, id: index.toString() }));
+    setAffiliationsDataTable(affiliationsDataTableTmp);
+    setIsLoadingAffiliations(false);
+  };
+
   useEffect(() => {
     let publicationsDataTableTmp = [];
     if (data) {
@@ -141,52 +190,8 @@ export default function Home() {
         }));
     }
     setPublicationsDataTable(publicationsDataTableTmp);
-    // Group by affiliation
-    const normalizedName = (name) => name
-      .toLowerCase()
-      .replaceAll('<em>', '')
-      .replaceAll('</em>', '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9]/g, '');
-    let affiliationsDataTableTmp = {};
-    if (data) {
-      data.results.forEach((publication) => {
-        switch (publication.datasource) {
-          case 'bso':
-            (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
-              const affiliationName = normalizedName(affiliation);
-              if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
-                affiliationsDataTableTmp[affiliationName] = {
-                  name: affiliation,
-                  publications: [],
-                  status: 'sort',
-                };
-              }
-              affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
-            });
-            break;
-          case 'openalex':
-            (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
-              const affiliationName = normalizedName(affiliation);
-              if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
-                affiliationsDataTableTmp[affiliationName] = {
-                  name: affiliation,
-                  publications: [],
-                  status: 'sort',
-                };
-              }
-              affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
-            }));
-            break;
-          default:
-        }
-      });
-    }
-    affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
-      .sort((a, b) => b.publications.length - a.publications.length)
-      .map((affiliation, index) => ({ ...affiliation, id: index.toString() }));
-    setAffiliationsDataTable(affiliationsDataTableTmp);
+    groupByAffiliations(publicationsDataTableTmp);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const tagPublications = (publications, action, setSelectedPublications) => {
@@ -263,29 +268,40 @@ export default function Home() {
                   className="fr-mr-1w"
                   disabled={checkSelectedAffiliation()}
                   icon="ri-check-fill"
-                  onClick={() => { tagAffiliations(selectedAffiliations, 'keep'); }}
+                  onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
                   size="sm"
                 >
                   Keep all
                 </Button>
                 <Button
-                  className="fr-mb-1w"
+                  className="fr-mr-1w"
                   disabled={checkSelectedAffiliation()}
                   icon="ri-close-fill"
-                  onClick={() => { tagAffiliations(selectedAffiliations, 'exclude'); }}
+                  onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
                   size="sm"
                 >
                   Exclude all
+                </Button>
+                <Button
+                  className="fr-mb-1w"
+                  icon="ri-refresh-line"
+                  onClick={() => groupByAffiliations(publicationsDataTable)}
+                  size="sm"
+                >
+                  Refresh
                 </Button>
               </Col>
             </Row>
             <Row>
               <Col>
-                <AffiliationsView
-                  affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.status === 'sort')}
-                  selectedAffiliations={selectedAffiliations}
-                  setSelectedAffiliations={setSelectedAffiliations}
-                />
+                {isLoadingAffiliations && (<Container as="section"><PageSpinner /></Container>)}
+                {!isLoadingAffiliations && (
+                  <AffiliationsView
+                    affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.status === 'sort')}
+                    selectedAffiliations={selectedAffiliations}
+                    setSelectedAffiliations={setSelectedAffiliations}
+                  />
+                )}
               </Col>
             </Row>
           </Tab>
@@ -304,7 +320,7 @@ export default function Home() {
                   className="fr-mr-1w"
                   disabled={selectedPublications1.length === 0}
                   icon="ri-check-fill"
-                  onClick={() => { tagPublications(selectedPublications1, 'keep', setSelectedPublications1); }}
+                  onClick={() => tagPublications(selectedPublications1, 'keep', setSelectedPublications1)}
                   size="sm"
                 >
                   Keep
@@ -313,7 +329,7 @@ export default function Home() {
                   className="fr-mb-1w"
                   disabled={selectedPublications1.length === 0}
                   icon="ri-close-fill"
-                  onClick={() => { tagPublications(selectedPublications1, 'exclude', setSelectedPublications1); }}
+                  onClick={() => tagPublications(selectedPublications1, 'exclude', setSelectedPublications1)}
                   size="sm"
                 >
                   Exclude
@@ -345,7 +361,7 @@ export default function Home() {
                   className="fr-mr-1w"
                   disabled={selectedPublications2.length === 0}
                   icon="ri-check-fill"
-                  onClick={() => { tagPublications(selectedPublications2, 'sort', setSelectedPublications2); }}
+                  onClick={() => tagPublications(selectedPublications2, 'sort', setSelectedPublications2)}
                   size="sm"
                 >
                   Sort
@@ -354,7 +370,7 @@ export default function Home() {
                   className="fr-mb-1w"
                   disabled={selectedPublications2.length === 0}
                   icon="ri-close-fill"
-                  onClick={() => { tagPublications(selectedPublications2, 'exclude', setSelectedPublications2); }}
+                  onClick={() => tagPublications(selectedPublications2, 'exclude', setSelectedPublications2)}
                   size="sm"
                 >
                   Exclude
@@ -386,7 +402,7 @@ export default function Home() {
                   className="fr-mr-1w"
                   disabled={selectedPublications3.length === 0}
                   icon="ri-check-fill"
-                  onClick={() => { tagPublications(selectedPublications3, 'sort', setSelectedPublications3); }}
+                  onClick={() => tagPublications(selectedPublications3, 'sort', setSelectedPublications3)}
                   size="sm"
                 >
                   Sort
@@ -395,7 +411,7 @@ export default function Home() {
                   className="fr-mb-1w"
                   disabled={selectedPublications3.length === 0}
                   icon="ri-close-fill"
-                  onClick={() => { tagPublications(selectedPublications3, 'keep', setSelectedPublications3); }}
+                  onClick={() => tagPublications(selectedPublications3, 'keep', setSelectedPublications3)}
                   size="sm"
                 >
                   Keep
