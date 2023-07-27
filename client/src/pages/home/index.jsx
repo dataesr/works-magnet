@@ -146,6 +146,7 @@ export default function Home() {
             if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
               affiliationsDataTableTmp[affiliationName] = {
                 name: affiliation,
+                nameTxt: affiliation.replaceAll('<em>', '').replaceAll('</em>', ''),
                 publications: [],
                 status: 'sort',
               };
@@ -159,6 +160,7 @@ export default function Home() {
             if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
               affiliationsDataTableTmp[affiliationName] = {
                 name: affiliation,
+                nameTxt: affiliation.replaceAll('<em>', '').replaceAll('</em>', ''),
                 publications: [],
                 status: 'sort',
               };
