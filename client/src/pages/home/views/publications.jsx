@@ -10,8 +10,8 @@ import {
 
 export default function PublicationsView({
   publicationsDataTable,
-  selectedPublicationIds,
-  setSelectedPublicationIds,
+  selectedPublications,
+  setSelectedPublications,
 }) {
   return (
     <DataTable
@@ -19,13 +19,13 @@ export default function PublicationsView({
       dataKey="id"
       filterDisplay="row"
       metaKeySelection={false}
-      onSelectionChange={(e) => setSelectedPublicationIds(e.value.map((publication) => publication.id))}
+      onSelectionChange={(e) => setSelectedPublications(e.value)}
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
       scrollable
-      selection={selectedPublicationIds}
+      selection={selectedPublications}
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '15px' }}
@@ -53,6 +53,14 @@ PublicationsView.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  setSelectedPublicationIds: PropTypes.func.isRequired,
-  selectedPublicationIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  setSelectedPublications: PropTypes.func.isRequired,
+  selectedPublications: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    datasource: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+  })).isRequired,
 };
