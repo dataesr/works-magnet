@@ -208,7 +208,13 @@ export default function Home() {
     const publicationsDataTableTmp = [...publicationsDataTable];
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
     const publicationIds = affiliations.map((affiliation) => affiliation.publications).flat();
-    publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
+    publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => {
+      if (action === 'exclude' && publication.status === 'keep') {
+        publication.status = 'keep';
+      } else {
+        publication.status = action;
+      }
+    });
     setPublicationsDataTable(publicationsDataTableTmp);
     const affiliationsDataTableTmp = [...affiliationsDataTable];
     affiliationsDataTableTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
