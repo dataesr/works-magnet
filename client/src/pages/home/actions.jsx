@@ -1,6 +1,7 @@
-import { Button, Col, File, Row } from '@dataesr/react-dsfr';
+import { Col, File, Row } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import Button from '../../components/button';
 
 import { export2BsoCsv, export2json, importJson } from '../../utils/file';
 
@@ -39,7 +40,7 @@ export default function Actions({
           onClick={() => export2json(affiliationsDataTable, options, publicationsDataTable)}
           size="sm"
         >
-          Save
+          Save work to file
         </Button>
       </Col>
       <Col className="text-right">
@@ -48,9 +49,8 @@ export default function Actions({
           icon="ri-save-line"
           onClick={() => export2BsoCsv(publicationsDataTable)}
           size="sm"
-          colors={['success']}
         >
-          Export to BSO
+          Create local BSO file
         </Button>
       </Col>
     </Row>

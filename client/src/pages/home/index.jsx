@@ -255,6 +255,8 @@ export default function Home() {
           <Tab label={`Affiliations (${affiliationsDataTable.length})`}>
             <Row>
               <Col className="text-right">
+                Apply to selected affiliations
+                {' '}
                 <Button
                   className="fr-mr-1w"
                   disabled={checkSelectedAffiliation()}
@@ -262,7 +264,7 @@ export default function Home() {
                   onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
                   size="sm"
                 >
-                  Sort all
+                  Reset to "Sort" status
                 </Button>
                 <Button
                   className="fr-mr-1w"
@@ -271,16 +273,16 @@ export default function Home() {
                   onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
                   size="sm"
                 >
-                  Keep all
+                  Keep for local BSO
                 </Button>
                 <Button
                   className="fr-mr-1w"
                   disabled={checkSelectedAffiliation()}
-                  icon="ri-close-fill"
+                  icon="ri-eye-off-line"
                   onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
                   size="sm"
                 >
-                  Exclude all
+                  Hide
                 </Button>
                 <Button
                   className="fr-mb-1w"
@@ -288,7 +290,7 @@ export default function Home() {
                   onClick={() => groupByAffiliations(publicationsDataTable)}
                   size="sm"
                 >
-                  Refresh
+                  Refresh affiliations
                 </Button>
               </Col>
             </Row>
