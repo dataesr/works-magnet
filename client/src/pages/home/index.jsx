@@ -108,13 +108,10 @@ export default function Home() {
   const [formOptions, setFormOptions] = useState({});
   const [isLoadingAffiliations, setIsLoadingAffiliations] = useState(false);
   const [publicationsDataTable, setPublicationsDataTable] = useState([]);
-  const [selectedAffiliations1, setSelectedAffiliations1] = useState([]);
-  const [selectedAffiliations2, setSelectedAffiliations2] = useState([]);
-  const [selectedAffiliations3, setSelectedAffiliations3] = useState([]);
+  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedPublications1, setSelectedPublications1] = useState([]);
   const [selectedPublications2, setSelectedPublications2] = useState([]);
   const [selectedPublications3, setSelectedPublications3] = useState([]);
-  const [viewAllAffiliations, setViewAllAffiliations] = useState(false);
   const [viewAllPublications, setViewAllPublications] = useState(false);
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -205,25 +202,21 @@ export default function Home() {
     setSelectedPublications([]);
   };
 
-  const tagAffiliations = (affiliations, action, setSelectedAffiliations) => {
-    const publicationsDataTableTmp = [...publicationsDataTable];
-    const affiliationIds = affiliations.map((affiliation) => affiliation.id);
-    const publicationIds = affiliations.map((affiliation) => affiliation.publications).flat();
-    publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => {
-      if (action === 'exclude' && publication.status === 'keep') {
-        publication.status = 'keep';
-      } else {
-        publication.status = action;
-      }
-    });
-    setPublicationsDataTable(publicationsDataTableTmp);
+  const tagAffiliations = (affiliations, action) => {
+    if (action !== 'exclude') {
+      const publicationsDataTableTmp = [...publicationsDataTable];
+      const publicationIds = affiliations.map((affiliation) => affiliation.publications).flat();
+      publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
+      setPublicationsDataTable(publicationsDataTableTmp);
+    }
     const affiliationsDataTableTmp = [...affiliationsDataTable];
+    const affiliationIds = affiliations.map((affiliation) => affiliation.id);
     affiliationsDataTableTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
     setAffiliationsDataTable(affiliationsDataTableTmp);
     setSelectedAffiliations([]);
   };
 
-  const checkSelectedAffiliation = (selectedAffiliations) => {
+  const checkSelectedAffiliation = () => {
     let ret = false;
     if (!selectedAffiliations) ret = true;
     if (Object.keys(selectedAffiliations)?.length === 0 && selectedAffiliations?.constructor === Object) {
@@ -262,31 +255,32 @@ export default function Home() {
           setPublicationsDataTable={setPublicationsDataTable}
         />
         <Tabs defaultActiveTab={0}>
-          <Tab label={`Affiliations to sort (${affiliationsDataTable.filter((affiliation) => affiliation.status === 'sort').length})`}>
+          <Tab label={`Affiliations (${affiliationsDataTable.length})`}>
             <Row>
-              <Col>
-                <Checkbox
-                  checked={viewAllAffiliations}
-                  label="View all affiliations"
-                  onChange={() => setViewAllAffiliations(!viewAllAffiliations)}
-                  size="sm"
-                />
-              </Col>
               <Col className="text-right">
                 <Button
                   className="fr-mr-1w"
-                  disabled={checkSelectedAffiliation(selectedAffiliations1)}
+                  disabled={checkSelectedAffiliation()}
+                  icon="ri-question-mark"
+                  onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
+                  size="sm"
+                >
+                  Sort all
+                </Button>
+                <Button
+                  className="fr-mr-1w"
+                  disabled={checkSelectedAffiliation()}
                   icon="ri-check-fill"
-                  onClick={() => tagAffiliations(selectedAffiliations1, 'keep', setSelectedAffiliations1)}
+                  onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
                   size="sm"
                 >
                   Keep all
                 </Button>
                 <Button
                   className="fr-mr-1w"
-                  disabled={checkSelectedAffiliation(selectedAffiliations1)}
+                  disabled={checkSelectedAffiliation()}
                   icon="ri-close-fill"
-                  onClick={() => tagAffiliations(selectedAffiliations1, 'exclude', setSelectedAffiliations1)}
+                  onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
                   size="sm"
                 >
                   Exclude all
@@ -306,113 +300,9 @@ export default function Home() {
                 {isLoadingAffiliations && (<Container as="section"><PageSpinner /></Container>)}
                 {!isLoadingAffiliations && (
                   <AffiliationsView
-                    affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.status === 'sort')}
-                    selectedAffiliations={selectedAffiliations1}
-                    setSelectedAffiliations={setSelectedAffiliations1}
-                  />
-                )}
-              </Col>
-            </Row>
-          </Tab>
-          <Tab label={`Affiliations to keep (${affiliationsDataTable.filter((affiliation) => affiliation.status === 'keep').length})`}>
-            <Row>
-              <Col>
-                <Checkbox
-                  checked={viewAllAffiliations}
-                  label="View all affiliations"
-                  onChange={() => setViewAllAffiliations(!viewAllAffiliations)}
-                  size="sm"
-                />
-              </Col>
-              <Col className="text-right">
-                <Button
-                  className="fr-mr-1w"
-                  disabled={checkSelectedAffiliation(selectedAffiliations2)}
-                  icon="ri-question-mark"
-                  onClick={() => tagAffiliations(selectedAffiliations2, 'sort', setSelectedAffiliations2)}
-                  size="sm"
-                >
-                  Sort all
-                </Button>
-                <Button
-                  className="fr-mr-1w"
-                  disabled={checkSelectedAffiliation(selectedAffiliations2)}
-                  icon="ri-close-fill"
-                  onClick={() => tagAffiliations(selectedAffiliations2, 'exclude', setSelectedAffiliations2)}
-                  size="sm"
-                >
-                  Exclude all
-                </Button>
-                <Button
-                  className="fr-mb-1w"
-                  icon="ri-refresh-line"
-                  onClick={() => groupByAffiliations(publicationsDataTable)}
-                  size="sm"
-                >
-                  Refresh
-                </Button>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                {isLoadingAffiliations && (<Container as="section"><PageSpinner /></Container>)}
-                {!isLoadingAffiliations && (
-                  <AffiliationsView
-                    affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.status === 'sort')}
-                    selectedAffiliations={selectedAffiliations2}
-                    setSelectedAffiliations={setSelectedAffiliations2}
-                  />
-                )}
-              </Col>
-            </Row>
-          </Tab>
-          <Tab label={`Affiliations to exclude (${affiliationsDataTable.filter((affiliation) => affiliation.status === 'exclude').length})`}>
-            <Row>
-              <Col>
-                <Checkbox
-                  checked={viewAllAffiliations}
-                  label="View all affiliations"
-                  onChange={() => setViewAllAffiliations(!viewAllAffiliations)}
-                  size="sm"
-                />
-              </Col>
-              <Col className="text-right">
-                <Button
-                  className="fr-mr-1w"
-                  disabled={checkSelectedAffiliation(selectedAffiliations3)}
-                  icon="ri-question-mark"
-                  onClick={() => tagAffiliations(selectedAffiliations3, 'sort', setSelectedAffiliations3)}
-                  size="sm"
-                >
-                  Sort all
-                </Button>
-                <Button
-                  className="fr-mr-1w"
-                  disabled={checkSelectedAffiliation(selectedAffiliations3)}
-                  icon="ri-check-fill"
-                  onClick={() => tagAffiliations(selectedAffiliations3, 'keep', setSelectedAffiliations3)}
-                  size="sm"
-                >
-                  Keep all
-                </Button>
-                <Button
-                  className="fr-mb-1w"
-                  icon="ri-refresh-line"
-                  onClick={() => groupByAffiliations(publicationsDataTable)}
-                  size="sm"
-                >
-                  Refresh
-                </Button>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                {isLoadingAffiliations && (<Container as="section"><PageSpinner /></Container>)}
-                {!isLoadingAffiliations && (
-                  <AffiliationsView
-                    affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.status === 'sort')}
-                    selectedAffiliations={selectedAffiliations3}
-                    setSelectedAffiliations={setSelectedAffiliations3}
+                    affiliationsDataTable={affiliationsDataTable}
+                    selectedAffiliations={selectedAffiliations}
+                    setSelectedAffiliations={setSelectedAffiliations}
                   />
                 )}
               </Col>
