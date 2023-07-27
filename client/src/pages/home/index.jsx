@@ -158,9 +158,9 @@ export default function Home() {
               const affiliationName = normalizedName(affiliation);
               if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
                 affiliationsDataTableTmp[affiliationName] = {
-                  display: true,
                   name: affiliation,
                   publications: [],
+                  status: 'sort',
                 };
               }
               affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
@@ -171,9 +171,9 @@ export default function Home() {
               const affiliationName = normalizedName(affiliation);
               if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
                 affiliationsDataTableTmp[affiliationName] = {
-                  display: true,
                   name: affiliation,
                   publications: [],
+                  status: 'sort',
                 };
               }
               affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
@@ -204,7 +204,7 @@ export default function Home() {
     publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
     setPublicationsDataTable(publicationsDataTableTmp);
     const affiliationsDataTableTmp = [...affiliationsDataTable];
-    affiliationsDataTableTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.display = false);
+    affiliationsDataTableTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
     setAffiliationsDataTable(affiliationsDataTableTmp);
     setSelectedAffiliations([]);
   };
@@ -248,7 +248,7 @@ export default function Home() {
           setPublicationsDataTable={setPublicationsDataTable}
         />
         <Tabs defaultActiveTab={0}>
-          <Tab label={`Affiliations view (${affiliationsDataTable.filter((affiliation) => affiliation.display).length})`}>
+          <Tab label={`Affiliations view (${affiliationsDataTable.filter((affiliation) => affiliation.status === 'sort').length})`}>
             <Row>
               <Col>
                 <Checkbox
@@ -282,7 +282,7 @@ export default function Home() {
             <Row>
               <Col>
                 <AffiliationsView
-                  affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.display)}
+                  affiliationsDataTable={viewAllAffiliations ? affiliationsDataTable : affiliationsDataTable.filter((affiliation) => affiliation.status === 'sort')}
                   selectedAffiliations={selectedAffiliations}
                   setSelectedAffiliations={setSelectedAffiliations}
                 />
