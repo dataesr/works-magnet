@@ -114,7 +114,6 @@ export default function Home() {
   const [selectedPublications3, setSelectedPublications3] = useState([]);
   const [viewAllAffiliations, setViewAllAffiliations] = useState(false);
   const [viewAllPublications, setViewAllPublications] = useState(false);
-
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(formOptions),

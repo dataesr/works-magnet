@@ -2,7 +2,7 @@ import { Button, Col, File, Row } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-import { export2json, importJson } from '../../utils/file';
+import { export2BsoCsv, export2json, importJson } from '../../utils/file';
 
 export default function Actions({
   affiliationsDataTable,
@@ -15,8 +15,8 @@ export default function Actions({
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
 
   return (
-    <Row>
-      <Col className="text-right">
+    <Row className="fr-mb-1w">
+      <Col>
         <Button
           icon="ri-file-upload-line"
           onClick={() => setDisplayFileUpload(true)}
@@ -38,9 +38,19 @@ export default function Actions({
           icon="ri-save-line"
           onClick={() => export2json(affiliationsDataTable, options, publicationsDataTable)}
           size="sm"
-          colors={['success']}
         >
           Save
+        </Button>
+      </Col>
+      <Col className="text-right">
+        <Button
+          disabled={publicationsDataTable.length === 0}
+          icon="ri-save-line"
+          onClick={() => export2BsoCsv(publicationsDataTable)}
+          size="sm"
+          colors={['success']}
+        >
+          Export to BSO
         </Button>
       </Col>
     </Row>
