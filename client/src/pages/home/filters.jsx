@@ -64,8 +64,8 @@ export default function Filters({ sendQuery }) {
       <Row gutters>
         <Col n="5">
           <TagInput
-            hint="Name, Grid, RNSR, RoR, HAL structId or viaf. At least one of these affiliations should be present, OR operator"
-            label="Affiliations"
+            hint="At least one of these affiliations should be present, OR operator"
+            label="Affiliations (Name, Grid, RNSR, RoR, HAL structId or viaf)"
             onTagsChange={(tags) => { setAffiliations(tags); }}
             tags={affiliations}
           />
