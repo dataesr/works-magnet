@@ -273,7 +273,7 @@ export default function Home() {
                   onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
                   size="sm"
                 >
-                  Keep for local BSO
+                  Keep to export list
                 </Button>
                 <Button
                   className="fr-mr-1w"
@@ -310,6 +310,8 @@ export default function Home() {
           <Tab label={`Publications (${publicationsDataTable.length})`}>
             <Row>
               <Col className="text-right">
+                Apply to selected publications
+                {' '}
                 <Button
                   className="fr-mr-1w"
                   disabled={selectedPublications.length === 0}
@@ -317,7 +319,7 @@ export default function Home() {
                   onClick={() => tagPublications(selectedPublications, 'sort')}
                   size="sm"
                 >
-                  Sort
+                  Reset to "Sort" status
                 </Button>
                 <Button
                   className="fr-mr-1w"
@@ -326,16 +328,16 @@ export default function Home() {
                   onClick={() => tagPublications(selectedPublications, 'keep')}
                   size="sm"
                 >
-                  Keep
+                  Keep to export list
                 </Button>
                 <Button
                   className="fr-mb-1w"
                   disabled={selectedPublications.length === 0}
-                  icon="ri-close-fill"
+                  icon="ri-eye-off-line"
                   onClick={() => tagPublications(selectedPublications, 'exclude')}
                   size="sm"
                 >
-                  Exclude
+                  Hide
                 </Button>
               </Col>
             </Row>

@@ -50,7 +50,7 @@ export default function Actions({
           onClick={() => export2BsoCsv(publicationsDataTable)}
           size="sm"
         >
-          Create local BSO file
+          Create export file
         </Button>
       </Col>
     </Row>
