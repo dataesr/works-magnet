@@ -239,8 +239,10 @@ export default function Home() {
 
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
+          affiliationsDataTable={affiliationsDataTable}
           options={formOptions}
           publicationsDataTable={publicationsDataTable}
+          setAffiliationsDataTable={setAffiliationsDataTable}
           setOptions={setFormOptions}
           setPublicationsDataTable={setPublicationsDataTable}
         />

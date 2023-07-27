@@ -5,8 +5,10 @@ import { useState } from 'react';
 import { export2json, importJson } from '../../utils/file';
 
 export default function Actions({
+  affiliationsDataTable,
   options,
   publicationsDataTable,
+  setAffiliationsDataTable,
   setOptions,
   setPublicationsDataTable,
 }) {
@@ -28,13 +30,13 @@ export default function Actions({
             accept=".json"
             hint="Select JSON file to restore from previous state"
             label="JSON file"
-            onChange={(e) => importJson(e, setPublicationsDataTable, setOptions)}
+            onChange={(e) => importJson(e, setAffiliationsDataTable, setPublicationsDataTable, setOptions)}
           />
         )}
         <Button
           disabled={publicationsDataTable.length === 0}
           icon="ri-save-line"
-          onClick={() => export2json(options, publicationsDataTable)}
+          onClick={() => export2json(affiliationsDataTable, options, publicationsDataTable)}
           size="sm"
           colors={['success']}
         >
@@ -46,6 +48,11 @@ export default function Actions({
 }
 
 Actions.propTypes = {
+  affiliationsDataTable: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    publications: PropTypes.arrayOf(PropTypes.string).isRequired,
+  })).isRequired,
   options: PropTypes.object.isRequired,
   publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -56,6 +63,7 @@ Actions.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
+  setAffiliationsDataTable: PropTypes.func.isRequired,
   setOptions: PropTypes.func.isRequired,
   setPublicationsDataTable: PropTypes.func.isRequired,
 };
