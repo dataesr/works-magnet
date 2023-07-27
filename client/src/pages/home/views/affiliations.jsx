@@ -17,7 +17,7 @@ export default function AffiliationsView({
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       dataKey="id"
-      filterDisplay="row"
+      filterDisplay="menu"
       metaKeySelection
       onSelectionChange={(e) => setSelectedAffiliations(e.value)}
       paginator
@@ -33,9 +33,9 @@ export default function AffiliationsView({
       value={affiliationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-      <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
+      <Column field="status" header="Status" body={statusTemplate} filter showFilterMenuOptions={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
       <Column filter filterMatchMode="contains" body={nameTemplate} field="name" header="Affiliation" style={{ minWidth: '10px' }} filterField="nameTxt" filterPlaceholder="Search by affiliation" />
-      <Column showFilterMenu={false} field="publications" body={(rowData) => rowData.publications.length} header="Number of publications" style={{ minWidth: '10px' }} />
+      <Column field="publications" body={(rowData) => rowData.publications.length} header="Number of publications" style={{ minWidth: '10px' }} />
     </DataTable>
   );
 }
