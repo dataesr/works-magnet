@@ -13,7 +13,7 @@ export default function AffiliationsView({
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       dataKey="id"
-      filterDisplay="row"
+      filterDisplay="menu"
       metaKeySelection
       onSelectionChange={(e) => setSelectedAffiliations(e.value)}
       paginator
