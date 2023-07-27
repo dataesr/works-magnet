@@ -109,10 +109,7 @@ export default function Home() {
   const [isLoadingAffiliations, setIsLoadingAffiliations] = useState(false);
   const [publicationsDataTable, setPublicationsDataTable] = useState([]);
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
-  const [selectedPublications1, setSelectedPublications1] = useState([]);
-  const [selectedPublications2, setSelectedPublications2] = useState([]);
-  const [selectedPublications3, setSelectedPublications3] = useState([]);
-  const [viewAllPublications, setViewAllPublications] = useState(false);
+  const [selectedPublications, setSelectedPublications] = useState([]);
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(formOptions),
@@ -194,7 +191,7 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const tagPublications = (publications, action, setSelectedPublications) => {
+  const tagPublications = (publications, action) => {
     const publicationsDataTableTmp = [...publicationsDataTable];
     const publicationIds = publications.map((publication) => publication.id);
     publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
@@ -308,31 +305,32 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Publications to sort (${publicationsDataTable.filter((item) => item.status === 'sort').length})`}>
+          <Tab label={`Publications (${publicationsDataTable.length})`}>
             <Row>
-              <Col>
-                <Checkbox
-                  checked={viewAllPublications}
-                  label="View all publications"
-                  onChange={() => setViewAllPublications(!viewAllPublications)}
-                  size="sm"
-                />
-              </Col>
               <Col className="text-right">
                 <Button
                   className="fr-mr-1w"
-                  disabled={selectedPublications1.length === 0}
+                  disabled={selectedPublications.length === 0}
+                  icon="ri-question-mark"
+                  onClick={() => tagPublications(selectedPublications, 'sort')}
+                  size="sm"
+                >
+                  Sort
+                </Button>
+                <Button
+                  className="fr-mr-1w"
+                  disabled={selectedPublications.length === 0}
                   icon="ri-check-fill"
-                  onClick={() => tagPublications(selectedPublications1, 'keep', setSelectedPublications1)}
+                  onClick={() => tagPublications(selectedPublications, 'keep')}
                   size="sm"
                 >
                   Keep
                 </Button>
                 <Button
                   className="fr-mb-1w"
-                  disabled={selectedPublications1.length === 0}
+                  disabled={selectedPublications.length === 0}
                   icon="ri-close-fill"
-                  onClick={() => tagPublications(selectedPublications1, 'exclude', setSelectedPublications1)}
+                  onClick={() => tagPublications(selectedPublications, 'exclude')}
                   size="sm"
                 >
                   Exclude
@@ -342,91 +340,9 @@ export default function Home() {
             <Row>
               <Col>
                 <PublicationsView
-                  publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => item.status === 'sort')}
-                  selectedPublications={selectedPublications1}
-                  setSelectedPublications={setSelectedPublications1}
-                />
-              </Col>
-            </Row>
-          </Tab>
-          <Tab label={`Publications to keep (${publicationsDataTable.filter((item) => item.status === 'keep').length})`}>
-            <Row>
-              <Col>
-                <Checkbox
-                  checked={viewAllPublications}
-                  label="View all publications"
-                  onChange={() => setViewAllPublications(!viewAllPublications)}
-                  size="sm"
-                />
-              </Col>
-              <Col className="text-right">
-                <Button
-                  className="fr-mr-1w"
-                  disabled={selectedPublications2.length === 0}
-                  icon="ri-question-mark"
-                  onClick={() => tagPublications(selectedPublications2, 'sort', setSelectedPublications2)}
-                  size="sm"
-                >
-                  Sort
-                </Button>
-                <Button
-                  className="fr-mb-1w"
-                  disabled={selectedPublications2.length === 0}
-                  icon="ri-close-fill"
-                  onClick={() => tagPublications(selectedPublications2, 'exclude', setSelectedPublications2)}
-                  size="sm"
-                >
-                  Exclude
-                </Button>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <PublicationsView
-                  publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => item.status === 'keep')}
-                  selectedPublications={selectedPublications2}
-                  setSelectedPublications={setSelectedPublications2}
-                />
-              </Col>
-            </Row>
-          </Tab>
-          <Tab label={`Publications to exclude (${publicationsDataTable.filter((item) => item.status === 'exclude').length})`}>
-            <Row>
-              <Col>
-                <Checkbox
-                  checked={viewAllPublications}
-                  label="View all publications"
-                  onChange={() => setViewAllPublications(!viewAllPublications)}
-                  size="sm"
-                />
-              </Col>
-              <Col className="text-right">
-                <Button
-                  className="fr-mr-1w"
-                  disabled={selectedPublications3.length === 0}
-                  icon="ri-question-mark"
-                  onClick={() => tagPublications(selectedPublications3, 'sort', setSelectedPublications3)}
-                  size="sm"
-                >
-                  Sort
-                </Button>
-                <Button
-                  className="fr-mb-1w"
-                  disabled={selectedPublications3.length === 0}
-                  icon="ri-check-fill"
-                  onClick={() => tagPublications(selectedPublications3, 'keep', setSelectedPublications3)}
-                  size="sm"
-                >
-                  Keep
-                </Button>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <PublicationsView
-                  publicationsDataTable={viewAllPublications ? publicationsDataTable : publicationsDataTable.filter((item) => item.status === 'exclude')}
-                  selectedPublications={selectedPublications3}
-                  setSelectedPublications={setSelectedPublications3}
+                  publicationsDataTable={publicationsDataTable}
+                  selectedPublications={selectedPublications}
+                  setSelectedPublications={setSelectedPublications}
                 />
               </Col>
             </Row>
