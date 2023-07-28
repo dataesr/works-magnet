@@ -1,6 +1,6 @@
-const export2json = (affiliationsDataTable, options, publicationDataTable) => {
+const export2json = (affiliationsDataTable, options, publicationsDataTable) => {
   const link = document.createElement('a');
-  link.href = URL.createObjectURL(new Blob([JSON.stringify({ affiliationsDataTable, options, publicationDataTable })], { type: 'application/json' }));
+  link.href = URL.createObjectURL(new Blob([JSON.stringify({ affiliationsDataTable, options, publicationsDataTable })], { type: 'application/json' }));
   link.setAttribute('download', 'publications-finder.json');
   document.body.appendChild(link);
   link.click();
@@ -11,10 +11,10 @@ const importJson = (e, setAffiliationsDataTable, setPublicationsDataTable, setOp
   const fileReader = new FileReader();
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {
-    const { affiliationsDataTable, options, publicationDataTable } = JSON.parse(f.target.result);
+    const { affiliationsDataTable, options, publicationsDataTable } = JSON.parse(f.target.result);
     options.restoreFromFile = true;
     setAffiliationsDataTable(affiliationsDataTable);
-    setPublicationsDataTable(publicationDataTable);
+    setPublicationsDataTable(publicationsDataTable);
     setOptions(options);
   };
 };

@@ -165,6 +165,8 @@ export default function Home() {
           }));
           break;
         default:
+          // eslint-disable-next-line no-console
+          console.error(`Datasource ${publication.datasource} not integrated`);
       }
     });
     affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
@@ -311,7 +313,7 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Publications (${publicationsDataTable.filter((publication) => publication.status === 'sort').length} / ${publicationsDataTable.length})`}>
+          <Tab label={`Publications (${publicationsDataTable.filter((publication) => publication.status === 'keep').length} / ${publicationsDataTable.length})`}>
             <Row>
               <Col>
                 Apply to selected publications
