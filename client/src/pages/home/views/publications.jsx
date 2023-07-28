@@ -20,7 +20,6 @@ export default function PublicationsView({
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       dataKey="id"
       filterDisplay="row"
-      lazy
       metaKeySelection={false}
       onSelectionChange={(e) => setSelectedPublications(e.value)}
       paginator
@@ -33,7 +32,6 @@ export default function PublicationsView({
       stripedRows
       style={{ fontSize: '11px', lineHeight: '15px' }}
       tableStyle={{ minWidth: '50rem' }}
-      totalRecords={publicationsDataTable.length}
       value={publicationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />

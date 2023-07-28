@@ -18,7 +18,6 @@ export default function AffiliationsView({
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       dataKey="id"
       filterDisplay="row"
-      lazy
       metaKeySelection
       onSelectionChange={(e) => setSelectedAffiliations(e.value)}
       paginator
@@ -31,12 +30,11 @@ export default function AffiliationsView({
       stripedRows
       style={{ fontSize: '11px', lineHeight: '15px' }}
       tableStyle={{ minWidth: '50rem' }}
-      totalRecords={affiliationsDataTable.length}
       value={affiliationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
-      <Column filter filterMatchMode="contains" body={nameTemplate} field="name" header="Affiliation" style={{ minWidth: '10px' }} filterField="nameTxt" filterPlaceholder="Search by affiliation" />
+      <Column field="name" header="Affiliation" body={nameTemplate} filter filterField="nameTxt" filterMatchMode="contains" filterPlaceholder="Search by affiliation" style={{ minWidth: '10px' }} />
       <Column field="publications" body={(rowData) => rowData.publications.length} header="Number of publications" style={{ minWidth: '10px' }} />
     </DataTable>
   );
