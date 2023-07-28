@@ -255,11 +255,11 @@ export default function Home() {
         <Tabs defaultActiveTab={0}>
           <Tab label={`Affiliations (${affiliationsDataTable.length})`}>
             <Row>
-              <Col className="text-right">
+              <Col>
                 Apply to selected affiliations
                 {' '}
                 <Button
-                  className="fr-mr-1w"
+                  className="fr-mr-1w btn-text"
                   disabled={checkSelectedAffiliation()}
                   icon="ri-question-mark"
                   onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
@@ -268,16 +268,17 @@ export default function Home() {
                   Reset to "Sort" status
                 </Button>
                 <Button
-                  className="fr-mr-1w"
+                  className="fr-mr-1w btn-success"
                   disabled={checkSelectedAffiliation()}
                   icon="ri-check-fill"
                   onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
                   size="sm"
+
                 >
                   Keep to export list
                 </Button>
                 <Button
-                  className="fr-mr-1w"
+                  className="fr-mr-1w btn-error"
                   disabled={checkSelectedAffiliation()}
                   icon="ri-eye-off-line"
                   onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
@@ -285,6 +286,8 @@ export default function Home() {
                 >
                   Hide
                 </Button>
+              </Col>
+              <Col className="text-right" n="2">
                 <Button
                   className="fr-mb-1w"
                   icon="ri-refresh-line"
@@ -310,11 +313,11 @@ export default function Home() {
           </Tab>
           <Tab label={`Publications (${publicationsDataTable.filter((publication) => publication.status === 'sort').length} / ${publicationsDataTable.length})`}>
             <Row>
-              <Col className="text-right">
+              <Col>
                 Apply to selected publications
                 {' '}
                 <Button
-                  className="fr-mr-1w"
+                  className="fr-mr-1w btn-text"
                   disabled={selectedPublications.length === 0}
                   icon="ri-question-mark"
                   onClick={() => tagPublications(selectedPublications, 'sort')}
@@ -323,7 +326,7 @@ export default function Home() {
                   Reset to "Sort" status
                 </Button>
                 <Button
-                  className="fr-mr-1w"
+                  className="fr-mr-1w btn-success"
                   disabled={selectedPublications.length === 0}
                   icon="ri-check-fill"
                   onClick={() => tagPublications(selectedPublications, 'keep')}
@@ -332,7 +335,7 @@ export default function Home() {
                   Keep to export list
                 </Button>
                 <Button
-                  className="fr-mb-1w"
+                  className="fr-mb-1w btn-error"
                   disabled={selectedPublications.length === 0}
                   icon="ri-eye-off-line"
                   onClick={() => tagPublications(selectedPublications, 'exclude')}

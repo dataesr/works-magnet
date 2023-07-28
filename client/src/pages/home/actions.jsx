@@ -16,44 +16,50 @@ export default function Actions({
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
 
   return (
-    <Row className="fr-mb-1w">
-      <Col>
-        <Button
-          icon="ri-file-upload-line"
-          onClick={() => setDisplayFileUpload(true)}
-          secondary
-          size="sm"
-        >
-          Restore from file
-        </Button>
-        {displayFileUpload && (
-          <File
-            accept=".json"
-            hint="Select JSON file to restore from previous state"
-            label="JSON file"
-            onChange={(e) => importJson(e, setAffiliationsDataTable, setPublicationsDataTable, setOptions)}
-          />
-        )}
-        <Button
-          disabled={publicationsDataTable.length === 0}
-          icon="ri-save-line"
-          onClick={() => export2json(affiliationsDataTable, options, publicationsDataTable)}
-          size="sm"
-        >
-          Save work to file
-        </Button>
-      </Col>
-      <Col className="text-right">
-        <Button
-          disabled={publicationsDataTable.length === 0}
-          icon="ri-save-line"
-          onClick={() => export2BsoCsv(publicationsDataTable)}
-          size="sm"
-        >
-          Create export file
-        </Button>
-      </Col>
-    </Row>
+    <>
+      <Row className="fr-mb-1w">
+        <Col>
+          <Button
+            icon="ri-file-upload-line"
+            onClick={() => setDisplayFileUpload(true)}
+            secondary
+            size="sm"
+          >
+            Restore from file
+          </Button>
+          <Button
+            disabled={publicationsDataTable.length === 0}
+            icon="ri-save-line"
+            onClick={() => export2json(affiliationsDataTable, options, publicationsDataTable)}
+            size="sm"
+          >
+            Save work to file
+          </Button>
+        </Col>
+        <Col className="text-right">
+          <Button
+            disabled={publicationsDataTable.length === 0}
+            icon="ri-save-line"
+            onClick={() => export2BsoCsv(publicationsDataTable)}
+            size="sm"
+          >
+            Create export file
+          </Button>
+        </Col>
+      </Row>
+      {displayFileUpload && (
+        <Row className="fr-mb-1w">
+          <Col>
+            <File
+              accept=".json"
+              hint="Select JSON file to restore from previous state"
+              label="JSON file"
+              onChange={(e) => importJson(e, setAffiliationsDataTable, setPublicationsDataTable, setOptions)}
+            />
+          </Col>
+        </Row>
+      )}
+    </>
   );
 }
 
