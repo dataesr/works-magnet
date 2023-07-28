@@ -1,25 +1,3 @@
-const export2json = (affiliationsDataTable, options, publicationsDataTable) => {
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(new Blob([JSON.stringify({ affiliationsDataTable, options, publicationsDataTable })], { type: 'application/json' }));
-  link.setAttribute('download', 'publications-finder.json');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-
-const importJson = (e, setAffiliationsDataTable, setPublicationsDataTable, setOptions, setSearchParams) => {
-  const fileReader = new FileReader();
-  fileReader.readAsText(e.target.files[0], 'UTF-8');
-  fileReader.onload = (f) => {
-    const { affiliationsDataTable, options, publicationsDataTable } = JSON.parse(f.target.result);
-    options.restoreFromFile = true;
-    setAffiliationsDataTable(affiliationsDataTable);
-    setPublicationsDataTable(publicationsDataTable);
-    // setOptions(options);
-    setSearchParams(options);
-  };
-};
-
 const export2BsoCsv = (publicationDataTable) => {
   const csvHeader = ['doi', 'hal_id', 'nnt_id'].join(';');
   const keepedPublications = publicationDataTable.filter((publication) => publication.status === 'keep');
@@ -47,6 +25,27 @@ const export2BsoCsv = (publicationDataTable) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+};
+
+const export2json = (affiliationsDataTable, options, publicationsDataTable) => {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([JSON.stringify({ affiliationsDataTable, options, publicationsDataTable })], { type: 'application/json' }));
+  link.setAttribute('download', 'publications-finder.json');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const importJson = (e, setAffiliationsDataTable, setPublicationsDataTable, setSearchParams) => {
+  const fileReader = new FileReader();
+  fileReader.readAsText(e.target.files[0], 'UTF-8');
+  fileReader.onload = (f) => {
+    const { affiliationsDataTable, options, publicationsDataTable } = JSON.parse(f.target.result);
+    options.restoreFromFile = true;
+    setAffiliationsDataTable(affiliationsDataTable);
+    setPublicationsDataTable(publicationsDataTable);
+    setSearchParams(options);
+  };
 };
 
 export {

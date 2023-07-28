@@ -12,7 +12,6 @@ export default function Actions({
   options,
   publicationsDataTable,
   setAffiliationsDataTable,
-  setOptions,
   setPublicationsDataTable,
 }) {
   const [, setSearchParams] = useSearchParams();
@@ -57,7 +56,7 @@ export default function Actions({
               accept=".json"
               hint="Select JSON file to restore from previous state"
               label="JSON file"
-              onChange={(e) => importJson(e, setAffiliationsDataTable, setPublicationsDataTable, setOptions, setSearchParams)}
+              onChange={(e) => importJson(e, setAffiliationsDataTable, setPublicationsDataTable, setSearchParams)}
             />
           </Col>
         </Row>
@@ -83,6 +82,5 @@ Actions.propTypes = {
     type: PropTypes.string.isRequired,
   })).isRequired,
   setAffiliationsDataTable: PropTypes.func.isRequired,
-  setOptions: PropTypes.func.isRequired,
   setPublicationsDataTable: PropTypes.func.isRequired,
 };

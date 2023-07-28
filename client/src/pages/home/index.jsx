@@ -251,7 +251,6 @@ export default function Home() {
           options={formOptions}
           publicationsDataTable={publicationsDataTable}
           setAffiliationsDataTable={setAffiliationsDataTable}
-          setOptions={setFormOptions}
           setPublicationsDataTable={setPublicationsDataTable}
         />
         <Tabs defaultActiveTab={0}>
