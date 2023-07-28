@@ -258,8 +258,6 @@ export default function Home() {
           <Tab label={`Affiliations (${affiliationsDataTable.length})`}>
             <Row>
               <Col>
-                Apply to selected affiliations
-                {' '}
                 <Button
                   className="fr-mr-1w btn-reset"
                   disabled={checkSelectedAffiliation()}
@@ -316,8 +314,6 @@ export default function Home() {
           <Tab label={`Publications (${publicationsDataTable.filter((publication) => publication.status === 'keep').length} / ${publicationsDataTable.length})`}>
             <Row>
               <Col>
-                Apply to selected publications
-                {' '}
                 <Button
                   className="fr-mr-1w btn-reset"
                   disabled={selectedPublications.length === 0}
