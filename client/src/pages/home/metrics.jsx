@@ -7,26 +7,30 @@ const {
 } = import.meta.env;
 
 export default function Metrics({ data }) {
-  const totBso = data?.total?.bso ? 100 : 0;
-  const totOpenalex = data?.total?.openalex ? 100 : 0;
-  const totCollectedBso = Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE) * (100) / (data?.total?.bso ?? 1);
-  const totCollectedOpenalex = Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE) * (100) / (data?.total?.openalex ?? 1);
+  const totBso = data?.total?.bso || 0;
+  const totOpenAlex = data?.total?.openalex || 0;
+  const totCollectedBso = Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE);
+  const totCollectedOpenAlex = Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE);
+  const totDeduplicated = data?.total?.deduplicated;
+  const grandMax = Math.max(totBso, totOpenAlex, totDeduplicated);
+  const percBso = totBso * 100 / (grandMax || 1);
+  const percCollectedBso = totCollectedBso * 100 / (grandMax || 1);
+  const percOpenAlex = totOpenAlex * 100 / (grandMax || 1);
+  const percCollectedOpenAlex = totCollectedOpenAlex * 100 / (grandMax || 1);
+  const percDeduplicated = totDeduplicated * 100 / (grandMax || 1);
 
   return (
     <aside className="jauges">
-      {`${data?.total?.bso ?? 0} publications in the BSO`}
-      <div className="jauge jauge-totBso" style={{ width: `${totBso}%` }} />
-      {`${Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE)} publications collected from the BSO`}
-      <div className="jauge jauge-collectedBso" style={{ width: `${totCollectedBso}%` }} />
-      <hr />
-
-      {`${data?.total?.openalex ?? 0} publications in OpenAlex`}
-      <div className="jauge jauge-totOpenAlex" style={{ width: `${totOpenalex}%` }} />
-      {`${Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE)} publications collected from OpenAlex`}
-      <div className="jauge jauge-collectedOpenAlex" style={{ width: `${totCollectedOpenalex}%` }} />
-      <hr />
-      {`${data?.total?.deduplicated ?? 0} publications after deduplication`}
-      <div className="jauge jauge-deduplicated" style={{ width: `${totCollectedOpenalex}%` }} />
+      {`${totBso} publications in the BSO database`}
+      <div className="jauge jauge-totBso" style={{ width: `${percBso}%` }} />
+      {`${totCollectedBso} publications collected from the BSO database (max ${VITE_BSO_SIZE})`}
+      <div className="jauge jauge-collectedBso" style={{ width: `${percCollectedBso}%` }} />
+      {`${totOpenAlex} publications in OpenAlex database`}
+      <div className="jauge jauge-totOpenAlex" style={{ width: `${percOpenAlex}%` }} />
+      {`${totCollectedOpenAlex} publications collected from OpenAlex database (max ${VITE_OPENALEX_SIZE})`}
+      <div className="jauge jauge-collectedOpenAlex" style={{ width: `${percCollectedOpenAlex}%` }} />
+      {`${totDeduplicated} publications after deduplication`}
+      <div className="jauge jauge-deduplicated" style={{ width: `${percDeduplicated}%` }} />
 
     </aside>
   );
