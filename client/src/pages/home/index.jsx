@@ -258,36 +258,39 @@ export default function Home() {
           <Tab label={`Affiliations (${affiliationsDataTable.length})`}>
             <Row>
               <Col>
-                Apply to selected affiliations
-                {' '}
-                <Button
-                  className="fr-mr-1w btn-text"
-                  disabled={checkSelectedAffiliation()}
-                  icon="ri-question-mark"
-                  onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
-                  size="sm"
-                >
-                  Reset to "Sort" status
-                </Button>
-                <Button
-                  className="fr-mr-1w btn-success"
-                  disabled={checkSelectedAffiliation()}
-                  icon="ri-check-fill"
-                  onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
-                  size="sm"
+                <div>
+                  Apply to selected affiliations
+                </div>
+                <div>
+                  <Button
+                    className="fr-mr-1w btn-text"
+                    disabled={checkSelectedAffiliation()}
+                    icon="ri-question-mark"
+                    onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
+                    size="sm"
+                  >
+                    Reset to "Sort" status
+                  </Button>
+                  <Button
+                    className="fr-mr-1w btn-success"
+                    disabled={checkSelectedAffiliation()}
+                    icon="ri-check-fill"
+                    onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
+                    size="sm"
 
-                >
-                  Keep to export list
-                </Button>
-                <Button
-                  className="fr-mr-1w btn-error"
-                  disabled={checkSelectedAffiliation()}
-                  icon="ri-eye-off-line"
-                  onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
-                  size="sm"
-                >
-                  Hide
-                </Button>
+                  >
+                    Keep to export list
+                  </Button>
+                  <Button
+                    className="fr-mr-1w btn-error"
+                    disabled={checkSelectedAffiliation()}
+                    icon="ri-eye-off-line"
+                    onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
+                    size="sm"
+                  >
+                    Hide
+                  </Button>
+                </div>
               </Col>
               <Col className="text-right" n="2">
                 <Button
@@ -316,35 +319,38 @@ export default function Home() {
           <Tab label={`Publications (${publicationsDataTable.filter((publication) => publication.status === 'keep').length} / ${publicationsDataTable.length})`}>
             <Row>
               <Col>
-                Apply to selected publications
-                {' '}
-                <Button
-                  className="fr-mr-1w btn-text"
-                  disabled={selectedPublications.length === 0}
-                  icon="ri-question-mark"
-                  onClick={() => tagPublications(selectedPublications, 'sort')}
-                  size="sm"
-                >
-                  Reset to "Sort" status
-                </Button>
-                <Button
-                  className="fr-mr-1w btn-success"
-                  disabled={selectedPublications.length === 0}
-                  icon="ri-check-fill"
-                  onClick={() => tagPublications(selectedPublications, 'keep')}
-                  size="sm"
-                >
-                  Keep to export list
-                </Button>
-                <Button
-                  className="fr-mb-1w btn-error"
-                  disabled={selectedPublications.length === 0}
-                  icon="ri-eye-off-line"
-                  onClick={() => tagPublications(selectedPublications, 'exclude')}
-                  size="sm"
-                >
-                  Hide
-                </Button>
+                <div>
+                  Apply to selected publications
+                </div>
+                <div>
+                  <Button
+                    className="fr-mr-1w btn-text"
+                    disabled={selectedPublications.length === 0}
+                    icon="ri-question-mark"
+                    onClick={() => tagPublications(selectedPublications, 'sort')}
+                    size="sm"
+                  >
+                    Reset to "Sort" status
+                  </Button>
+                  <Button
+                    className="fr-mr-1w btn-success"
+                    disabled={selectedPublications.length === 0}
+                    icon="ri-check-fill"
+                    onClick={() => tagPublications(selectedPublications, 'keep')}
+                    size="sm"
+                  >
+                    Keep to export list
+                  </Button>
+                  <Button
+                    className="fr-mb-1w btn-error"
+                    disabled={selectedPublications.length === 0}
+                    icon="ri-eye-off-line"
+                    onClick={() => tagPublications(selectedPublications, 'exclude')}
+                    size="sm"
+                  >
+                    Hide
+                  </Button>
+                </div>
               </Col>
             </Row>
             <Row>
