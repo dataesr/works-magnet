@@ -261,7 +261,7 @@ export default function Home() {
                 <Button
                   className="fr-mr-1w btn-keep"
                   disabled={checkSelectedAffiliation()}
-                  icon="ri-check-fill"
+                  icon="ri-checkbox-circle-line"
                   onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
                   size="sm"
 
@@ -271,7 +271,7 @@ export default function Home() {
                 <Button
                   className="fr-mr-1w btn-hide"
                   disabled={checkSelectedAffiliation()}
-                  icon="ri-remove-line"
+                  icon="ri-indeterminate-circle-line"
                   onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
                   size="sm"
                 >
@@ -280,7 +280,7 @@ export default function Home() {
                 <Button
                   className="fr-mr-1w btn-reset"
                   disabled={checkSelectedAffiliation()}
-                  icon="ri-question-mark"
+                  icon="ri-reply-fill"
                   onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
                   size="sm"
                 >
