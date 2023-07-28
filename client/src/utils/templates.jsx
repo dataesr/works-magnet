@@ -1,8 +1,8 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
-import { Badge } from '@dataesr/react-dsfr';
 import { Tooltip } from 'react-tooltip';
 import { Dropdown } from 'primereact/dropdown';
+import { Tag } from 'primereact/tag';
 
 import { getIdLink } from './publications';
 
@@ -125,23 +125,23 @@ const getAuthorsTooltipField = (rowData) => {
 
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.name }} />;
 
-const getStatusType = (status) => {
-  let type;
+const getStatusBackgroundColor = (status) => {
+  let color;
   switch (status) {
   case 'keep':
-    type = 'success';
+    color = '#18753C';
     break;
   case 'exclude':
-    type = 'error';
+    color = '#ce0500';
     break;
   default:
-    type = 'info';
+    color = '#161616';
     break;
   }
-  return type;
+  return color;
 };
 
-const statusTemplate = (rowData) => <Badge text={rowData?.status ?? rowData} type={getStatusType(rowData?.status ?? rowData)} />;
+const statusTemplate = (rowData) => <Tag value={rowData?.status ?? rowData} style={{ backgroundColor: getStatusBackgroundColor(rowData?.status ?? rowData) }} />;
 
 const statusFilterTemplate = (options) => (
   <Dropdown
