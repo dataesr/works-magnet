@@ -18,6 +18,7 @@ export default function AffiliationsView({
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       dataKey="id"
       filterDisplay="row"
+      lazy
       metaKeySelection
       onSelectionChange={(e) => setSelectedAffiliations(e.value)}
       paginator
@@ -30,6 +31,7 @@ export default function AffiliationsView({
       stripedRows
       style={{ fontSize: '11px', lineHeight: '15px' }}
       tableStyle={{ minWidth: '50rem' }}
+      totalRecords={affiliationsDataTable.length}
       value={affiliationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
