@@ -7,7 +7,7 @@ const export2json = (affiliationsDataTable, options, publicationsDataTable) => {
   document.body.removeChild(link);
 };
 
-const importJson = (e, setAffiliationsDataTable, setPublicationsDataTable, setOptions) => {
+const importJson = (e, setAffiliationsDataTable, setPublicationsDataTable, setOptions, setSearchParams) => {
   const fileReader = new FileReader();
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {
@@ -15,7 +15,8 @@ const importJson = (e, setAffiliationsDataTable, setPublicationsDataTable, setOp
     options.restoreFromFile = true;
     setAffiliationsDataTable(affiliationsDataTable);
     setPublicationsDataTable(publicationsDataTable);
-    setOptions(options);
+    // setOptions(options);
+    setSearchParams(options);
   };
 };
 

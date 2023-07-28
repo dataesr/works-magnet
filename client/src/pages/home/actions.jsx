@@ -1,6 +1,8 @@
 import { Col, File, Row } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
 import Button from '../../components/button';
 
 import { export2BsoCsv, export2json, importJson } from '../../utils/file';
@@ -13,6 +15,7 @@ export default function Actions({
   setOptions,
   setPublicationsDataTable,
 }) {
+  const [, setSearchParams] = useSearchParams();
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
 
   return (
@@ -54,7 +57,7 @@ export default function Actions({
               accept=".json"
               hint="Select JSON file to restore from previous state"
               label="JSON file"
-              onChange={(e) => importJson(e, setAffiliationsDataTable, setPublicationsDataTable, setOptions)}
+              onChange={(e) => importJson(e, setAffiliationsDataTable, setPublicationsDataTable, setOptions, setSearchParams)}
             />
           </Col>
         </Row>

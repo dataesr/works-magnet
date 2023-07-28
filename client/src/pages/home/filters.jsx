@@ -25,9 +25,9 @@ export default function Filters({ sendQuery }) {
   const [authorsToExclude, setAuthorsToExclude] = useState(searchParams.size ? searchParams.getAll('authorsToExclude') : []);
   const [dataIdentifiers, setDataIdentifiers] = useState(searchParams.size ? searchParams.getAll('dataIdentifiers') : identifiers);
   const [datasources, setDatasources] = useState(searchParams.size ? searchParams.getAll('datasources') : sources.map((source) => source.key));
-  const [endYear, setEndYear] = useState(searchParams.size ? searchParams.getAll('endYear')?.[0] : '2021');
-  const [moreOptions, setMoreOptions] = useState(searchParams.size ? searchParams.getAll('moreOptions')?.[0].toString() === 'true' : false);
-  const [startYear, setStartYear] = useState(searchParams.size ? searchParams.getAll('startYear')?.[0] : '2021');
+  const [endYear, setEndYear] = useState(searchParams.size ? searchParams.get('endYear') : '2021');
+  const [moreOptions, setMoreOptions] = useState(searchParams.size ? searchParams.get('moreOptions').toString() === 'true' : false);
+  const [startYear, setStartYear] = useState(searchParams.size ? searchParams.get('startYear') : '2021');
 
   useEffect(() => {
     setSearchParams({
