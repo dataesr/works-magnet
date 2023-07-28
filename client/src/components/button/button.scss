@@ -2,30 +2,36 @@
   SPAN {
     pointer-events: none;
   }
+
   position: relative;
 }
 
-.btn--loading > :not(.lds-ellipsis--wrapper) {
+.btn--loading> :not(.lds-ellipsis--wrapper) {
   opacity: 0;
 }
+
 // BUTTON SUCCESS
 .btn-success.fr-btn.btn-primary {
   --hover: var(--background-action-high-success-hover);
   --active: var(--background-action-high-success-active);
 }
+
 .btn-success.fr-btn {
   background-color: var(--background-action-high-success);
   color: var(--text-inverted-success);
 }
+
 .btn-success.fr-btn--secondary {
   box-shadow: inset 0 0 0 1px var(--background-action-high-success);
   color: var(--background-action-high-success);
   background-color: transparent;
 }
+
 .btn-success.fr-btn--tertiary {
   color: var(--background-action-high-success);
   background-color: transparent;
 }
+
 .btn-success.fr-btn--tertiary-no-outline {
   color: var(--background-action-high-success);
   background-color: transparent;
@@ -36,41 +42,50 @@
   --hover: var(--background-action-high-error-hover);
   --active: var(--background-action-high-error-active);
 }
+
 .btn-error.fr-btn {
   background-color: var(--background-action-high-error);
   color: var(--text-inverted-error);
 }
+
 .btn-error.fr-btn--secondary {
   box-shadow: inset 0 0 0 1px var(--background-action-high-error);
   color: var(--background-action-high-error);
   background-color: transparent;
 }
+
 .btn-error.fr-btn--tertiary {
   color: var(--background-action-high-error);
   background-color: transparent;
 }
+
 .btn-error.fr-btn--tertiary-no-outline {
   color: var(--background-action-high-error);
   background-color: transparent;
 }
+
 // BUTTON TEXT
 .btn-text.fr-btn.btn-primary {
   --hover: var(--text-mention-grey);
   --active: var(--text-disabled-grey);
 }
+
 .btn-text.fr-btn {
   background-color: var(--text-action-high-grey);
   color: var(--text-inverted-grey);
 }
+
 .btn-text.fr-btn--secondary {
   box-shadow: inset 0 0 0 1px var(--text-action-high-grey);
   color: var(--text-action-high-grey);
   background-color: transparent;
 }
+
 .btn-text.fr-btn--tertiary {
   color: var(--text-action-high-grey);
   background-color: transparent;
 }
+
 .btn-text.fr-btn--tertiary-no-outline {
   color: var(--text-action-high-grey);
   background-color: transparent;
@@ -79,25 +94,30 @@
 
 // ICON BUTTON
 .btn-icon {
-  display:inline-flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+
   &:before {
     display: none;
   }
 }
-.fr-btns-group--sm .btn-icon{
+
+.fr-btns-group--sm .btn-icon {
   width: 2rem !important;
   height: 2rem !important;
 }
+
 .btn-icon.fr-btn--sm {
   max-width: 2rem !important;
   max-height: 2rem !important;
 }
+
 .btn-icon.fr-btn--md {
   max-width: 2.5rem !important;
   max-height: 2.5rem !important;
 }
+
 .btn-icon.fr-btn--lg {
   max-width: 3rem !important;
   max-height: 3rem !important;
@@ -106,4 +126,47 @@
 .btn-icon--rounded.btn-icon {
   border-radius: 99999px;
   z-index: 1000;
+}
+
+
+// BUTTON KEEP
+.btn-keep.fr-btn {
+  background-color: var(--background-contrast-success);
+  color: var(--text-default-success);
+
+  &:hover {
+    background-color: var(--background-contrast-success-hover);
+  }
+
+  &:active {
+    background-color: var(--background-contrast-success-active);
+  }
+}
+
+// BUTTON RESET
+.btn-reset.fr-btn {
+  background-color: var(--background-contrast-info);
+  color: var(--text-default-info);
+
+  &:hover {
+    background-color: var(--background-contrast-info-hover);
+  }
+
+  &:active {
+    background-color: var(--background-contrast-info-active);
+  }
+}
+
+// BUTTON HIDE
+.btn-hide.fr-btn {
+  background-color: var(--background-contrast-error);
+  color: var(--text-default-error);
+
+  &:hover {
+    background-color: var(--background-contrast-error-hover);
+  }
+
+  &:active {
+    background-color: var(--background-contrast-error-active);
+  }
 }
