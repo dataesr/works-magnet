@@ -259,15 +259,6 @@ export default function Home() {
             <Row>
               <Col>
                 <Button
-                  className="fr-mr-1w btn-reset"
-                  disabled={checkSelectedAffiliation()}
-                  icon="ri-question-mark"
-                  onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
-                  size="sm"
-                >
-                  Reset to "Sort" status
-                </Button>
-                <Button
                   className="fr-mr-1w btn-keep"
                   disabled={checkSelectedAffiliation()}
                   icon="ri-check-fill"
@@ -275,16 +266,25 @@ export default function Home() {
                   size="sm"
 
                 >
-                  Keep to export list
+                  Validate
                 </Button>
                 <Button
                   className="fr-mr-1w btn-hide"
                   disabled={checkSelectedAffiliation()}
-                  icon="ri-eye-off-line"
+                  icon="ri-remove-line"
                   onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
                   size="sm"
                 >
-                  Hide
+                  Remove
+                </Button>
+                <Button
+                  className="fr-mr-1w btn-reset"
+                  disabled={checkSelectedAffiliation()}
+                  icon="ri-question-mark"
+                  onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
+                  size="sm"
+                >
+                  Reset status
                 </Button>
               </Col>
               <Col className="text-right" n="2">
