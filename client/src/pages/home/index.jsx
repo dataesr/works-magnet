@@ -135,6 +135,7 @@ export default function Home() {
     let affiliationsDataTableTmp = {};
     publications.filter((publication) => publication.status === 'sort').forEach((publication) => {
       switch (publication.datasource) {
+        case 'bso, openalex':
         case 'bso':
           (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
             const affiliationName = normalizedName(affiliation);
@@ -307,7 +308,7 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Publications (${publicationsDataTable.length})`}>
+          <Tab label={`Publications (${publicationsDataTable.filter((publication) => publication.status === 'sort').length} / ${publicationsDataTable.length})`}>
             <Row>
               <Col className="text-right">
                 Apply to selected publications
