@@ -310,7 +310,7 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Publications (${publicationsDataTable.filter((publication) => publication.status === 'keep').length} / ${publicationsDataTable.length})`}>
+          <Tab label={`Productions (${publicationsDataTable.filter((publication) => publication.status === 'keep').length} / ${publicationsDataTable.length})`}>
             <Row>
               <Col>
                 <Button

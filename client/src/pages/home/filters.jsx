@@ -191,7 +191,7 @@ export default function Filters({ sendQuery }) {
             }}
             size="sm"
           >
-            Search publications
+            Search productions
           </Button>
         </Col>
       </Row>
