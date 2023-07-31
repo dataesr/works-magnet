@@ -119,6 +119,7 @@ export default function Home() {
   });
 
   const sendQuery = async (_options) => {
+    console.log('sendQuery', _options);
     await setFormOptions(_options);
     refetch();
   };

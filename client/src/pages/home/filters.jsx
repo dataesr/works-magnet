@@ -1,10 +1,12 @@
 import {
+  Alert,
   Button,
   Checkbox,
   CheckboxGroup,
   Col,
   Row,
   Select,
+  Text,
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -19,6 +21,7 @@ const years = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '
 export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSeachParams, setCurrentSeachParams] = useState({});
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (searchParams.size === 0) {
@@ -65,6 +68,15 @@ export default function Filters({ sendQuery }) {
       setSearchParams({ ...currentSeachParams, dataIdentifiers: dataIdentifiers.filter((item) => item !== label) });
     } else {
       setSearchParams({ ...currentSeachParams, dataIdentifiers: [...dataIdentifiers, label] });
+    }
+  };
+
+  const checkAndSendQuery = () => {
+    if (currentSeachParams.affiliations.length === 0 && currentSeachParams.authors.length === 0) {
+      setMessage('You must provide at least one affiliation or one author. Don\'t forget to validate the input.');
+    } else {
+      setMessage('');
+      sendQuery(currentSeachParams);
     }
   };
 
@@ -186,15 +198,22 @@ export default function Filters({ sendQuery }) {
           </Button>
           <Button
             icon="ri-search-line"
-            onClick={() => {
-              sendQuery(currentSeachParams);
-            }}
+            onClick={checkAndSendQuery}
             size="sm"
           >
             Search productions
           </Button>
         </Col>
       </Row>
+      {
+        message && (
+          <Row className="fr-mt-1w">
+            <Col>
+              <Alert type="error" description={message} />
+            </Col>
+          </Row>
+        )
+      }
     </>
   );
 }
