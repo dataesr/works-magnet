@@ -73,7 +73,7 @@ export default function Filters({ sendQuery }) {
 
   const checkAndSendQuery = () => {
     if (currentSeachParams.affiliations.length === 0 && currentSeachParams.authors.length === 0) {
-      setMessage('You must provide at least one affiliation or one author. Don\'t forget to validate the input.');
+      setMessage('You must provide at least one affiliation or one author.');
     } else {
       setMessage('');
       sendQuery(currentSeachParams);
