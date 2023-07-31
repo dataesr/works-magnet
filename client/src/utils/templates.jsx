@@ -149,8 +149,8 @@ const statusFilterTemplate = (options) => (
     itemTemplate={statusTemplate}
     onChange={(e) => options.filterApplyCallback(e.value)}
     options={['to be decided', 'validated', 'excluded']}
-    placeholder="State"
-    style={{ width: '5rem' }}
+    placeholder=""
+    style={{ width: '6rem' }}
     showClear
     value={options.value}
   />
