@@ -119,7 +119,6 @@ export default function Home() {
   });
 
   const sendQuery = async (_options) => {
-    console.log('sendQuery', _options);
     await setFormOptions(_options);
     refetch();
   };
@@ -226,6 +225,38 @@ export default function Home() {
     return ret;
   };
 
+  const renderAffiliationButtons = () => (
+    <>
+      <Button
+        className="fr-mr-1w btn-keep"
+        disabled={checkSelectedAffiliation()}
+        icon="ri-checkbox-circle-line"
+        onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
+        size="sm"
+      >
+        Validate
+      </Button>
+      <Button
+        className="fr-mr-1w btn-hide"
+        disabled={checkSelectedAffiliation()}
+        icon="ri-indeterminate-circle-line"
+        onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
+        size="sm"
+      >
+        Remove
+      </Button>
+      <Button
+        className="fr-mr-1w btn-reset"
+        disabled={checkSelectedAffiliation()}
+        icon="ri-reply-fill"
+        onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
+        size="sm"
+      >
+        Reset status
+      </Button>
+    </>
+  );
+
   return (
     <>
       <Container className="fr-my-5w" as="section" fluid>
@@ -258,34 +289,7 @@ export default function Home() {
           <Tab label={`Affiliations (${affiliationsDataTable.length})`}>
             <Row>
               <Col>
-                <Button
-                  className="fr-mr-1w btn-keep"
-                  disabled={checkSelectedAffiliation()}
-                  icon="ri-checkbox-circle-line"
-                  onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
-                  size="sm"
-
-                >
-                  Validate
-                </Button>
-                <Button
-                  className="fr-mr-1w btn-hide"
-                  disabled={checkSelectedAffiliation()}
-                  icon="ri-indeterminate-circle-line"
-                  onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
-                  size="sm"
-                >
-                  Remove
-                </Button>
-                <Button
-                  className="fr-mr-1w btn-reset"
-                  disabled={checkSelectedAffiliation()}
-                  icon="ri-reply-fill"
-                  onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
-                  size="sm"
-                >
-                  Reset status
-                </Button>
+                {renderAffiliationButtons()}
               </Col>
               <Col className="text-right" n="2">
                 <Button
@@ -308,6 +312,11 @@ export default function Home() {
                     setSelectedAffiliations={setSelectedAffiliations}
                   />
                 )}
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                {renderAffiliationButtons()}
               </Col>
             </Row>
           </Tab>
