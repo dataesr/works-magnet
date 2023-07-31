@@ -85,6 +85,15 @@ export default function Filters({ sendQuery }) {
     sendQuery(currentSeachParams);
   };
 
+  const checkSource = (source) => {
+    if (source === 'openalex') {
+      if (currentSeachParams.authors.length > 0) {
+        return false;
+      }
+    }
+    return currentSeachParams.datasources?.includes(source);
+  };
+
   return (
     <>
       <Row gutters>
@@ -112,7 +121,7 @@ export default function Filters({ sendQuery }) {
             {
               sources.map((source) => (
                 <Checkbox
-                  checked={currentSeachParams.datasources?.includes(source.key)}
+                  checked={checkSource(source.key)}
                   key={source.key}
                   label={source.label}
                   onChange={() => onDatasourcesChange(source.key)}
