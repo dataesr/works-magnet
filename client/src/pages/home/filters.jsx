@@ -6,7 +6,6 @@ import {
   Col,
   Row,
   Select,
-  Text,
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -22,6 +21,8 @@ export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSeachParams, setCurrentSeachParams] = useState({});
   const [message, setMessage] = useState('');
+  const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
+  const [onInputAuthorsHandler, setOnInputAuthorsHandler] = useState(false);
 
   useEffect(() => {
     if (searchParams.size === 0) {
@@ -72,12 +73,16 @@ export default function Filters({ sendQuery }) {
   };
 
   const checkAndSendQuery = () => {
+    if (onInputAffiliationsHandler || onInputAuthorsHandler) {
+      setMessage('Don\'t forget to validate the input.');
+      return;
+    }
     if (currentSeachParams.affiliations.length === 0 && currentSeachParams.authors.length === 0) {
       setMessage('You must provide at least one affiliation or one author.');
-    } else {
-      setMessage('');
-      sendQuery(currentSeachParams);
+      return;
     }
+    setMessage('');
+    sendQuery(currentSeachParams);
   };
 
   return (
@@ -89,6 +94,7 @@ export default function Filters({ sendQuery }) {
             label="Affiliations (Name, Grid, RNSR, RoR, HAL structId or viaf)"
             onTagsChange={(affiliations) => setSearchParams({ ...currentSeachParams, affiliations })}
             tags={currentSeachParams.affiliations}
+            onInputHandler={setOnInputAffiliationsHandler}
           />
         </Col>
         <Col n="5">
@@ -97,6 +103,7 @@ export default function Filters({ sendQuery }) {
             label="Authors"
             onTagsChange={(authors) => setSearchParams({ ...currentSeachParams, authors })}
             tags={currentSeachParams.authors}
+            onInputHandler={setOnInputAuthorsHandler}
           />
         </Col>
         <Col n="2" className="fr-pt-4w">

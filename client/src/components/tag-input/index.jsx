@@ -2,7 +2,14 @@ import { Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-export default function TagInput({ hint, label, onTagsChange, placeholder, tags }) {
+export default function TagInput({
+  hint,
+  label,
+  onInputHandler,
+  onTagsChange,
+  placeholder,
+  tags,
+}) {
   const [input, setInput] = useState('');
   const [values, setValues] = useState(tags);
 
@@ -16,6 +23,14 @@ export default function TagInput({ hint, label, onTagsChange, placeholder, tags 
       onTagsChange(newValues);
     }
   };
+
+  useEffect(() => {
+    if (input && input.length > 0) {
+      onInputHandler(true);
+    } else if (input.length === 0) {
+      onInputHandler(false);
+    }
+  }, [input, onInputHandler]);
 
   const handleDeleteClick = (tag) => {
     const newValues = [...values.filter((el) => el !== tag)];
@@ -68,10 +83,12 @@ TagInput.propTypes = {
   onTagsChange: PropTypes.func.isRequired,
   tags: PropTypes.arrayOf(PropTypes.string),
   placeholder: PropTypes.string,
+  onInputHandler: PropTypes.func,
 };
 
 TagInput.defaultProps = {
   hint: 'Valider votre ajout avec la touche "Entrée"',
   tags: [],
   placeholder: '',
+  onInputHandler: () => { },
 };
