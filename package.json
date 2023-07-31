@@ -1,6 +1,6 @@
 {
-  "name": "publications-retriever",
-  "homepage": "https://github.com/dataesr/publications-finder/",
+  "name": "works-finder",
+  "homepage": "https://github.com/dataesr/works-finder/",
   "private": true,
   "version": "1.0.0",
   "type": "module",
