@@ -34,7 +34,7 @@ export default function AffiliationsView({
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
-      <Column field="name" header="Affiliation" body={nameTemplate} filter filterField="nameTxt" filterMatchMode="contains" filterPlaceholder="Search by affiliation" style={{ minWidth: '10px' }} />
+      <Column field="name" header="Affiliation" body={nameTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by affiliation" style={{ minWidth: '10px' }} />
       <Column field="works" body={(rowData) => rowData.works.length} header="Number of works" style={{ minWidth: '10px' }} />
     </DataTable>
   );
@@ -44,14 +44,12 @@ AffiliationsView.propTypes = {
   affiliationsDataTable: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    nameTxt: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    nameTxt: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,

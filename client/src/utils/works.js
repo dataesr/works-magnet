@@ -33,17 +33,6 @@ const getBsoQuery = (options) => {
   } else if (options?.endYear) {
     query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
   }
-  query.highlight = {
-    fields: {
-      'affiliations.grid': {},
-      'affiliations.name': {},
-      'affiliations.rnsr': {},
-      'affiliations.ror': {},
-      'affiliations.structId': {},
-      'affiliations.viaf': {},
-      'authors.full_name': {},
-    },
-  };
   query.query.bool.filter.push({ terms: { 'external_ids.id_type': options.dataIdentifiers } });
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'title', 'year'];
@@ -53,7 +42,6 @@ const getBsoQuery = (options) => {
 const getBsoCount = (options) => {
   const body = getBsoQuery(options);
   delete body._source;
-  delete body.highlight;
   delete body.size;
   const params = {
     method: 'POST',
@@ -93,7 +81,6 @@ const getBsoWorks = (options) => {
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: result._source?.authors ?? [],
         datasource: 'bso',
-        highlight: result.highlight,
         id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
         original: result,
         type: result._source?.genre_raw ?? result._source.genre,
@@ -173,7 +160,7 @@ const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse =
       datasource: 'openalex',
       total: response.total,
       results: response.results.map((result) => ({
-        affiliations: result?.authorships?.map((author) => ({ name: author.raw_affiliation_strings })) ?? result.affiliations,
+        affiliations: result?.authorships?.map((author) => ({ name: author.raw_affiliation_string })) ?? result.affiliations,
         allIds: result?.ids ? Object.keys(result.ids).map((key) => ({ id_type: key, id_value: getIdValue(result.ids[key]) })) : result.allIds,
         authors: result?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? result.authors,
         datasource: 'openalex',

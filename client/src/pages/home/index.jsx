@@ -141,12 +141,11 @@ export default function Home() {
       switch (work.datasource) {
         case 'bso, openalex':
         case 'bso':
-          (work?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
-            const affiliationName = normalizedName(affiliation);
+          (work?.affiliations ?? []).forEach((affiliation) => {
+            const affiliationName = normalizedName(affiliation.name);
             if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
               affiliationsDataTableTmp[affiliationName] = {
-                name: affiliation,
-                nameTxt: affiliation.replaceAll('<em>', '').replaceAll('</em>', ''),
+                name: affiliation.name,
                 status: TO_BE_DECIDED_STATUS,
                 works: [],
               };
@@ -160,7 +159,6 @@ export default function Home() {
             if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
               affiliationsDataTableTmp[affiliationName] = {
                 name: affiliation,
-                nameTxt: affiliation.replaceAll('<em>', '').replaceAll('</em>', ''),
                 status: TO_BE_DECIDED_STATUS,
                 works: [],
               };
