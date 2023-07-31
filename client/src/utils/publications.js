@@ -105,6 +105,7 @@ const getIdLink = (type, id) => {
   let prefix = null;
   switch (type) {
   case 'crossref':
+  case 'datacite':
   case 'doi':
     prefix = 'https://doi.org/';
     break;

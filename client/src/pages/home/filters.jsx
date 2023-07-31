@@ -99,7 +99,7 @@ export default function Filters({ sendQuery }) {
         </Col>
         <Col n="5">
           <TagInput
-            hint="At least one of these authors should be present, OR operator. ⚠️ French monitor only"
+            hint="At least one of these authors should be present, OR operator. ⚠️ French Monitor only"
             label="Authors"
             onTagsChange={(authors) => setSearchParams({ ...currentSeachParams, authors })}
             tags={currentSeachParams.authors}
@@ -208,7 +208,7 @@ export default function Filters({ sendQuery }) {
             onClick={checkAndSendQuery}
             size="sm"
           >
-            Search productions
+            Search works
           </Button>
         </Col>
       </Row>
