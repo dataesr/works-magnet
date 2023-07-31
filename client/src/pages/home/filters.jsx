@@ -86,12 +86,10 @@ export default function Filters({ sendQuery }) {
   };
 
   const checkSource = (source) => {
-    if (source === 'openalex') {
-      if ((currentSearchParams?.authors ?? []).length > 0) {
-        return false;
-      }
+    if ((source === 'openalex') && ((currentSearchParams?.authors ?? []).length > 0)) {
+      return false;
     }
-    return currentSearchParams.datasources?.includes(source);
+    return (currentSearchParams?.datasources ?? []).includes(source);
   };
 
   return (
