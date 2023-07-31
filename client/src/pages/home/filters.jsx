@@ -23,7 +23,7 @@ export default function Filters({ sendQuery }) {
   useEffect(() => {
     if (searchParams.size === 0) {
       setSearchParams({
-        affiliations: ['Ingénierie-Biologie-Santé Lorraine', 'UMS 2008', 'IBSLOR', 'UMS2008', 'UMS CNRS 2008'],
+        affiliations: [],
         affiliationsToExclude: [],
         affiliationsToInclude: [],
         authors: [],
