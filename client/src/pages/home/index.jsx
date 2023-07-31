@@ -328,31 +328,31 @@ export default function Home() {
             <Row>
               <Col>
                 <Button
-                  className="fr-mr-1w btn-reset"
-                  disabled={selectedPublications.length === 0}
-                  icon="ri-question-mark"
-                  onClick={() => tagPublications(selectedPublications, TO_DECIDE_STATUS)}
-                  size="sm"
-                >
-                  Reset to "Sort" status
-                </Button>
-                <Button
                   className="fr-mr-1w btn-keep"
                   disabled={selectedPublications.length === 0}
-                  icon="ri-check-fill"
+                  icon="ri-checkbox-circle-line"
                   onClick={() => tagPublications(selectedPublications, VALIDATED_STATUS)}
                   size="sm"
                 >
-                  Keep to export list
+                  Validate
                 </Button>
                 <Button
                   className="fr-mb-1w btn-hide"
                   disabled={selectedPublications.length === 0}
-                  icon="ri-eye-off-line"
+                  icon="ri-indeterminate-circle-line"
                   onClick={() => tagPublications(selectedPublications, EXCLUDED_STATUS)}
                   size="sm"
                 >
-                  Hide
+                  Exclude
+                </Button>
+                <Button
+                  className="fr-mr-1w btn-reset"
+                  disabled={selectedPublications.length === 0}
+                  icon="ri-reply-fill"
+                  onClick={() => tagPublications(selectedPublications, TO_DECIDE_STATUS)}
+                  size="sm"
+                >
+                  Reset status
                 </Button>
               </Col>
             </Row>
