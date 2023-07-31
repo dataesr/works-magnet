@@ -4,7 +4,7 @@ import { Badge } from '@dataesr/react-dsfr';
 import { Tooltip } from 'react-tooltip';
 import { Dropdown } from 'primereact/dropdown';
 
-import { getIdLink } from './publications';
+import { getIdLink } from './works';
 
 const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliationsHtml }} />;
 

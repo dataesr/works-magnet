@@ -19,7 +19,7 @@ const years = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '
 
 export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [currentSeachParams, setCurrentSeachParams] = useState({});
+  const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [message, setMessage] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
   const [onInputAuthorsHandler, setOnInputAuthorsHandler] = useState(false);
@@ -39,7 +39,7 @@ export default function Filters({ sendQuery }) {
         startYear: '2021',
       });
     } else {
-      setCurrentSeachParams({
+      setCurrentSearchParams({
         affiliations: searchParams.getAll('affiliations'),
         affiliationsToExclude: searchParams.getAll('affiliationsToExclude'),
         affiliationsToInclude: searchParams.getAll('affiliationsToInclude'),
@@ -55,20 +55,20 @@ export default function Filters({ sendQuery }) {
   }, [searchParams, setSearchParams]);
 
   const onDatasourcesChange = (key) => {
-    const { datasources } = currentSeachParams;
+    const { datasources } = currentSearchParams;
     if (datasources.includes(key)) {
-      setSearchParams({ ...currentSeachParams, datasources: datasources.filter((datasource) => datasource !== key) });
+      setSearchParams({ ...currentSearchParams, datasources: datasources.filter((datasource) => datasource !== key) });
     } else {
-      setSearchParams({ ...currentSeachParams, datasources: [...datasources, key] });
+      setSearchParams({ ...currentSearchParams, datasources: [...datasources, key] });
     }
   };
 
   const onIdentifiersChange = (label) => {
-    const { dataIdentifiers } = currentSeachParams;
+    const { dataIdentifiers } = currentSearchParams;
     if (dataIdentifiers.includes(label)) {
-      setSearchParams({ ...currentSeachParams, dataIdentifiers: dataIdentifiers.filter((item) => item !== label) });
+      setSearchParams({ ...currentSearchParams, dataIdentifiers: dataIdentifiers.filter((item) => item !== label) });
     } else {
-      setSearchParams({ ...currentSeachParams, dataIdentifiers: [...dataIdentifiers, label] });
+      setSearchParams({ ...currentSearchParams, dataIdentifiers: [...dataIdentifiers, label] });
     }
   };
 
@@ -77,21 +77,21 @@ export default function Filters({ sendQuery }) {
       setMessage('Don\'t forget to validate the input.');
       return;
     }
-    if (currentSeachParams.affiliations.length === 0 && currentSeachParams.authors.length === 0) {
+    if (currentSearchParams.affiliations.length === 0 && currentSearchParams.authors.length === 0) {
       setMessage('You must provide at least one affiliation or one author.');
       return;
     }
     setMessage('');
-    sendQuery(currentSeachParams);
+    sendQuery(currentSearchParams);
   };
 
   const checkSource = (source) => {
     if (source === 'openalex') {
-      if (currentSeachParams.authors.length > 0) {
+      if (currentSearchParams.authors.length > 0) {
         return false;
       }
     }
-    return currentSeachParams.datasources?.includes(source);
+    return currentSearchParams.datasources?.includes(source);
   };
 
   return (
@@ -101,8 +101,8 @@ export default function Filters({ sendQuery }) {
           <TagInput
             hint="At least one of these affiliations should be present, OR operator"
             label="Affiliations (Name, Grid, RNSR, RoR, HAL structId or viaf)"
-            onTagsChange={(affiliations) => setSearchParams({ ...currentSeachParams, affiliations })}
-            tags={currentSeachParams.affiliations}
+            onTagsChange={(affiliations) => setSearchParams({ ...currentSearchParams, affiliations })}
+            tags={currentSearchParams.affiliations}
             onInputHandler={setOnInputAffiliationsHandler}
           />
         </Col>
@@ -110,8 +110,8 @@ export default function Filters({ sendQuery }) {
           <TagInput
             hint="At least one of these authors should be present, OR operator. ⚠️ French Monitor only"
             label="Authors"
-            onTagsChange={(authors) => setSearchParams({ ...currentSeachParams, authors })}
-            tags={currentSeachParams.authors}
+            onTagsChange={(authors) => setSearchParams({ ...currentSearchParams, authors })}
+            tags={currentSearchParams.authors}
             onInputHandler={setOnInputAuthorsHandler}
           />
         </Col>
@@ -133,23 +133,23 @@ export default function Filters({ sendQuery }) {
         </Col>
       </Row>
       {
-        currentSeachParams.moreOptions && (
+        currentSearchParams.moreOptions && (
           <>
             <Row gutters>
               <Col n="5">
                 <TagInput
                   hint="All these affiliations must be present, AND operator"
                   label="Affiliations to include mandatory"
-                  onTagsChange={(affiliationsToInclude) => setSearchParams({ ...currentSeachParams, affiliationsToInclude })}
-                  tags={currentSeachParams.affiliationsToInclude}
+                  onTagsChange={(affiliationsToInclude) => setSearchParams({ ...currentSearchParams, affiliationsToInclude })}
+                  tags={currentSearchParams.affiliationsToInclude}
                 />
               </Col>
               <Col n="5">
                 <TagInput
                   hint="None of these authors must be present, AND operator"
                   label="Authors to exclude"
-                  onTagsChange={(authorsToExclude) => setSearchParams({ ...currentSeachParams, authorsToExclude })}
-                  tags={currentSeachParams.authorsToExclude}
+                  onTagsChange={(authorsToExclude) => setSearchParams({ ...currentSearchParams, authorsToExclude })}
+                  tags={currentSearchParams.authorsToExclude}
                 />
               </Col>
             </Row>
@@ -158,8 +158,8 @@ export default function Filters({ sendQuery }) {
                 <TagInput
                   hint="None of these affiliations must be present, AND operator"
                   label="Affiliations to exclude"
-                  onTagsChange={(affiliationsToExclude) => setSearchParams({ ...currentSeachParams, affiliationsToExclude })}
-                  tags={currentSeachParams.affiliationsToExclude}
+                  onTagsChange={(affiliationsToExclude) => setSearchParams({ ...currentSearchParams, affiliationsToExclude })}
+                  tags={currentSearchParams.affiliationsToExclude}
                 />
               </Col>
             </Row>
@@ -170,25 +170,25 @@ export default function Filters({ sendQuery }) {
         <Col n="5">
           <Row gutters>
             <Col>
-              <Select label="Start year" options={years} selected={currentSeachParams.startYear} onChange={(e) => setSearchParams({ ...currentSeachParams, startYear: e.target.value })} />
+              <Select label="Start year" options={years} selected={currentSearchParams.startYear} onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })} />
             </Col>
             <Col>
-              <Select label="End year" options={years} selected={currentSeachParams.endYear} onChange={(e) => setSearchParams({ ...currentSeachParams, endYear: e.target.value })} />
+              <Select label="End year" options={years} selected={currentSearchParams.endYear} onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })} />
             </Col>
           </Row>
         </Col>
         {
-          currentSeachParams.moreOptions && (
+          currentSearchParams.moreOptions && (
             <Col n="3">
               {
-                currentSeachParams.datasources.includes('bso') && (
+                currentSearchParams.datasources.includes('bso') && (
                   <>
                     BSO Identifiers:
                     <CheckboxGroup isInline>
                       {
                         identifiers.map((identifier) => (
                           <Checkbox
-                            checked={currentSeachParams.dataIdentifiers.includes(identifier)}
+                            checked={currentSearchParams.dataIdentifiers.includes(identifier)}
                             key={identifier}
                             label={identifier}
                             onChange={() => onIdentifiersChange(identifier)}
@@ -205,12 +205,12 @@ export default function Filters({ sendQuery }) {
         }
         <Col className="text-right">
           <Button
-            onClick={() => setSearchParams({ ...currentSeachParams, moreOptions: !currentSeachParams.moreOptions })}
+            onClick={() => setSearchParams({ ...currentSearchParams, moreOptions: !currentSearchParams.moreOptions })}
             secondary
             size="sm"
             icon="ri-filter-line"
           >
-            {currentSeachParams.moreOptions ? 'Less filters' : 'More filters'}
+            {currentSearchParams.moreOptions ? 'Less filters' : 'More filters'}
           </Button>
           <Button
             icon="ri-search-line"

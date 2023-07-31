@@ -70,7 +70,7 @@ const getBsoCount = (options) => {
     });
 };
 
-const getBsoPublications = (options) => {
+const getBsoWorks = (options) => {
   const params = {
     method: 'POST',
     body: JSON.stringify(getBsoQuery(options)),
@@ -132,7 +132,7 @@ const getIdValue = (id) => (
     : null
 );
 
-const getOpenAlexPublications = (options, isRor = false, page = '1', previousResponse = []) => {
+const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse = []) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (options?.startYear && options?.endYear) {
@@ -165,7 +165,7 @@ const getOpenAlexPublications = (options, isRor = false, page = '1', previousRes
       const results = [...previousResponse, ...response.results];
       const nextPage = Number(page) + 1;
       if (Number(response.results.length) === Number(VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexPublications(options, isRor, nextPage, results);
+        return getOpenAlexWorks(options, isRor, nextPage, results);
       }
       return ({ total: response.meta.count, results });
     })
@@ -187,12 +187,12 @@ const getOpenAlexPublications = (options, isRor = false, page = '1', previousRes
     }));
 };
 
-const mergePublications = (publi1, publi2) => {
-  const priorityPublication = [publi1, publi2].some((publi) => publi.datasource === 'bso')
+const mergeWorks = (publi1, publi2) => {
+  const priorityWork = [publi1, publi2].some((publi) => publi.datasource === 'bso')
     ? [publi1, publi2].find((publi) => publi.datasource === 'bso')
     : publi1;
   return ({
-    ...priorityPublication,
+    ...priorityWork,
     affiliations: [...publi1.affiliations, ...publi2.affiliations],
     // Filter ids by uniq values
     allIds: Object.values([...publi1.allIds, ...publi2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
@@ -204,8 +204,8 @@ const mergePublications = (publi1, publi2) => {
 
 export {
   getBsoCount,
-  getBsoPublications,
+  getBsoWorks,
   getIdLink,
-  getOpenAlexPublications,
-  mergePublications,
+  getOpenAlexWorks,
+  mergeWorks,
 };

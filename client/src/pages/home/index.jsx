@@ -9,14 +9,14 @@ import Actions from './actions';
 import Filters from './filters';
 import Metrics from './metrics';
 import AffiliationsView from './views/affiliations';
-import PublicationsView from './views/publications';
+import WorksView from './views/works';
 import { PageSpinner } from '../../components/spinner';
 import {
   getBsoCount,
-  getBsoPublications,
-  getOpenAlexPublications,
-  mergePublications,
-} from '../../utils/publications';
+  getBsoWorks,
+  getOpenAlexWorks,
+  mergeWorks,
+} from '../../utils/works';
 import {
   getAllIdsHtmlField,
   getAffiliationsHtmlField,
@@ -32,7 +32,7 @@ const {
   VITE_BSO_MAX_SIZE,
 } = import.meta.env;
 
-const TO_DECIDE_STATUS = 'to be decided';
+const TO_BE_DECIDED_STATUS = 'to be decided';
 const VALIDATED_STATUS = 'validated';
 const EXCLUDED_STATUS = 'excluded';
 
@@ -51,14 +51,14 @@ const getData = async (options) => {
   const promises = options?.datasources.map((datasource) => {
     switch (datasource) {
       case 'bso':
-        return getBsoPublications(options);
+        return getBsoWorks(options);
       case 'openalex':
         const { notRorAffiliations, rorAffiliations } = getRorAffiliations(options.affiliations);
         const { notRorAffiliations: notRorAffiliationsToExclude, rorAffiliations: rorAffiliationsToExclude } = getRorAffiliations(options.affiliationsToExclude);
         const { notRorAffiliations: notRorAffiliationsToInclude, rorAffiliations: rorAffiliationsToInclude } = getRorAffiliations(options.affiliationsToInclude);
         const p = [];
         if (notRorAffiliations.length || notRorAffiliationsToExclude.length || notRorAffiliationsToInclude.length) {
-          p.push(getOpenAlexPublications({
+          p.push(getOpenAlexWorks({
             ...options,
             affiliations: notRorAffiliations,
             affiliationsToExclude: notRorAffiliationsToExclude,
@@ -66,7 +66,7 @@ const getData = async (options) => {
           }, false));
         }
         if (rorAffiliations.length || rorAffiliationsToExclude.length || rorAffiliationsToInclude.length) {
-          p.push(getOpenAlexPublications({
+          p.push(getOpenAlexWorks({
             ...options,
             affiliations: rorAffiliations,
             affiliationsToExclude: rorAffiliationsToExclude,
@@ -80,30 +80,30 @@ const getData = async (options) => {
         return Promise.resolve();
     }
   });
-  const publications = await Promise.all(promises.flat());
+  const works = await Promise.all(promises.flat());
   const data = { results: [], total: {} };
-  publications.forEach((publication) => {
-    data.results = [...data.results, ...publication.results];
-    data.total[publication.datasource] = publication.total;
+  works.forEach((work) => {
+    data.results = [...data.results, ...work.results];
+    data.total[work.datasource] = work.total;
   });
   // Correct BSO total if maximum is reached
   if (Number(data.total.bso) === Number(VITE_BSO_MAX_SIZE)) {
     const { count } = await getBsoCount(options);
     data.total.bso = count;
   }
-  // Deduplicate publications by DOI or by hal_id
+  // Deduplicate works by DOI or by hal_id
   data.total.all = data.results.length;
-  const deduplicatedPublications = {};
-  data.results.forEach((publication) => {
-    const id = publication?.doi ?? publication?.primary_location?.landing_page_url?.split('/')?.pop() ?? publication.id;
-    if (!Object.keys(deduplicatedPublications).includes(id)) {
-      deduplicatedPublications[id] = publication;
+  const deduplicatedWorks = {};
+  data.results.forEach((work) => {
+    const id = work?.doi ?? work?.primary_location?.landing_page_url?.split('/')?.pop() ?? work.id;
+    if (!Object.keys(deduplicatedWorks).includes(id)) {
+      deduplicatedWorks[id] = work;
     } else {
-      deduplicatedPublications[id] = mergePublications(deduplicatedPublications[id], publication);
+      deduplicatedWorks[id] = mergeWorks(deduplicatedWorks[id], work);
     }
   });
-  data.results = Object.values(deduplicatedPublications);
-  data.total.deduplicated = Object.values(deduplicatedPublications).length;
+  data.results = Object.values(deduplicatedWorks);
+  data.total.deduplicated = Object.values(deduplicatedWorks).length;
   return data;
 };
 
@@ -111,9 +111,9 @@ export default function Home() {
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
   const [formOptions, setFormOptions] = useState({});
   const [isLoadingAffiliations, setIsLoadingAffiliations] = useState(false);
-  const [publicationsDataTable, setPublicationsDataTable] = useState([]);
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
-  const [selectedPublications, setSelectedPublications] = useState([]);
+  const [selectedWorks, setSelectedWorks] = useState([]);
+  const [worksDataTable, setWorksDataTable] = useState([]);
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(formOptions),
@@ -127,7 +127,7 @@ export default function Home() {
     refetch();
   };
 
-  const groupByAffiliations = (publications) => {
+  const groupByAffiliations = (works) => {
     setIsLoadingAffiliations(true);
     const normalizedName = (name) => name
       .toLowerCase()
@@ -137,81 +137,81 @@ export default function Home() {
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-zA-Z0-9]/g, '');
     let affiliationsDataTableTmp = {};
-    publications.filter((publication) => publication.status === TO_DECIDE_STATUS).forEach((publication) => {
-      switch (publication.datasource) {
+    works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
+      switch (work.datasource) {
         case 'bso, openalex':
         case 'bso':
-          (publication?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
+          (work?.highlight?.['affiliations.name'] ?? []).forEach((affiliation) => {
             const affiliationName = normalizedName(affiliation);
             if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
               affiliationsDataTableTmp[affiliationName] = {
                 name: affiliation,
                 nameTxt: affiliation.replaceAll('<em>', '').replaceAll('</em>', ''),
-                publications: [],
-                status: TO_DECIDE_STATUS,
+                status: TO_BE_DECIDED_STATUS,
+                works: [],
               };
             }
-            affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
+            affiliationsDataTableTmp[affiliationName].works.push(work.id);
           });
           break;
         case 'openalex':
-          (publication?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
+          (work?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
             const affiliationName = normalizedName(affiliation);
             if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
               affiliationsDataTableTmp[affiliationName] = {
                 name: affiliation,
                 nameTxt: affiliation.replaceAll('<em>', '').replaceAll('</em>', ''),
-                publications: [],
-                status: TO_DECIDE_STATUS,
+                status: TO_BE_DECIDED_STATUS,
+                works: [],
               };
             }
-            affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
+            affiliationsDataTableTmp[affiliationName].works.push(work.id);
           }));
           break;
         default:
           // eslint-disable-next-line no-console
-          console.error(`Datasource ${publication.datasource} not integrated`);
+          console.error(`Datasource ${work.datasource} not integrated`);
       }
     });
     affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
-      .sort((a, b) => b.publications.length - a.publications.length)
+      .sort((a, b) => b.works.length - a.works.length)
       .map((affiliation, index) => ({ ...affiliation, id: index.toString() }));
     setAffiliationsDataTable(affiliationsDataTableTmp);
     setIsLoadingAffiliations(false);
   };
 
   useEffect(() => {
-    let publicationsDataTableTmp = [];
+    let worksDataTableTmp = [];
     if (data) {
-      publicationsDataTableTmp = data.results
-        .map((publication) => ({
-          ...publication,
-          affiliationsHtml: getAffiliationsHtmlField(publication),
-          allIdsHtml: getAllIdsHtmlField(publication),
-          authorsHtml: getAuthorsHtmlField(publication),
-          authorsTooltip: getAuthorsTooltipField(publication),
-          status: TO_DECIDE_STATUS,
+      worksDataTableTmp = data.results
+        .map((work) => ({
+          ...work,
+          affiliationsHtml: getAffiliationsHtmlField(work),
+          allIdsHtml: getAllIdsHtmlField(work),
+          authorsHtml: getAuthorsHtmlField(work),
+          authorsTooltip: getAuthorsTooltipField(work),
+          status: TO_BE_DECIDED_STATUS,
         }));
     }
-    setPublicationsDataTable(publicationsDataTableTmp);
-    groupByAffiliations(publicationsDataTableTmp);
+    setWorksDataTable(worksDataTableTmp);
+    groupByAffiliations(worksDataTableTmp);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const tagPublications = (publications, action) => {
-    const publicationsDataTableTmp = [...publicationsDataTable];
-    const publicationIds = publications.map((publication) => publication.id);
-    publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
-    setPublicationsDataTable(publicationsDataTableTmp);
-    setSelectedPublications([]);
+  const tagWorks = (works, action) => {
+    const worksDataTableTmp = [...worksDataTable];
+    const workIds = works.map((work) => work.id);
+    worksDataTableTmp.filter((work) => workIds.includes(work.id)).map((work) => work.status = action);
+    setWorksDataTable(worksDataTableTmp);
+    setSelectedWorks([]);
   };
 
   const tagAffiliations = (affiliations, action) => {
     if (action !== EXCLUDED_STATUS) {
-      const publicationsDataTableTmp = [...publicationsDataTable];
-      const publicationIds = affiliations.map((affiliation) => affiliation.publications).flat();
-      publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
-      setPublicationsDataTable(publicationsDataTableTmp);
+      const worksDataTableTmp = [...worksDataTable];
+      const workIds = affiliations.map((affiliation) => affiliation.works).flat();
+      worksDataTableTmp.filter((work) => workIds.includes(work.id)).map((work) => work.status = action);
+      setWorksDataTable(worksDataTableTmp);
     }
     const affiliationsDataTableTmp = [...affiliationsDataTable];
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
@@ -259,7 +259,7 @@ export default function Home() {
         className="fr-mb-1w btn-reset"
         disabled={checkSelectedAffiliation()}
         icon="ri-reply-fill"
-        onClick={() => tagAffiliations(selectedAffiliations, TO_DECIDE_STATUS)}
+        onClick={() => tagAffiliations(selectedAffiliations, TO_BE_DECIDED_STATUS)}
         size="sm"
       >
         Reset status
@@ -294,9 +294,9 @@ export default function Home() {
         <Actions
           affiliationsDataTable={affiliationsDataTable}
           options={formOptions}
-          publicationsDataTable={publicationsDataTable}
           setAffiliationsDataTable={setAffiliationsDataTable}
-          setPublicationsDataTable={setPublicationsDataTable}
+          setWorksDataTable={setWorksDataTable}
+          worksDataTable={worksDataTable}
         />
         <Tabs defaultActiveTab={0}>
           <Tab label={`Affiliations (${affiliationsDataTable.length})`}>
@@ -308,7 +308,7 @@ export default function Home() {
                 <Button
                   className="fr-mb-1w"
                   icon="ri-refresh-line"
-                  onClick={() => groupByAffiliations(publicationsDataTable)}
+                  onClick={() => groupByAffiliations(worksDataTable)}
                   size="sm"
                 >
                   Refresh affiliations
@@ -333,53 +333,53 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Works (${publicationsDataTable.filter((publication) => publication.status === VALIDATED_STATUS).length} / ${publicationsDataTable.length})`}>
+          <Tab label={`Works (${worksDataTable.filter((work) => work.status === VALIDATED_STATUS).length} / ${worksDataTable.length})`}>
             <Row>
               <Col>
                 <Button
                   className="fr-mr-1w btn-keep"
-                  disabled={selectedPublications.length === 0}
+                  disabled={selectedWorks.length === 0}
                   icon="ri-checkbox-circle-line"
-                  onClick={() => tagPublications(selectedPublications, VALIDATED_STATUS)}
+                  onClick={() => tagWorks(selectedWorks, VALIDATED_STATUS)}
                   size="sm"
                 >
                   Validate
-                  {!!selectedPublications.length && (
-                    ` (${selectedPublications.length})`
+                  {!!selectedWorks.length && (
+                    ` (${selectedWorks.length})`
                   )}
                 </Button>
                 <Button
                   className="fr-mr-1w btn-hide"
-                  disabled={selectedPublications.length === 0}
+                  disabled={selectedWorks.length === 0}
                   icon="ri-indeterminate-circle-line"
-                  onClick={() => tagPublications(selectedPublications, EXCLUDED_STATUS)}
+                  onClick={() => tagWorks(selectedWorks, EXCLUDED_STATUS)}
                   size="sm"
                 >
                   Exclude
-                  {!!selectedPublications.length && (
-                    ` (${selectedPublications.length})`
+                  {!!selectedWorks.length && (
+                    ` (${selectedWorks.length})`
                   )}
                 </Button>
                 <Button
                   className="fr-mb-1w btn-reset"
-                  disabled={selectedPublications.length === 0}
+                  disabled={selectedWorks.length === 0}
                   icon="ri-reply-fill"
-                  onClick={() => tagPublications(selectedPublications, TO_DECIDE_STATUS)}
+                  onClick={() => tagWorks(selectedWorks, TO_BE_DECIDED_STATUS)}
                   size="sm"
                 >
                   Reset status
-                  {!!selectedPublications.length && (
-                    ` (${selectedPublications.length})`
+                  {!!selectedWorks.length && (
+                    ` (${selectedWorks.length})`
                   )}
                 </Button>
               </Col>
             </Row>
             <Row>
               <Col>
-                <PublicationsView
-                  publicationsDataTable={publicationsDataTable}
-                  selectedPublications={selectedPublications}
-                  setSelectedPublications={setSelectedPublications}
+                <WorksView
+                  selectedWorks={selectedWorks}
+                  setSelectedWorks={setSelectedWorks}
+                  worksDataTable={worksDataTable}
                 />
               </Col>
             </Row>

@@ -10,9 +10,9 @@ import { export2BsoCsv, export2json, importJson } from '../../utils/file';
 export default function Actions({
   affiliationsDataTable,
   options,
-  publicationsDataTable,
   setAffiliationsDataTable,
-  setPublicationsDataTable,
+  setWorksDataTable,
+  worksDataTable,
 }) {
   const [, setSearchParams] = useSearchParams();
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
@@ -30,9 +30,9 @@ export default function Actions({
             Restore from file
           </Button>
           <Button
-            disabled={publicationsDataTable.length === 0}
+            disabled={worksDataTable.length === 0}
             icon="ri-save-line"
-            onClick={() => export2json(affiliationsDataTable, options, publicationsDataTable)}
+            onClick={() => export2json(affiliationsDataTable, options, worksDataTable)}
             size="sm"
           >
             Save work to file
@@ -40,9 +40,9 @@ export default function Actions({
         </Col>
         <Col className="text-right">
           <Button
-            disabled={publicationsDataTable.length === 0}
+            disabled={worksDataTable.length === 0}
             icon="ri-save-line"
-            onClick={() => export2BsoCsv(publicationsDataTable)}
+            onClick={() => export2BsoCsv(worksDataTable)}
             size="sm"
           >
             Create export file
@@ -56,7 +56,7 @@ export default function Actions({
               accept=".json"
               hint="Select JSON file to restore from previous state"
               label="JSON file"
-              onChange={(e) => importJson(e, setAffiliationsDataTable, setPublicationsDataTable, setSearchParams)}
+              onChange={(e) => importJson(e, setAffiliationsDataTable, setSearchParams, setWorksDataTable)}
             />
           </Col>
         </Row>
@@ -69,10 +69,12 @@ Actions.propTypes = {
   affiliationsDataTable: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    publications: PropTypes.arrayOf(PropTypes.string).isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,
   options: PropTypes.object.isRequired,
-  publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
+  setAffiliationsDataTable: PropTypes.func.isRequired,
+  setWorksDataTable: PropTypes.func.isRequired,
+  worksDataTable: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -81,6 +83,4 @@ Actions.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  setAffiliationsDataTable: PropTypes.func.isRequired,
-  setPublicationsDataTable: PropTypes.func.isRequired,
 };

@@ -12,10 +12,10 @@ import {
   statusTemplate,
 } from '../../../utils/templates';
 
-export default function PublicationsView({
-  publicationsDataTable,
-  selectedPublications,
-  setSelectedPublications,
+export default function WorksView({
+  selectedWorks,
+  setSelectedWorks,
+  worksDataTable,
 }) {
   return (
     <DataTable
@@ -23,18 +23,17 @@ export default function PublicationsView({
       dataKey="id"
       filterDisplay="row"
       metaKeySelection={false}
-      onSelectionChange={(e) => setSelectedPublications(e.value)}
+      onSelectionChange={(e) => setSelectedWorks(e.value)}
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={25}
       rowsPerPageOptions={[25, 50, 100, 200]}
       scrollable
-      selection={selectedPublications}
+      selection={selectedWorks}
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}
-      // tableStyle={{ minWidth: '50rem' }}
-      value={publicationsDataTable}
+      value={worksDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
@@ -48,8 +47,8 @@ export default function PublicationsView({
   );
 }
 
-PublicationsView.propTypes = {
-  publicationsDataTable: PropTypes.arrayOf(PropTypes.shape({
+WorksView.propTypes = {
+  selectedWorks: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -58,8 +57,8 @@ PublicationsView.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  setSelectedPublications: PropTypes.func.isRequired,
-  selectedPublications: PropTypes.arrayOf(PropTypes.shape({
+  setSelectedWorks: PropTypes.func.isRequired,
+  worksDataTable: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
