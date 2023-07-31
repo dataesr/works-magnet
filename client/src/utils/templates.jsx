@@ -149,8 +149,8 @@ const statusFilterTemplate = (options) => (
     itemTemplate={statusTemplate}
     onChange={(e) => options.filterApplyCallback(e.value)}
     options={['to be decided', 'validated', 'excluded']}
-    placeholder="Select"
-    style={{ width: '7rem' }}
+    placeholder="State"
+    style={{ width: '5rem' }}
     showClear
     value={options.value}
   />
@@ -161,8 +161,8 @@ const genreFilterTemplate = (options) => (
     className="p-column-filter"
     onChange={(e) => options.filterApplyCallback(e.value)}
     options={['journal-article', 'proceedings', 'book-chapter', 'book', 'dataset', 'preprint', 'other']}
-    placeholder="Select"
-    style={{ width: '7rem', overflow: 'scroll' }}
+    placeholder="Type"
+    style={{ width: '5rem', overflow: 'scroll' }}
     showClear
     value={options.value}
   />
@@ -173,9 +173,9 @@ const sourcesFilterTemplate = (options) => (
     className="p-column-filter"
     onChange={(e) => options.filterApplyCallback(e.value)}
     options={['bso', 'openalex']}
-    placeholder="Select"
+    placeholder=""
     showClear
-    style={{ width: '7rem' }}
+    style={{ width: '3rem' }}
     value={options.value}
   />
 );
