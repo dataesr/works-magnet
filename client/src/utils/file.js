@@ -1,6 +1,6 @@
 const export2BsoCsv = (publicationDataTable) => {
   const csvHeader = ['doi', 'hal_id', 'nnt_id'].join(';');
-  const keepedPublications = publicationDataTable.filter((publication) => publication.status === 'keep');
+  const keepedPublications = publicationDataTable.filter((publication) => publication.status === 'validated');
   const getValue = (row, idType) => {
     if (!row) return '';
     if (row.doi && idType === 'doi') return row.doi;

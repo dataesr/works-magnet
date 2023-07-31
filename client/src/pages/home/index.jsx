@@ -32,6 +32,10 @@ const {
   VITE_BSO_MAX_SIZE,
 } = import.meta.env;
 
+const TO_DECIDE_STATUS = 'to be decided';
+const VALIDATED_STATUS = 'validated';
+const EXCLUDED_STATUS = 'excluded';
+
 const getRorAffiliations = (affiliations) => {
   const notRorAffiliations = [];
   const rorAffiliations = [];
@@ -133,7 +137,7 @@ export default function Home() {
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-zA-Z0-9]/g, '');
     let affiliationsDataTableTmp = {};
-    publications.filter((publication) => publication.status === 'sort').forEach((publication) => {
+    publications.filter((publication) => publication.status === TO_DECIDE_STATUS).forEach((publication) => {
       switch (publication.datasource) {
         case 'bso, openalex':
         case 'bso':
@@ -144,7 +148,7 @@ export default function Home() {
                 name: affiliation,
                 nameTxt: affiliation.replaceAll('<em>', '').replaceAll('</em>', ''),
                 publications: [],
-                status: 'sort',
+                status: TO_DECIDE_STATUS,
               };
             }
             affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
@@ -158,7 +162,7 @@ export default function Home() {
                 name: affiliation,
                 nameTxt: affiliation.replaceAll('<em>', '').replaceAll('</em>', ''),
                 publications: [],
-                status: 'sort',
+                status: TO_DECIDE_STATUS,
               };
             }
             affiliationsDataTableTmp[affiliationName].publications.push(publication.id);
@@ -186,7 +190,7 @@ export default function Home() {
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
           authorsTooltip: getAuthorsTooltipField(publication),
-          status: 'sort',
+          status: TO_DECIDE_STATUS,
         }));
     }
     setPublicationsDataTable(publicationsDataTableTmp);
@@ -203,7 +207,7 @@ export default function Home() {
   };
 
   const tagAffiliations = (affiliations, action) => {
-    if (action !== 'exclude') {
+    if (action !== EXCLUDED_STATUS) {
       const publicationsDataTableTmp = [...publicationsDataTable];
       const publicationIds = affiliations.map((affiliation) => affiliation.publications).flat();
       publicationsDataTableTmp.filter((publication) => publicationIds.includes(publication.id)).map((publication) => publication.status = action);
@@ -231,7 +235,7 @@ export default function Home() {
         className="fr-mr-1w btn-keep"
         disabled={checkSelectedAffiliation()}
         icon="ri-checkbox-circle-line"
-        onClick={() => tagAffiliations(selectedAffiliations, 'keep')}
+        onClick={() => tagAffiliations(selectedAffiliations, VALIDATED_STATUS)}
         size="sm"
       >
         Validate
@@ -240,16 +244,16 @@ export default function Home() {
         className="fr-mr-1w btn-hide"
         disabled={checkSelectedAffiliation()}
         icon="ri-indeterminate-circle-line"
-        onClick={() => tagAffiliations(selectedAffiliations, 'exclude')}
+        onClick={() => tagAffiliations(selectedAffiliations, EXCLUDED_STATUS)}
         size="sm"
       >
-        Remove
+        Exclude
       </Button>
       <Button
         className="fr-mr-1w btn-reset"
         disabled={checkSelectedAffiliation()}
         icon="ri-reply-fill"
-        onClick={() => tagAffiliations(selectedAffiliations, 'sort')}
+        onClick={() => tagAffiliations(selectedAffiliations, TO_DECIDE_STATUS)}
         size="sm"
       >
         Reset status
@@ -320,14 +324,14 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Works (${publicationsDataTable.filter((publication) => publication.status === 'keep').length} / ${publicationsDataTable.length})`}>
+          <Tab label={`Works (${publicationsDataTable.filter((publication) => publication.status === VALIDATED_STATUS).length} / ${publicationsDataTable.length})`}>
             <Row>
               <Col>
                 <Button
                   className="fr-mr-1w btn-reset"
                   disabled={selectedPublications.length === 0}
                   icon="ri-question-mark"
-                  onClick={() => tagPublications(selectedPublications, 'sort')}
+                  onClick={() => tagPublications(selectedPublications, TO_DECIDE_STATUS)}
                   size="sm"
                 >
                   Reset to "Sort" status
@@ -336,7 +340,7 @@ export default function Home() {
                   className="fr-mr-1w btn-keep"
                   disabled={selectedPublications.length === 0}
                   icon="ri-check-fill"
-                  onClick={() => tagPublications(selectedPublications, 'keep')}
+                  onClick={() => tagPublications(selectedPublications, VALIDATED_STATUS)}
                   size="sm"
                 >
                   Keep to export list
@@ -345,7 +349,7 @@ export default function Home() {
                   className="fr-mb-1w btn-hide"
                   disabled={selectedPublications.length === 0}
                   icon="ri-eye-off-line"
-                  onClick={() => tagPublications(selectedPublications, 'exclude')}
+                  onClick={() => tagPublications(selectedPublications, EXCLUDED_STATUS)}
                   size="sm"
                 >
                   Hide

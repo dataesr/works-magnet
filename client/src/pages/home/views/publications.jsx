@@ -6,6 +6,7 @@ import {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  genreFilterTemplate,
   sourcesFilterTemplate,
   statusFilterTemplate,
   statusTemplate,
@@ -39,7 +40,7 @@ export default function PublicationsView({
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
       <Column field="allIdsHtml" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by id" />
       <Column field="datasource" header="Source" filter showFilterMenu={false} filterElement={sourcesFilterTemplate} />
-      <Column field="type" header="Type" filter showFilterMenu={false} />
+      <Column field="type" header="Type" filter showFilterMenu={false} filterElement={genreFilterTemplate} />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by affiliation" style={{ minWidth: '300px' }} />
       <Column field="authorsHtml" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by author" style={{ minWidth: '10px' }} />
       <Column field="title" header="Title" filter filterMatchMode="contains" showFilterMenu={false} filterPlaceholder="Search by title" style={{ minWidth: '10px' }} />

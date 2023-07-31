@@ -128,10 +128,10 @@ const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowDa
 const getStatusType = (status) => {
   let type;
   switch (status) {
-    case 'keep':
+    case 'validated':
       type = 'success';
       break;
-    case 'exclude':
+    case 'excluded':
       type = 'error';
       break;
     default:
@@ -148,9 +148,21 @@ const statusFilterTemplate = (options) => (
     className="p-column-filter"
     itemTemplate={statusTemplate}
     onChange={(e) => options.filterApplyCallback(e.value)}
-    options={['exclude', 'keep', 'sort']}
+    options={['to be decided', 'validated', 'excluded']}
     placeholder="Select"
     style={{ width: '7rem' }}
+    showClear
+    value={options.value}
+  />
+);
+
+const genreFilterTemplate = (options) => (
+  <Dropdown
+    className="p-column-filter"
+    onChange={(e) => options.filterApplyCallback(e.value)}
+    options={['journal-article', 'proceedings', 'book-chapter', 'book', 'dataset', 'preprint', 'other']}
+    placeholder="Select"
+    style={{ width: '7rem', overflow: 'scroll' }}
     showClear
     value={options.value}
   />
@@ -172,6 +184,7 @@ export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  genreFilterTemplate,
   getAffiliationsHtmlField,
   getAllIdsHtmlField,
   getAuthorsHtmlField,
