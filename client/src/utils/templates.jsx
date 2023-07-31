@@ -128,15 +128,15 @@ const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowDa
 const getStatusType = (status) => {
   let type;
   switch (status) {
-  case 'keep':
-    type = 'success';
-    break;
-  case 'exclude':
-    type = 'error';
-    break;
-  default:
-    type = 'info';
-    break;
+    case 'keep':
+      type = 'success';
+      break;
+    case 'exclude':
+      type = 'error';
+      break;
+    default:
+      type = 'info';
+      break;
   }
   return type;
 };
@@ -149,9 +149,21 @@ const statusFilterTemplate = (options) => (
     itemTemplate={statusTemplate}
     onChange={(e) => options.filterApplyCallback(e.value)}
     options={['exclude', 'keep', 'sort']}
-    placeholder="Select One"
+    placeholder="Select"
+    style={{ width: '7rem' }}
     showClear
-    style={{ minWidth: '12rem' }}
+    value={options.value}
+  />
+);
+
+const sourcesFilterTemplate = (options) => (
+  <Dropdown
+    className="p-column-filter"
+    onChange={(e) => options.filterApplyCallback(e.value)}
+    options={['bso', 'openalex']}
+    placeholder="Select"
+    showClear
+    style={{ width: '7rem' }}
     value={options.value}
   />
 );
@@ -165,6 +177,7 @@ export {
   getAuthorsHtmlField,
   getAuthorsTooltipField,
   nameTemplate,
+  sourcesFilterTemplate,
   statusFilterTemplate,
   statusTemplate,
 };
