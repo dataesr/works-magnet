@@ -109,21 +109,21 @@ const getData = async (options) => {
 
 export default function Home() {
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
-  const [formOptions, setFormOptions] = useState({});
   const [isLoadingAffiliations, setIsLoadingAffiliations] = useState(false);
+  const [options, setOptions] = useState({});
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedWorks, setSelectedWorks] = useState([]);
   const [worksDataTable, setWorksDataTable] = useState([]);
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
-    queryFn: () => getData(formOptions),
+    queryFn: () => getData(options),
     enabled: false,
     staleTime: Infinity,
     cacheTime: Infinity,
   });
 
   const sendQuery = async (_options) => {
-    await setFormOptions(_options);
+    await setOptions(_options);
     refetch();
   };
 
@@ -293,7 +293,7 @@ export default function Home() {
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
           affiliationsDataTable={affiliationsDataTable}
-          options={formOptions}
+          options={options}
           setAffiliationsDataTable={setAffiliationsDataTable}
           setWorksDataTable={setWorksDataTable}
           worksDataTable={worksDataTable}
