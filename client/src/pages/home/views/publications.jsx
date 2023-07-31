@@ -31,8 +31,8 @@ export default function PublicationsView({
       selection={selectedPublications}
       size="small"
       stripedRows
-      style={{ fontSize: '11px', lineHeight: '15px' }}
-      tableStyle={{ minWidth: '50rem' }}
+      style={{ fontSize: '11px', lineHeight: '10px' }}
+      // tableStyle={{ minWidth: '50rem' }}
       value={publicationsDataTable}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />

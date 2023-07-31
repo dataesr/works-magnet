@@ -28,7 +28,7 @@ export default function AffiliationsView({
       selection={selectedAffiliations}
       size="small"
       stripedRows
-      style={{ fontSize: '11px', lineHeight: '15px' }}
+      style={{ fontSize: '11px', lineHeight: '10px' }}
       tableStyle={{ minWidth: '50rem' }}
       value={affiliationsDataTable}
     >
