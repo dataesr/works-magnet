@@ -239,6 +239,9 @@ export default function Home() {
         size="sm"
       >
         Validate
+        {!!selectedAffiliations.length && (
+          ` (${selectedAffiliations.length})`
+        )}
       </Button>
       <Button
         className="fr-mr-1w btn-hide"
@@ -248,15 +251,21 @@ export default function Home() {
         size="sm"
       >
         Exclude
+        {!!selectedAffiliations.length && (
+          ` (${selectedAffiliations.length})`
+        )}
       </Button>
       <Button
-        className="fr-mr-1w btn-reset"
+        className="fr-mb-1w btn-reset"
         disabled={checkSelectedAffiliation()}
         icon="ri-reply-fill"
         onClick={() => tagAffiliations(selectedAffiliations, TO_DECIDE_STATUS)}
         size="sm"
       >
         Reset status
+        {!!selectedAffiliations.length && (
+          ` (${selectedAffiliations.length})`
+        )}
       </Button>
     </>
   );
@@ -335,24 +344,33 @@ export default function Home() {
                   size="sm"
                 >
                   Validate
+                  {!!selectedPublications.length && (
+                    ` (${selectedPublications.length})`
+                  )}
                 </Button>
                 <Button
-                  className="fr-mb-1w btn-hide"
+                  className="fr-mr-1w btn-hide"
                   disabled={selectedPublications.length === 0}
                   icon="ri-indeterminate-circle-line"
                   onClick={() => tagPublications(selectedPublications, EXCLUDED_STATUS)}
                   size="sm"
                 >
                   Exclude
+                  {!!selectedPublications.length && (
+                    ` (${selectedPublications.length})`
+                  )}
                 </Button>
                 <Button
-                  className="fr-mr-1w btn-reset"
+                  className="fr-mb-1w btn-reset"
                   disabled={selectedPublications.length === 0}
                   icon="ri-reply-fill"
                   onClick={() => tagPublications(selectedPublications, TO_DECIDE_STATUS)}
                   size="sm"
                 >
                   Reset status
+                  {!!selectedPublications.length && (
+                    ` (${selectedPublications.length})`
+                  )}
                 </Button>
               </Col>
             </Row>
