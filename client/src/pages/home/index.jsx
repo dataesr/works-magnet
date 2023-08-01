@@ -31,8 +31,6 @@ import Gauge from '../../components/gauge';
 
 const {
   VITE_BSO_MAX_SIZE,
-  VITE_BSO_SIZE,
-  VITE_OPENALEX_SIZE,
 } = import.meta.env;
 
 const TO_BE_DECIDED_STATUS = 'to be decided';
