@@ -377,9 +377,9 @@ export default function Home() {
               <Col>
                 <Gauge
                   data={[
-                    { label: 'bso', color: '#334476', value: Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE) },
-                    { label: 'openAlex', color: '#22a498', value: Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE) },
-                    { label: 'bso,openAlex', color: '#2faf41a4', value: data?.total?.deduplicated },
+                    { label: 'French Monitor', color: '#334476', value: worksDataTable.filter((work) => work.datasource === 'bso').length },
+                    { label: 'openAlex', color: '#22a498', value: worksDataTable.filter((work) => work.datasource === 'openalex').length },
+                    { label: 'Both', color: '#2faf41a4', value: worksDataTable.filter((work) => work.datasource === 'bso, openalex').length },
                   ]}
                 />
               </Col>
