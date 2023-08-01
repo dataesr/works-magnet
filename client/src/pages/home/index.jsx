@@ -223,7 +223,7 @@ export default function Home() {
     <>
       <Button
         className="fr-mr-1w btn-keep"
-        disabled={!!selectedAffiliations.length}
+        disabled={!selectedAffiliations.length}
         icon="ri-checkbox-circle-line"
         onClick={() => tagAffiliations(selectedAffiliations, VALIDATED_STATUS)}
         size="sm"
@@ -235,7 +235,7 @@ export default function Home() {
       </Button>
       <Button
         className="fr-mr-1w btn-hide"
-        disabled={!!selectedAffiliations.length}
+        disabled={!selectedAffiliations.length}
         icon="ri-indeterminate-circle-line"
         onClick={() => tagAffiliations(selectedAffiliations, EXCLUDED_STATUS)}
         size="sm"
@@ -247,7 +247,7 @@ export default function Home() {
       </Button>
       <Button
         className="fr-mb-1w btn-reset"
-        disabled={!!selectedAffiliations.length}
+        disabled={!selectedAffiliations.length}
         icon="ri-reply-fill"
         onClick={() => tagAffiliations(selectedAffiliations, TO_BE_DECIDED_STATUS)}
         size="sm"
@@ -328,7 +328,7 @@ export default function Home() {
               <Col>
                 <Button
                   className="fr-mr-1w btn-keep"
-                  disabled={!!selectedWorks.length}
+                  disabled={!selectedWorks.length}
                   icon="ri-checkbox-circle-line"
                   onClick={() => tagWorks(selectedWorks, VALIDATED_STATUS)}
                   size="sm"
@@ -340,7 +340,7 @@ export default function Home() {
                 </Button>
                 <Button
                   className="fr-mr-1w btn-hide"
-                  disabled={!!selectedWorks.length}
+                  disabled={!selectedWorks.length}
                   icon="ri-indeterminate-circle-line"
                   onClick={() => tagWorks(selectedWorks, EXCLUDED_STATUS)}
                   size="sm"
@@ -352,7 +352,7 @@ export default function Home() {
                 </Button>
                 <Button
                   className="fr-mb-1w btn-reset"
-                  disabled={!!selectedWorks.length}
+                  disabled={!selectedWorks.length}
                   icon="ri-reply-fill"
                   onClick={() => tagWorks(selectedWorks, TO_BE_DECIDED_STATUS)}
                   size="sm"

@@ -30,7 +30,7 @@ export default function Actions({
             Restore from file
           </Button>
           <Button
-            disabled={worksDataTable.length === 0}
+            disabled={!worksDataTable.length}
             icon="ri-save-line"
             onClick={() => export2json(affiliationsDataTable, options, worksDataTable)}
             size="sm"
@@ -40,7 +40,7 @@ export default function Actions({
         </Col>
         <Col className="text-right">
           <Button
-            disabled={worksDataTable.length === 0}
+            disabled={!worksDataTable.length}
             icon="ri-save-line"
             onClick={() => export2BsoCsv(worksDataTable)}
             size="sm"
