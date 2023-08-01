@@ -160,7 +160,7 @@ const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse =
       datasource: 'openalex',
       total: response.total,
       results: response.results.map((result) => ({
-        affiliations: result?.authorships?.map((author) => ({ name: author.raw_affiliation_string })) ?? result.affiliations,
+        affiliations: result?.authorships?.map((author) => author.raw_affiliation_strings.map((name) => ({ name }))).flat() ?? result.affiliations,
         allIds: result?.ids ? Object.keys(result.ids).map((key) => ({ id_type: key, id_value: getIdValue(result.ids[key]) })) : result.allIds,
         authors: result?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? result.authors,
         datasource: 'openalex',
