@@ -1,0 +1,14 @@
+.gauge-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .gauge-bar {
+        height: 32px;
+        position: relative;
+        color: white;
+        padding: 3px 8px;
+    }
+}

@@ -27,9 +27,12 @@ import {
 import './index.scss';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
+import Gauge from '../../components/gauge';
 
 const {
   VITE_BSO_MAX_SIZE,
+  VITE_BSO_SIZE,
+  VITE_OPENALEX_SIZE,
 } = import.meta.env;
 
 const TO_BE_DECIDED_STATUS = 'to be decided';
@@ -370,6 +373,15 @@ export default function Home() {
                     ` (${selectedWorks.length})`
                   )}
                 </Button>
+              </Col>
+              <Col>
+                <Gauge
+                  data={[
+                    { label: 'bso', color: '#334476', value: Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE) },
+                    { label: 'openAlex', color: '#22a498', value: Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE) },
+                    { label: 'bso,openAlex', color: '#2faf41a4', value: data?.total?.deduplicated },
+                  ]}
+                />
               </Col>
             </Row>
             <Row>
