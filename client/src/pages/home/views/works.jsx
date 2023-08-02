@@ -38,7 +38,7 @@ export default function WorksView({
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
       <Column field="allIdsHtml" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by id" />
-      <Column field="datasource" header="Source" filter showFilterMenu={false} filterElement={sourcesFilterTemplate} />
+      <Column field="datasource" header="Source" filter showFilterMenu={false} filterElement={sourcesFilterTemplate} filterMatchMode="contains" />
       <Column field="type" header="Type" filter showFilterMenu={false} filterElement={genreFilterTemplate} />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by affiliation" style={{ minWidth: '300px' }} />
       <Column field="authorsHtml" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by author" style={{ minWidth: '10px' }} />
