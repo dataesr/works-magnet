@@ -194,7 +194,26 @@ export default function Home() {
     setWorksDataTable(worksDataTableTmp);
     groupByAffiliations(worksDataTableTmp, regexp);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, filterAffiliations]);
+  }, [data, options]);
+
+  useEffect(() => {
+    setIsLoading(false);
+    const regexp = new RegExp(`(${(options?.affiliations ?? [])
+      .map((affiliationQuery) => affiliationQuery
+        .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
+        .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
+        .replaceAll(/(i|ì|í|î|ï)/g, '(i|ì|í|î|ï)')
+        .replaceAll(/(o|ò|ó|ô|õ|ö|ø)/g, '(o|ò|ó|ô|õ|ö|ø)')
+        .replaceAll(/(u|ù|ú|û|ü)/g, '(u|ù|ú|û|ü)')
+        .replaceAll(/(y|ý|ÿ)/g, '(y|ý|ÿ)')
+        .replaceAll(/(n|ñ)/g, '(n|ñ)')
+        .replaceAll(/(c|ç)/g, '(c|ç)')
+        .replaceAll(/æ/g, '(æ|ae)')
+        .replaceAll(/œ/g, '(œ|oe)'))
+      .join('|')})`, 'gi');
+    groupByAffiliations(worksDataTable, regexp);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterAffiliations, worksDataTable]);
 
   const tagWorks = (works, action) => {
     const worksDataTableTmp = [...worksDataTable];
@@ -272,11 +291,6 @@ export default function Home() {
             {data && (<Metrics data={data} />)}
           </Col>
         </Row>
-        <Row>
-          <Col>
-            {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-          </Col>
-        </Row>
       </Container>
 
       <Container className="fr-mx-5w" as="section" fluid>
@@ -320,8 +334,8 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {isLoading && (<Container as="section"><PageSpinner /></Container>)}
-                {!isLoading && (
+                {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
+                {!isFetching && !isLoading && (
                   <AffiliationsView
                     affiliationsDataTable={affiliationsDataTable}
                     selectedAffiliations={selectedAffiliations}
@@ -388,11 +402,14 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                <WorksView
-                  selectedWorks={selectedWorks}
-                  setSelectedWorks={setSelectedWorks}
-                  worksDataTable={worksDataTable}
-                />
+                {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
+                {!isFetching && !isLoading && (
+                  <WorksView
+                    selectedWorks={selectedWorks}
+                    setSelectedWorks={setSelectedWorks}
+                    worksDataTable={worksDataTable}
+                  />
+                )}
               </Col>
             </Row>
           </Tab>
