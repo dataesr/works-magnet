@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import {
   Badge,
   Header as HeaderWrapper,
@@ -8,13 +7,15 @@ import {
   Tool,
   ToolItemGroup,
 } from '@dataesr/react-dsfr';
+import PropTypes from 'prop-types';
+import { NavLink } from 'react-router-dom';
 
 const {
   VITE_APP_NAME,
+  VITE_DESCRIPTION,
   VITE_HEADER_TAG,
   VITE_HEADER_TAG_COLOR,
   VITE_MINISTER_NAME,
-  VITE_DESCRIPTION,
 } = import.meta.env;
 
 export default function Header({ switchTheme }) {
@@ -23,7 +24,10 @@ export default function Header({ switchTheme }) {
   return (
     <HeaderWrapper>
       <HeaderBody>
-        <Logo splitCharacter={9} href="./">
+        <Logo
+          asLink={<NavLink to="/" />}
+          splitCharacter={9}
+        >
           {VITE_MINISTER_NAME}
         </Logo>
         <Service
@@ -32,10 +36,10 @@ export default function Header({ switchTheme }) {
               {VITE_APP_NAME}
               {VITE_HEADER_TAG && (
                 <Badge
-                  text={VITE_HEADER_TAG}
                   color={(!VITE_HEADER_TAG_COLOR) ? 'info' : undefined}
-                  isSmall
                   colorFamily={VITE_HEADER_TAG_COLOR}
+                  isSmall
+                  text={VITE_HEADER_TAG}
                 />
               )}
             </>
@@ -45,10 +49,10 @@ export default function Header({ switchTheme }) {
         <Tool closeButtonLabel="fermer" className="extend">
           <ToolItemGroup>
             <button
+              aria-controls="fr-theme-modal"
+              className="fr-footer__bottom-link fr-fi-theme-fill fr-link--icon-left"
               onClick={() => setIsOpen(true)}
               type="button"
-              className="fr-footer__bottom-link fr-fi-theme-fill fr-link--icon-left"
-              aria-controls="fr-theme-modal"
               data-fr-opened={isOpen}
             >
               Paramètres d'affichage
