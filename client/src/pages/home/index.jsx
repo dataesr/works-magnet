@@ -155,6 +155,7 @@ export default function Home() {
         const affiliationName = normalizedName(affiliation.name);
         if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
           affiliationsDataTableTmp[affiliationName] = {
+            matches: affiliation?.matches,
             name: getAffiliationName(affiliation),
             status: TO_BE_DECIDED_STATUS,
             works: [],
