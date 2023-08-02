@@ -123,7 +123,7 @@ const typeFilterTemplate = (options) => (
   <Dropdown
     className="p-column-filter"
     onChange={(e) => options.filterApplyCallback(e.value)}
-    options={['journal-article', 'proceedings', 'book-chapter', 'book', 'dataset', 'preprint', 'other']}
+    options={['book-chapter', 'comm', 'dataset', 'image', 'journal-article', 'other', 'physicalobject', 'preprint', 'proceedings-article', 'text', 'thesis']}
     placeholder="Type"
     style={{ width: '5rem', overflow: 'scroll' }}
     showClear
