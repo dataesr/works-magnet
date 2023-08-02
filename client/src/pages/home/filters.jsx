@@ -73,8 +73,12 @@ export default function Filters({ sendQuery }) {
   };
 
   const checkAndSendQuery = () => {
-    if (onInputAffiliationsHandler || onInputAuthorsHandler) {
-      setMessage('Don\'t forget to validate the input.');
+    if (onInputAffiliationsHandler) {
+      setMessage('Don\'t forget to validate the Affiliations input by pressing the return key.');
+      return;
+    }
+    if (onInputAuthorsHandler) {
+      setMessage('Don\'t forget to validate the Authors input by pressing the return key.');
       return;
     }
     if (currentSearchParams.affiliations.length === 0 && currentSearchParams.authors.length === 0) {
