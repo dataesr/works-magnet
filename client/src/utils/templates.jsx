@@ -19,7 +19,7 @@ const authorsTemplate = (rowData) => (
   </>
 );
 
-const getAffiliationName = (affiliation) => {
+const getAffiliationName = (affiliation, regexp) => {
   let affiliationName = affiliation.name;
   if (affiliation?.ror) {
     let ror = '';
@@ -30,12 +30,12 @@ const getAffiliationName = (affiliation) => {
     }
     affiliationName += ` ${ror}`;
   }
-  return affiliationName;
+  return affiliationName.replace(regexp, '<b>$&</b>');
 };
 
-const getAffiliationsHtmlField = (rowData) => {
+const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
-    .map((affiliation) => getAffiliationName(affiliation))
+    .map((affiliation) => getAffiliationName(affiliation, regexp))
     .filter((affiliation) => affiliation.length > 0)
     .flat();
   affiliations = [...new Set(affiliations)];

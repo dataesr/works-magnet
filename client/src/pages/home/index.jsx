@@ -25,7 +25,6 @@ import {
   getAuthorsTooltipField,
 } from '../../utils/templates';
 
-import './index.scss';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 import Gauge from '../../components/gauge';
@@ -130,19 +129,17 @@ export default function Home() {
     refetch();
   };
 
-  const groupByAffiliations = (works) => {
+  const normalizedName = (name) => name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]/g, '');
+
+  const groupByAffiliations = (works, regexp) => {
     setIsLoadingAffiliations(true);
-    const normalizedName = (name) => name
-      .toLowerCase()
-      .replaceAll('<em>', '')
-      .replaceAll('</em>', '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9]/g, '');
     let affiliationsDataTableTmp = {};
-    const regexp = new RegExp(`(${(options?.affiliations ?? []).map((affiliationQuery) => normalizedName(affiliationQuery)).join('|')})`, 'g');
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
-      let affiliations = (work?.affiliations ?? []);
+      let affiliations = work?.affiliations ?? [];
       if (filterAffiliations) {
         affiliations = affiliations
           .map((affiliation) => ({
@@ -156,7 +153,7 @@ export default function Home() {
         if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
           affiliationsDataTableTmp[affiliationName] = {
             matches: affiliation?.matches,
-            name: getAffiliationName(affiliation),
+            name: getAffiliationName(affiliation, regexp),
             status: TO_BE_DECIDED_STATUS,
             works: [],
           };
@@ -172,12 +169,13 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const regexp = new RegExp(`(${(options?.affiliations ?? []).map((affiliationQuery) => normalizedName(affiliationQuery)).join('|')})`, 'gi');
     let worksDataTableTmp = [];
     if (data) {
       worksDataTableTmp = data.results
         .map((work) => ({
           ...work,
-          affiliationsHtml: getAffiliationsHtmlField(work),
+          affiliationsHtml: getAffiliationsHtmlField(work, regexp),
           allIdsHtml: getAllIdsHtmlField(work),
           authorsHtml: getAuthorsHtmlField(work),
           authorsTooltip: getAuthorsTooltipField(work),
@@ -185,7 +183,7 @@ export default function Home() {
         }));
     }
     setWorksDataTable(worksDataTableTmp);
-    groupByAffiliations(worksDataTableTmp);
+    groupByAffiliations(worksDataTableTmp, regexp);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, filterAffiliations]);
 
