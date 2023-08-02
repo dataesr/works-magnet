@@ -25,7 +25,7 @@ export default function Footer({ switchTheme }) {
     <FooterWrapper className="fr-mt-md-8w">
       <FooterBody description={`${VITE_APP_NAME} : ${VITE_DESCRIPTION}`}>
         <Logo
-          asLink={<NavLink to="/" />}
+          asLink={<NavLink to="./" />}
           splitCharacter={9}
         >
           {VITE_MINISTER_NAME}

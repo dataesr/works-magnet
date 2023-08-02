@@ -25,6 +25,7 @@ export default function Header({ switchTheme }) {
     <HeaderWrapper>
       <HeaderBody>
         <Logo
+          asLink={<NavLink to="./" />}
           splitCharacter={9}
         >
           {VITE_MINISTER_NAME}
@@ -44,7 +45,7 @@ export default function Header({ switchTheme }) {
             </>
           )}
           description={VITE_DESCRIPTION}
-          asLink={<NavLink to="/" />}
+          asLink={<NavLink to="./" />}
         />
         <Tool closeButtonLabel="fermer" className="extend">
           <ToolItemGroup>
