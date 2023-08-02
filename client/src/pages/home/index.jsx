@@ -364,7 +364,7 @@ export default function Home() {
               <Col>
                 <Gauge
                   data={[
-                    { label: 'French Monitor', color: '#334476', value: worksDataTable.filter((work) => work.datasource === 'bso').length },
+                    { label: 'French OSM', color: '#334476', value: worksDataTable.filter((work) => work.datasource === 'bso').length },
                     { label: 'OpenAlex', color: '#22a498', value: worksDataTable.filter((work) => work.datasource === 'openalex').length },
                     { label: 'Both', color: '#2faf41a4', value: worksDataTable.filter((work) => work.datasource === 'bso, openalex').length },
                   ]}

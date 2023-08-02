@@ -133,6 +133,50 @@ const getAffilitionsFromOpenAlex = (work) => {
   return work.affiliations;
 };
 
+const getTypeFromOpenAlex = (type) => {
+  let newType = type;
+  // eslint-disable-next-line default-case
+  switch (type) {
+  case 'component':
+  case 'dissertation':
+  case 'editorial':
+  case 'erratum':
+  case 'grant':
+  case 'journal':
+  case 'journal-issue':
+  case 'journal-volume':
+  case 'letter':
+  case 'paratext':
+  case 'peer-review':
+  case 'reference-entry':
+  case 'report':
+  case 'report-series':
+  case 'standard':
+    newType = 'other';
+    break;
+  case 'book-series':
+  case 'book-set':
+  case 'monograph':
+  case 'reference-book':
+    newType = 'book';
+    break;
+  case 'proceedings-article':
+  case 'proceedings-series':
+    newType = 'proceedings';
+    break;
+  case 'article':
+    newType = 'journal-article';
+    break;
+  case 'book-part':
+    newType = 'book-chapter';
+    break;
+  case 'posted-content':
+    newType = 'preprint';
+    break;
+  }
+  return newType;
+};
+
 const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse = []) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
@@ -182,7 +226,7 @@ const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse =
         id: result?.doi ? getIdValue(result.doi) : result.id,
         original: result,
         title: result?.display_name ?? result.title,
-        type: result.type,
+        type: getTypeFromOpenAlex(result.type),
         year: result?.publication_year ?? result.year,
       })),
     }));

@@ -107,18 +107,6 @@ const statusFilterTemplate = (options) => (
   />
 );
 
-const genreFilterTemplate = (options) => (
-  <Dropdown
-    className="p-column-filter"
-    onChange={(e) => options.filterApplyCallback(e.value)}
-    options={['journal-article', 'proceedings', 'book-chapter', 'book', 'dataset', 'preprint', 'other']}
-    placeholder="Type"
-    style={{ width: '5rem', overflow: 'scroll' }}
-    showClear
-    value={options.value}
-  />
-);
-
 const sourcesFilterTemplate = (options) => (
   <Dropdown
     className="p-column-filter"
@@ -131,11 +119,22 @@ const sourcesFilterTemplate = (options) => (
   />
 );
 
+const typeFilterTemplate = (options) => (
+  <Dropdown
+    className="p-column-filter"
+    onChange={(e) => options.filterApplyCallback(e.value)}
+    options={['journal-article', 'proceedings', 'book-chapter', 'book', 'dataset', 'preprint', 'other']}
+    placeholder="Type"
+    style={{ width: '5rem', overflow: 'scroll' }}
+    showClear
+    value={options.value}
+  />
+);
+
 export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
-  genreFilterTemplate,
   getAffiliationsHtmlField,
   getAffiliationName,
   getAllIdsHtmlField,
@@ -145,4 +144,5 @@ export {
   sourcesFilterTemplate,
   statusFilterTemplate,
   statusTemplate,
+  typeFilterTemplate,
 };

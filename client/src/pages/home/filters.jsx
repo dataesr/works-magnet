@@ -14,7 +14,7 @@ import { useSearchParams } from 'react-router-dom';
 import TagInput from '../../components/tag-input';
 
 const identifiers = ['crossref', 'hal_id', 'datacite'];
-const sources = [{ key: 'bso', label: 'French Monitor (BSO)' }, { key: 'openalex', label: 'OpenAlex ⚠️ API does not allow text search on authors name' }];
+const sources = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex ⚠️ API does not allow text search on authors name' }];
 const years = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'].map((year) => ({ label: year, value: year }));
 
 export default function Filters({ sendQuery }) {
@@ -110,7 +110,7 @@ export default function Filters({ sendQuery }) {
         </Col>
         <Col n="5">
           <TagInput
-            hint="At least one of these authors should be present, OR operator. ⚠️ French Monitor only"
+            hint="At least one of these authors should be present, OR operator. ⚠️ French OSM only"
             label="Authors"
             onTagsChange={(authors) => setSearchParams({ ...currentSearchParams, authors })}
             tags={currentSearchParams.authors}

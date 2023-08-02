@@ -21,9 +21,9 @@ export default function Metrics({ data }) {
 
   return (
     <aside className="jauges">
-      {`${totBso} works in the French Monitor`}
+      {`${totBso} works in the French OSM`}
       <div className="jauge jauge-totBso" style={{ width: `${percBso}%` }} />
-      {`${totCollectedBso} works collected from the French Monitor (max ${VITE_BSO_SIZE})`}
+      {`${totCollectedBso} works collected from the French OSM (max ${VITE_BSO_SIZE})`}
       <div className="jauge jauge-collectedBso" style={{ width: `${percCollectedBso}%` }} />
       {`${totOpenAlex} works in OpenAlex`}
       <div className="jauge jauge-totOpenAlex" style={{ width: `${percOpenAlex}%` }} />
