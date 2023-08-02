@@ -128,13 +128,12 @@ export default function Home() {
     refetch();
   };
 
-  const normalizedName = (name) => name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9]/g, '');
-
   const groupByAffiliations = (works, regexp) => {
+    const normalizedName = (name) => name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]/g, '');
     let affiliationsDataTableTmp = {};
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
       let affiliations = work?.affiliations ?? [];
@@ -142,7 +141,7 @@ export default function Home() {
         affiliations = affiliations
           .map((affiliation) => ({
             ...affiliation,
-            matches: normalizedName(affiliation.name).match(regexp)?.length ?? 0,
+            matches: affiliation.name.match(regexp)?.length ?? 0,
           }))
           .filter((affiliation) => !!affiliation.matches);
       }
@@ -167,7 +166,19 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const regexp = new RegExp(`(${(options?.affiliations ?? []).map((affiliationQuery) => normalizedName(affiliationQuery)).join('|')})`, 'gi');
+    const regexp = new RegExp(`(${(options?.affiliations ?? [])
+      .map((affiliationQuery) => affiliationQuery
+        .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
+        .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
+        .replaceAll(/(i|ì|í|î|ï)/g, '(i|ì|í|î|ï)')
+        .replaceAll(/(o|ò|ó|ô|õ|ö|ø)/g, '(o|ò|ó|ô|õ|ö|ø)')
+        .replaceAll(/(u|ù|ú|û|ü)/g, '(u|ù|ú|û|ü)')
+        .replaceAll(/(y|ý|ÿ)/g, '(y|ý|ÿ)')
+        .replaceAll(/(n|ñ)/g, '(n|ñ)')
+        .replaceAll(/(c|ç)/g, '(c|ç)')
+        .replaceAll(/æ/g, '(æ|ae)')
+        .replaceAll(/œ/g, '(œ|oe)'))
+      .join('|')})`, 'gi');
     let worksDataTableTmp = [];
     if (data) {
       worksDataTableTmp = data.results
