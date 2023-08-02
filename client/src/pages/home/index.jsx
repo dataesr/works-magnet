@@ -20,6 +20,7 @@ import {
 import {
   getAllIdsHtmlField,
   getAffiliationsHtmlField,
+  getAffiliationName,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 } from '../../utils/templates';
@@ -36,20 +37,6 @@ const {
 const TO_BE_DECIDED_STATUS = 'to be decided';
 const VALIDATED_STATUS = 'validated';
 const EXCLUDED_STATUS = 'excluded';
-
-const getAffiliationName = (affiliation) => {
-  let affiliationName = affiliation.name;
-  if (affiliation?.ror) {
-    let ror = '';
-    if (Array.isArray(affiliation.ror)) {
-      ror = affiliation.ror.map((_ror) => _ror.replace('https://ror.org/', '')).join(' ');
-    } else {
-      ror = affiliation.ror.replace('https://ror.org/', '');
-    }
-    affiliationName += ` ${ror}`;
-  }
-  return affiliationName;
-};
 
 const getRorAffiliations = (affiliations) => {
   const notRorAffiliations = [];

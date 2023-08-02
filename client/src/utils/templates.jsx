@@ -19,9 +19,23 @@ const authorsTemplate = (rowData) => (
   </>
 );
 
+const getAffiliationName = (affiliation) => {
+  let affiliationName = affiliation.name;
+  if (affiliation?.ror) {
+    let ror = '';
+    if (Array.isArray(affiliation.ror)) {
+      ror = affiliation.ror.map((_ror) => _ror.replace('https://ror.org/', '')).join(' ');
+    } else {
+      ror = affiliation.ror.replace('https://ror.org/', '');
+    }
+    affiliationName += ` ${ror}`;
+  }
+  return affiliationName;
+};
+
 const getAffiliationsHtmlField = (rowData) => {
   let affiliations = (rowData?.affiliations ?? [])
-    .map((affiliation) => affiliation.name)
+    .map((affiliation) => getAffiliationName(affiliation))
     .filter((affiliation) => affiliation.length > 0)
     .flat();
   affiliations = [...new Set(affiliations)];
@@ -123,6 +137,7 @@ export {
   authorsTemplate,
   genreFilterTemplate,
   getAffiliationsHtmlField,
+  getAffiliationName,
   getAllIdsHtmlField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
