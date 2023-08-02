@@ -113,7 +113,7 @@ export default function Home() {
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
   const [isLoadingAffiliations, setIsLoadingAffiliations] = useState(false);
   const [options, setOptions] = useState({});
-  const [filterAffiliations, setFilterAffiliations] = useState(false);
+  const [filterAffiliations, setFilterAffiliations] = useState(true);
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedWorks, setSelectedWorks] = useState([]);
   const [worksDataTable, setWorksDataTable] = useState([]);
