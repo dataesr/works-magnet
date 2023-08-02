@@ -119,6 +119,20 @@ const getIdValue = (id) => (
     : null
 );
 
+const getAffilitionsFromOpenAlex = (work) => {
+  if (work?.authorships) {
+    return work?.authorships?.map((author) => {
+      if (author.raw_affiliation_strings.length === 1) {
+        const affiliation = { name: author.raw_affiliation_strings[0] };
+        if (author?.institutions?.[0]?.ror) affiliation.ror = author.institutions[0].ror;
+        return affiliation;
+      }
+      return author.raw_affiliation_strings.map((name) => ({ name }));
+    }).flat();
+  }
+  return work.affiliations;
+};
+
 const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse = []) => {
   let url = `https://api.openalex.org/works?mailto=bso@recherche.gouv.fr&per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
@@ -160,7 +174,7 @@ const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse =
       datasource: 'openalex',
       total: response.total,
       results: response.results.map((result) => ({
-        affiliations: result?.authorships?.map((author) => author.raw_affiliation_strings.map((name) => ({ name }))).flat() ?? result.affiliations,
+        affiliations: getAffilitionsFromOpenAlex(result),
         allIds: result?.ids ? Object.keys(result.ids).map((key) => ({ id_type: key, id_value: getIdValue(result.ids[key]) })) : result.allIds,
         authors: result?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? result.authors,
         datasource: 'openalex',
@@ -181,7 +195,7 @@ const mergeWorks = (publi1, publi2) => {
   return ({
     ...priorityWork,
     affiliations: [...publi1.affiliations, ...publi2.affiliations],
-    // Filter ids by uniq values
+    // Filter allIds by uniq values
     allIds: Object.values([...publi1.allIds, ...publi2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
     // Filter authors by uniq full_name
     authors: Object.values([...publi1.authors, ...publi2.authors].reduce((acc, obj) => ({ ...acc, [obj.full_name]: obj }), {})),

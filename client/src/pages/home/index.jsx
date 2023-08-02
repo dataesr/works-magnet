@@ -37,6 +37,20 @@ const TO_BE_DECIDED_STATUS = 'to be decided';
 const VALIDATED_STATUS = 'validated';
 const EXCLUDED_STATUS = 'excluded';
 
+const getAffiliationName = (affiliation) => {
+  let affiliationName = affiliation.name;
+  if (affiliation?.ror) {
+    let ror = '';
+    if (Array.isArray(affiliation.ror)) {
+      ror = affiliation.ror.map((_ror) => _ror.replace('https://ror.org/', '')).join(' ');
+    } else {
+      ror = affiliation.ror.replace('https://ror.org/', '');
+    }
+    affiliationName += ` ${ror}`;
+  }
+  return affiliationName;
+};
+
 const getRorAffiliations = (affiliations) => {
   const notRorAffiliations = [];
   const rorAffiliations = [];
@@ -139,38 +153,17 @@ export default function Home() {
       .replace(/[^a-zA-Z0-9]/g, '');
     let affiliationsDataTableTmp = {};
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
-      switch (work.datasource) {
-        case 'bso, openalex':
-        case 'bso':
-          (work?.affiliations ?? []).forEach((affiliation) => {
-            const affiliationName = normalizedName(affiliation.name);
-            if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
-              affiliationsDataTableTmp[affiliationName] = {
-                name: affiliation.name,
-                status: TO_BE_DECIDED_STATUS,
-                works: [],
-              };
-            }
-            affiliationsDataTableTmp[affiliationName].works.push(work.id);
-          });
-          break;
-        case 'openalex':
-          (work?.authors ?? []).forEach((author) => (author?.raw_affiliation_strings ?? []).forEach((affiliation) => {
-            const affiliationName = normalizedName(affiliation);
-            if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
-              affiliationsDataTableTmp[affiliationName] = {
-                name: affiliation,
-                status: TO_BE_DECIDED_STATUS,
-                works: [],
-              };
-            }
-            affiliationsDataTableTmp[affiliationName].works.push(work.id);
-          }));
-          break;
-        default:
-          // eslint-disable-next-line no-console
-          console.error(`Datasource ${work.datasource} not integrated`);
-      }
+      (work?.affiliations ?? []).forEach((affiliation) => {
+        const affiliationName = normalizedName(affiliation.name);
+        if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
+          affiliationsDataTableTmp[affiliationName] = {
+            name: getAffiliationName(affiliation),
+            status: TO_BE_DECIDED_STATUS,
+            works: [],
+          };
+        }
+        affiliationsDataTableTmp[affiliationName].works.push(work.id);
+      });
     });
     affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
       .sort((a, b) => b.works.length - a.works.length)
@@ -367,7 +360,7 @@ export default function Home() {
                 <Gauge
                   data={[
                     { label: 'French Monitor', color: '#334476', value: worksDataTable.filter((work) => work.datasource === 'bso').length },
-                    { label: 'openAlex', color: '#22a498', value: worksDataTable.filter((work) => work.datasource === 'openalex').length },
+                    { label: 'OpenAlex', color: '#22a498', value: worksDataTable.filter((work) => work.datasource === 'openalex').length },
                     { label: 'Both', color: '#2faf41a4', value: worksDataTable.filter((work) => work.datasource === 'bso, openalex').length },
                   ]}
                 />

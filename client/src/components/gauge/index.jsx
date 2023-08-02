@@ -10,7 +10,7 @@ export default function Gauge({ data }) {
   return (
     <div className="gauge-container">
       {gaugeValuesInPercent.map((item) => (
-        <div className="gauge-bar" style={{ width: `${item.valuePct}%`, backgroundColor: item.color }}>
+        <div className="gauge-bar" style={{ width: `${item.valuePct}%`, backgroundColor: item.color }} key={item.label}>
           {`${item.label} (${item.value})`}
         </div>
       ))}
