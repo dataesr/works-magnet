@@ -36,6 +36,7 @@ export default function AffiliationsView({
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
       <Column field="name" header="Affiliation" body={nameTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by affiliation" style={{ minWidth: '10px' }} />
       <Column field="works" body={(rowData) => rowData.works.length} header="Number of works" style={{ minWidth: '10px' }} />
+      <Column field="matches" header="Number of matches" style={{ minWidth: '10px' }} />
     </DataTable>
   );
 }

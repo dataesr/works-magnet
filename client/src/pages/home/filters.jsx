@@ -118,8 +118,8 @@ export default function Filters({ sendQuery }) {
           />
         </Col>
         <Col n="2" className="fr-pt-4w">
-          Datasources:
-          <CheckboxGroup>
+          Datasources
+          <CheckboxGroup className="fr-mb-0">
             {
               sources.map((source) => (
                 <Checkbox

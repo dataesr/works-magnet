@@ -140,10 +140,16 @@ export default function Home() {
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-zA-Z0-9]/g, '');
     let affiliationsDataTableTmp = {};
+    const regexp = new RegExp(`(${(options?.affiliations ?? []).map((affiliationQuery) => normalizedName(affiliationQuery)).join('|')})`, 'g');
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
       let affiliations = (work?.affiliations ?? []);
       if (filterAffiliations) {
-        affiliations = affiliations.filter((affiliation) => normalizedName(affiliation.name).match(`(${options.affiliations.map((affiliationQuery) => normalizedName(affiliationQuery)).join('|')})`));
+        affiliations = affiliations
+          .map((affiliation) => ({
+            ...affiliation,
+            matches: normalizedName(affiliation.name).match(regexp)?.length ?? 0,
+          }))
+          .filter((affiliation) => !!affiliation.matches);
       }
       affiliations.forEach((affiliation) => {
         const affiliationName = normalizedName(affiliation.name);
