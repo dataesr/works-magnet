@@ -10,13 +10,8 @@ import Filters from './filters';
 import Metrics from './metrics';
 import AffiliationsView from './views/affiliations';
 import WorksView from './views/works';
+import Gauge from '../../components/gauge';
 import { PageSpinner } from '../../components/spinner';
-import {
-  getBsoCount,
-  getBsoWorks,
-  getOpenAlexWorks,
-  mergeWorks,
-} from '../../utils/works';
 import {
   getAllIdsHtmlField,
   getAffiliationsHtmlField,
@@ -24,14 +19,17 @@ import {
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 } from '../../utils/templates';
+import {
+  getBsoCount,
+  getBsoWorks,
+  getOpenAlexWorks,
+  mergeWorks,
+} from '../../utils/works';
 
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
-import Gauge from '../../components/gauge';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
-const {
-  VITE_BSO_MAX_SIZE,
-} = import.meta.env;
+const { VITE_BSO_MAX_SIZE } = import.meta.env;
 
 const TO_BE_DECIDED_STATUS = 'to be decided';
 const VALIDATED_STATUS = 'validated';
@@ -110,9 +108,9 @@ const getData = async (options) => {
 
 export default function Home() {
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
-  const [isLoadingAffiliations, setIsLoadingAffiliations] = useState(false);
-  const [options, setOptions] = useState({});
   const [filterAffiliations, setFilterAffiliations] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [options, setOptions] = useState({});
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedWorks, setSelectedWorks] = useState([]);
   const [worksDataTable, setWorksDataTable] = useState([]);
@@ -125,6 +123,7 @@ export default function Home() {
   });
 
   const sendQuery = async (_options) => {
+    setIsLoading(true);
     await setOptions(_options);
     refetch();
   };
@@ -136,7 +135,6 @@ export default function Home() {
     .replace(/[^a-zA-Z0-9]/g, '');
 
   const groupByAffiliations = (works, regexp) => {
-    setIsLoadingAffiliations(true);
     let affiliationsDataTableTmp = {};
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
       let affiliations = work?.affiliations ?? [];
@@ -165,7 +163,7 @@ export default function Home() {
       .sort((a, b) => b.works.length - a.works.length)
       .map((affiliation, index) => ({ ...affiliation, id: index.toString() }));
     setAffiliationsDataTable(affiliationsDataTableTmp);
-    setIsLoadingAffiliations(false);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -265,7 +263,7 @@ export default function Home() {
         </Row>
         <Row>
           <Col>
-            {isFetching && (<Container as="section"><PageSpinner /></Container>)}
+            {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
           </Col>
         </Row>
       </Container>
@@ -311,8 +309,8 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {isLoadingAffiliations && (<Container as="section"><PageSpinner /></Container>)}
-                {!isLoadingAffiliations && (
+                {isLoading && (<Container as="section"><PageSpinner /></Container>)}
+                {!isLoading && (
                   <AffiliationsView
                     affiliationsDataTable={affiliationsDataTable}
                     selectedAffiliations={selectedAffiliations}
