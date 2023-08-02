@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
-import { Button, Checkbox, Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
+import { Button, Checkbox, Col, Container, Notice, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
@@ -282,6 +282,14 @@ export default function Home() {
         />
         <Tabs defaultActiveTab={0}>
           <Tab label={`Affiliations (${affiliationsDataTable.length})`}>
+            <Row>
+              <Col n="8" offset="2">
+                <Notice
+                  className="fr-m-1w"
+                  title="All the affiliations of the publications found in OpenAlex and French OSM are listed below. A filter can be applied to view only the affiliations containing at least one of the matching query input (this filter is applied by default but can be removed)"
+                />
+              </Col>
+            </Row>
             <Row>
               <Col>
                 {renderAffiliationButtons()}
