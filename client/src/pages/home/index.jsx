@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
-import { Button, Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
+import { Button, Checkbox, Col, Container, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
@@ -113,6 +113,7 @@ export default function Home() {
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
   const [isLoadingAffiliations, setIsLoadingAffiliations] = useState(false);
   const [options, setOptions] = useState({});
+  const [filterAffiliations, setFilterAffiliations] = useState(false);
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedWorks, setSelectedWorks] = useState([]);
   const [worksDataTable, setWorksDataTable] = useState([]);
@@ -140,7 +141,11 @@ export default function Home() {
       .replace(/[^a-zA-Z0-9]/g, '');
     let affiliationsDataTableTmp = {};
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
-      (work?.affiliations ?? []).forEach((affiliation) => {
+      let affiliations = (work?.affiliations ?? []);
+      if (filterAffiliations) {
+        affiliations = affiliations.filter((affiliation) => normalizedName(affiliation.name).match(`(${options.affiliations.map((affiliationQuery) => normalizedName(affiliationQuery)).join('|')})`));
+      }
+      affiliations.forEach((affiliation) => {
         const affiliationName = normalizedName(affiliation.name);
         if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
           affiliationsDataTableTmp[affiliationName] = {
@@ -175,7 +180,7 @@ export default function Home() {
     setWorksDataTable(worksDataTableTmp);
     groupByAffiliations(worksDataTableTmp);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, filterAffiliations]);
 
   const tagWorks = (works, action) => {
     const worksDataTableTmp = [...worksDataTable];
@@ -275,6 +280,12 @@ export default function Home() {
                 {renderAffiliationButtons()}
               </Col>
               <Col className="text-right" n="2">
+                <Checkbox
+                  checked={filterAffiliations}
+                  label="Filter on matching affiliations"
+                  onChange={() => setFilterAffiliations(!filterAffiliations)}
+                  size="sm"
+                />
                 <Button
                   className="fr-mb-1w"
                   icon="ri-refresh-line"
