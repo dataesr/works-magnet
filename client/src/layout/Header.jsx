@@ -23,7 +23,7 @@ export default function Header({ switchTheme }) {
   return (
     <HeaderWrapper>
       <HeaderBody>
-        <Logo splitCharacter={9} href="/">
+        <Logo splitCharacter={9} href="./">
           {VITE_MINISTER_NAME}
         </Logo>
         <Service
