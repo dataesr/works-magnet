@@ -108,6 +108,7 @@ const getData = async (options) => {
 
 export default function Home() {
   const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
+  const [allAffiliations, setAllAffiliations] = useState([]);
   const [filterAffiliations, setFilterAffiliations] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
@@ -129,39 +130,33 @@ export default function Home() {
   };
 
   const groupByAffiliations = (works, regexp) => {
+    setIsLoading(true);
     const normalizedName = (name) => name
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-zA-Z0-9]/g, '');
-    let affiliationsDataTableTmp = {};
+    let affiliations = {};
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
-      let affiliations = work?.affiliations ?? [];
-      if (filterAffiliations) {
-        affiliations = affiliations
-          .map((affiliation) => ({
-            ...affiliation,
-            matches: affiliation.name.match(regexp)?.length ?? 0,
-          }))
-          .filter((affiliation) => !!affiliation.matches);
-      }
-      affiliations.forEach((affiliation) => {
-        const affiliationName = normalizedName(affiliation.name);
-        if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
-          affiliationsDataTableTmp[affiliationName] = {
-            matches: affiliation?.matches,
-            name: getAffiliationName(affiliation, regexp),
-            status: TO_BE_DECIDED_STATUS,
-            works: [],
-          };
-        }
-        affiliationsDataTableTmp[affiliationName].works.push(work.id);
-      });
+      (work?.affiliations ?? [])
+        .forEach((affiliation) => {
+          const affiliationName = normalizedName(affiliation.name);
+          if (!Object.keys(affiliations).includes(affiliationName)) {
+            affiliations[affiliationName] = {
+              matches: affiliation.name.match(regexp)?.length ?? 0,
+              name: getAffiliationName(affiliation, regexp),
+              status: TO_BE_DECIDED_STATUS,
+              works: [],
+            };
+          }
+          affiliations[affiliationName].works.push(work.id);
+        });
     });
-    affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
+    affiliations = Object.values(affiliations)
       .sort((a, b) => b.works.length - a.works.length)
       .map((affiliation, index) => ({ ...affiliation, id: index.toString() }));
-    setAffiliationsDataTable(affiliationsDataTableTmp);
+    setAllAffiliations(affiliations);
+    setAffiliationsDataTable(filterAffiliations ? affiliations.filter((affiliation) => !!affiliation.matches) : affiliations);
     setIsLoading(false);
   };
 
@@ -198,22 +193,9 @@ export default function Home() {
 
   useEffect(() => {
     setIsLoading(true);
-    const regexp = new RegExp(`(${(options?.affiliations ?? [])
-      .map((affiliationQuery) => affiliationQuery
-        .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
-        .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
-        .replaceAll(/(i|ì|í|î|ï)/g, '(i|ì|í|î|ï)')
-        .replaceAll(/(o|ò|ó|ô|õ|ö|ø)/g, '(o|ò|ó|ô|õ|ö|ø)')
-        .replaceAll(/(u|ù|ú|û|ü)/g, '(u|ù|ú|û|ü)')
-        .replaceAll(/(y|ý|ÿ)/g, '(y|ý|ÿ)')
-        .replaceAll(/(n|ñ)/g, '(n|ñ)')
-        .replaceAll(/(c|ç)/g, '(c|ç)')
-        .replaceAll(/æ/g, '(æ|ae)')
-        .replaceAll(/œ/g, '(œ|oe)'))
-      .join('|')})`, 'gi');
-    groupByAffiliations(worksDataTable, regexp);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterAffiliations, worksDataTable]);
+    setAffiliationsDataTable(filterAffiliations ? allAffiliations.filter((affiliation) => !!affiliation.matches) : allAffiliations);
+    setIsLoading(false);
+  }, [allAffiliations, filterAffiliations]);
 
   const tagWorks = (works, action) => {
     const worksDataTableTmp = [...worksDataTable];
