@@ -34,14 +34,14 @@ const { VITE_BSO_MAX_SIZE } = import.meta.env;
 const TO_BE_DECIDED_STATUS = 'to be decided';
 const VALIDATED_STATUS = 'validated';
 const EXCLUDED_STATUS = 'excluded';
+const REGEXP_ROR = /^(https:\/\/ror\.org\/|ror\.org\/){0,1}0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
 
 const getRorAffiliations = (affiliations) => {
   const notRorAffiliations = [];
   const rorAffiliations = [];
-  const regexp = /^(https:\/\/ror\.org\/|ror\.org\/){0,1}0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
   affiliations.forEach((affiliation) => {
     // eslint-disable-next-line no-unused-expressions
-    affiliation.match(regexp) ? rorAffiliations.push(affiliation) : notRorAffiliations.push(affiliation);
+    affiliation.match(REGEXP_ROR) ? rorAffiliations.push(affiliation) : notRorAffiliations.push(affiliation);
   });
   return { notRorAffiliations, rorAffiliations };
 };
@@ -142,9 +142,10 @@ export default function Home() {
         .forEach((affiliation) => {
           const affiliationName = normalizedName(affiliation.name);
           if (!Object.keys(affiliations).includes(affiliationName)) {
+            const name = getAffiliationName(affiliation, regexp);
             affiliations[affiliationName] = {
-              matches: affiliation.name.match(regexp)?.length ?? 0,
-              name: getAffiliationName(affiliation, regexp),
+              matches: name.match(regexp)?.length ?? 0,
+              name,
               status: TO_BE_DECIDED_STATUS,
               works: [],
             };
@@ -162,7 +163,7 @@ export default function Home() {
 
   useEffect(() => {
     const regexp = new RegExp(`(${(options?.affiliations ?? [])
-      .map((affiliationQuery) => affiliationQuery
+      .map((affiliationQuery) => (affiliationQuery.match(REGEXP_ROR) ? affiliationQuery : affiliationQuery
         .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
         .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
         .replaceAll(/(i|ì|í|î|ï)/g, '(i|ì|í|î|ï)')
@@ -172,7 +173,7 @@ export default function Home() {
         .replaceAll(/(n|ñ)/g, '(n|ñ)')
         .replaceAll(/(c|ç)/g, '(c|ç)')
         .replaceAll(/æ/g, '(æ|ae)')
-        .replaceAll(/œ/g, '(œ|oe)'))
+        .replaceAll(/œ/g, '(œ|oe)')))
       .join('|')})`, 'gi');
     let worksDataTableTmp = [];
     if (data) {
