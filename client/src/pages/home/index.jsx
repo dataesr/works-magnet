@@ -197,7 +197,7 @@ export default function Home() {
   }, [data, options]);
 
   useEffect(() => {
-    setIsLoading(false);
+    setIsLoading(true);
     const regexp = new RegExp(`(${(options?.affiliations ?? [])
       .map((affiliationQuery) => affiliationQuery
         .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
