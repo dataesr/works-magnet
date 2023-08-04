@@ -135,34 +135,28 @@ export default function Home() {
     .replace(/[^a-zA-Z0-9]/g, '');
 
   const groupByAffiliations = (works) => {
-    console.time('groupByAffiliations');
-    console.log('groupByAffiliations - start');
+    setIsLoading(true);
     let affiliationsDataTableTmp = {};
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
       (work?.affiliations ?? [])
-        .map((affiliation) => ({
-          ...affiliation,
-          matches: affiliation.name.match(regexp)?.length ?? 0,
-        }))
         .forEach((affiliation) => {
-        const affiliationName = normalizedName(affiliation.name);
-        if (!affiliationsDataTableTmp?.[affiliationName]) {
-          affiliationsDataTableTmp[affiliationName] = {
-            matches: affiliation?.matches,
-            name: getAffiliationName(affiliation, regexp),
-            status: TO_BE_DECIDED_STATUS,
-            works: [],
-          };
-        }
-        affiliationsDataTableTmp[affiliationName].works.push(work.id);
-      });
+          const affiliationName = normalizedName(affiliation.name);
+          if (!affiliationsDataTableTmp?.[affiliationName]) {
+            const name = getAffiliationName(affiliation, regexp);
+            affiliationsDataTableTmp[affiliationName] = {
+              matches: [...new Set(name.match(regexp))].length,
+              name,
+              status: TO_BE_DECIDED_STATUS,
+              works: [],
+            };
+          }
+          affiliationsDataTableTmp[affiliationName].works.push(work.id);
+        });
     });
     affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
-      .sort((a, b) => b.works.length - a.works.length)
-      .map((affiliation, index) => ({ ...affiliation, id: index.toString() }));
+      .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: affiliation.works.length }));
     setAllAffiliations(affiliationsDataTableTmp);
     setIsLoading(false);
-    console.timeEnd('groupByAffiliations');
   };
 
   useEffect(() => {
@@ -199,9 +193,8 @@ export default function Home() {
   }, [data, regexp]);
 
   useEffect(() => {
-    setIsLoading(true);
     groupByAffiliations(worksDataTable, regexp);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [worksDataTable]);
 
   const tagWorks = (works, action) => {

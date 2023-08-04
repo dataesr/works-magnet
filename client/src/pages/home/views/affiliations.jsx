@@ -27,6 +27,8 @@ export default function AffiliationsView({
       scrollable
       selection={selectedAffiliations}
       size="small"
+      sortField="works"
+      sortOrder={-1}
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}
       tableStyle={{ minWidth: '50rem' }}
@@ -35,7 +37,7 @@ export default function AffiliationsView({
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} />
       <Column field="name" header="Affiliation" body={nameTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by affiliation" />
-      <Column field="works" body={(rowData) => rowData.works.length} header="Number of works" sortable />
+      <Column field="works" header="Number of works" sortable />
       <Column field="matches" header="Number of matches" sortable />
     </DataTable>
   );
