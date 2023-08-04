@@ -13,9 +13,9 @@ import {
 } from '../../../utils/templates';
 
 export default function WorksView({
+  allWorks,
   selectedWorks,
   setSelectedWorks,
-  worksDataTable,
 }) {
   return (
     <DataTable
@@ -33,7 +33,7 @@ export default function WorksView({
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}
-      value={worksDataTable}
+      value={allWorks}
     >
       <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
@@ -48,6 +48,15 @@ export default function WorksView({
 }
 
 WorksView.propTypes = {
+  allWorks: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    datasource: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+  })).isRequired,
   selectedWorks: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -58,13 +67,4 @@ WorksView.propTypes = {
     type: PropTypes.string.isRequired,
   })).isRequired,
   setSelectedWorks: PropTypes.func.isRequired,
-  worksDataTable: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
-    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-  })).isRequired,
 };

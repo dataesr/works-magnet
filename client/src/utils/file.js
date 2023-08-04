@@ -1,6 +1,6 @@
-const export2BsoCsv = (worksDataTable) => {
+const export2BsoCsv = (allWorks) => {
   const csvHeader = ['doi', 'hal_id', 'nnt_id'].join(';');
-  const keptWorks = worksDataTable.filter((work) => work.status === 'validated');
+  const keptWorks = allWorks.filter((work) => work.status === 'validated');
   const getValue = (row, idType) => {
     if (!row) return '';
     if (row.doi && idType === 'doi') return row.doi;
@@ -27,23 +27,23 @@ const export2BsoCsv = (worksDataTable) => {
   document.body.removeChild(link);
 };
 
-const export2json = (affiliationsDataTable, options, worksDataTable) => {
+const export2json = (allAffiliations, allWorks, options) => {
   const link = document.createElement('a');
-  link.href = URL.createObjectURL(new Blob([JSON.stringify({ affiliationsDataTable, options, worksDataTable })], { type: 'application/json' }));
+  link.href = URL.createObjectURL(new Blob([JSON.stringify({ allAffiliations, allWorks, options })], { type: 'application/json' }));
   link.setAttribute('download', 'works-finder.json');
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
-const importJson = (e, setAffiliationsDataTable, setSearchParams, setWorksDataTable) => {
+const importJson = (e, setAllAffiliations, setSearchParams, setAllWorks) => {
   const fileReader = new FileReader();
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {
-    const { affiliationsDataTable, options, worksDataTable } = JSON.parse(f.target.result);
+    const { allAffiliations, allWorks, options } = JSON.parse(f.target.result);
     options.restoreFromFile = true;
-    setAffiliationsDataTable(affiliationsDataTable);
-    setWorksDataTable(worksDataTable);
+    setAllAffiliations(allAffiliations);
+    setAllWorks(allWorks);
     setSearchParams(options);
   };
 };

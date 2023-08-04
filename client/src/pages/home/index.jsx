@@ -108,13 +108,13 @@ const getData = async (options) => {
 
 export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
+  const [allWorks, setAllWorks] = useState([]);
   const [filterAffiliations, setFilterAffiliations] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedWorks, setSelectedWorks] = useState([]);
-  const [worksDataTable, setWorksDataTable] = useState([]);
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(options),
@@ -136,26 +136,26 @@ export default function Home() {
 
   const groupByAffiliations = (works) => {
     setIsLoading(true);
-    let affiliationsDataTableTmp = {};
+    let allAffiliationsTmp = {};
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
       (work?.affiliations ?? [])
         .forEach((affiliation) => {
           const affiliationName = normalizedName(affiliation.name);
-          if (!affiliationsDataTableTmp?.[affiliationName]) {
+          if (!allAffiliationsTmp?.[affiliationName]) {
             const name = getAffiliationName(affiliation, regexp);
-            affiliationsDataTableTmp[affiliationName] = {
+            allAffiliationsTmp[affiliationName] = {
               matches: [...new Set(name.match(regexp))].length,
               name,
               status: TO_BE_DECIDED_STATUS,
               works: [],
             };
           }
-          affiliationsDataTableTmp[affiliationName].works.push(work.id);
+          allAffiliationsTmp[affiliationName].works.push(work.id);
         });
     });
-    affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
+    allAffiliationsTmp = Object.values(allAffiliationsTmp)
       .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: affiliation.works.length }));
-    setAllAffiliations(affiliationsDataTableTmp);
+    setAllAffiliations(allAffiliationsTmp);
     setIsLoading(false);
   };
 
@@ -177,9 +177,9 @@ export default function Home() {
   }, [options?.affiliations]);
 
   useEffect(() => {
-    let worksDataTableTmp = [];
+    let allWorksTmp = [];
     if (data) {
-      worksDataTableTmp = data.results
+      allWorksTmp = data.results
         .map((work) => ({
           ...work,
           affiliationsHtml: getAffiliationsHtmlField(work, regexp),
@@ -189,33 +189,33 @@ export default function Home() {
           status: TO_BE_DECIDED_STATUS,
         }));
     }
-    setWorksDataTable(worksDataTableTmp);
+    setAllWorks(allWorksTmp);
   }, [data, regexp]);
 
   useEffect(() => {
-    groupByAffiliations(worksDataTable, regexp);
+    groupByAffiliations(allWorks, regexp);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [worksDataTable]);
+  }, [allWorks]);
 
   const tagWorks = (works, action) => {
-    const worksDataTableTmp = [...worksDataTable];
+    const allWorksTmp = [...allWorks];
     const workIds = works.map((work) => work.id);
-    worksDataTableTmp.filter((work) => workIds.includes(work.id)).map((work) => work.status = action);
-    setWorksDataTable(worksDataTableTmp);
+    allWorksTmp.filter((work) => workIds.includes(work.id)).map((work) => work.status = action);
+    setAllWorks(allWorksTmp);
     setSelectedWorks([]);
   };
 
   const tagAffiliations = (affiliations, action) => {
     if (action !== EXCLUDED_STATUS) {
-      const worksDataTableTmp = [...worksDataTable];
+      const allWorksTmp = [...allWorks];
       const workIds = affiliations.map((affiliation) => affiliation.works).flat();
-      worksDataTableTmp.filter((work) => workIds.includes(work.id)).map((work) => work.status = action);
-      setWorksDataTable(worksDataTableTmp);
+      allWorksTmp.filter((work) => workIds.includes(work.id)).map((work) => work.status = action);
+      setAllWorks(allWorksTmp);
     }
-    const affiliationsDataTableTmp = [...allAffiliations];
+    const allAffiliationsTmp = [...allAffiliations];
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
-    affiliationsDataTableTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
-    setAllAffiliations(affiliationsDataTableTmp);
+    allAffiliationsTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
+    setAllAffiliations(allAffiliationsTmp);
     setSelectedAffiliations([]);
   };
 
@@ -278,10 +278,10 @@ export default function Home() {
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
           allAffiliations={allAffiliations}
+          allWorks={allWorks}
           options={options}
           setAllAffiliations={setAllAffiliations}
-          setWorksDataTable={setWorksDataTable}
-          worksDataTable={worksDataTable}
+          setAllWorks={setAllWorks}
         />
         <Tabs defaultActiveTab={0}>
           <Tab label={`Affiliations (${filterAffiliations ? allAffiliations.filter((affiliation) => !!affiliation.matches).length : allAffiliations.length})`}>
@@ -307,7 +307,7 @@ export default function Home() {
                 <Button
                   className="fr-mb-1w"
                   icon="ri-refresh-line"
-                  onClick={() => groupByAffiliations(worksDataTable)}
+                  onClick={() => groupByAffiliations(allWorks)}
                   size="sm"
                 >
                   Refresh affiliations
@@ -332,7 +332,7 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Works (${worksDataTable.filter((work) => work.status === VALIDATED_STATUS).length} / ${worksDataTable.length})`}>
+          <Tab label={`Works (${allWorks.filter((work) => work.status === VALIDATED_STATUS).length} / ${allWorks.length})`}>
             <Row>
               <Col>
                 <Button
@@ -375,9 +375,9 @@ export default function Home() {
               <Col>
                 <Gauge
                   data={[
-                    { label: 'French OSM', color: '#334476', value: worksDataTable.filter((work) => work.datasource === 'bso').length },
-                    { label: 'OpenAlex', color: '#22a498', value: worksDataTable.filter((work) => work.datasource === 'openalex').length },
-                    { label: 'Both', color: '#2faf41a4', value: worksDataTable.filter((work) => work.datasource === 'bso, openalex').length },
+                    { label: 'French OSM', color: '#334476', value: allWorks.filter((work) => work.datasource === 'bso').length },
+                    { label: 'OpenAlex', color: '#22a498', value: allWorks.filter((work) => work.datasource === 'openalex').length },
+                    { label: 'Both', color: '#2faf41a4', value: allWorks.filter((work) => work.datasource === 'bso, openalex').length },
                   ]}
                 />
               </Col>
@@ -387,9 +387,9 @@ export default function Home() {
                 {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
                 {!isFetching && !isLoading && (
                   <WorksView
+                    allWorks={allWorks}
                     selectedWorks={selectedWorks}
                     setSelectedWorks={setSelectedWorks}
-                    worksDataTable={worksDataTable}
                   />
                 )}
               </Col>

@@ -49,13 +49,14 @@ AffiliationsView.propTypes = {
     matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    works: PropTypes.number.isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
+    matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    works: PropTypes.number.isRequired,
   })).isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,
 };
