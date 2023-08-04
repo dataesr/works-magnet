@@ -70,8 +70,10 @@ Actions.propTypes = {
     id: PropTypes.string.isRequired,
     matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
+    nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    works: PropTypes.number.isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   allWorks: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,

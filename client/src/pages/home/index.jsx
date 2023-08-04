@@ -142,10 +142,11 @@ export default function Home() {
         .forEach((affiliation) => {
           const affiliationName = normalizedName(affiliation.name);
           if (!allAffiliationsTmp?.[affiliationName]) {
-            const name = getAffiliationName(affiliation, regexp);
+            const name = getAffiliationName(affiliation);
             allAffiliationsTmp[affiliationName] = {
               matches: [...new Set(name.match(regexp))].length,
               name,
+              nameHtml: name.replace(regexp, '<b>$&</b>'),
               status: TO_BE_DECIDED_STATUS,
               works: [],
             };
@@ -154,7 +155,7 @@ export default function Home() {
         });
     });
     allAffiliationsTmp = Object.values(allAffiliationsTmp)
-      .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: affiliation.works.length }));
+      .map((affiliation, index) => ({ ...affiliation, id: index.toString(), worksNumber: affiliation.works.length }));
     setAllAffiliations(allAffiliationsTmp);
     setIsLoading(false);
   };

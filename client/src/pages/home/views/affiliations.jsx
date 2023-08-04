@@ -27,7 +27,7 @@ export default function AffiliationsView({
       scrollable
       selection={selectedAffiliations}
       size="small"
-      sortField="works"
+      sortField="worksNumber"
       sortOrder={-1}
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}
@@ -36,8 +36,8 @@ export default function AffiliationsView({
     >
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} />
-      <Column field="name" header="Affiliation" body={nameTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by affiliation" />
-      <Column field="works" header="Number of works" sortable />
+      <Column field="nameHtml" header="Affiliation" body={nameTemplate} filter filterField="name" filterMatchMode="contains" filterPlaceholder="Search by affiliation" />
+      <Column field="worksNumber" header="Number of works" sortable />
       <Column field="matches" header="Number of matches" sortable />
     </DataTable>
   );
@@ -48,15 +48,19 @@ AffiliationsView.propTypes = {
     id: PropTypes.string.isRequired,
     matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
+    nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    works: PropTypes.number.isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
+    nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    works: PropTypes.number.isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,
 };

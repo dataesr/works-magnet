@@ -19,7 +19,7 @@ const authorsTemplate = (rowData) => (
   </>
 );
 
-const getAffiliationName = (affiliation, regexp) => {
+const getAffiliationName = (affiliation) => {
   let affiliationName = affiliation.name;
   if (affiliation?.ror) {
     let ror = '';
@@ -30,12 +30,12 @@ const getAffiliationName = (affiliation, regexp) => {
     }
     affiliationName += ` ${ror}`;
   }
-  return affiliationName.replace(regexp, '<b>$&</b>');
+  return affiliationName;
 };
 
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
-    .map((affiliation) => getAffiliationName(affiliation, regexp))
+    .map((affiliation) => getAffiliationName(affiliation).replace(regexp, '<b>$&</b>'))
     .filter((affiliation) => affiliation.length > 0)
     .flat();
   affiliations = [...new Set(affiliations)];
@@ -74,7 +74,7 @@ const getAuthorsTooltipField = (rowData) => {
   return html;
 };
 
-const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.name }} />;
+const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
 const getBadgeTypeByStatus = (status) => {
   let type;
