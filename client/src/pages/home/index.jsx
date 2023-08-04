@@ -107,10 +107,11 @@ const getData = async (options) => {
 };
 
 export default function Home() {
-  const [affiliationsDataTable, setAffiliationsDataTable] = useState([]);
+  const [allAffiliations, setAllAffiliations] = useState([]);
   const [filterAffiliations, setFilterAffiliations] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
+  const [regexp, setRegexp] = useState();
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedWorks, setSelectedWorks] = useState([]);
   const [worksDataTable, setWorksDataTable] = useState([]);
@@ -128,26 +129,24 @@ export default function Home() {
     refetch();
   };
 
-  const groupByAffiliations = (works, regexp) => {
-    const normalizedName = (name) => name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9]/g, '');
+  const normalizedName = (name) => name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[^a-zA-Z0-9]/g, '');
+
+  const groupByAffiliations = (works) => {
+    console.time('groupByAffiliations');
+    console.log('groupByAffiliations - start');
     let affiliationsDataTableTmp = {};
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
-      let affiliations = work?.affiliations ?? [];
-      if (filterAffiliations) {
-        affiliations = affiliations
-          .map((affiliation) => ({
-            ...affiliation,
-            matches: affiliation.name.match(regexp)?.length ?? 0,
-          }))
-          .filter((affiliation) => !!affiliation.matches);
-      }
-      affiliations.forEach((affiliation) => {
+      (work?.affiliations ?? [])
+        .map((affiliation) => ({
+          ...affiliation,
+          matches: affiliation.name.match(regexp)?.length ?? 0,
+        }))
+        .forEach((affiliation) => {
         const affiliationName = normalizedName(affiliation.name);
-        if (!Object.keys(affiliationsDataTableTmp).includes(affiliationName)) {
+        if (!affiliationsDataTableTmp?.[affiliationName]) {
           affiliationsDataTableTmp[affiliationName] = {
             matches: affiliation?.matches,
             name: getAffiliationName(affiliation, regexp),
@@ -161,12 +160,13 @@ export default function Home() {
     affiliationsDataTableTmp = Object.values(affiliationsDataTableTmp)
       .sort((a, b) => b.works.length - a.works.length)
       .map((affiliation, index) => ({ ...affiliation, id: index.toString() }));
-    setAffiliationsDataTable(affiliationsDataTableTmp);
+    setAllAffiliations(affiliationsDataTableTmp);
     setIsLoading(false);
+    console.timeEnd('groupByAffiliations');
   };
 
   useEffect(() => {
-    const regexp = new RegExp(`(${(options?.affiliations ?? [])
+    const regexpTmp = new RegExp(`(${(options?.affiliations ?? [])
       .map((affiliationQuery) => (affiliationQuery.match(REGEXP_ROR) ? affiliationQuery : affiliationQuery
         .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
         .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
@@ -179,6 +179,10 @@ export default function Home() {
         .replaceAll(/æ/g, '(æ|ae)')
         .replaceAll(/œ/g, '(œ|oe)')))
       .join('|')})`, 'gi');
+    setRegexp(regexpTmp);
+  }, [options?.affiliations]);
+
+  useEffect(() => {
     let worksDataTableTmp = [];
     if (data) {
       worksDataTableTmp = data.results
@@ -192,28 +196,13 @@ export default function Home() {
         }));
     }
     setWorksDataTable(worksDataTableTmp);
-    groupByAffiliations(worksDataTableTmp, regexp);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, options]);
+  }, [data, regexp]);
 
   useEffect(() => {
     setIsLoading(true);
-    const regexp = new RegExp(`(${(options?.affiliations ?? [])
-      .map((affiliationQuery) => affiliationQuery
-        .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
-        .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
-        .replaceAll(/(i|ì|í|î|ï)/g, '(i|ì|í|î|ï)')
-        .replaceAll(/(o|ò|ó|ô|õ|ö|ø)/g, '(o|ò|ó|ô|õ|ö|ø)')
-        .replaceAll(/(u|ù|ú|û|ü)/g, '(u|ù|ú|û|ü)')
-        .replaceAll(/(y|ý|ÿ)/g, '(y|ý|ÿ)')
-        .replaceAll(/(n|ñ)/g, '(n|ñ)')
-        .replaceAll(/(c|ç)/g, '(c|ç)')
-        .replaceAll(/æ/g, '(æ|ae)')
-        .replaceAll(/œ/g, '(œ|oe)'))
-      .join('|')})`, 'gi');
     groupByAffiliations(worksDataTable, regexp);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterAffiliations, worksDataTable]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [worksDataTable]);
 
   const tagWorks = (works, action) => {
     const worksDataTableTmp = [...worksDataTable];
@@ -230,10 +219,10 @@ export default function Home() {
       worksDataTableTmp.filter((work) => workIds.includes(work.id)).map((work) => work.status = action);
       setWorksDataTable(worksDataTableTmp);
     }
-    const affiliationsDataTableTmp = [...affiliationsDataTable];
+    const affiliationsDataTableTmp = [...allAffiliations];
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
     affiliationsDataTableTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
-    setAffiliationsDataTable(affiliationsDataTableTmp);
+    setAllAffiliations(affiliationsDataTableTmp);
     setSelectedAffiliations([]);
   };
 
@@ -295,14 +284,14 @@ export default function Home() {
 
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
-          affiliationsDataTable={affiliationsDataTable}
+          allAffiliations={allAffiliations}
           options={options}
-          setAffiliationsDataTable={setAffiliationsDataTable}
+          setAllAffiliations={setAllAffiliations}
           setWorksDataTable={setWorksDataTable}
           worksDataTable={worksDataTable}
         />
         <Tabs defaultActiveTab={0}>
-          <Tab label={`Affiliations (${affiliationsDataTable.length})`}>
+          <Tab label={`Affiliations (${filterAffiliations ? allAffiliations.filter((affiliation) => !!affiliation.matches).length : allAffiliations.length})`}>
             <Row>
               <Col n="8" offset="2">
                 <Notice
@@ -337,7 +326,7 @@ export default function Home() {
                 {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
                 {!isFetching && !isLoading && (
                   <AffiliationsView
-                    affiliationsDataTable={affiliationsDataTable}
+                    allAffiliations={filterAffiliations ? allAffiliations.filter((affiliation) => !!affiliation.matches) : allAffiliations}
                     selectedAffiliations={selectedAffiliations}
                     setSelectedAffiliations={setSelectedAffiliations}
                   />

@@ -9,7 +9,7 @@ import {
 } from '../../../utils/templates';
 
 export default function AffiliationsView({
-  affiliationsDataTable,
+  allAffiliations,
   selectedAffiliations,
   setSelectedAffiliations,
 }) {
@@ -30,7 +30,7 @@ export default function AffiliationsView({
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}
       tableStyle={{ minWidth: '50rem' }}
-      value={affiliationsDataTable}
+      value={allAffiliations}
     >
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} />
@@ -42,8 +42,9 @@ export default function AffiliationsView({
 }
 
 AffiliationsView.propTypes = {
-  affiliationsDataTable: PropTypes.arrayOf(PropTypes.shape({
+  allAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
+    matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     works: PropTypes.arrayOf(PropTypes.string).isRequired,

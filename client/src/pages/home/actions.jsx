@@ -8,9 +8,9 @@ import Button from '../../components/button';
 import { export2BsoCsv, export2json, importJson } from '../../utils/file';
 
 export default function Actions({
-  affiliationsDataTable,
+  allAffiliations,
   options,
-  setAffiliationsDataTable,
+  setAllAffiliations,
   setWorksDataTable,
   worksDataTable,
 }) {
@@ -32,7 +32,7 @@ export default function Actions({
           <Button
             disabled={!worksDataTable.length}
             icon="ri-save-line"
-            onClick={() => export2json(affiliationsDataTable, options, worksDataTable)}
+            onClick={() => export2json(allAffiliations, options, worksDataTable)}
             size="sm"
           >
             Save work to file
@@ -56,7 +56,7 @@ export default function Actions({
               accept=".json"
               hint="Select JSON file to restore from previous state"
               label="JSON file"
-              onChange={(e) => importJson(e, setAffiliationsDataTable, setSearchParams, setWorksDataTable)}
+              onChange={(e) => importJson(e, setAllAffiliations, setSearchParams, setWorksDataTable)}
             />
           </Col>
         </Row>
@@ -66,13 +66,15 @@ export default function Actions({
 }
 
 Actions.propTypes = {
-  affiliationsDataTable: PropTypes.arrayOf(PropTypes.shape({
+  allAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
+    matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,
   options: PropTypes.object.isRequired,
-  setAffiliationsDataTable: PropTypes.func.isRequired,
+  setAllAffiliations: PropTypes.func.isRequired,
   setWorksDataTable: PropTypes.func.isRequired,
   worksDataTable: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
