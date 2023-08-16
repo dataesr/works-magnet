@@ -22,6 +22,12 @@ jobs:
       - name: Log into registry
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build client
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm ci --silent && npm run build
+
       - name: Build image
         run: docker build -f Dockerfile -t ${{ github.repository }} --build-arg MODE=staging .
 
