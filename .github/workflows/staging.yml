@@ -10,7 +10,7 @@ env:
   DEPLOYMENT: works-finder
   DEPLOYMENT_NAMESPACE: works-finder
   DEPLOYMENT_URL: https://works-finder.staging.dataesr.ovh
-  MM_NOTIFICATION_CHANNEL: bot
+  MM_NOTIFICATION_CHANNEL: bots
 
 jobs:
   publish-ghcr:
