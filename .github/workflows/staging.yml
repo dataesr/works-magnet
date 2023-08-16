@@ -25,7 +25,7 @@ jobs:
       - name: Build image
         run: docker build -f Dockerfile -t ${{ github.repository }} --build-arg MODE=staging .
 
-      - name: Get Tag
+      - name: Get tag
         id: version
         run: echo "tag=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
