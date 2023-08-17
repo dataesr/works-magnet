@@ -29,7 +29,7 @@ jobs:
       - run: npm ci --silent && npm run build
 
       - name: Build image
-        run: docker build -f Dockerfile -t ${{ github.repository }} --build-arg MODE=staging .
+        run: docker build -t ${{ github.repository }} --build-arg MODE=staging .
 
       - name: Get tag
         id: version

@@ -9,4 +9,9 @@ export default defineConfig({
   },
   plugins: [react()],
   root: 'client',
+  server: {
+    host: true,
+    strictPort: true,
+    port: 5173,
+  }
 });
