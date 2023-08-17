@@ -17,25 +17,20 @@ jobs:
     name: Publish docker image
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: 🏁 Checkout
+        uses: actions/checkout@v3
 
-      - name: Log into registry
-        run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build client
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: npm ci --silent && npm run build
-
-      - name: Build image
-        run: docker build -t ${{ github.repository }} --build-arg MODE=staging .
-
-      - name: Get tag
-        id: version
+      - name: 🏷️ Get tag
+        id: tag
         run: echo "tag=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
-      - name: Push image
+      - name: 🔑 Login Docker
+        run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐋 Build Docker image
+        run: docker build -t ${{ github.repository }} --build-arg MODE=staging .
+
+      - name: 📦 Push Docker image
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository }}
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
