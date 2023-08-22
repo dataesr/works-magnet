@@ -1,5 +1,4 @@
 const {
-  VITE_API_URL,
   VITE_BSO_AUTH,
   VITE_BSO_SIZE,
   VITE_BSO_URL,
@@ -179,7 +178,7 @@ const getTypeFromOpenAlex = (type) => {
 };
 
 const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse = []) => {
-  let url = `${VITE_API_URL}/openalex?per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
+  let url = `/api/openalex?per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (options?.startYear && options?.endYear) {
     url += `,publication_year:${Number(options.startYear)}-${Number(options?.endYear)}`;
