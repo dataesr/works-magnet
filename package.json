@@ -1,8 +1,8 @@
 {
   "name": "works-finder",
   "homepage": "https://github.com/dataesr/works-finder/",
-  "private": true,
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "workspaces": [
     "client",
@@ -14,13 +14,12 @@
     "react-tooltip": "^5.18.1"
   },
   "scripts": {
-    "build-fullstack": "npm -w client run build -- --mode ${npm_config_mode}",
+    "build": "rm -rf server/dist && npm -w client run build -- --mode ${npm_config_mode} --emptyOutDir --outDir ../server/dist",
     "client": "npm -w client run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "preview": "vite build && vite preview",
     "preview-fullstack": "npm run build --mode=${npm_config_mode} && npm -w server start",
     "server": "npm -w server run dev",
-    "start": "npm run dev",
-    "preview": "vite build && vite preview",
-    "build": "vite build"
+    "start": "npm run dev"
   }
 }

@@ -1,14 +1,7 @@
-FROM node:18-alpine AS build
+FROM node:18-alpine
 WORKDIR /app
 COPY package*.json ./
-COPY ./client/package*.json ./client/
-COPY ./server/package*.json ./server/
+COPY server ./server
 RUN npm ci --silent
-COPY . .
-RUN npm run build
-
-# production environment
-FROM nginx:stable
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+CMD ["npm", "run", "-w", "server", "start"]
 EXPOSE 3000
