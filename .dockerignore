@@ -1,7 +1,15 @@
-npm-debug.log
-.dockerignore
+# Github
 **/.git
-**/.DS_Store
-**/node_modules
-.git
 .github
+
+# Docker
+.dockerignore
+Dockerfile
+
+# NPM
+**/dist
+**/node_modules
+npm-debug.log
+
+# Misc
+**/.DS_Store
