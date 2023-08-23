@@ -7,7 +7,6 @@
 Dockerfile
 
 # NPM
-**/dist
 **/node_modules
 npm-debug.log
 
