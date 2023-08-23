@@ -20,6 +20,11 @@ concurrency:
   group: 'pages'
   cancel-in-progress: true
 
+env:
+  # Must match k8s deployment name
+  DEPLOYMENT_URL: https://dataesr.github.io/works-finder/
+  MM_NOTIFICATION_CHANNEL: bots
+
 jobs:
   # Single deploy job since we're just deploying
   deploy:
@@ -47,3 +52,15 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
+
+  notify:
+    needs: deploy
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dataesr/mm-notifier-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          mattermost_webhook_url: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          mattermost_channel: ${{ env.MM_NOTIFICATION_CHANNEL}}
+          deployment_url: ${{ env.DEPLOYMENT_URL }}
