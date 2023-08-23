@@ -2,8 +2,9 @@ const {
   VITE_BSO_AUTH,
   VITE_BSO_SIZE,
   VITE_BSO_URL,
-  VITE_OPENALEX_SIZE,
   VITE_OPENALEX_PER_PAGE,
+  VITE_OPENALEX_SIZE,
+  VITE_OPENALEX_URL,
 } = import.meta.env;
 
 const VITE_OPENALEX_MAX_PAGE = Math.floor(VITE_OPENALEX_SIZE / VITE_OPENALEX_PER_PAGE);
@@ -178,7 +179,7 @@ const getTypeFromOpenAlex = (type) => {
 };
 
 const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse = []) => {
-  let url = `/api/openalex?per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
+  let url = `${VITE_OPENALEX_URL}per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (options?.startYear && options?.endYear) {
     url += `,publication_year:${Number(options.startYear)}-${Number(options?.endYear)}`;

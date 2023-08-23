@@ -35,17 +35,15 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: npm run build -- --base=/works-finder/
+      - name: Install dependencies and build
+        run: npm ci --silent && npm run build --mode=poc -- --base=/works-finder/
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload dist repository
-          path: './dist'
+          # Upload server/dist repository
+          path: './server/dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
