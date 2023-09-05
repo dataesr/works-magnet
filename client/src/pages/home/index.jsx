@@ -220,7 +220,7 @@ export default function Home() {
     setSelectedAffiliations([]);
   };
 
-  const renderAffiliationButtons = () => (
+  const renderAffiliationsButtons = () => (
     <>
       <Button
         className="fr-mr-1w btn-keep"
@@ -230,9 +230,7 @@ export default function Home() {
         size="sm"
       >
         Validate
-        {!!selectedAffiliations.length && (
-          ` (${selectedAffiliations.length})`
-        )}
+        {` (${selectedAffiliations.length})`}
       </Button>
       <Button
         className="fr-mr-1w btn-hide"
@@ -242,9 +240,7 @@ export default function Home() {
         size="sm"
       >
         Exclude
-        {!!selectedAffiliations.length && (
-          ` (${selectedAffiliations.length})`
-        )}
+        {` (${selectedAffiliations.length})`}
       </Button>
       <Button
         className="fr-mb-1w btn-reset"
@@ -254,9 +250,42 @@ export default function Home() {
         size="sm"
       >
         Reset status
-        {!!selectedAffiliations.length && (
-          ` (${selectedAffiliations.length})`
-        )}
+        {` (${selectedAffiliations.length})`}
+      </Button>
+    </>
+  );
+
+  const renderWorksButtons = () => (
+    <>
+      <Button
+        className="fr-mr-1w btn-keep"
+        disabled={!selectedWorks.length}
+        icon="ri-checkbox-circle-line"
+        onClick={() => tagWorks(selectedWorks, VALIDATED_STATUS)}
+        size="sm"
+      >
+        Validate
+        {` (${selectedWorks.length})`}
+      </Button>
+      <Button
+        className="fr-mr-1w btn-hide"
+        disabled={!selectedWorks.length}
+        icon="ri-indeterminate-circle-line"
+        onClick={() => tagWorks(selectedWorks, EXCLUDED_STATUS)}
+        size="sm"
+      >
+        Exclude
+        {` (${selectedWorks.length})`}
+      </Button>
+      <Button
+        className="fr-mb-1w btn-reset"
+        disabled={!selectedWorks.length}
+        icon="ri-reply-fill"
+        onClick={() => tagWorks(selectedWorks, TO_BE_DECIDED_STATUS)}
+        size="sm"
+      >
+        Reset status
+        {` (${selectedWorks.length})`}
       </Button>
     </>
   );
@@ -296,7 +325,7 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {renderAffiliationButtons()}
+                {renderAffiliationsButtons()}
               </Col>
               <Col className="text-right" n="2">
                 <Checkbox
@@ -305,6 +334,8 @@ export default function Home() {
                   onChange={() => setFilterAffiliations(!filterAffiliations)}
                   size="sm"
                 />
+              </Col>
+              <Col className="text-right" n="2">
                 <Button
                   className="fr-mb-1w"
                   icon="ri-refresh-line"
@@ -329,49 +360,14 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {renderAffiliationButtons()}
+                {renderAffiliationsButtons()}
               </Col>
             </Row>
           </Tab>
           <Tab label={`Works (${allWorks.filter((work) => work.status === VALIDATED_STATUS).length} / ${allWorks.length})`}>
             <Row>
               <Col>
-                <Button
-                  className="fr-mr-1w btn-keep"
-                  disabled={!selectedWorks.length}
-                  icon="ri-checkbox-circle-line"
-                  onClick={() => tagWorks(selectedWorks, VALIDATED_STATUS)}
-                  size="sm"
-                >
-                  Validate
-                  {!!selectedWorks.length && (
-                    ` (${selectedWorks.length})`
-                  )}
-                </Button>
-                <Button
-                  className="fr-mr-1w btn-hide"
-                  disabled={!selectedWorks.length}
-                  icon="ri-indeterminate-circle-line"
-                  onClick={() => tagWorks(selectedWorks, EXCLUDED_STATUS)}
-                  size="sm"
-                >
-                  Exclude
-                  {!!selectedWorks.length && (
-                    ` (${selectedWorks.length})`
-                  )}
-                </Button>
-                <Button
-                  className="fr-mb-1w btn-reset"
-                  disabled={!selectedWorks.length}
-                  icon="ri-reply-fill"
-                  onClick={() => tagWorks(selectedWorks, TO_BE_DECIDED_STATUS)}
-                  size="sm"
-                >
-                  Reset status
-                  {!!selectedWorks.length && (
-                    ` (${selectedWorks.length})`
-                  )}
-                </Button>
+                {renderWorksButtons()}
               </Col>
               <Col>
                 <Gauge
@@ -393,6 +389,11 @@ export default function Home() {
                     setSelectedWorks={setSelectedWorks}
                   />
                 )}
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                {renderWorksButtons()}
               </Col>
             </Row>
           </Tab>
