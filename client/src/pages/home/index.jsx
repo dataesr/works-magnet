@@ -137,6 +137,7 @@ export default function Home() {
   const groupByAffiliations = (works) => {
     setIsLoading(true);
     let allAffiliationsTmp = {};
+    const taggedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== TO_BE_DECIDED_STATUS);
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
       (work?.affiliations ?? [])
         .forEach((affiliation) => {
@@ -154,8 +155,16 @@ export default function Home() {
           allAffiliationsTmp[affiliationName].works.push(work.id);
         });
     });
+    taggedAffiliations.forEach((affiliation) => {
+      const affiliationName = normalizedName(affiliation.name);
+      if (!allAffiliationsTmp?.[affiliationName]) {
+        allAffiliationsTmp[affiliationName] = affiliation;
+      } else {
+        allAffiliationsTmp[affiliationName].status = affiliation.status;
+      }
+    });
     allAffiliationsTmp = Object.values(allAffiliationsTmp)
-      .map((affiliation, index) => ({ ...affiliation, id: index.toString(), worksNumber: affiliation.works.length }));
+      .map((affiliation, index) => ({ ...affiliation, works: [...new Set(affiliation.works)], id: index.toString(), worksNumber: [...new Set(affiliation.works)].length }));
     setAllAffiliations(allAffiliationsTmp);
     setIsLoading(false);
   };
@@ -219,7 +228,6 @@ export default function Home() {
     setAllAffiliations(allAffiliationsTmp);
     setSelectedAffiliations([]);
   };
-
   const renderAffiliationsButtons = () => (
     <>
       <Button
