@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
@@ -115,6 +116,7 @@ export default function Home() {
   const [regexp, setRegexp] = useState();
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedWorks, setSelectedWorks] = useState([]);
+  const [affiliationsNotice, setAffiliationsNotice] = useState(true);
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(options),
@@ -323,19 +325,22 @@ export default function Home() {
         />
         <Tabs defaultActiveTab={0}>
           <Tab label={`Affiliations (${filterAffiliations ? allAffiliations.filter((affiliation) => !!affiliation.matches).length : allAffiliations.length})`}>
-            <Row>
-              <Col n="8" offset="2">
-                <Notice
-                  className="fr-m-1w"
-                  title="All the affiliations of the publications found in OpenAlex and French OSM are listed below. A filter can be applied to view only the affiliations containing at least one of the matching query input (this filter is applied by default but can be removed)"
-                />
-              </Col>
-            </Row>
+            {affiliationsNotice && (
+              <Row>
+                <Col n="12">
+                  <Notice
+                    className="fr-m-1w"
+                    onClose={() => { setAffiliationsNotice(false); }}
+                    title="All the affiliations of the publications found in OpenAlex and French OSM are listed below. A filter can be applied to view only the affiliations containing at least one of the matching query input (this filter is applied by default but can be removed)"
+                  />
+                </Col>
+              </Row>
+            )}
             <Row>
               <Col>
                 {renderAffiliationsButtons()}
               </Col>
-              <Col className="text-right" n="2">
+              <Col className="text-right" n="3">
                 <Checkbox
                   checked={filterAffiliations}
                   label="Filter on matching affiliations"
