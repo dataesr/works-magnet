@@ -142,6 +142,7 @@ export default function Home() {
     const taggedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== TO_BE_DECIDED_STATUS);
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
       (work?.affiliations ?? [])
+        .filter((affiliation) => Object.keys(affiliation).length)
         .forEach((affiliation) => {
           const affiliationName = normalizedName(affiliation.name);
           if (!allAffiliationsTmp?.[affiliationName]) {

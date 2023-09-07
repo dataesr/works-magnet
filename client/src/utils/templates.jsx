@@ -35,8 +35,9 @@ const getAffiliationName = (affiliation) => {
 
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
+    .filter((affiliation) => Object.keys(affiliation).length)
     .map((affiliation) => getAffiliationName(affiliation).replace(regexp, '<b>$&</b>'))
-    .filter((affiliation) => affiliation.length > 0)
+    .filter((affiliation) => affiliation.length)
     .flat();
   affiliations = [...new Set(affiliations)];
   let html = '<ul>';
