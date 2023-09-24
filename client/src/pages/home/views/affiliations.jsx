@@ -21,11 +21,13 @@ export default function AffiliationsView({
       metaKeySelection
       onSelectionChange={(e) => setSelectedAffiliations(e.value)}
       paginator
+      paginatorPosition="both"
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-      rows={25}
+      rows={50}
       rowsPerPageOptions={[25, 50, 100, 200]}
       scrollable
       selection={selectedAffiliations}
+      selectionPageOnly
       size="small"
       sortField="worksNumber"
       sortOrder={-1}

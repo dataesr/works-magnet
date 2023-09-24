@@ -25,17 +25,19 @@ export default function WorksView({
       metaKeySelection={false}
       onSelectionChange={(e) => setSelectedWorks(e.value)}
       paginator
+      paginatorPosition="both"
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-      rows={25}
+      rows={50}
       rowsPerPageOptions={[25, 50, 100, 200]}
       scrollable
       selection={selectedWorks}
+      selectionPageOnly
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}
       value={allWorks}
     >
-      <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
+      <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
       <Column field="allIdsHtml" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by id" />
       <Column field="datasource" header="Source" filter showFilterMenu={false} filterElement={sourcesFilterTemplate} filterMatchMode="contains" />
