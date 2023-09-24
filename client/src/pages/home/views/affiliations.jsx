@@ -39,6 +39,7 @@ export default function AffiliationsView({
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} />
       <Column field="nameHtml" header="Affiliation" body={nameTemplate} filter filterField="name" filterMatchMode="contains" filterPlaceholder="Search by affiliation" />
+      <Column field="ror" header="RoR" filter />
       <Column field="worksNumber" header="Number of works" sortable />
       <Column field="matches" header="Number of matches" sortable />
     </DataTable>

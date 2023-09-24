@@ -19,24 +19,17 @@ const authorsTemplate = (rowData) => (
   </>
 );
 
-const getAffiliationName = (affiliation) => {
-  let affiliationName = affiliation.name;
-  if (affiliation?.ror) {
-    let ror = '';
-    if (Array.isArray(affiliation.ror)) {
-      ror = affiliation.ror.map((_ror) => _ror.replace('https://ror.org/', '')).join(' ');
-    } else {
-      ror = affiliation.ror.replace('https://ror.org/', '');
-    }
-    affiliationName += ` ${ror}`;
-  }
-  return affiliationName;
+const getAffiliationRor = (affiliation) => {
+  if (!affiliation?.ror) return undefined;
+  if (Array.isArray(affiliation.ror)) return affiliation.ror.map((ror) => (ror.startsWith('https') ? ror : `https://ror.org/${ror}`)).join(' ');
+  if (!affiliation.ror.startsWith('https')) return `https://ror.org/${affiliation.ror}`;
+  return affiliation.ror;
 };
 
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
     .filter((affiliation) => Object.keys(affiliation).length)
-    .map((affiliation) => getAffiliationName(affiliation).replace(regexp, '<b>$&</b>'))
+    .map((affiliation) => affiliation.name.replace(regexp, '<b>$&</b>'))
     .filter((affiliation) => affiliation.length)
     .flat();
   affiliations = [...new Set(affiliations)];
@@ -136,8 +129,8 @@ export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  getAffiliationRor,
   getAffiliationsHtmlField,
-  getAffiliationName,
   getAllIdsHtmlField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,

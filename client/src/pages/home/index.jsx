@@ -15,8 +15,8 @@ import Gauge from '../../components/gauge';
 import { PageSpinner } from '../../components/spinner';
 import {
   getAllIdsHtmlField,
+  getAffiliationRor,
   getAffiliationsHtmlField,
-  getAffiliationName,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 } from '../../utils/templates';
@@ -138,31 +138,31 @@ export default function Home() {
 
   const groupByAffiliations = (works) => {
     setIsLoading(true);
+    // Save already decided affiliations
+    const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== TO_BE_DECIDED_STATUS);
+    // Compute distinct affiliations of the undecided works
     let allAffiliationsTmp = {};
-
-    // save already tagged affiliations
-    const taggedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== TO_BE_DECIDED_STATUS);
-
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
       (work?.affiliations ?? [])
         .filter((affiliation) => Object.keys(affiliation).length)
         .forEach((affiliation) => {
-          const name = getAffiliationName(affiliation);
-          const affiliationName = normalizedName(name);
-          if (!allAffiliationsTmp?.[affiliationName]) {
-            allAffiliationsTmp[affiliationName] = {
-              matches: [...new Set(name.match(regexp))].length,
-              name,
-              nameHtml: name.replace(regexp, '<b>$&</b>'),
+          const ror = getAffiliationRor(affiliation);
+          const normalizedAffiliationName = normalizedName(affiliation.name);
+          if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
+            allAffiliationsTmp[normalizedAffiliationName] = {
+              matches: [...new Set(affiliation.name.match(regexp))].length,
+              name: affiliation.name,
+              nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
+              ror,
               status: TO_BE_DECIDED_STATUS,
               works: [],
             };
           }
-          allAffiliationsTmp[affiliationName].works.push(work.id);
+          allAffiliationsTmp[normalizedAffiliationName].works.push(work.id);
         });
     });
 
-    taggedAffiliations.forEach((affiliation) => {
+    decidedAffiliations.forEach((affiliation) => {
       const affiliationName = normalizedName(affiliation.name);
 
       if (!allAffiliationsTmp?.[affiliationName]) {
