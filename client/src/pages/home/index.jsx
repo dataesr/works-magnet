@@ -17,6 +17,7 @@ import {
   getAllIdsHtmlField,
   getAffiliationRor,
   getAffiliationsHtmlField,
+  getAffiliationsSearchField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 } from '../../utils/templates';
@@ -144,7 +145,7 @@ export default function Home() {
     let allAffiliationsTmp = {};
     works.filter((work) => work.status === TO_BE_DECIDED_STATUS).forEach((work) => {
       (work?.affiliations ?? [])
-        .filter((affiliation) => Object.keys(affiliation).length)
+        .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
         .forEach((affiliation) => {
           const ror = getAffiliationRor(affiliation);
           const normalizedAffiliationName = normalizedName(affiliation.name);
@@ -201,6 +202,7 @@ export default function Home() {
       allWorksTmp = data.results
         .map((work) => ({
           ...work,
+          affiliationsSearch: getAffiliationsSearchField(work),
           affiliationsHtml: getAffiliationsHtmlField(work, regexp),
           allIdsHtml: getAllIdsHtmlField(work),
           authorsHtml: getAuthorsHtmlField(work),

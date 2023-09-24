@@ -28,15 +28,25 @@ const getAffiliationRor = (affiliation) => {
 
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
-    .filter((affiliation) => Object.keys(affiliation).length)
+    .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
     .map((affiliation) => affiliation.name.replace(regexp, '<b>$&</b>'))
-    .filter((affiliation) => affiliation.length)
+    .filter((affiliation) => affiliation?.length ?? 0)
     .flat();
   affiliations = [...new Set(affiliations)];
   let html = '<ul>';
   html += affiliations.map((affiliation, index) => `<li key=affilition-${index}>${affiliation}</li>`);
   html += '</ul>';
   return html;
+};
+
+const getAffiliationsSearchField = (rowData) => {
+  let affiliations = (rowData?.affiliations ?? [])
+    .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
+    .map((affiliation) => affiliation.name)
+    .filter((affiliation) => affiliation?.length ?? 0)
+    .flat();
+  affiliations = [...new Set(affiliations)];
+  return affiliations;
 };
 
 const getAllIdsHtmlField = (rowData) => {
@@ -131,6 +141,7 @@ export {
   authorsTemplate,
   getAffiliationRor,
   getAffiliationsHtmlField,
+  getAffiliationsSearchField,
   getAllIdsHtmlField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
