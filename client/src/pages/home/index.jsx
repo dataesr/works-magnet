@@ -151,7 +151,7 @@ export default function Home() {
           const normalizedAffiliationName = normalizedName(affiliation.name);
           if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
             allAffiliationsTmp[normalizedAffiliationName] = {
-              matches: [...new Set(affiliation.name.match(regexp))].length,
+              matches: [...new Set((affiliation?.name?.match(regexp) ?? []).map((name) => normalizedName(name)))].length,
               name: affiliation.name,
               nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
               ror,
