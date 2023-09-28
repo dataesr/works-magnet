@@ -80,6 +80,8 @@ const getAuthorsTooltipField = (rowData) => {
 
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
+const rorTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.rorHtml }} />;
+
 const getBadgeTypeByStatus = (status) => {
   let type;
   switch (status) {
@@ -146,6 +148,7 @@ export {
   getAuthorsHtmlField,
   getAuthorsTooltipField,
   nameTemplate,
+  rorTemplate,
   sourcesFilterTemplate,
   statusFilterTemplate,
   statusTemplate,

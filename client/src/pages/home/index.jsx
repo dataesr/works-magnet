@@ -150,11 +150,18 @@ export default function Home() {
           const ror = getAffiliationRor(affiliation);
           const normalizedAffiliationName = normalizedName(affiliation.name);
           if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
+            // Check matches in affiliation name and ror
+            let matches = `${affiliation?.name} ${ror}`?.match(regexp) ?? [];
+            // Normalize matched strings
+            matches = matches.map((name) => normalizedName(name));
+            // Filter matches as uniq
+            matches = [...new Set(matches)];
             allAffiliationsTmp[normalizedAffiliationName] = {
-              matches: [...new Set((affiliation?.name?.match(regexp) ?? []).map((name) => normalizedName(name)))].length,
+              matches: matches.length,
               name: affiliation.name,
               nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
               ror,
+              rorHtml: ror?.replace(regexp, '<b>$&</b>'),
               status: TO_BE_DECIDED_STATUS,
               works: [],
             };
