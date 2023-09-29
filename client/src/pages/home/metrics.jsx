@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 const {
   VITE_BSO_SIZE,
+  VITE_BSO_MAX_SIZE,
   VITE_OPENALEX_SIZE,
 } = import.meta.env;
 
@@ -23,7 +24,7 @@ export default function Metrics({ data }) {
     <aside className="jauges">
       {`${totalBso} works in the French OSM`}
       <div className="jauge jauge-totBso" style={{ width: `${percentageBso}%` }} />
-      {`${totalCollectedBso} works collected from the French OSM (max ${VITE_BSO_SIZE})`}
+      {`${totalCollectedBso} works collected from the French OSM (max ${VITE_BSO_MAX_SIZE})`}
       <div className="jauge jauge-collectedBso" style={{ width: `${percentageCollectedBso}%` }} />
       {`${totalOpenAlex} works in OpenAlex`}
       <div className="jauge jauge-totOpenAlex" style={{ width: `${percentageOpenAlex}%` }} />

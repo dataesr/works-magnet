@@ -1,5 +1,8 @@
 const {
   VITE_BSO_AUTH,
+  VITE_BSO_INDICES,
+  VITE_BSO_MAX_SIZE,
+  VITE_BSO_PIT_KEEP_ALIVE,
   VITE_BSO_SIZE,
   VITE_BSO_URL,
   VITE_OPENALEX_PER_PAGE,
@@ -9,7 +12,7 @@ const {
 
 const VITE_OPENALEX_MAX_PAGE = Math.floor(VITE_OPENALEX_SIZE / VITE_OPENALEX_PER_PAGE);
 
-const getBsoQuery = (options) => {
+const getBsoQuery = (options, pit, searchAfter) => {
   const query = { size: VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   const affiliationsFields = ['affiliations.grid', 'affiliations.name', 'affiliations.rnsr', 'affiliations.ror', 'affiliations.structId', 'affiliations.viaf'];
   options.affiliations.forEach((affiliation) => {
@@ -37,6 +40,14 @@ const getBsoQuery = (options) => {
   query.query.bool.filter.push({ terms: { 'external_ids.id_type': options.dataIdentifiers } });
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'title', 'year'];
+  query.sort = ['_shard_doc'];
+  if (pit) {
+    query.pit = { id: pit, keep_alive: VITE_BSO_PIT_KEEP_ALIVE };
+  }
+  if (searchAfter) {
+    query.search_after = searchAfter;
+    query.track_total_hits = false;
+  }
   return query;
 };
 
@@ -44,6 +55,7 @@ const getBsoCount = (options) => {
   const body = getBsoQuery(options);
   delete body._source;
   delete body.size;
+  delete body.sort;
   const params = {
     method: 'POST',
     body: JSON.stringify(body),
@@ -59,10 +71,15 @@ const getBsoCount = (options) => {
     });
 };
 
-const getBsoWorks = (options) => {
+const getBsoWorks = async (options, pit, searchAfter, allResults = []) => {
+  if (!pit) {
+    const response = await fetch(`${VITE_BSO_URL}/${VITE_BSO_INDICES}/_pit?keep_alive=${VITE_BSO_PIT_KEEP_ALIVE}`, { method: 'POST', headers: { Authorization: VITE_BSO_AUTH } });
+    // eslint-disable-next-line no-param-reassign
+    pit = (await response.json()).id;
+  }
   const params = {
     method: 'POST',
-    body: JSON.stringify(getBsoQuery(options)),
+    body: JSON.stringify(getBsoQuery(options, pit, searchAfter)),
     headers: {
       'content-type': 'application/json',
       Authorization: VITE_BSO_AUTH,
@@ -73,20 +90,33 @@ const getBsoWorks = (options) => {
       if (response.ok) return response.json();
       return 'Oops... BSO API request did not work';
     })
-    .then((response) => ({
-      datasource: 'bso',
-      total: response?.hits?.total?.value ?? 0,
-      results: (response?.hits?.hits ?? []).map((result) => ({
+    .then((response) => {
+      const hits = response?.hits?.hits ?? [];
+      // eslint-disable-next-line no-param-reassign
+      allResults = allResults.concat(hits.map((result) => ({
         ...result._source,
-        // Filter ids by uniq values
+        // Filter ids on uniq values
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: result._source?.authors ?? [],
         datasource: 'bso',
         id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
         original: result,
         type: result._source?.genre_raw ?? result._source.genre,
-      })),
-    }));
+      })));
+      if (hits.length > 0 && (VITE_BSO_MAX_SIZE === 0 || allResults.length < VITE_BSO_MAX_SIZE)) {
+        // eslint-disable-next-line no-param-reassign
+        searchAfter = hits.at('-1').sort;
+        return getBsoWorks(options, pit, searchAfter, allResults);
+      }
+      if (pit) {
+        fetch(`${VITE_BSO_URL}/_pit`, { method: 'DELETE', headers: { Authorization: VITE_BSO_AUTH, 'Content-type': 'application/json' }, body: JSON.stringify({ id: pit }) });
+      }
+      return ({
+        datasource: 'bso',
+        total: response?.hits?.total?.value ?? 0,
+        results: allResults,
+      });
+    });
 };
 
 const getIdLink = (type, id) => {
