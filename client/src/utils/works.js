@@ -103,7 +103,7 @@ const getBsoWorks = async (options, pit, searchAfter, allResults = []) => {
         original: result,
         type: result._source?.genre_raw ?? result._source.genre,
       })));
-      if (hits.length > 0 && (VITE_BSO_MAX_SIZE === 0 || allResults.length < VITE_BSO_MAX_SIZE)) {
+      if (hits.length > 0 && (Number(VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(VITE_BSO_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
         return getBsoWorks(options, pit, searchAfter, allResults);
