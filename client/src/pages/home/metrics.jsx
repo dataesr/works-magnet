@@ -10,7 +10,7 @@ const {
 export default function Metrics({ data }) {
   const totalBso = data?.total?.bso || 0;
   const totalOpenAlex = data?.total?.openalex || 0;
-  const totalCollectedBso = Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE);
+  const totalCollectedBso = Number(VITE_BSO_MAX_SIZE) === 0 ? data?.total?.bso ?? 0 : Math.min(data?.total?.bso ?? 0, VITE_BSO_SIZE);
   const totalCollectedOpenAlex = Math.min(data?.total?.openalex ?? 0, VITE_OPENALEX_SIZE);
   const totalDeduplicated = data?.total?.deduplicated;
   const grandMax = Math.max(totalBso, totalOpenAlex, totalDeduplicated);
@@ -24,7 +24,8 @@ export default function Metrics({ data }) {
     <aside className="jauges">
       {`${totalBso} works in the French OSM`}
       <div className="jauge jauge-totBso" style={{ width: `${percentageBso}%` }} />
-      {`${totalCollectedBso} works collected from the French OSM (max ${VITE_BSO_MAX_SIZE})`}
+      {`${totalCollectedBso} works collected from the French OSM `}
+      {Number(VITE_BSO_MAX_SIZE) === 0 ? '(all of them)' : `(max ${VITE_BSO_MAX_SIZE})`}
       <div className="jauge jauge-collectedBso" style={{ width: `${percentageCollectedBso}%` }} />
       {`${totalOpenAlex} works in OpenAlex`}
       <div className="jauge jauge-totOpenAlex" style={{ width: `${percentageOpenAlex}%` }} />

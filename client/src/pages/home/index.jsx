@@ -88,7 +88,7 @@ const getData = async (options) => {
     data.total[work.datasource] = work.total;
   });
   // Correct BSO total if maximum is reached
-  if (Number(data.total.bso) === Number(VITE_BSO_MAX_SIZE)) {
+  if ((Number(data.total.bso) === 0) || (Number(data.total.bso) === Number(VITE_BSO_MAX_SIZE))) {
     const { count } = await getBsoCount(options);
     data.total.bso = count;
   }
