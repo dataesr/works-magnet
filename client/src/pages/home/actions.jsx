@@ -45,7 +45,7 @@ export default function Actions({
             onClick={() => export2BsoCsv(allWorks)}
             size="sm"
           >
-            Create export file
+            Export BSO
           </Button>
         </Col>
       </Row>
