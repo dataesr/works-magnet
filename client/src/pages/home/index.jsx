@@ -55,21 +55,18 @@ const getRorAffiliations = (affiliations) => {
 const getData = async (options) => {
   const promises = [getBsoPublications({ options, index: VITE_BSO_PUBLICATIONS_INDEX })];
   const { notRorAffiliations, rorAffiliations } = getRorAffiliations(options.affiliations);
-  const { notRorAffiliations: notRorAffiliationsToExclude, rorAffiliations: rorAffiliationsToExclude } = getRorAffiliations(options.affiliationsToExclude);
   const { notRorAffiliations: notRorAffiliationsToInclude, rorAffiliations: rorAffiliationsToInclude } = getRorAffiliations(options.affiliationsToInclude);
-  if (notRorAffiliations.length || notRorAffiliationsToExclude.length || notRorAffiliationsToInclude.length) {
+  if (notRorAffiliations.length || notRorAffiliationsToInclude.length) {
     promises.push(getOpenAlexPublications({
       ...options,
       affiliations: notRorAffiliations,
-      affiliationsToExclude: notRorAffiliationsToExclude,
       affiliationsToInclude: notRorAffiliationsToInclude,
     }, false));
   }
-  if (rorAffiliations.length || rorAffiliationsToExclude.length || rorAffiliationsToInclude.length) {
+  if (rorAffiliations.length || rorAffiliationsToInclude.length) {
     promises.push(getOpenAlexPublications({
       ...options,
       affiliations: rorAffiliations,
-      affiliationsToExclude: rorAffiliationsToExclude,
       affiliationsToInclude: rorAffiliationsToInclude,
     }, true));
   }

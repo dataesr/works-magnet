@@ -27,7 +27,6 @@ export default function Filters({ sendQuery }) {
     if (searchParams.size === 0) {
       setSearchParams({
         affiliations: [],
-        affiliationsToExclude: [],
         affiliationsToInclude: [],
         dataIdentifiers: identifiers,
         datasources: sources.map((source) => source.key),
@@ -38,7 +37,6 @@ export default function Filters({ sendQuery }) {
     } else {
       setCurrentSearchParams({
         affiliations: searchParams.getAll('affiliations'),
-        affiliationsToExclude: searchParams.getAll('affiliationsToExclude'),
         affiliationsToInclude: searchParams.getAll('affiliationsToInclude'),
         dataIdentifiers: searchParams.getAll('dataIdentifiers'),
         datasources: searchParams.getAll('datasources'),
@@ -113,28 +111,16 @@ export default function Filters({ sendQuery }) {
       </Row>
       {
         currentSearchParams.moreOptions && (
-          <>
-            <Row gutters>
-              <Col n="5">
-                <TagInput
-                  hint="All these affiliations must be present, AND operator"
-                  label="Affiliations to include mandatory"
-                  onTagsChange={(affiliationsToInclude) => setSearchParams({ ...currentSearchParams, affiliationsToInclude })}
-                  tags={currentSearchParams.affiliationsToInclude}
-                />
-              </Col>
-            </Row>
-            <Row gutters>
-              <Col n="5">
-                <TagInput
-                  hint="None of these affiliations must be present, AND operator"
-                  label="Affiliations to exclude"
-                  onTagsChange={(affiliationsToExclude) => setSearchParams({ ...currentSearchParams, affiliationsToExclude })}
-                  tags={currentSearchParams.affiliationsToExclude}
-                />
-              </Col>
-            </Row>
-          </>
+          <Row gutters>
+            <Col n="5">
+              <TagInput
+                hint="All these affiliations must be present, AND operator"
+                label="Affiliations to include mandatory"
+                onTagsChange={(affiliationsToInclude) => setSearchParams({ ...currentSearchParams, affiliationsToInclude })}
+                tags={currentSearchParams.affiliationsToInclude}
+              />
+            </Col>
+          </Row>
         )
       }
       <Row gutters alignItems="bottom">
