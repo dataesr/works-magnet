@@ -10,7 +10,7 @@ import Actions from './actions';
 import Filters from './filters';
 import Metrics from './metrics';
 import AffiliationsView from './views/affiliations';
-import PublicationsView from './views/publications';
+import WorksView from './views/works';
 import Gauge from '../../components/gauge';
 import { PageSpinner } from '../../components/spinner';
 import {
@@ -26,12 +26,16 @@ import {
   getBsoPublications,
   getOpenAlexPublications,
   mergePublications,
-} from '../../utils/publications';
+} from '../../utils/works';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
-const { VITE_BSO_MAX_SIZE } = import.meta.env;
+const {
+  VITE_BSO_MAX_SIZE,
+  VITE_BSO_DATASETS_INDEX,
+  VITE_BSO_PUBLICATIONS_INDEX,
+} = import.meta.env;
 
 const TO_BE_DECIDED_STATUS = 'to be decided';
 const VALIDATED_STATUS = 'validated';
@@ -49,43 +53,37 @@ const getRorAffiliations = (affiliations) => {
 };
 
 const getData = async (options) => {
-  const promises = options?.datasources.map((datasource) => {
-    switch (datasource) {
-      case 'bso':
-        return getBsoPublications(options);
-      case 'openalex':
-        const { notRorAffiliations, rorAffiliations } = getRorAffiliations(options.affiliations);
-        const { notRorAffiliations: notRorAffiliationsToExclude, rorAffiliations: rorAffiliationsToExclude } = getRorAffiliations(options.affiliationsToExclude);
-        const { notRorAffiliations: notRorAffiliationsToInclude, rorAffiliations: rorAffiliationsToInclude } = getRorAffiliations(options.affiliationsToInclude);
-        const p = [];
-        if (notRorAffiliations.length || notRorAffiliationsToExclude.length || notRorAffiliationsToInclude.length) {
-          p.push(getOpenAlexPublications({
-            ...options,
-            affiliations: notRorAffiliations,
-            affiliationsToExclude: notRorAffiliationsToExclude,
-            affiliationsToInclude: notRorAffiliationsToInclude,
-          }, false));
-        }
-        if (rorAffiliations.length || rorAffiliationsToExclude.length || rorAffiliationsToInclude.length) {
-          p.push(getOpenAlexPublications({
-            ...options,
-            affiliations: rorAffiliations,
-            affiliationsToExclude: rorAffiliationsToExclude,
-            affiliationsToInclude: rorAffiliationsToInclude,
-          }, true));
-        }
-        return p;
-      default:
-        // eslint-disable-next-line no-console
-        console.error(`Datasoure : ${datasource} is badly formatted and should be one of BSO or OpenAlex`);
-        return Promise.resolve();
-    }
-  });
+  const promises = [getBsoPublications({ options, index: VITE_BSO_PUBLICATIONS_INDEX })];
+  const { notRorAffiliations, rorAffiliations } = getRorAffiliations(options.affiliations);
+  const { notRorAffiliations: notRorAffiliationsToExclude, rorAffiliations: rorAffiliationsToExclude } = getRorAffiliations(options.affiliationsToExclude);
+  const { notRorAffiliations: notRorAffiliationsToInclude, rorAffiliations: rorAffiliationsToInclude } = getRorAffiliations(options.affiliationsToInclude);
+  if (notRorAffiliations.length || notRorAffiliationsToExclude.length || notRorAffiliationsToInclude.length) {
+    promises.push(getOpenAlexPublications({
+      ...options,
+      affiliations: notRorAffiliations,
+      affiliationsToExclude: notRorAffiliationsToExclude,
+      affiliationsToInclude: notRorAffiliationsToInclude,
+    }, false));
+  }
+  if (rorAffiliations.length || rorAffiliationsToExclude.length || rorAffiliationsToInclude.length) {
+    promises.push(getOpenAlexPublications({
+      ...options,
+      affiliations: rorAffiliations,
+      affiliationsToExclude: rorAffiliationsToExclude,
+      affiliationsToInclude: rorAffiliationsToInclude,
+    }, true));
+  }
   const publications = await Promise.all(promises.flat());
-  const data = { results: [], total: {} };
+  const promises2 = [getBsoPublications({ options, index: VITE_BSO_DATASETS_INDEX })];
+  const datasets = await Promise.all(promises2.flat());
+  const data = { datasets: [], publications: [], total: {} };
   publications.forEach((publication) => {
-    data.results = [...data.results, ...publication.results];
+    data.publications = [...data.publications, ...publication.results];
     data.total[publication.datasource] = publication.total;
+  });
+  datasets.forEach((dataset) => {
+    data.datasets = [...data.datasets, ...dataset.results];
+    data.total.dataset = dataset.total;
   });
   // Correct BSO total if maximum is reached
   if ((Number(data.total.bso) === 0) || (Number(data.total.bso) === Number(VITE_BSO_MAX_SIZE))) {
@@ -93,9 +91,9 @@ const getData = async (options) => {
     data.total.bso = count;
   }
   // Deduplicate publications by DOI or by hal_id
-  data.total.all = data.results.length;
+  data.total.all = data.publications.length;
   const deduplicatedPublications = {};
-  data.results.forEach((publication) => {
+  data.publications.forEach((publication) => {
     const id = publication?.doi ?? publication?.primary_location?.landing_page_url?.split('/')?.pop() ?? publication.id;
     if (!Object.keys(deduplicatedPublications).includes(id)) {
       deduplicatedPublications[id] = publication;
@@ -103,18 +101,20 @@ const getData = async (options) => {
       deduplicatedPublications[id] = mergePublications(deduplicatedPublications[id], publication);
     }
   });
-  data.results = Object.values(deduplicatedPublications);
+  data.publications = Object.values(deduplicatedPublications);
   data.total.deduplicated = Object.values(deduplicatedPublications).length;
   return data;
 };
 
 export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
+  const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
+  const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [affiliationsNotice, setAffiliationsNotice] = useState(true);
   const { data, isFetching, refetch } = useQuery({
@@ -203,19 +203,30 @@ export default function Home() {
   }, [options?.affiliations]);
 
   useEffect(() => {
+    let allDatasetsTmp = [];
     let allPublicationsTmp = [];
     if (data) {
-      allPublicationsTmp = data.results
+      allDatasetsTmp = data.datasets.map((dataset) => ({
+        ...dataset,
+        affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
+        affiliationsSearch: getAffiliationsSearchField(dataset),
+        allIdsHtml: getAllIdsHtmlField(dataset),
+        authorsHtml: getAuthorsHtmlField(dataset),
+        authorsTooltip: getAuthorsTooltipField(dataset),
+        status: TO_BE_DECIDED_STATUS,
+      }));
+      allPublicationsTmp = data.publications
         .map((publication) => ({
           ...publication,
-          affiliationsSearch: getAffiliationsSearchField(publication),
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
+          affiliationsSearch: getAffiliationsSearchField(publication),
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
           authorsTooltip: getAuthorsTooltipField(publication),
           status: TO_BE_DECIDED_STATUS,
         }));
     }
+    setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
   }, [data, regexp]);
 
@@ -280,37 +291,37 @@ export default function Home() {
     </>
   );
 
-  const renderPublicationsButtons = () => (
+  const renderWorksButtons = (selected) => (
     <>
       <Button
         className="fr-mr-1w btn-keep"
-        disabled={!selectedPublications.length}
+        disabled={!selected.length}
         icon="ri-checkbox-circle-line"
-        onClick={() => tagPublications(selectedPublications, VALIDATED_STATUS)}
+        onClick={() => tagPublications(selected, VALIDATED_STATUS)}
         size="sm"
       >
         Validate
-        {` (${selectedPublications.length})`}
+        {` (${selected.length})`}
       </Button>
       <Button
         className="fr-mr-1w btn-hide"
-        disabled={!selectedPublications.length}
+        disabled={!selected.length}
         icon="ri-indeterminate-circle-line"
-        onClick={() => tagPublications(selectedPublications, EXCLUDED_STATUS)}
+        onClick={() => tagPublications(selected, EXCLUDED_STATUS)}
         size="sm"
       >
         Exclude
-        {` (${selectedPublications.length})`}
+        {` (${selected.length})`}
       </Button>
       <Button
         className="fr-mb-1w btn-reset"
-        disabled={!selectedPublications.length}
+        disabled={!selected.length}
         icon="ri-reply-fill"
-        onClick={() => tagPublications(selectedPublications, TO_BE_DECIDED_STATUS)}
+        onClick={() => tagPublications(selected, TO_BE_DECIDED_STATUS)}
         size="sm"
       >
         Reset status
-        {` (${selectedPublications.length})`}
+        {` (${selected.length})`}
       </Button>
     </>
   );
@@ -346,7 +357,7 @@ export default function Home() {
                   <Notice
                     className="fr-m-1w"
                     onClose={() => { setAffiliationsNotice(false); }}
-                    title="All the affiliations of the publications found in OpenAlex and French OSM are listed below. A filter can be applied to view only the affiliations containing at least one of the matching query input (this filter is applied by default but can be removed)"
+                    title="All the affiliations of the works found in the French OSM and OpenAlex are listed below. A filter is applied to view only the affiliations containing at least one of the matching query input."
                   />
                 </Col>
               </Row>
@@ -377,7 +388,7 @@ export default function Home() {
           <Tab label={`Publications (${allPublications.filter((publication) => publication.status === VALIDATED_STATUS).length} / ${allPublications.length})`}>
             <Row>
               <Col>
-                {renderPublicationsButtons()}
+                {renderWorksButtons(selectedPublications)}
               </Col>
               <Col>
                 <Gauge
@@ -393,7 +404,7 @@ export default function Home() {
               <Col>
                 {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
                 {!isFetching && !isLoading && (
-                  <PublicationsView
+                  <WorksView
                     allPublications={allPublications}
                     selectedPublications={selectedPublications}
                     setSelectedPublications={setSelectedPublications}
@@ -403,7 +414,40 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {renderPublicationsButtons()}
+                {renderWorksButtons(selectedPublications)}
+              </Col>
+            </Row>
+          </Tab>
+          <Tab label={`Datasets (${allDatasets.filter((dataset) => dataset.status === VALIDATED_STATUS).length} / ${allDatasets.length})`}>
+            <Row>
+              <Col>
+                {renderWorksButtons(selectedDatasets)}
+              </Col>
+              <Col>
+                <Gauge
+                  data={[
+                    { label: 'French OSM', color: '#334476', value: allDatasets.filter((dataset) => dataset.datasource === 'bso').length },
+                    { label: 'OpenAlex', color: '#22a498', value: allDatasets.filter((dataset) => dataset.datasource === 'openalex').length },
+                    { label: 'Both', color: '#2faf41a4', value: allDatasets.filter((dataset) => dataset.datasource === 'bso, openalex').length },
+                  ]}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
+                {!isFetching && !isLoading && (
+                  <WorksView
+                    allPublications={allDatasets}
+                    selectedPublications={selectedDatasets}
+                    setSelectedPublications={setSelectedDatasets}
+                  />
+                )}
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                {renderWorksButtons(selectedDatasets)}
               </Col>
             </Row>
           </Tab>

@@ -12,7 +12,7 @@ import {
   typeFilterTemplate,
 } from '../../../utils/templates';
 
-export default function PublicationsView({
+export default function WorksView({
   allPublications,
   selectedPublications,
   setSelectedPublications,
@@ -49,7 +49,7 @@ export default function PublicationsView({
   );
 }
 
-PublicationsView.propTypes = {
+WorksView.propTypes = {
   allPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,

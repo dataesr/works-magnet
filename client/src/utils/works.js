@@ -65,9 +65,9 @@ const getBsoCount = (options) => {
     });
 };
 
-const getBsoPublications = async (options, pit, searchAfter, allResults = []) => {
+const getBsoWorks = async ({ allResults = [], index = VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
   if (!pit) {
-    const response = await fetch(`${VITE_BSO_URL}/${VITE_BSO_PUBLICATIONS_INDEX}/_pit?keep_alive=${VITE_BSO_PIT_KEEP_ALIVE}`, { method: 'POST', headers: { Authorization: VITE_BSO_AUTH } });
+    const response = await fetch(`${VITE_BSO_URL}/${index}/_pit?keep_alive=${VITE_BSO_PIT_KEEP_ALIVE}`, { method: 'POST', headers: { Authorization: VITE_BSO_AUTH } });
     // eslint-disable-next-line no-param-reassign
     pit = (await response.json()).id;
   }
@@ -100,7 +100,7 @@ const getBsoPublications = async (options, pit, searchAfter, allResults = []) =>
       if (hits.length > 0 && (Number(VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(VITE_BSO_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
-        return getBsoPublications(options, pit, searchAfter, allResults);
+        return getBsoWorks({ allResults, index, options, pit, searchAfter });
       }
       if (pit) {
         fetch(`${VITE_BSO_URL}/_pit`, { method: 'DELETE', headers: { Authorization: VITE_BSO_AUTH, 'Content-type': 'application/json' }, body: JSON.stringify({ id: pit }) });
@@ -252,7 +252,7 @@ const getOpenAlexPublications = (options, isRor = false, page = '1', previousRes
         original: result,
         title: result?.display_name ?? result.title,
         type: getTypeFromOpenAlex(result.type),
-        year: result?.publication_year ?? result.year,
+        year: Number(result?.publication_year) ?? Number(result.year),
       })),
     }));
 };
@@ -274,7 +274,7 @@ const mergePublications = (publi1, publi2) => {
 
 export {
   getBsoCount,
-  getBsoPublications,
+  getBsoWorks as getBsoPublications,
   getIdLink,
   getOpenAlexPublications,
   mergePublications,
