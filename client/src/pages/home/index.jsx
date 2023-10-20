@@ -149,8 +149,8 @@ export default function Home() {
           const ror = getAffiliationRor(affiliation);
           const normalizedAffiliationName = normalizedName(affiliation.name);
           if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
-            // Check matches in affiliation name and ror
-            let matches = `${affiliation?.name} ${ror}`?.match(regexp) ?? [];
+            // Check matches in affiliation name
+            let matches = `${affiliation?.name}`?.match(regexp) ?? [];
             // Normalize matched strings
             matches = matches.map((name) => normalizedName(name));
             // Filter matches as uniq

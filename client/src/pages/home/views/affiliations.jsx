@@ -4,7 +4,6 @@ import { DataTable } from 'primereact/datatable';
 
 import {
   nameTemplate,
-  rorTemplate,
   statusFilterTemplate,
   statusTemplate,
 } from '../../../utils/templates';
@@ -40,7 +39,6 @@ export default function AffiliationsView({
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} />
       <Column field="nameHtml" header="Affiliation" body={nameTemplate} filter filterField="name" filterMatchMode="contains" filterPlaceholder="Search by affiliation" />
-      <Column field="rorHtml" header="RoR" body={rorTemplate} filter filterField="ror" filterMatchMode="contains" filterPlaceholder="Search by RoR" />
       <Column field="worksNumber" header="Number of works" sortable />
       <Column field="matches" header="Number of matches" sortable />
     </DataTable>
