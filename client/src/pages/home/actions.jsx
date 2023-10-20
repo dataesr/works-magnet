@@ -27,7 +27,7 @@ export default function Actions({
             secondary
             size="sm"
           >
-            Restore from file
+            Restore session
           </Button>
           <Button
             disabled={!allWorks.length}
