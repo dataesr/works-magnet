@@ -2,7 +2,7 @@
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
-import { Button, Checkbox, Col, Container, Notice, Row, Tab, Tabs } from '@dataesr/react-dsfr';
+import { Button, Col, Container, Notice, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
@@ -111,7 +111,6 @@ const getData = async (options) => {
 export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allWorks, setAllWorks] = useState([]);
-  const [filterAffiliations, setFilterAffiliations] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
@@ -340,7 +339,7 @@ export default function Home() {
           setAllWorks={setAllWorks}
         />
         <Tabs defaultActiveTab={0}>
-          <Tab label={`Affiliations (${filterAffiliations ? allAffiliations.filter((affiliation) => !!affiliation.matches).length : allAffiliations.length})`}>
+          <Tab label={`Affiliations (${allAffiliations.filter((affiliation) => !!affiliation.matches).length})`}>
             {affiliationsNotice && (
               <Row>
                 <Col n="12">
@@ -356,21 +355,13 @@ export default function Home() {
               <Col>
                 {renderAffiliationsButtons()}
               </Col>
-              <Col className="text-right" n="3">
-                <Checkbox
-                  checked={filterAffiliations}
-                  label="Filter on matching affiliations"
-                  onChange={() => setFilterAffiliations(!filterAffiliations)}
-                  size="sm"
-                />
-              </Col>
             </Row>
             <Row>
               <Col>
                 {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
                 {!isFetching && !isLoading && (
                   <AffiliationsView
-                    allAffiliations={filterAffiliations ? allAffiliations.filter((affiliation) => !!affiliation.matches) : allAffiliations}
+                    allAffiliations={allAffiliations.filter((affiliation) => !!affiliation.matches)}
                     selectedAffiliations={selectedAffiliations}
                     setSelectedAffiliations={setSelectedAffiliations}
                   />
