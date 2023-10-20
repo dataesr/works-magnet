@@ -118,7 +118,7 @@ export default function Filters({ sendQuery }) {
         </Col>
         <Col n="3">
           {
-            currentSearchParams.datasources.includes('bso') && (
+            currentSearchParams?.datasources && currentSearchParams.datasources.includes('bso') && (
               <>
                 BSO Identifiers:
                 <CheckboxGroup isInline>
