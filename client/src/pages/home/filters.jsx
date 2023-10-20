@@ -27,7 +27,6 @@ export default function Filters({ sendQuery }) {
     if (searchParams.size === 0) {
       setSearchParams({
         affiliations: [],
-        affiliationsToInclude: [],
         dataIdentifiers: identifiers,
         datasources: sources.map((source) => source.key),
         endYear: '2021',
@@ -37,7 +36,6 @@ export default function Filters({ sendQuery }) {
     } else {
       setCurrentSearchParams({
         affiliations: searchParams.getAll('affiliations'),
-        affiliationsToInclude: searchParams.getAll('affiliationsToInclude'),
         dataIdentifiers: searchParams.getAll('dataIdentifiers'),
         datasources: searchParams.getAll('datasources'),
         endYear: searchParams.get('endYear'),
@@ -109,20 +107,6 @@ export default function Filters({ sendQuery }) {
           </CheckboxGroup>
         </Col>
       </Row>
-      {
-        currentSearchParams.moreOptions && (
-          <Row gutters>
-            <Col n="5">
-              <TagInput
-                hint="All these affiliations must be present, AND operator"
-                label="Affiliations to include mandatory"
-                onTagsChange={(affiliationsToInclude) => setSearchParams({ ...currentSearchParams, affiliationsToInclude })}
-                tags={currentSearchParams.affiliationsToInclude}
-              />
-            </Col>
-          </Row>
-        )
-      }
       <Row gutters alignItems="bottom">
         <Col n="5">
           <Row gutters>

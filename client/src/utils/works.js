@@ -18,9 +18,6 @@ const getBsoQuery = (options, pit, searchAfter) => {
   options.affiliations.forEach((affiliation) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
   });
-  options.affiliationsToInclude.forEach((affiliationToInclude) => {
-    query.query.bool.must.push({ multi_match: { fields: affiliationsFields, query: `"${affiliationToInclude}"`, operator: 'and' } });
-  });
   if (options?.startYear && options?.endYear) {
     query.query.bool.filter.push({ range: { year: { gte: options.startYear, lte: options.endYear } } });
   } else if (options?.startYear) {
@@ -209,15 +206,13 @@ const getOpenAlexPublications = (options, isRor = false, page = '1', previousRes
   } else if (options?.endYear) {
     url += `,publication_year:-${Number(options.endYear)}`;
   }
-  if (options.affiliations.length || options.affiliationsToInclude.length) {
+  if (options.affiliations.length) {
     if (isRor) {
       url += '';
       if (options.affiliations.length) url += `,institutions.ror:${options.affiliations.join('|')}`;
-      if (options.affiliationsToInclude.length) url += options.affiliationsToInclude.map((affiliation) => `,institutions.ror:${affiliation}`).join('');
     } else {
       url += ',raw_affiliation_string.search:';
       if (options.affiliations.length) url += `(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
-      if (options.affiliationsToInclude.length) url += `${options.affiliationsToInclude.map((aff) => ` AND "${aff}"`).join('')}`;
     }
   }
   url += '&select=authorships,display_name,doi,id,ids,publication_year,type';
