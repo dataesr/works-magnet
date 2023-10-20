@@ -22,16 +22,16 @@ export default function Metrics({ data }) {
 
   return (
     <aside className="jauges">
-      {`${totalBso} works in the French OSM`}
+      {`${totalBso} publications in the French OSM`}
       <div className="jauge jauge-totBso" style={{ width: `${percentageBso}%` }} />
-      {`${totalCollectedBso} works collected from the French OSM `}
+      {`${totalCollectedBso} publications collected from the French OSM `}
       {Number(VITE_BSO_MAX_SIZE) === 0 ? '(all of them)' : `(max ${VITE_BSO_MAX_SIZE})`}
       <div className="jauge jauge-collectedBso" style={{ width: `${percentageCollectedBso}%` }} />
-      {`${totalOpenAlex} works in OpenAlex`}
+      {`${totalOpenAlex} publications in OpenAlex`}
       <div className="jauge jauge-totOpenAlex" style={{ width: `${percentageOpenAlex}%` }} />
-      {`${totalCollectedOpenAlex} works collected from OpenAlex (max ${VITE_OPENALEX_SIZE})`}
+      {`${totalCollectedOpenAlex} publications collected from OpenAlex (max ${VITE_OPENALEX_SIZE})`}
       <div className="jauge jauge-collectedOpenAlex" style={{ width: `${percentageCollectedOpenAlex}%` }} />
-      {`${totalDeduplicated} works after deduplication`}
+      {`${totalDeduplicated} publications after deduplication`}
       <div className="jauge jauge-deduplicated" style={{ width: `${percentageDeduplicated}%` }} />
 
     </aside>

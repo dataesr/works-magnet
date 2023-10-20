@@ -1,13 +1,13 @@
-const export2BsoCsv = (allWorks) => {
+const export2BsoCsv = (allPublications) => {
   const csvHeader = ['doi', 'hal_id', 'nnt_id'].join(';');
-  const keptWorks = allWorks.filter((work) => work.status === 'validated');
+  const validatedPublications = allPublications.filter((publication) => publication.status === 'validated');
   const getValue = (row, idType) => {
     if (!row) return '';
     if (row.doi && idType === 'doi') return row.doi;
     return row.allIds.find((id) => id.id_type === idType)?.id_value || '';
   };
 
-  const csvContent = keptWorks.map((row) => {
+  const csvContent = validatedPublications.map((row) => {
     const doi = getValue(row, 'doi');
     const halId = getValue(row, 'hal_id');
     const nntId = getValue(row, 'nnt_id');
@@ -27,23 +27,23 @@ const export2BsoCsv = (allWorks) => {
   document.body.removeChild(link);
 };
 
-const export2json = (allAffiliations, allWorks, options) => {
+const export2json = (allAffiliations, allPublications, options) => {
   const link = document.createElement('a');
-  link.href = URL.createObjectURL(new Blob([JSON.stringify({ allAffiliations, allWorks, options })], { type: 'application/json' }));
+  link.href = URL.createObjectURL(new Blob([JSON.stringify({ allAffiliations, allPublications, options })], { type: 'application/json' }));
   link.setAttribute('download', 'works-finder.json');
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
-const importJson = (e, setAllAffiliations, setSearchParams, setAllWorks) => {
+const importJson = (e, setAllAffiliations, setSearchParams, setAllPublications) => {
   const fileReader = new FileReader();
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {
-    const { allAffiliations, allWorks, options } = JSON.parse(f.target.result);
+    const { allAffiliations, allPublications, options } = JSON.parse(f.target.result);
     options.restoreFromFile = true;
     setAllAffiliations(allAffiliations);
-    setAllWorks(allWorks);
+    setAllPublications(allPublications);
     setSearchParams(options);
   };
 };

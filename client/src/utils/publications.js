@@ -1,8 +1,8 @@
 const {
   VITE_BSO_AUTH,
-  VITE_BSO_INDICES,
   VITE_BSO_MAX_SIZE,
   VITE_BSO_PIT_KEEP_ALIVE,
+  VITE_BSO_PUBLICATIONS_INDEX,
   VITE_BSO_SIZE,
   VITE_BSO_URL,
   VITE_OPENALEX_PER_PAGE,
@@ -65,9 +65,9 @@ const getBsoCount = (options) => {
     });
 };
 
-const getBsoWorks = async (options, pit, searchAfter, allResults = []) => {
+const getBsoPublications = async (options, pit, searchAfter, allResults = []) => {
   if (!pit) {
-    const response = await fetch(`${VITE_BSO_URL}/${VITE_BSO_INDICES}/_pit?keep_alive=${VITE_BSO_PIT_KEEP_ALIVE}`, { method: 'POST', headers: { Authorization: VITE_BSO_AUTH } });
+    const response = await fetch(`${VITE_BSO_URL}/${VITE_BSO_PUBLICATIONS_INDEX}/_pit?keep_alive=${VITE_BSO_PIT_KEEP_ALIVE}`, { method: 'POST', headers: { Authorization: VITE_BSO_AUTH } });
     // eslint-disable-next-line no-param-reassign
     pit = (await response.json()).id;
   }
@@ -100,7 +100,7 @@ const getBsoWorks = async (options, pit, searchAfter, allResults = []) => {
       if (hits.length > 0 && (Number(VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(VITE_BSO_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
-        return getBsoWorks(options, pit, searchAfter, allResults);
+        return getBsoPublications(options, pit, searchAfter, allResults);
       }
       if (pit) {
         fetch(`${VITE_BSO_URL}/_pit`, { method: 'DELETE', headers: { Authorization: VITE_BSO_AUTH, 'Content-type': 'application/json' }, body: JSON.stringify({ id: pit }) });
@@ -144,9 +144,9 @@ const getIdValue = (id) => (
     : null
 );
 
-const getAffilitionsFromOpenAlex = (work) => {
-  if (work?.authorships) {
-    return work?.authorships?.map((author) => {
+const getAffilitionsFromOpenAlex = (publication) => {
+  if (publication?.authorships) {
+    return publication?.authorships?.map((author) => {
       if (author.raw_affiliation_strings.length === 1) {
         const affiliation = { name: author.raw_affiliation_strings[0] };
         if (author?.institutions?.[0]?.ror) affiliation.ror = author.institutions[0].ror;
@@ -155,7 +155,7 @@ const getAffilitionsFromOpenAlex = (work) => {
       return author.raw_affiliation_strings.map((name) => ({ name }));
     }).flat();
   }
-  return work.affiliations;
+  return publication.affiliations;
 };
 
 const getTypeFromOpenAlex = (type) => {
@@ -202,7 +202,7 @@ const getTypeFromOpenAlex = (type) => {
   return newType;
 };
 
-const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse = []) => {
+const getOpenAlexPublications = (options, isRor = false, page = '1', previousResponse = []) => {
   let url = `${VITE_OPENALEX_URL}per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (options?.startYear && options?.endYear) {
@@ -235,7 +235,7 @@ const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse =
       const results = [...previousResponse, ...response.results];
       const nextPage = Number(page) + 1;
       if (Number(response.results.length) === Number(VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexWorks(options, isRor, nextPage, results);
+        return getOpenAlexPublications(options, isRor, nextPage, results);
       }
       return ({ total: response.meta.count, results });
     })
@@ -257,12 +257,12 @@ const getOpenAlexWorks = (options, isRor = false, page = '1', previousResponse =
     }));
 };
 
-const mergeWorks = (publi1, publi2) => {
-  const priorityWork = [publi1, publi2].some((publi) => publi.datasource === 'bso')
+const mergePublications = (publi1, publi2) => {
+  const priorityPublication = [publi1, publi2].some((publi) => publi.datasource === 'bso')
     ? [publi1, publi2].find((publi) => publi.datasource === 'bso')
     : publi1;
   return ({
-    ...priorityWork,
+    ...priorityPublication,
     affiliations: [...publi1.affiliations, ...publi2.affiliations],
     // Filter allIds by uniq values
     allIds: Object.values([...publi1.allIds, ...publi2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
@@ -274,8 +274,8 @@ const mergeWorks = (publi1, publi2) => {
 
 export {
   getBsoCount,
-  getBsoWorks,
+  getBsoPublications,
   getIdLink,
-  getOpenAlexWorks,
-  mergeWorks,
+  getOpenAlexPublications,
+  mergePublications,
 };

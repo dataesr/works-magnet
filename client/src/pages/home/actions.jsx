@@ -9,10 +9,10 @@ import { export2BsoCsv, export2json, importJson } from '../../utils/file';
 
 export default function Actions({
   allAffiliations,
-  allWorks,
+  allPublications,
   options,
   setAllAffiliations,
-  setAllWorks,
+  setAllPublications,
 }) {
   const [, setSearchParams] = useSearchParams();
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
@@ -30,27 +30,27 @@ export default function Actions({
           >
             Restore session
           </Button>
-          <Tooltip id="restore-session-button" hidden={!allWorks.length}>
+          <Tooltip id="restore-session-button" hidden={!allPublications.length}>
             Restore a previous work from saved file
           </Tooltip>
           <Button
             data-tooltip-id="save-session-button"
-            disabled={!allWorks.length}
+            disabled={!allPublications.length}
             icon="ri-save-line"
-            onClick={() => export2json(allAffiliations, allWorks, options)}
+            onClick={() => export2json(allAffiliations, allPublications, options)}
             size="sm"
           >
             Save session
           </Button>
-          <Tooltip id="save-session-button" hidden={!allWorks.length}>
+          <Tooltip id="save-session-button" hidden={!allPublications.length}>
             Save your ongoing work into a file that could be restored later
           </Tooltip>
         </Col>
         <Col className="text-right">
           <Button
-            disabled={!allWorks.length}
+            disabled={!allPublications.length}
             icon="ri-save-line"
-            onClick={() => export2BsoCsv(allWorks)}
+            onClick={() => export2BsoCsv(allPublications)}
             size="sm"
           >
             Export BSO
@@ -64,7 +64,7 @@ export default function Actions({
               accept=".json"
               hint="Select JSON file to restore from previous state"
               label="JSON file"
-              onChange={(e) => importJson(e, setAllAffiliations, setSearchParams, setAllWorks)}
+              onChange={(e) => importJson(e, setAllAffiliations, setSearchParams, setAllPublications)}
             />
           </Col>
         </Row>
@@ -80,10 +80,10 @@ Actions.propTypes = {
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    works: PropTypes.arrayOf(PropTypes.string).isRequired,
-    worksNumber: PropTypes.number.isRequired,
+    publications: PropTypes.arrayOf(PropTypes.string).isRequired,
+    publicationsNumber: PropTypes.number.isRequired,
   })).isRequired,
-  allWorks: PropTypes.arrayOf(PropTypes.shape({
+  allPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
@@ -93,5 +93,5 @@ Actions.propTypes = {
   })).isRequired,
   options: PropTypes.object.isRequired,
   setAllAffiliations: PropTypes.func.isRequired,
-  setAllWorks: PropTypes.func.isRequired,
+  setAllPublications: PropTypes.func.isRequired,
 };

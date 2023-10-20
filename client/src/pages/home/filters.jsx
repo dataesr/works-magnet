@@ -188,7 +188,7 @@ export default function Filters({ sendQuery }) {
             onClick={checkAndSendQuery}
             size="sm"
           >
-            Search works
+            Search publications
           </Button>
         </Col>
       </Row>

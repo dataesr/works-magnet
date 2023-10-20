@@ -12,10 +12,10 @@ import {
   typeFilterTemplate,
 } from '../../../utils/templates';
 
-export default function WorksView({
-  allWorks,
-  selectedWorks,
-  setSelectedWorks,
+export default function PublicationsView({
+  allPublications,
+  selectedPublications,
+  setSelectedPublications,
 }) {
   return (
     <DataTable
@@ -23,19 +23,19 @@ export default function WorksView({
       dataKey="id"
       filterDisplay="row"
       metaKeySelection={false}
-      onSelectionChange={(e) => setSelectedWorks(e.value)}
+      onSelectionChange={(e) => setSelectedPublications(e.value)}
       paginator
       paginatorPosition="both"
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={50}
       rowsPerPageOptions={[25, 50, 100, 200]}
       scrollable
-      selection={selectedWorks}
+      selection={selectedPublications}
       selectionPageOnly
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}
-      value={allWorks}
+      value={allPublications}
     >
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
@@ -49,8 +49,8 @@ export default function WorksView({
   );
 }
 
-WorksView.propTypes = {
-  allWorks: PropTypes.arrayOf(PropTypes.shape({
+PublicationsView.propTypes = {
+  allPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -59,7 +59,7 @@ WorksView.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  selectedWorks: PropTypes.arrayOf(PropTypes.shape({
+  selectedPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -68,5 +68,5 @@ WorksView.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  setSelectedWorks: PropTypes.func.isRequired,
+  setSelectedPublications: PropTypes.func.isRequired,
 };
