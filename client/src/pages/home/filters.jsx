@@ -30,7 +30,6 @@ export default function Filters({ sendQuery }) {
         dataIdentifiers: identifiers,
         datasources: sources.map((source) => source.key),
         endYear: '2021',
-        moreOptions: false,
         startYear: '2021',
       });
     } else {
@@ -39,7 +38,6 @@ export default function Filters({ sendQuery }) {
         dataIdentifiers: searchParams.getAll('dataIdentifiers'),
         datasources: searchParams.getAll('datasources'),
         endYear: searchParams.get('endYear'),
-        moreOptions: searchParams.get('moreOptions')?.toString() === 'true',
         startYear: searchParams.get('startYear'),
       });
     }
@@ -118,41 +116,29 @@ export default function Filters({ sendQuery }) {
             </Col>
           </Row>
         </Col>
-        {
-          currentSearchParams.moreOptions && (
-            <Col n="3">
-              {
-                currentSearchParams.datasources.includes('bso') && (
-                  <>
-                    BSO Identifiers:
-                    <CheckboxGroup isInline>
-                      {
-                        identifiers.map((identifier) => (
-                          <Checkbox
-                            checked={currentSearchParams.dataIdentifiers.includes(identifier)}
-                            key={identifier}
-                            label={identifier}
-                            onChange={() => onIdentifiersChange(identifier)}
-                            size="sm"
-                          />
-                        ))
-                      }
-                    </CheckboxGroup>
-                  </>
-                )
-              }
-            </Col>
-          )
-        }
+        <Col n="3">
+          {
+            currentSearchParams.datasources.includes('bso') && (
+              <>
+                BSO Identifiers:
+                <CheckboxGroup isInline>
+                  {
+                    identifiers.map((identifier) => (
+                      <Checkbox
+                        checked={currentSearchParams.dataIdentifiers.includes(identifier)}
+                        key={identifier}
+                        label={identifier}
+                        onChange={() => onIdentifiersChange(identifier)}
+                        size="sm"
+                      />
+                    ))
+                  }
+                </CheckboxGroup>
+              </>
+            )
+          }
+        </Col>
         <Col className="text-right">
-          <Button
-            onClick={() => setSearchParams({ ...currentSearchParams, moreOptions: !currentSearchParams.moreOptions })}
-            secondary
-            size="sm"
-            icon="ri-filter-line"
-          >
-            {currentSearchParams.moreOptions ? 'Less filters' : 'More filters'}
-          </Button>
           <Button
             icon="ri-search-line"
             onClick={checkAndSendQuery}
