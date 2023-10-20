@@ -18,14 +18,8 @@ const getBsoQuery = (options, pit, searchAfter) => {
   options.affiliations.forEach((affiliation) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
   });
-  options.authors.forEach((author) => {
-    query.query.bool.should.push({ match: { 'authors.full_name': { query: `"${author}"`, operator: 'and' } } });
-  });
   options.affiliationsToExclude.forEach((affiliationToExclude) => {
     query.query.bool.must_not.push({ multi_match: { fields: affiliationsFields, query: affiliationToExclude, operator: 'and' } });
-  });
-  options.authorsToExclude.forEach((authorToExclude) => {
-    query.query.bool.must_not.push({ match: { 'authors.full_name': { query: authorToExclude, operator: 'and' } } });
   });
   options.affiliationsToInclude.forEach((affiliationToInclude) => {
     query.query.bool.must.push({ multi_match: { fields: affiliationsFields, query: `"${affiliationToInclude}"`, operator: 'and' } });

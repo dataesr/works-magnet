@@ -78,7 +78,6 @@ Actions.propTypes = {
   allWorks: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,

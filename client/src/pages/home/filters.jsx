@@ -14,7 +14,7 @@ import { useSearchParams } from 'react-router-dom';
 import TagInput from '../../components/tag-input';
 
 const identifiers = ['crossref', 'hal_id', 'datacite'];
-const sources = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex ⚠️ API does not allow text search on authors name' }];
+const sources = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 const years = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'].map((year) => ({ label: year, value: year }));
 
 export default function Filters({ sendQuery }) {
@@ -22,7 +22,6 @@ export default function Filters({ sendQuery }) {
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [message, setMessage] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
-  const [onInputAuthorsHandler, setOnInputAuthorsHandler] = useState(false);
 
   useEffect(() => {
     if (searchParams.size === 0) {
@@ -30,8 +29,6 @@ export default function Filters({ sendQuery }) {
         affiliations: [],
         affiliationsToExclude: [],
         affiliationsToInclude: [],
-        authors: [],
-        authorsToExclude: [],
         dataIdentifiers: identifiers,
         datasources: sources.map((source) => source.key),
         endYear: '2021',
@@ -43,8 +40,6 @@ export default function Filters({ sendQuery }) {
         affiliations: searchParams.getAll('affiliations'),
         affiliationsToExclude: searchParams.getAll('affiliationsToExclude'),
         affiliationsToInclude: searchParams.getAll('affiliationsToInclude'),
-        authors: searchParams.getAll('authors'),
-        authorsToExclude: searchParams.getAll('authorsToExclude'),
         dataIdentifiers: searchParams.getAll('dataIdentifiers'),
         datasources: searchParams.getAll('datasources'),
         endYear: searchParams.get('endYear'),
@@ -77,24 +72,15 @@ export default function Filters({ sendQuery }) {
       setMessage('Don\'t forget to validate the Affiliations input by pressing the return key.');
       return;
     }
-    if (onInputAuthorsHandler) {
-      setMessage('Don\'t forget to validate the Authors input by pressing the return key.');
-      return;
-    }
-    if (currentSearchParams.affiliations.length === 0 && currentSearchParams.authors.length === 0) {
-      setMessage('You must provide at least one affiliation or one author.');
+    if (currentSearchParams.affiliations.length === 0) {
+      setMessage('You must provide at least one affiliation.');
       return;
     }
     setMessage('');
     sendQuery(currentSearchParams);
   };
 
-  const checkSource = (source) => {
-    if ((source === 'openalex') && ((currentSearchParams?.authors ?? []).length > 0)) {
-      return false;
-    }
-    return (currentSearchParams?.datasources ?? []).includes(source);
-  };
+  const checkSource = (source) => (currentSearchParams?.datasources ?? []).includes(source);
 
   return (
     <>
@@ -106,15 +92,6 @@ export default function Filters({ sendQuery }) {
             onTagsChange={(affiliations) => setSearchParams({ ...currentSearchParams, affiliations })}
             tags={currentSearchParams.affiliations}
             onInputHandler={setOnInputAffiliationsHandler}
-          />
-        </Col>
-        <Col n="5">
-          <TagInput
-            hint="At least one of these authors should be present, OR operator. ⚠️ French OSM only"
-            label="Authors"
-            onTagsChange={(authors) => setSearchParams({ ...currentSearchParams, authors })}
-            tags={currentSearchParams.authors}
-            onInputHandler={setOnInputAuthorsHandler}
           />
         </Col>
         <Col n="2" className="fr-pt-4w">
@@ -144,14 +121,6 @@ export default function Filters({ sendQuery }) {
                   label="Affiliations to include mandatory"
                   onTagsChange={(affiliationsToInclude) => setSearchParams({ ...currentSearchParams, affiliationsToInclude })}
                   tags={currentSearchParams.affiliationsToInclude}
-                />
-              </Col>
-              <Col n="5">
-                <TagInput
-                  hint="None of these authors must be present, AND operator"
-                  label="Authors to exclude"
-                  onTagsChange={(authorsToExclude) => setSearchParams({ ...currentSearchParams, authorsToExclude })}
-                  tags={currentSearchParams.authorsToExclude}
                 />
               </Col>
             </Row>
