@@ -2,9 +2,9 @@ import { Col, File, Row } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Tooltip } from 'react-tooltip';
 
 import Button from '../../components/button';
-
 import { export2BsoCsv, export2json, importJson } from '../../utils/file';
 
 export default function Actions({
@@ -34,9 +34,14 @@ export default function Actions({
             icon="ri-save-line"
             onClick={() => export2json(allAffiliations, allWorks, options)}
             size="sm"
+            data-tooltip-id="save-session-button"
+            data-tooltip-place="top"
           >
-            Save work to file
+            Save session
           </Button>
+          <Tooltip id="save-session-button" hidden={!allWorks.length}>
+            Save your ongoing work into a file that could be restored later
+          </Tooltip>
         </Col>
         <Col className="text-right">
           <Button
