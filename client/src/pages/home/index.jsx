@@ -364,16 +364,6 @@ export default function Home() {
                   size="sm"
                 />
               </Col>
-              <Col className="text-right" n="2">
-                <Button
-                  className="fr-mb-1w"
-                  icon="ri-refresh-line"
-                  onClick={() => groupByAffiliations(allWorks)}
-                  size="sm"
-                >
-                  Refresh affiliations
-                </Button>
-              </Col>
             </Row>
             <Row>
               <Col>
