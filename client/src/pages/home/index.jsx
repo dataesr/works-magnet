@@ -2,7 +2,7 @@
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
-import { Button, Col, Container, Notice, Row, Tab, Tabs } from '@dataesr/react-dsfr';
+import { Button, Checkbox, CheckboxGroup, Col, Container, Notice, Row, Tab, Tabs } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
@@ -41,6 +41,7 @@ const TO_BE_DECIDED_STATUS = 'to be decided';
 const VALIDATED_STATUS = 'validated';
 const EXCLUDED_STATUS = 'excluded';
 const REGEXP_ROR = /^(https:\/\/ror\.org\/|ror\.org\/){0,1}0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
+const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 
 const getRorAffiliations = (affiliations) => {
   const notRorAffiliations = [];
@@ -104,6 +105,7 @@ export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
+  const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
@@ -200,16 +202,18 @@ export default function Home() {
     let allDatasetsTmp = [];
     let allPublicationsTmp = [];
     if (data) {
-      allDatasetsTmp = data.datasets.map((dataset) => ({
-        ...dataset,
-        affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
-        affiliationsSearch: getAffiliationsSearchField(dataset),
-        allIdsHtml: getAllIdsHtmlField(dataset),
-        authorsHtml: getAuthorsHtmlField(dataset),
-        authorsTooltip: getAuthorsTooltipField(dataset),
-        status: TO_BE_DECIDED_STATUS,
-      }));
+      allDatasetsTmp = data.datasets
+        .map((dataset) => ({
+          ...dataset,
+          affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
+          affiliationsSearch: getAffiliationsSearchField(dataset),
+          allIdsHtml: getAllIdsHtmlField(dataset),
+          authorsHtml: getAuthorsHtmlField(dataset),
+          authorsTooltip: getAuthorsTooltipField(dataset),
+          status: TO_BE_DECIDED_STATUS,
+        }));
       allPublicationsTmp = data.publications
+        .filter((publication) => filteredDatasources.includes(publication.datasource))
         .map((publication) => ({
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
@@ -222,12 +226,12 @@ export default function Home() {
     }
     setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
-  }, [data, regexp]);
+  }, [data, filteredDatasources, regexp]);
 
   useEffect(() => {
     groupByAffiliations(allPublications, regexp);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allPublications]);
+  }, [allPublications, regexp]);
 
   const tagPublications = (publications, action) => {
     const allPublicationsTmp = [...allPublications];
@@ -250,6 +254,7 @@ export default function Home() {
     setAllAffiliations(allAffiliationsTmp);
     setSelectedAffiliations([]);
   };
+
   const renderAffiliationsButtons = () => (
     <>
       <Button
@@ -319,6 +324,14 @@ export default function Home() {
       </Button>
     </>
   );
+
+  const onDatasourcesChange = (datasource) => {
+    if (filteredDatasources.includes(datasource.key)) {
+      setFilteredDatasources(filteredDatasources.filter((filteredDatasource) => filteredDatasource !== datasource.key));
+    } else {
+      setFilteredDatasources(filteredDatasources.concat([datasource.key]));
+    }
+  };
 
   return (
     <>
@@ -394,18 +407,34 @@ export default function Home() {
                 />
               </Col>
             </Row>
-            <Row>
-              <Col>
-                {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-                {!isFetching && !isLoading && (
+            {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
+            {(!isFetching && !isLoading) && (
+              <Row>
+                <Col n="2">
+                  <CheckboxGroup
+                    hint="Filter results on available datasources"
+                    legend="Datasources"
+                  >
+                    {DATASOURCES.map((datasource) => (
+                      <Checkbox
+                        checked={filteredDatasources.includes(datasource.key)}
+                        key={datasource.key}
+                        label={datasource.label}
+                        onChange={() => onDatasourcesChange(datasource)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
+                </Col>
+                <Col>
                   <WorksView
                     allPublications={allPublications}
                     selectedPublications={selectedPublications}
                     setSelectedPublications={setSelectedPublications}
                   />
-                )}
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            )}
             <Row>
               <Col>
                 {renderWorksButtons(selectedPublications)}

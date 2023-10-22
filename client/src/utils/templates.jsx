@@ -34,7 +34,7 @@ const getAffiliationsHtmlField = (rowData, regexp) => {
     .flat();
   affiliations = [...new Set(affiliations)];
   let html = '<ul>';
-  html += affiliations.map((affiliation, index) => `<li key=affilition-${index}>${affiliation}</li>`);
+  html += affiliations.map((affiliation, index) => `<li key=affilition-${index}>${affiliation}</li>`).join('');
   html += '</ul>';
   return html;
 };
@@ -63,7 +63,7 @@ const getAllIdsHtmlField = (rowData) => {
 
 const getAuthorsHtmlField = (rowData) => {
   let html = `<ul data-tooltip-id="tooltip-author-${rowData.id}">`;
-  html += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author.full_name}</li>`);
+  html += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author.full_name}</li>`).join('');
   if (rowData.authors.length > 3) {
     html += `<li>et al. (${rowData.authors.length - 3})</li>`;
   }
@@ -73,7 +73,7 @@ const getAuthorsHtmlField = (rowData) => {
 
 const getAuthorsTooltipField = (rowData) => {
   let html = '<ul>';
-  html += rowData.authors.map((author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author.full_name}</li>`);
+  html += rowData.authors.map((author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author.full_name}</li>`).join('');
   html += '</ul>';
   return html;
 };
@@ -111,18 +111,6 @@ const statusFilterTemplate = (options) => (
   />
 );
 
-const sourcesFilterTemplate = (options) => (
-  <Dropdown
-    className="p-column-filter"
-    onChange={(e) => options.filterApplyCallback(e.value)}
-    options={['bso', 'openalex']}
-    placeholder=""
-    showClear
-    style={{ width: '3rem' }}
-    value={options.value}
-  />
-);
-
 const typeFilterTemplate = (options) => (
   <Dropdown
     className="p-column-filter"
@@ -146,7 +134,6 @@ export {
   getAuthorsHtmlField,
   getAuthorsTooltipField,
   nameTemplate,
-  sourcesFilterTemplate,
   statusFilterTemplate,
   statusTemplate,
   typeFilterTemplate,

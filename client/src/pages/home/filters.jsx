@@ -43,15 +43,6 @@ export default function Filters({ sendQuery }) {
     }
   }, [searchParams, setSearchParams]);
 
-  const onDatasourcesChange = (key) => {
-    const { datasources } = currentSearchParams;
-    if (datasources.includes(key)) {
-      setSearchParams({ ...currentSearchParams, datasources: datasources.filter((datasource) => datasource !== key) });
-    } else {
-      setSearchParams({ ...currentSearchParams, datasources: [...datasources, key] });
-    }
-  };
-
   const onIdentifiersChange = (label) => {
     const { dataIdentifiers } = currentSearchParams;
     if (dataIdentifiers.includes(label)) {
@@ -74,8 +65,6 @@ export default function Filters({ sendQuery }) {
     sendQuery(currentSearchParams);
   };
 
-  const checkSource = (source) => (currentSearchParams?.datasources ?? []).includes(source);
-
   return (
     <>
       <Row gutters>
@@ -87,22 +76,6 @@ export default function Filters({ sendQuery }) {
             tags={currentSearchParams.affiliations}
             onInputHandler={setOnInputAffiliationsHandler}
           />
-        </Col>
-        <Col n="2" className="fr-pt-4w">
-          Datasources
-          <CheckboxGroup className="fr-mb-0">
-            {
-              sources.map((source) => (
-                <Checkbox
-                  checked={checkSource(source.key)}
-                  key={source.key}
-                  label={source.label}
-                  onChange={() => onDatasourcesChange(source.key)}
-                  size="sm"
-                />
-              ))
-            }
-          </CheckboxGroup>
         </Col>
       </Row>
       <Row gutters alignItems="bottom">
