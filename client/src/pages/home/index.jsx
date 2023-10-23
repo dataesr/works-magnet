@@ -486,9 +486,9 @@ export default function Home() {
                 </Col>
                 <Col>
                   <WorksView
-                    allPublications={filteredPublications}
-                    selectedPublications={selectedPublications}
-                    setSelectedPublications={setSelectedPublications}
+                    selectedWorks={selectedPublications}
+                    setSelectedWorks={setSelectedPublications}
+                    works={filteredPublications}
                   />
                 </Col>
               </Row>
@@ -519,9 +519,9 @@ export default function Home() {
                 {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
                 {!isFetching && !isLoading && (
                   <WorksView
-                    allPublications={allDatasets}
-                    selectedPublications={selectedDatasets}
-                    setSelectedPublications={setSelectedDatasets}
+                    selectedWorks={selectedDatasets}
+                    setSelectedWorks={setSelectedDatasets}
+                    works={allDatasets}
                   />
                 )}
               </Col>

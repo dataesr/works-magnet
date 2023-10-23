@@ -11,9 +11,9 @@ import {
 } from '../../../utils/templates';
 
 export default function WorksView({
-  allPublications,
-  selectedPublications,
-  setSelectedPublications,
+  selectedWorks,
+  setSelectedWorks,
+  works,
 }) {
   return (
     <DataTable
@@ -21,19 +21,19 @@ export default function WorksView({
       dataKey="id"
       filterDisplay="row"
       metaKeySelection={false}
-      onSelectionChange={(e) => setSelectedPublications(e.value)}
+      onSelectionChange={(e) => setSelectedWorks(e.value)}
       paginator
       paginatorPosition="both"
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={50}
       rowsPerPageOptions={[25, 50, 100, 200]}
       scrollable
-      selection={selectedPublications}
+      selection={selectedWorks}
       selectionPageOnly
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}
-      value={allPublications}
+      value={works}
     >
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} style={{ minWidth: '10px' }} />
@@ -48,7 +48,7 @@ export default function WorksView({
 }
 
 WorksView.propTypes = {
-  allPublications: PropTypes.arrayOf(PropTypes.shape({
+  selectedWorks: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -57,7 +57,8 @@ WorksView.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  selectedPublications: PropTypes.arrayOf(PropTypes.shape({
+  setSelectedWorks: PropTypes.func.isRequired,
+  works: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -66,5 +67,4 @@ WorksView.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  setSelectedPublications: PropTypes.func.isRequired,
 };
