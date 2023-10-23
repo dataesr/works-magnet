@@ -111,18 +111,6 @@ const statusFilterTemplate = (options) => (
   />
 );
 
-const typeFilterTemplate = (options) => (
-  <Dropdown
-    className="p-column-filter"
-    onChange={(e) => options.filterApplyCallback(e.value)}
-    options={['book-chapter', 'comm', 'dataset', 'image', 'journal-article', 'other', 'physicalobject', 'preprint', 'proceedings-article', 'text', 'thesis']}
-    placeholder="Type"
-    style={{ width: '5rem', overflow: 'scroll' }}
-    showClear
-    value={options.value}
-  />
-);
-
 export {
   affiliationsTemplate,
   allIdsTemplate,
@@ -136,5 +124,4 @@ export {
   nameTemplate,
   statusFilterTemplate,
   statusTemplate,
-  typeFilterTemplate,
 };

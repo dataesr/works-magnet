@@ -103,18 +103,22 @@ const getData = async (options) => {
 };
 
 export default function Home() {
+  const [affiliationsNotice, setAffiliationsNotice] = useState(true);
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
   const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
   const [filteredFosmIdentifiers, setFilteredFosmIdentifiers] = useState(FOSM_IDENTIFIERS);
+  const [filteredPublications, setFilteredPublications] = useState([]);
+  const [filteredTypes, setFilteredTypes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
-  const [affiliationsNotice, setAffiliationsNotice] = useState(true);
+  const [types, setTypes] = useState([]);
+
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(options),
@@ -215,7 +219,6 @@ export default function Home() {
           status: STATUS_TO_BE_DECIDED,
         }));
       allPublicationsTmp = data.publications
-        .filter((publication) => filteredDatasources.includes(publication.datasource) && ((!publication.datasource.includes('bso')) || (publication?.external_ids.map((id) => id.id_type).every((type) => filteredFosmIdentifiers.includes(type)))))
         .map((publication) => ({
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
@@ -228,7 +231,16 @@ export default function Home() {
     }
     setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
-  }, [data, filteredDatasources, filteredFosmIdentifiers, regexp]);
+    const allTypes = [...new Set(allPublicationsTmp.map((publication) => publication?.type))];
+    setTypes(allTypes);
+    setFilteredTypes(allTypes);
+    setFilteredPublications(allPublicationsTmp);
+  }, [data, regexp]);
+
+  useEffect(() => {
+    const tmp = allPublications.filter((publication) => filteredDatasources.includes(publication.datasource) && ((!publication.datasource.includes('bso')) || (publication?.external_ids.map((id) => id.id_type).every((type) => filteredFosmIdentifiers.includes(type)))) && filteredTypes.includes(publication.type));
+    setFilteredPublications(tmp);
+  }, [allPublications, filteredDatasources, filteredFosmIdentifiers, filteredTypes]);
 
   useEffect(() => {
     groupByAffiliations(allPublications, regexp);
@@ -343,6 +355,14 @@ export default function Home() {
     }
   };
 
+  const onTypesChange = (type) => {
+    if (filteredTypes.includes(type)) {
+      setFilteredTypes(filteredTypes.filter((filteredType) => filteredType !== type));
+    } else {
+      setFilteredTypes(filteredTypes.concat([type]));
+    }
+  };
+
   return (
     <>
       <Container className="fr-my-5w" as="section" fluid>
@@ -449,10 +469,24 @@ export default function Home() {
                       />
                     ))}
                   </CheckboxGroup>
+                  <CheckboxGroup
+                    hint="Filter results on selected types"
+                    legend="Types"
+                  >
+                    {types.map((type) => (
+                      <Checkbox
+                        checked={filteredTypes.includes(type)}
+                        key={type}
+                        label={type}
+                        onChange={() => onTypesChange(type)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
                 </Col>
                 <Col>
                   <WorksView
-                    allPublications={allPublications}
+                    allPublications={filteredPublications}
                     selectedPublications={selectedPublications}
                     setSelectedPublications={setSelectedPublications}
                   />
