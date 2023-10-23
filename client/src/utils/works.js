@@ -26,7 +26,7 @@ const getBsoQuery = (options, pit, searchAfter) => {
     query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
   }
   query.query.bool.minimum_should_match = 1;
-  query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'title', 'year'];
+  query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'journal_name', 'title', 'year'];
   query.sort = ['_shard_doc'];
   if (pit) {
     query.pit = { id: pit, keep_alive: VITE_BSO_PIT_KEEP_ALIVE };
