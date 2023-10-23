@@ -50,7 +50,7 @@ export default function Filters({ sendQuery }) {
 
   return (
     <>
-      <Row gutters>
+      <Row gutters alignItems="top">
         <Col n="5">
           <TagInput
             hint="At least one of these affiliations should be present, OR operator"
@@ -60,19 +60,25 @@ export default function Filters({ sendQuery }) {
             onInputHandler={setOnInputAffiliationsHandler}
           />
         </Col>
-      </Row>
-      <Row gutters alignItems="bottom">
-        <Col n="5">
-          <Row gutters>
-            <Col>
-              <Select label="Start year" options={years} selected={currentSearchParams.startYear} onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })} />
-            </Col>
-            <Col>
-              <Select label="End year" options={years} selected={currentSearchParams.endYear} onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })} />
-            </Col>
-          </Row>
+        <Col n="2">
+          <Select
+            hint="&nbsp;"
+            label="Start year"
+            options={years}
+            selected={currentSearchParams.startYear}
+            onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
+          />
         </Col>
-        <Col className="text-right">
+        <Col n="2">
+          <Select
+            hint="&nbsp;"
+            label="End year"
+            options={years}
+            selected={currentSearchParams.endYear}
+            onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
+          />
+        </Col>
+        <Col>
           <Button
             icon="ri-search-line"
             onClick={checkAndSendQuery}
