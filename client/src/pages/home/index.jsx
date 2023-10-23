@@ -18,6 +18,7 @@ import {
   getAffiliationRor,
   getAffiliationsHtmlField,
   getAffiliationsSearchField,
+  getAffiliationsTooltipField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 } from '../../utils/templates';
@@ -190,6 +191,7 @@ export default function Home() {
           ...dataset,
           affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
           affiliationsSearch: getAffiliationsSearchField(dataset),
+          affiliationsTooltip: getAffiliationsTooltipField(dataset),
           allIdsHtml: getAllIdsHtmlField(dataset),
           authorsHtml: getAuthorsHtmlField(dataset),
           authorsTooltip: getAuthorsTooltipField(dataset),
@@ -200,6 +202,7 @@ export default function Home() {
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
           affiliationsSearch: getAffiliationsSearchField(publication),
+          affiliationsTooltip: getAffiliationsTooltipField(publication),
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
           authorsTooltip: getAuthorsTooltipField(publication),

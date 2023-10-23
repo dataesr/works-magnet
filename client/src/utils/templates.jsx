@@ -6,14 +6,21 @@ import { Tooltip } from 'react-tooltip';
 
 import { getIdLink } from './works';
 
-const affiliationsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.affiliationsHtml }} />;
+const affiliationsTemplate = (rowData) => (
+  <>
+    <span dangerouslySetInnerHTML={{ __html: rowData.affiliationsHtml }} />
+    <Tooltip id={`tooltip-affiliation-${rowData.id}`}>
+      <span dangerouslySetInnerHTML={{ __html: rowData.affiliationsTooltip }} />
+    </Tooltip>
+  </>
+);
 
 const allIdsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.allIdsHtml }} />;
 
 const authorsTemplate = (rowData) => (
   <>
     <span dangerouslySetInnerHTML={{ __html: rowData.authorsHtml }} />
-    <Tooltip id={`tooltip-author-${rowData.id}`} place="right">
+    <Tooltip id={`tooltip-author-${rowData.id}`}>
       <span dangerouslySetInnerHTML={{ __html: rowData.authorsTooltip }} />
     </Tooltip>
   </>
@@ -33,8 +40,11 @@ const getAffiliationsHtmlField = (rowData, regexp) => {
     .filter((affiliation) => affiliation?.length ?? 0)
     .flat();
   affiliations = [...new Set(affiliations)];
-  let html = '<ul>';
-  html += affiliations.map((affiliation, index) => `<li key=affilition-${index}>${affiliation}</li>`).join('');
+  let html = `<ul data-tooltip-id="tooltip-affiliation-${rowData.id}">`;
+  html += affiliations.slice(0, 3).map((affiliation, index) => `<li key=affilition-${index}>${affiliation}</li>`).join('');
+  if (affiliations.length > 3) {
+    html += `<li>et al. (${affiliations.length - 3})</li>`;
+  }
   html += '</ul>';
   return html;
 };
@@ -47,6 +57,13 @@ const getAffiliationsSearchField = (rowData) => {
     .flat();
   affiliations = [...new Set(affiliations)];
   return affiliations;
+};
+
+const getAffiliationsTooltipField = (rowData) => {
+  let html = '<ul>';
+  html += rowData.affiliations.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation.name}</li>`).join('');
+  html += '</ul>';
+  return html;
 };
 
 const getAllIdsHtmlField = (rowData) => {
@@ -118,6 +135,7 @@ export {
   getAffiliationRor,
   getAffiliationsHtmlField,
   getAffiliationsSearchField,
+  getAffiliationsTooltipField,
   getAllIdsHtmlField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
