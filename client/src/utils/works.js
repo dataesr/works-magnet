@@ -25,7 +25,6 @@ const getBsoQuery = (options, pit, searchAfter) => {
   } else if (options?.endYear) {
     query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
   }
-  query.query.bool.filter.push({ terms: { 'external_ids.id_type': options.dataIdentifiers } });
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'title', 'year'];
   query.sort = ['_shard_doc'];
@@ -264,7 +263,7 @@ const mergePublications = (publi1, publi2) => {
 
 export {
   getBsoCount,
-  getBsoWorks as getBsoPublications,
+  getBsoWorks,
   getIdLink,
   getOpenAlexPublications,
   mergePublications,

@@ -23,7 +23,7 @@ import {
 } from '../../utils/templates';
 import {
   getBsoCount,
-  getBsoPublications,
+  getBsoWorks,
   getOpenAlexPublications,
   mergePublications,
 } from '../../utils/works';
@@ -37,11 +37,12 @@ const {
   VITE_BSO_PUBLICATIONS_INDEX,
 } = import.meta.env;
 
-const TO_BE_DECIDED_STATUS = 'to be decided';
-const VALIDATED_STATUS = 'validated';
-const EXCLUDED_STATUS = 'excluded';
-const REGEXP_ROR = /^(https:\/\/ror\.org\/|ror\.org\/){0,1}0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
 const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
+const FOSM_IDENTIFIERS = ['crossref', 'hal_id', 'datacite'];
+const REGEXP_ROR = /^(https:\/\/ror\.org\/|ror\.org\/){0,1}0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
+const STATUS_EXCLUDED = 'excluded';
+const STATUS_TO_BE_DECIDED = 'to be decided';
+const STATUS_VALIDATED = 'validated';
 
 const getRorAffiliations = (affiliations) => {
   const notRorAffiliations = [];
@@ -54,7 +55,7 @@ const getRorAffiliations = (affiliations) => {
 };
 
 const getData = async (options) => {
-  const promises = [getBsoPublications({ options, index: VITE_BSO_PUBLICATIONS_INDEX })];
+  const promises = [getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX })];
   const { notRorAffiliations, rorAffiliations } = getRorAffiliations(options.affiliations);
   if (notRorAffiliations.length) {
     promises.push(getOpenAlexPublications({
@@ -69,7 +70,7 @@ const getData = async (options) => {
     }, true));
   }
   const publications = await Promise.all(promises.flat());
-  const promises2 = [getBsoPublications({ options, index: VITE_BSO_DATASETS_INDEX })];
+  const promises2 = [getBsoWorks({ options, index: VITE_BSO_DATASETS_INDEX })];
   const datasets = await Promise.all(promises2.flat());
   const data = { datasets: [], publications: [], total: {} };
   publications.forEach((publication) => {
@@ -106,6 +107,7 @@ export default function Home() {
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
   const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
+  const [filteredFosmIdentifiers, setFilteredFosmIdentifiers] = useState(FOSM_IDENTIFIERS);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
@@ -135,10 +137,10 @@ export default function Home() {
   const groupByAffiliations = (publications) => {
     setIsLoading(true);
     // Save already decided affiliations
-    const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== TO_BE_DECIDED_STATUS);
+    const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== STATUS_TO_BE_DECIDED);
     // Compute distinct affiliations of the undecided publications
     let allAffiliationsTmp = {};
-    publications.filter((publication) => publication.status === TO_BE_DECIDED_STATUS).forEach((publication) => {
+    publications.filter((publication) => publication.status === STATUS_TO_BE_DECIDED).forEach((publication) => {
       (publication?.affiliations ?? [])
         .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
         .forEach((affiliation) => {
@@ -157,7 +159,7 @@ export default function Home() {
               nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
               ror,
               rorHtml: ror?.replace(regexp, '<b>$&</b>'),
-              status: TO_BE_DECIDED_STATUS,
+              status: STATUS_TO_BE_DECIDED,
               publications: [],
             };
           }
@@ -210,10 +212,10 @@ export default function Home() {
           allIdsHtml: getAllIdsHtmlField(dataset),
           authorsHtml: getAuthorsHtmlField(dataset),
           authorsTooltip: getAuthorsTooltipField(dataset),
-          status: TO_BE_DECIDED_STATUS,
+          status: STATUS_TO_BE_DECIDED,
         }));
       allPublicationsTmp = data.publications
-        .filter((publication) => filteredDatasources.includes(publication.datasource))
+        .filter((publication) => filteredDatasources.includes(publication.datasource) && ((!publication.datasource.includes('bso')) || (publication?.external_ids.map((id) => id.id_type).every((type) => filteredFosmIdentifiers.includes(type)))))
         .map((publication) => ({
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
@@ -221,12 +223,12 @@ export default function Home() {
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
           authorsTooltip: getAuthorsTooltipField(publication),
-          status: TO_BE_DECIDED_STATUS,
+          status: STATUS_TO_BE_DECIDED,
         }));
     }
     setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
-  }, [data, filteredDatasources, regexp]);
+  }, [data, filteredDatasources, filteredFosmIdentifiers, regexp]);
 
   useEffect(() => {
     groupByAffiliations(allPublications, regexp);
@@ -242,7 +244,7 @@ export default function Home() {
   };
 
   const tagAffiliations = (affiliations, action) => {
-    if (action !== EXCLUDED_STATUS) {
+    if (action !== STATUS_EXCLUDED) {
       const allPublicationsTmp = [...allPublications];
       const publicationsIds = affiliations.map((affiliation) => affiliation.publications).flat();
       allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
@@ -261,7 +263,7 @@ export default function Home() {
         className="fr-mr-1w btn-keep"
         disabled={!selectedAffiliations.length}
         icon="ri-checkbox-circle-line"
-        onClick={() => tagAffiliations(selectedAffiliations, VALIDATED_STATUS)}
+        onClick={() => tagAffiliations(selectedAffiliations, STATUS_VALIDATED)}
         size="sm"
       >
         Validate
@@ -271,7 +273,7 @@ export default function Home() {
         className="fr-mr-1w btn-hide"
         disabled={!selectedAffiliations.length}
         icon="ri-indeterminate-circle-line"
-        onClick={() => tagAffiliations(selectedAffiliations, EXCLUDED_STATUS)}
+        onClick={() => tagAffiliations(selectedAffiliations, STATUS_EXCLUDED)}
         size="sm"
       >
         Exclude
@@ -281,7 +283,7 @@ export default function Home() {
         className="fr-mb-1w btn-reset"
         disabled={!selectedAffiliations.length}
         icon="ri-reply-fill"
-        onClick={() => tagAffiliations(selectedAffiliations, TO_BE_DECIDED_STATUS)}
+        onClick={() => tagAffiliations(selectedAffiliations, STATUS_TO_BE_DECIDED)}
         size="sm"
       >
         Reset status
@@ -296,7 +298,7 @@ export default function Home() {
         className="fr-mr-1w btn-keep"
         disabled={!selected.length}
         icon="ri-checkbox-circle-line"
-        onClick={() => tagPublications(selected, VALIDATED_STATUS)}
+        onClick={() => tagPublications(selected, STATUS_VALIDATED)}
         size="sm"
       >
         Validate
@@ -306,7 +308,7 @@ export default function Home() {
         className="fr-mr-1w btn-hide"
         disabled={!selected.length}
         icon="ri-indeterminate-circle-line"
-        onClick={() => tagPublications(selected, EXCLUDED_STATUS)}
+        onClick={() => tagPublications(selected, STATUS_EXCLUDED)}
         size="sm"
       >
         Exclude
@@ -316,7 +318,7 @@ export default function Home() {
         className="fr-mb-1w btn-reset"
         disabled={!selected.length}
         icon="ri-reply-fill"
-        onClick={() => tagPublications(selected, TO_BE_DECIDED_STATUS)}
+        onClick={() => tagPublications(selected, STATUS_TO_BE_DECIDED)}
         size="sm"
       >
         Reset status
@@ -330,6 +332,14 @@ export default function Home() {
       setFilteredDatasources(filteredDatasources.filter((filteredDatasource) => filteredDatasource !== datasource.key));
     } else {
       setFilteredDatasources(filteredDatasources.concat([datasource.key]));
+    }
+  };
+
+  const onFosmIdentifiersChange = (fosmIdentifier) => {
+    if (filteredFosmIdentifiers.includes(fosmIdentifier)) {
+      setFilteredFosmIdentifiers(filteredFosmIdentifiers.filter((filteredFosmIdentifier) => filteredFosmIdentifier !== fosmIdentifier));
+    } else {
+      setFilteredFosmIdentifiers(filteredFosmIdentifiers.concat([fosmIdentifier]));
     }
   };
 
@@ -392,7 +402,7 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Publications (${allPublications.filter((publication) => publication.status === VALIDATED_STATUS).length} / ${allPublications.length})`}>
+          <Tab label={`Publications (${allPublications.filter((publication) => publication.status === STATUS_VALIDATED).length} / ${allPublications.length})`}>
             <Row>
               <Col>
                 {renderWorksButtons(selectedPublications)}
@@ -412,7 +422,7 @@ export default function Home() {
               <Row>
                 <Col n="2">
                   <CheckboxGroup
-                    hint="Filter results on available datasources"
+                    hint="Filter results on selected datasources"
                     legend="Datasources"
                   >
                     {DATASOURCES.map((datasource) => (
@@ -421,6 +431,20 @@ export default function Home() {
                         key={datasource.key}
                         label={datasource.label}
                         onChange={() => onDatasourcesChange(datasource)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
+                  <CheckboxGroup
+                    hint="Filter results on selected identifiers"
+                    legend="FOSM identifiers"
+                  >
+                    {FOSM_IDENTIFIERS.map((fosmIdentifier) => (
+                      <Checkbox
+                        checked={filteredFosmIdentifiers.includes(fosmIdentifier)}
+                        key={fosmIdentifier}
+                        label={fosmIdentifier}
+                        onChange={() => onFosmIdentifiersChange(fosmIdentifier)}
                         size="sm"
                       />
                     ))}
@@ -441,7 +465,7 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Datasets (${allDatasets.filter((dataset) => dataset.status === VALIDATED_STATUS).length} / ${allDatasets.length})`}>
+          <Tab label={`Datasets (${allDatasets.filter((dataset) => dataset.status === STATUS_VALIDATED).length} / ${allDatasets.length})`}>
             <Row>
               <Col>
                 {renderWorksButtons(selectedDatasets)}
