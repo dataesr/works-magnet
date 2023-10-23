@@ -36,6 +36,7 @@ const getAffiliationRor = (affiliation) => {
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
     .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
+    .sort((a, b) => (b.name.match(regexp)?.length ?? 0) - (a.name.match(regexp)?.length ?? 0))
     .map((affiliation) => affiliation.name.replace(regexp, '<b>$&</b>'))
     .filter((affiliation) => affiliation?.length ?? 0)
     .flat();
@@ -47,16 +48,6 @@ const getAffiliationsHtmlField = (rowData, regexp) => {
   }
   html += '</ul>';
   return html;
-};
-
-const getAffiliationsSearchField = (rowData) => {
-  let affiliations = (rowData?.affiliations ?? [])
-    .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
-    .map((affiliation) => affiliation.name)
-    .filter((affiliation) => affiliation?.length ?? 0)
-    .flat();
-  affiliations = [...new Set(affiliations)];
-  return affiliations;
 };
 
 const getAffiliationsTooltipField = (rowData) => {
@@ -134,7 +125,6 @@ export {
   authorsTemplate,
   getAffiliationRor,
   getAffiliationsHtmlField,
-  getAffiliationsSearchField,
   getAffiliationsTooltipField,
   getAllIdsHtmlField,
   getAuthorsHtmlField,

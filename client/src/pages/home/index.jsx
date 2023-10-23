@@ -17,7 +17,6 @@ import {
   getAllIdsHtmlField,
   getAffiliationRor,
   getAffiliationsHtmlField,
-  getAffiliationsSearchField,
   getAffiliationsTooltipField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
@@ -190,7 +189,6 @@ export default function Home() {
         .map((dataset) => ({
           ...dataset,
           affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
-          affiliationsSearch: getAffiliationsSearchField(dataset),
           affiliationsTooltip: getAffiliationsTooltipField(dataset),
           allIdsHtml: getAllIdsHtmlField(dataset),
           authorsHtml: getAuthorsHtmlField(dataset),
@@ -201,7 +199,6 @@ export default function Home() {
         .map((publication) => ({
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
-          affiliationsSearch: getAffiliationsSearchField(publication),
           affiliationsTooltip: getAffiliationsTooltipField(publication),
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
@@ -482,7 +479,7 @@ export default function Home() {
                       <Checkbox
                         checked={filteredYears.includes(year)}
                         key={year}
-                        label={year}
+                        label={year.toString()}
                         onChange={() => onYearsChange(year)}
                         size="sm"
                       />
