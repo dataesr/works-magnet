@@ -20,12 +20,11 @@ export default function Actions({
   return (
     <>
       <Row className="fr-mb-1w">
-        <Col>
+        <Col className="text-right">
           <Button
             data-tooltip-id="restore-session-button"
             icon="ri-file-upload-line"
             onClick={() => setDisplayFileUpload(true)}
-            secondary
             size="sm"
           >
             Restore session
@@ -38,6 +37,7 @@ export default function Actions({
             disabled={!allPublications.length}
             icon="ri-save-line"
             onClick={() => export2json(allAffiliations, allPublications, options)}
+            secondary
             size="sm"
           >
             Save session
@@ -45,8 +45,6 @@ export default function Actions({
           <Tooltip id="save-session-button" hidden={!allPublications.length}>
             Save your ongoing work into a file that could be restored later
           </Tooltip>
-        </Col>
-        <Col className="text-right">
           <Button
             disabled={!allPublications.length}
             icon="ri-save-line"
