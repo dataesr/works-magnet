@@ -39,37 +39,13 @@ const {
 
 const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 const FOSM_IDENTIFIERS = ['crossref', 'hal_id', 'datacite'];
-const REGEXP_ROR = /^(https:\/\/ror\.org\/|ror\.org\/){0,1}0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
 const STATUS_EXCLUDED = 'excluded';
 const STATUS_TO_BE_DECIDED = 'to be decided';
 const STATUS_VALIDATED = 'validated';
 
-const getRorAffiliations = (affiliations) => {
-  const notRorAffiliations = [];
-  const rorAffiliations = [];
-  affiliations.forEach((affiliation) => {
-    // eslint-disable-next-line no-unused-expressions
-    affiliation.match(REGEXP_ROR) ? rorAffiliations.push(affiliation) : notRorAffiliations.push(affiliation);
-  });
-  return { notRorAffiliations, rorAffiliations };
-};
-
 const getData = async (options) => {
-  const promises = [getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX })];
-  const { notRorAffiliations, rorAffiliations } = getRorAffiliations(options.affiliations);
-  if (notRorAffiliations.length) {
-    promises.push(getOpenAlexPublications({
-      ...options,
-      affiliations: notRorAffiliations,
-    }, false));
-  }
-  if (rorAffiliations.length) {
-    promises.push(getOpenAlexPublications({
-      ...options,
-      affiliations: rorAffiliations,
-    }, true));
-  }
-  const publications = await Promise.all(promises.flat());
+  const promises1 = [getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX }), getOpenAlexPublications(options)];
+  const publications = await Promise.all(promises1.flat());
   const promises2 = [getBsoWorks({ options, index: VITE_BSO_DATASETS_INDEX })];
   const datasets = await Promise.all(promises2.flat());
   const data = { datasets: [], publications: [], total: {} };
@@ -175,7 +151,6 @@ export default function Home() {
 
     decidedAffiliations.forEach((affiliation) => {
       const affiliationName = normalizedName(affiliation.name);
-
       if (!allAffiliationsTmp?.[affiliationName]) {
         allAffiliationsTmp[affiliationName] = affiliation;
       } else {
@@ -191,7 +166,7 @@ export default function Home() {
 
   useEffect(() => {
     const regexpTmp = new RegExp(`(${(options?.affiliations ?? [])
-      .map((affiliationQuery) => (affiliationQuery.match(REGEXP_ROR) ? affiliationQuery : affiliationQuery
+      .map((affiliationQuery) => affiliationQuery
         .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
         .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
         .replaceAll(/(i|ì|í|î|ï)/g, '(i|ì|í|î|ï)')
@@ -201,7 +176,7 @@ export default function Home() {
         .replaceAll(/(n|ñ)/g, '(n|ñ)')
         .replaceAll(/(c|ç)/g, '(c|ç)')
         .replaceAll(/æ/g, '(æ|ae)')
-        .replaceAll(/œ/g, '(œ|oe)')))
+        .replaceAll(/œ/g, '(œ|oe)'))
       .join('|')})`, 'gi');
     setRegexp(regexpTmp);
   }, [options?.affiliations]);

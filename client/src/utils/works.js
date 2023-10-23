@@ -195,7 +195,7 @@ const getTypeFromOpenAlex = (type) => {
   return newType;
 };
 
-const getOpenAlexPublications = (options, isRor = false, page = '1', previousResponse = []) => {
+const getOpenAlexPublications = (options, page = '1', previousResponse = []) => {
   let url = `${VITE_OPENALEX_URL}per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (options?.startYear && options?.endYear) {
@@ -206,13 +206,8 @@ const getOpenAlexPublications = (options, isRor = false, page = '1', previousRes
     url += `,publication_year:-${Number(options.endYear)}`;
   }
   if (options.affiliations.length) {
-    if (isRor) {
-      url += '';
-      if (options.affiliations.length) url += `,institutions.ror:${options.affiliations.join('|')}`;
-    } else {
-      url += ',raw_affiliation_string.search:';
-      if (options.affiliations.length) url += `(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
-    }
+    url += ',raw_affiliation_string.search:';
+    if (options.affiliations.length) url += `(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
   }
   url += '&select=authorships,display_name,doi,id,ids,publication_year,type';
   return fetch(`${url}&page=${page}`)
@@ -224,7 +219,7 @@ const getOpenAlexPublications = (options, isRor = false, page = '1', previousRes
       const results = [...previousResponse, ...response.results];
       const nextPage = Number(page) + 1;
       if (Number(response.results.length) === Number(VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexPublications(options, isRor, nextPage, results);
+        return getOpenAlexPublications(options, nextPage, results);
       }
       return ({ total: response.meta.count, results });
     })
