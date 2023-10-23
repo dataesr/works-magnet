@@ -1,5 +1,4 @@
 import {
-  Alert,
   Button,
   Col,
   Row,
@@ -17,6 +16,7 @@ export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
 
   useEffect(() => {
@@ -37,67 +37,61 @@ export default function Filters({ sendQuery }) {
 
   const checkAndSendQuery = () => {
     if (onInputAffiliationsHandler) {
+      setMessageType('error');
       setMessage('Don\'t forget to validate the Affiliations input by pressing the return key.');
       return;
     }
     if (currentSearchParams.affiliations.length === 0) {
+      setMessageType('error');
       setMessage('You must provide at least one affiliation.');
       return;
     }
+    setMessageType('');
     setMessage('');
     sendQuery(currentSearchParams);
   };
 
   return (
-    <>
-      <Row gutters alignItems="top">
-        <Col n="5">
-          <TagInput
-            hint="At least one of these affiliations should be present, OR operator"
-            label="Affiliations (Name, Grid, RNSR, RoR, HAL structId or viaf)"
-            onTagsChange={(affiliations) => setSearchParams({ ...currentSearchParams, affiliations })}
-            tags={currentSearchParams.affiliations}
-            onInputHandler={setOnInputAffiliationsHandler}
-          />
-        </Col>
-        <Col n="2">
-          <Select
-            hint="&nbsp;"
-            label="Start year"
-            options={years}
-            selected={currentSearchParams.startYear}
-            onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
-          />
-        </Col>
-        <Col n="2">
-          <Select
-            hint="&nbsp;"
-            label="End year"
-            options={years}
-            selected={currentSearchParams.endYear}
-            onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
-          />
-        </Col>
-        <Col>
-          <Button
-            icon="ri-search-line"
-            onClick={checkAndSendQuery}
-            size="sm"
-          >
-            Search works
-          </Button>
-        </Col>
-      </Row>
-      {
-        message && (
-          <Row className="fr-mt-1w">
-            <Col>
-              <Alert type="error" description={message} />
-            </Col>
-          </Row>
-        )
-      }
-    </>
+    <Row gutters alignItems="top">
+      <Col n="5">
+        <TagInput
+          hint="At least one of these affiliations should be present, OR operator"
+          label="Affiliations (Name, Grid, RNSR, RoR, HAL structId or viaf)"
+          message={message}
+          messageType={messageType}
+          onTagsChange={(affiliations) => setSearchParams({ ...currentSearchParams, affiliations })}
+          tags={currentSearchParams.affiliations}
+          onInputHandler={setOnInputAffiliationsHandler}
+        />
+      </Col>
+      <Col n="2">
+        <Select
+          hint="&nbsp;"
+          label="Start year"
+          options={years}
+          selected={currentSearchParams.startYear}
+          onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
+        />
+      </Col>
+      <Col n="2">
+        <Select
+          hint="&nbsp;"
+          label="End year"
+          options={years}
+          selected={currentSearchParams.endYear}
+          onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
+        />
+      </Col>
+      <Col>
+        <Button
+          icon="ri-search-line"
+          onClick={checkAndSendQuery}
+          size="sm"
+        >
+          Search works
+        </Button>
+      </Col>
+    </Row>
   );
 }
 

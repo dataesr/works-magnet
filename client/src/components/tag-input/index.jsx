@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 export default function TagInput({
   hint,
   label,
+  message,
+  messageType,
   onInputHandler,
   onTagsChange,
   placeholder,
@@ -48,11 +50,13 @@ export default function TagInput({
             <TextInput
               hint={hint}
               label={label}
+              message={message}
+              messageType={messageType}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
+              placeholder={placeholder}
               type="text"
               value={input}
-              placeholder={placeholder}
             />
           </Col>
         </Row>
@@ -80,15 +84,19 @@ export default function TagInput({
 TagInput.propTypes = {
   hint: PropTypes.string,
   label: PropTypes.string.isRequired,
-  onTagsChange: PropTypes.func.isRequired,
-  tags: PropTypes.arrayOf(PropTypes.string),
-  placeholder: PropTypes.string,
+  message: PropTypes.string,
+  messageType: PropTypes.oneOf(['error', 'valid', '']),
   onInputHandler: PropTypes.func,
+  onTagsChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  tags: PropTypes.arrayOf(PropTypes.string),
 };
 
 TagInput.defaultProps = {
   hint: 'Valider votre ajout avec la touche "Entrée"',
-  tags: [],
-  placeholder: '',
+  message: '',
+  messageType: '',
   onInputHandler: () => { },
+  placeholder: '',
+  tags: [],
 };
