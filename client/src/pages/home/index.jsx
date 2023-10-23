@@ -111,6 +111,7 @@ export default function Home() {
   const [filteredFosmIdentifiers, setFilteredFosmIdentifiers] = useState(FOSM_IDENTIFIERS);
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredTypes, setFilteredTypes] = useState([]);
+  const [filteredYears, setFilteredYears] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
@@ -118,6 +119,7 @@ export default function Home() {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [types, setTypes] = useState([]);
+  const [years, setYears] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -233,14 +235,17 @@ export default function Home() {
     setAllPublications(allPublicationsTmp);
     const allTypes = [...new Set(allPublicationsTmp.map((publication) => publication?.type))];
     setTypes(allTypes);
+    const allYears = [...new Set(allPublicationsTmp.map((publication) => publication?.year))];
+    setYears(allYears);
     setFilteredTypes(allTypes);
+    setFilteredYears(allYears);
     setFilteredPublications(allPublicationsTmp);
   }, [data, regexp]);
 
   useEffect(() => {
-    const tmp = allPublications.filter((publication) => filteredDatasources.includes(publication.datasource) && ((!publication.datasource.includes('bso')) || (publication?.external_ids.map((id) => id.id_type).every((type) => filteredFosmIdentifiers.includes(type)))) && filteredTypes.includes(publication.type));
-    setFilteredPublications(tmp);
-  }, [allPublications, filteredDatasources, filteredFosmIdentifiers, filteredTypes]);
+    const filteredPublicationsTmp = allPublications.filter((publication) => filteredDatasources.includes(publication.datasource) && ((!publication.datasource.includes('bso')) || (publication?.external_ids.map((id) => id.id_type).every((type) => filteredFosmIdentifiers.includes(type)))) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
+    setFilteredPublications(filteredPublicationsTmp);
+  }, [allPublications, filteredDatasources, filteredFosmIdentifiers, filteredTypes, filteredYears]);
 
   useEffect(() => {
     groupByAffiliations(allPublications, regexp);
@@ -363,6 +368,14 @@ export default function Home() {
     }
   };
 
+  const onYearsChange = (year) => {
+    if (filteredYears.includes(year)) {
+      setFilteredYears(filteredYears.filter((filteredYear) => filteredYear !== year));
+    } else {
+      setFilteredYears(filteredYears.concat([year]));
+    }
+  };
+
   return (
     <>
       <Container className="fr-my-5w" as="section" fluid>
@@ -479,6 +492,20 @@ export default function Home() {
                         key={type}
                         label={type}
                         onChange={() => onTypesChange(type)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
+                  <CheckboxGroup
+                    hint="Filter results on selected years"
+                    legend="Years"
+                  >
+                    {years.map((year) => (
+                      <Checkbox
+                        checked={filteredYears.includes(year)}
+                        key={year}
+                        label={year}
+                        onChange={() => onYearsChange(year)}
                         size="sm"
                       />
                     ))}
