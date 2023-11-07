@@ -3,8 +3,9 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 
-import './button.scss';
 import Loader from './loader';
+
+import './button.scss';
 
 const iconSize = {
   sm: '1x',
@@ -70,39 +71,39 @@ const Button = forwardRef((props, ref) => {
 });
 
 Button.defaultProps = {
-  size: 'md',
-  isLoading: false,
-  secondary: false,
-  disabled: false,
-  iconPosition: 'left',
-  icon: '',
+  borderless: false,
   children: '',
   className: '',
-  tertiary: false,
-  submit: false,
-  borderless: false,
   color: null,
+  disabled: false,
+  icon: '',
+  iconPosition: 'left',
+  isLoading: false,
   rounded: false,
+  secondary: false,
+  size: 'md',
+  submit: false,
+  tertiary: false,
 };
 
 Button.propTypes = {
-  isLoading: PropTypes.bool,
-  secondary: PropTypes.bool,
   borderless: PropTypes.bool,
-  tertiary: PropTypes.bool,
-  icon: PropTypes.string,
-  disabled: PropTypes.bool,
-  iconPosition: PropTypes.oneOf(['left', 'right']),
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   className: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,
     PropTypes.array,
   ]),
-  size: PropTypes.oneOf(['sm', 'md', 'lg']),
   color: PropTypes.oneOf(['text', 'error', 'success', 'keep', 'VALIDATED']),
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  submit: PropTypes.bool,
+  disabled: PropTypes.bool,
+  icon: PropTypes.string,
+  iconPosition: PropTypes.oneOf(['left', 'right']),
+  isLoading: PropTypes.bool,
   rounded: PropTypes.bool,
+  secondary: PropTypes.bool,
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  submit: PropTypes.bool,
+  tertiary: PropTypes.bool,
 };
 
 export default Button;

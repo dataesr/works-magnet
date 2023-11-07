@@ -86,7 +86,6 @@ export default function Filters({ sendQuery }) {
         <Button
           icon="ri-search-line"
           onClick={checkAndSendQuery}
-          size="sm"
         >
           Search works
         </Button>

@@ -355,17 +355,18 @@ export default function Home() {
     <>
       <Container className="fr-my-5w" as="section" fluid>
         <Row className="fr-px-5w">
-          <Col n="9">
+          <Col>
             <Filters
               sendQuery={sendQuery}
             />
           </Col>
-          <Col n="3">
-            {data && (<Metrics data={data} />)}
-          </Col>
+          {/*
+            <Col n="3">
+              {data && (<Metrics data={data} />)}
+            </Col>
+          */}
         </Row>
       </Container>
-
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
           allAffiliations={allAffiliations}
@@ -375,7 +376,7 @@ export default function Home() {
           setAllPublications={setAllPublications}
         />
         <Tabs defaultActiveTab={0}>
-          <Tab label={`Affiliations (${allAffiliations.filter((affiliation) => !!affiliation.matches).length})`}>
+          <Tab label="Affiliations">
             {affiliationsNotice && (
               <Row>
                 <Col n="12">
@@ -388,8 +389,17 @@ export default function Home() {
               </Row>
             )}
             <Row>
-              <Col>
+              <Col n="4">
                 {renderAffiliationsButtons()}
+              </Col>
+              <Col>
+                <Gauge
+                  data={[
+                    { className: 'tobedecided', id: 'tobedecided', label: 'To be decided', value: allAffiliations.filter((affiliation) => affiliation.status === STATUS_TO_BE_DECIDED).length },
+                    { className: 'validated', id: 'validated', label: 'Validated', value: allAffiliations.filter((affiliation) => affiliation.status === STATUS_VALIDATED).length },
+                    { className: 'excluded', id: 'excluded', label: 'Excluded', value: allAffiliations.filter((affiliation) => affiliation.status === STATUS_EXCLUDED).length },
+                  ]}
+                />
               </Col>
             </Row>
             <Row>
@@ -410,17 +420,17 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Publications (${allPublications.filter((publication) => publication.status === STATUS_VALIDATED).length} / ${allPublications.length})`}>
+          <Tab label="Publications">
             <Row>
-              <Col>
+              <Col n="4">
                 {renderWorksButtons(selectedPublications)}
               </Col>
               <Col>
                 <Gauge
                   data={[
-                    { label: 'French OSM', color: '#334476', value: allPublications.filter((publication) => publication.datasource === 'bso').length },
-                    { label: 'OpenAlex', color: '#22a498', value: allPublications.filter((publication) => publication.datasource === 'openalex').length },
-                    { label: 'Both', color: '#2faf41a4', value: allPublications.filter((publication) => publication.datasource === 'bso, openalex').length },
+                    { className: 'tobedecided', id: 'tobedecided', label: 'To be decided', value: allPublications.filter((publication) => publication.status === STATUS_TO_BE_DECIDED).length },
+                    { className: 'validated', id: 'validated', label: 'Validated', value: allPublications.filter((publication) => publication.status === STATUS_VALIDATED).length },
+                    { className: 'excluded', id: 'excluded', label: 'Excluded', value: allPublications.filter((publication) => publication.status === STATUS_EXCLUDED).length },
                   ]}
                 />
               </Col>
@@ -496,12 +506,12 @@ export default function Home() {
               </Row>
             )}
             <Row>
-              <Col>
+              <Col n="4">
                 {renderWorksButtons(selectedPublications)}
               </Col>
             </Row>
           </Tab>
-          <Tab label={`Datasets (${allDatasets.filter((dataset) => dataset.status === STATUS_VALIDATED).length} / ${allDatasets.length})`}>
+          <Tab label="Datasets">
             <Row>
               <Col>
                 {renderWorksButtons(selectedDatasets)}
@@ -509,9 +519,9 @@ export default function Home() {
               <Col>
                 <Gauge
                   data={[
-                    { label: 'French OSM', color: '#334476', value: allDatasets.filter((dataset) => dataset.datasource === 'bso').length },
-                    { label: 'OpenAlex', color: '#22a498', value: allDatasets.filter((dataset) => dataset.datasource === 'openalex').length },
-                    { label: 'Both', color: '#2faf41a4', value: allDatasets.filter((dataset) => dataset.datasource === 'bso, openalex').length },
+                    { className: 'tobedecided', id: 'tobedecided', label: 'To be decided', value: allDatasets.filter((dataset) => dataset.status === STATUS_TO_BE_DECIDED).length },
+                    { className: 'validated', id: 'validated', label: 'Validated', value: allDatasets.filter((dataset) => dataset.status === STATUS_VALIDATED).length },
+                    { className: 'excluded', id: 'excluded', label: 'Excluded', value: allDatasets.filter((dataset) => dataset.status === STATUS_EXCLUDED).length },
                   ]}
                 />
               </Col>
