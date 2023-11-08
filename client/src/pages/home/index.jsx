@@ -377,14 +377,14 @@ export default function Home() {
           tagAffiliations={tagAffiliations}
         />
         <Tabs defaultActiveTab={0}>
-          <Tab label="Affiliations">
+          <Tab label="Grouped affiliations of works">
             {affiliationsNotice && (
               <Row>
                 <Col n="12">
                   <Notice
                     className="fr-m-1w"
                     onClose={() => { setAffiliationsNotice(false); }}
-                    title="All the affiliations of the works found in the French OSM and OpenAlex are listed below. A filter is applied to view only the affiliations containing at least one of the matching query input."
+                    title="All the affiliations of the works found in the French OSM and OpenAlex are listed below. A filter is applied to view only the affiliations containing at least one of the matching query input"
                   />
                 </Col>
               </Row>
@@ -421,7 +421,7 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label="Publications">
+          <Tab label="List all publications">
             <Row>
               <Col n="4">
                 {renderWorksButtons(selectedPublications)}
@@ -512,7 +512,7 @@ export default function Home() {
               </Col>
             </Row>
           </Tab>
-          <Tab label="Datasets">
+          <Tab label="List all datasets">
             <Row>
               <Col>
                 {renderWorksButtons(selectedDatasets)}
