@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 
 import Actions from './actions';
 import Filters from './filters';
-import Metrics from './metrics';
+// import Metrics from './metrics';
 import AffiliationsView from './views/affiliations';
 import WorksView from './views/works';
 import Gauge from '../../components/gauge';
@@ -374,6 +374,7 @@ export default function Home() {
           options={options}
           setAllAffiliations={setAllAffiliations}
           setAllPublications={setAllPublications}
+          tagAffiliations={tagAffiliations}
         />
         <Tabs defaultActiveTab={0}>
           <Tab label="Affiliations">

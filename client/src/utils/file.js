@@ -27,23 +27,33 @@ const export2BsoCsv = (allPublications) => {
   document.body.removeChild(link);
 };
 
-const export2json = (allAffiliations, allPublications, options) => {
+const export2json = (data) => {
   const link = document.createElement('a');
-  link.href = URL.createObjectURL(new Blob([JSON.stringify({ allAffiliations, allPublications, options })], { type: 'application/json' }));
+  link.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
   link.setAttribute('download', 'works-finder.json');
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
-const importJson = (e, setAllAffiliations, setSearchParams, setAllPublications) => {
+const importJson = (e, optionsInit, setAllAffiliations, setAllPublications, setSearchParams, tagAffiliations) => {
   const fileReader = new FileReader();
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {
-    const { allAffiliations, allPublications, options } = JSON.parse(f.target.result);
+    const { allAffiliations = [], allPublications = [], decidedAffiliations = [], options = optionsInit } = JSON.parse(f.target.result);
     options.restoreFromFile = true;
-    setAllAffiliations(allAffiliations);
-    setAllPublications(allPublications);
+    if (allAffiliations.length) {
+      setAllAffiliations(allAffiliations);
+    }
+    if (allPublications.length) {
+      setAllPublications(allPublications);
+    }
+    if (decidedAffiliations) {
+      const validatedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === 'validated');
+      tagAffiliations(validatedAffiliations, 'validated');
+      const excludedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === 'excluded');
+      tagAffiliations(excludedAffiliations, 'excluded');
+    }
     setSearchParams(options);
   };
 };

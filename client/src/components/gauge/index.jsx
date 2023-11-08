@@ -17,12 +17,12 @@ export default function Gauge({ data }) {
           <div
             className={item?.className ? `gauge-bar ${item.className}` : 'gauge-bar'}
             data-tooltip-id={`gauge-bar-${item.id}`}
-            key={item.label}
+            key={item.id}
             style={item?.color ? { width: `${item.valuePercentage}%`, backgroundColor: item.color } : { width: `${item.valuePercentage}%` }}
           >
             {`${item.label} (${item.value} ie. ${item.valuePercentage} %)`}
           </div>
-          <Tooltip id={`gauge-bar-${item.id}`}>
+          <Tooltip id={`gauge-bar-${item.id}`} key={`tooltip-${item.id}`}>
             {`${item.label} (${item.value} ie. ${item.valuePercentage} %)`}
           </Tooltip>
         </>
