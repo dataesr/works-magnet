@@ -6,6 +6,7 @@ import { Tooltip } from 'react-tooltip';
 
 import Button from '../../components/button';
 import { export2BsoCsv, export2json, importJson } from '../../utils/file';
+import { status } from '../../config';
 
 export default function Actions({
   allAffiliations,
@@ -18,7 +19,7 @@ export default function Actions({
   const [, setSearchParams] = useSearchParams();
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
 
-  const decidedAffiliations = allAffiliations.filter((affiliation) => ['excluded', 'validated'].includes(affiliation.status));
+  const decidedAffiliations = allAffiliations.filter((affiliation) => affiliation.status !== status.tobedecided.id);
 
   return (
     <>

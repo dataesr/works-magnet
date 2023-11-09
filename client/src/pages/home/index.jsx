@@ -27,6 +27,7 @@ import {
   getOpenAlexPublications,
   mergePublications,
 } from '../../utils/works';
+import { status } from '../../config';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -39,9 +40,6 @@ const {
 
 const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 const FOSM_IDENTIFIERS = ['crossref', 'hal_id', 'datacite'];
-const STATUS_EXCLUDED = 'excluded';
-const STATUS_TO_BE_DECIDED = 'to be decided';
-const STATUS_VALIDATED = 'validated';
 
 const getData = async (options) => {
   const promises1 = [getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX }), getOpenAlexPublications(options)];
@@ -119,10 +117,10 @@ export default function Home() {
   const groupByAffiliations = (publications) => {
     setIsLoading(true);
     // Save already decided affiliations
-    const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== STATUS_TO_BE_DECIDED);
-    // Compute distinct affiliations of the undecided publications
+    const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== status.tobedecided.id);
+    // Compute distinct affiliations of the undecided works
     let allAffiliationsTmp = {};
-    publications.filter((publication) => publication.status === STATUS_TO_BE_DECIDED).forEach((publication) => {
+    publications.filter((publication) => publication.status === status.tobedecided.id).forEach((publication) => {
       (publication?.affiliations ?? [])
         .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
         .forEach((affiliation) => {
@@ -141,7 +139,7 @@ export default function Home() {
               nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
               ror,
               rorHtml: ror?.replace(regexp, '<b>$&</b>'),
-              status: STATUS_TO_BE_DECIDED,
+              status: status.tobedecided.id,
               publications: [],
             };
           }
@@ -193,7 +191,7 @@ export default function Home() {
           allIdsHtml: getAllIdsHtmlField(dataset),
           authorsHtml: getAuthorsHtmlField(dataset),
           authorsTooltip: getAuthorsTooltipField(dataset),
-          status: STATUS_TO_BE_DECIDED,
+          status: status.tobedecided.id,
         }));
       allPublicationsTmp = data.publications
         .map((publication) => ({
@@ -203,7 +201,7 @@ export default function Home() {
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
           authorsTooltip: getAuthorsTooltipField(publication),
-          status: STATUS_TO_BE_DECIDED,
+          status: status.tobedecided.id,
         }));
     }
     setAllDatasets(allDatasetsTmp);
@@ -227,7 +225,7 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allPublications, regexp]);
 
-  const tagPublications = (publications, action) => {
+  const tagWorks = (publications, action) => {
     const allPublicationsTmp = [...allPublications];
     const publicationsIds = publications.map((publication) => publication.id);
     allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
@@ -236,7 +234,7 @@ export default function Home() {
   };
 
   const tagAffiliations = (affiliations, action) => {
-    if (action !== STATUS_EXCLUDED) {
+    if (action !== status.excluded.id) {
       const allPublicationsTmp = [...allPublications];
       const publicationsIds = affiliations.map((affiliation) => affiliation.publications).flat();
       allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
@@ -249,73 +247,35 @@ export default function Home() {
     setSelectedAffiliations([]);
   };
 
-  const renderAffiliationsButtons = () => (
+  const renderAffiliationsButtons = (selected) => (
     <>
-      <Button
-        className="fr-mr-1w btn-keep"
-        disabled={!selectedAffiliations.length}
-        icon="ri-checkbox-circle-line"
-        onClick={() => tagAffiliations(selectedAffiliations, STATUS_VALIDATED)}
-        size="sm"
-      >
-        Validate
-        {` (${selectedAffiliations.length})`}
-      </Button>
-      <Button
-        className="fr-mr-1w btn-hide"
-        disabled={!selectedAffiliations.length}
-        icon="ri-indeterminate-circle-line"
-        onClick={() => tagAffiliations(selectedAffiliations, STATUS_EXCLUDED)}
-        size="sm"
-      >
-        Exclude
-        {` (${selectedAffiliations.length})`}
-      </Button>
-      <Button
-        className="fr-mb-1w btn-reset"
-        disabled={!selectedAffiliations.length}
-        icon="ri-reply-fill"
-        onClick={() => tagAffiliations(selectedAffiliations, STATUS_TO_BE_DECIDED)}
-        size="sm"
-      >
-        Reset status
-        {` (${selectedAffiliations.length})`}
-      </Button>
+      {Object.values(status).map((st) => (
+        <Button
+          className={`fr-mb-1w fr-mr-1w ${st.buttonClassName}`}
+          disabled={!selected.length}
+          icon={st.buttonIcon}
+          onClick={() => tagAffiliations(selected, st.id)}
+          size="sm"
+        >
+          {`${st.buttonLabel} (${selected.length})`}
+        </Button>
+      ))}
     </>
   );
 
   const renderWorksButtons = (selected) => (
     <>
-      <Button
-        className="fr-mr-1w btn-keep"
-        disabled={!selected.length}
-        icon="ri-checkbox-circle-line"
-        onClick={() => tagPublications(selected, STATUS_VALIDATED)}
-        size="sm"
-      >
-        Validate
-        {` (${selected.length})`}
-      </Button>
-      <Button
-        className="fr-mr-1w btn-hide"
-        disabled={!selected.length}
-        icon="ri-indeterminate-circle-line"
-        onClick={() => tagPublications(selected, STATUS_EXCLUDED)}
-        size="sm"
-      >
-        Exclude
-        {` (${selected.length})`}
-      </Button>
-      <Button
-        className="fr-mb-1w btn-reset"
-        disabled={!selected.length}
-        icon="ri-reply-fill"
-        onClick={() => tagPublications(selected, STATUS_TO_BE_DECIDED)}
-        size="sm"
-      >
-        Reset status
-        {` (${selected.length})`}
-      </Button>
+      {Object.values(status).map((st) => (
+        <Button
+          className={`fr-mb-1w fr-mr-1w ${st.buttonClassName}`}
+          disabled={!selected.length}
+          icon={st.buttonIcon}
+          onClick={() => tagWorks(selected, st.id)}
+          size="sm"
+        >
+          {`${st.buttonLabel} (${selected.length})`}
+        </Button>
+      ))}
     </>
   );
 
@@ -391,15 +351,16 @@ export default function Home() {
             )}
             <Row>
               <Col n="4">
-                {renderAffiliationsButtons()}
+                {renderAffiliationsButtons(selectedAffiliations)}
               </Col>
               <Col>
                 <Gauge
-                  data={[
-                    { className: 'tobedecided', id: 'tobedecided', label: 'To be decided', value: allAffiliations.filter((affiliation) => affiliation.status === STATUS_TO_BE_DECIDED).length },
-                    { className: 'validated', id: 'validated', label: 'Validated', value: allAffiliations.filter((affiliation) => affiliation.status === STATUS_VALIDATED).length },
-                    { className: 'excluded', id: 'excluded', label: 'Excluded', value: allAffiliations.filter((affiliation) => affiliation.status === STATUS_EXCLUDED).length },
-                  ]}
+                  data={Object.values(status).map((st) => ({
+                    className: st.id,
+                    id: st.id,
+                    label: st.label,
+                    value: allAffiliations.filter((affiliation) => affiliation.status === st.id).length,
+                  }))}
                 />
               </Col>
             </Row>
@@ -417,7 +378,7 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {renderAffiliationsButtons()}
+                {renderAffiliationsButtons(selectedAffiliations)}
               </Col>
             </Row>
           </Tab>
@@ -428,11 +389,12 @@ export default function Home() {
               </Col>
               <Col>
                 <Gauge
-                  data={[
-                    { className: 'tobedecided', id: 'tobedecided', label: 'To be decided', value: allPublications.filter((publication) => publication.status === STATUS_TO_BE_DECIDED).length },
-                    { className: 'validated', id: 'validated', label: 'Validated', value: allPublications.filter((publication) => publication.status === STATUS_VALIDATED).length },
-                    { className: 'excluded', id: 'excluded', label: 'Excluded', value: allPublications.filter((publication) => publication.status === STATUS_EXCLUDED).length },
-                  ]}
+                  data={Object.keys(status).map((st) => ({
+                    className: status[st].id,
+                    id: status[st].id,
+                    label: status[st].label,
+                    value: allPublications.filter((publication) => publication.status === status[st].id).length,
+                  }))}
                 />
               </Col>
             </Row>
@@ -442,7 +404,7 @@ export default function Home() {
                 <Col n="2">
                   <CheckboxGroup
                     hint="Filter results on selected datasources"
-                    legend="Datasources"
+                    legend="Source"
                   >
                     {DATASOURCES.map((datasource) => (
                       <Checkbox
@@ -519,11 +481,12 @@ export default function Home() {
               </Col>
               <Col>
                 <Gauge
-                  data={[
-                    { className: 'tobedecided', id: 'tobedecided', label: 'To be decided', value: allDatasets.filter((dataset) => dataset.status === STATUS_TO_BE_DECIDED).length },
-                    { className: 'validated', id: 'validated', label: 'Validated', value: allDatasets.filter((dataset) => dataset.status === STATUS_VALIDATED).length },
-                    { className: 'excluded', id: 'excluded', label: 'Excluded', value: allDatasets.filter((dataset) => dataset.status === STATUS_EXCLUDED).length },
-                  ]}
+                  data={Object.keys(status).map((st) => ({
+                    className: status[st].id,
+                    id: status[st].id,
+                    label: status[st].label,
+                    value: allDatasets.filter((dataset) => dataset.status === status[st].id).length,
+                  }))}
                 />
               </Col>
             </Row>

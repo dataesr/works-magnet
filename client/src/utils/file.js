@@ -1,6 +1,8 @@
+import { status } from '../config';
+
 const export2BsoCsv = (allPublications) => {
   const csvHeader = ['doi', 'hal_id', 'nnt_id'].join(';');
-  const validatedPublications = allPublications.filter((publication) => publication.status === 'validated');
+  const validatedPublications = allPublications.filter((publication) => publication.status === status.validated.id);
   const getValue = (row, idType) => {
     if (!row) return '';
     if (row.doi && idType === 'doi') return row.doi;
@@ -49,10 +51,10 @@ const importJson = (e, optionsInit, setAllAffiliations, setAllPublications, setS
       setAllPublications(allPublications);
     }
     if (decidedAffiliations) {
-      const validatedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === 'validated');
-      tagAffiliations(validatedAffiliations, 'validated');
-      const excludedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === 'excluded');
-      tagAffiliations(excludedAffiliations, 'excluded');
+      const validatedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === status.validated.id);
+      tagAffiliations(validatedAffiliations, status.validated.id);
+      const excludedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === status.excluded.id);
+      tagAffiliations(excludedAffiliations, status.excluded.id);
     }
     setSearchParams(options);
   };
