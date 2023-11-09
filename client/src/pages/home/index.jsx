@@ -38,7 +38,6 @@ const {
   VITE_BSO_PUBLICATIONS_INDEX,
 } = import.meta.env;
 
-const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 const FOSM_IDENTIFIERS = ['crossref', 'hal_id', 'datacite'];
 
 const getData = async (options) => {
@@ -81,9 +80,9 @@ export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
-  const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
   const [filteredFosmIdentifiers, setFilteredFosmIdentifiers] = useState(FOSM_IDENTIFIERS);
   const [filteredPublications, setFilteredPublications] = useState([]);
+  const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -216,14 +215,14 @@ export default function Home() {
   }, [data, regexp]);
 
   useEffect(() => {
-    const filteredPublicationsTmp = allPublications.filter((publication) => filteredDatasources.includes(publication.datasource) && ((!publication.datasource.includes('bso')) || (publication?.external_ids.map((id) => id.id_type).every((type) => filteredFosmIdentifiers.includes(type)))) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
+    const filteredPublicationsTmp = allPublications.filter((publication) => filteredStatus.includes(publication.status) && ((!publication.datasource.includes('bso')) || (publication?.external_ids.map((id) => id.id_type).every((type) => filteredFosmIdentifiers.includes(type)))) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
     setFilteredPublications(filteredPublicationsTmp);
-  }, [allPublications, filteredDatasources, filteredFosmIdentifiers, filteredTypes, filteredYears]);
+  }, [allPublications, filteredFosmIdentifiers, filteredStatus, filteredTypes, filteredYears]);
 
   useEffect(() => {
     groupByAffiliations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allPublications, regexp]);
+  }, [allDatasets, allPublications, regexp]);
 
   const tagPublications = (publications, action) => {
     const allPublicationsTmp = [...allPublications];
@@ -275,19 +274,19 @@ export default function Home() {
     </>
   );
 
-  const onDatasourcesChange = (datasource) => {
-    if (filteredDatasources.includes(datasource.key)) {
-      setFilteredDatasources(filteredDatasources.filter((filteredDatasource) => filteredDatasource !== datasource.key));
-    } else {
-      setFilteredDatasources(filteredDatasources.concat([datasource.key]));
-    }
-  };
-
   const onFosmIdentifiersChange = (fosmIdentifier) => {
     if (filteredFosmIdentifiers.includes(fosmIdentifier)) {
       setFilteredFosmIdentifiers(filteredFosmIdentifiers.filter((filteredFosmIdentifier) => filteredFosmIdentifier !== fosmIdentifier));
     } else {
       setFilteredFosmIdentifiers(filteredFosmIdentifiers.concat([fosmIdentifier]));
+    }
+  };
+
+  const onStatusChange = (st) => {
+    if (filteredStatus.includes(st)) {
+      setFilteredStatus(filteredStatus.filter((filteredSt) => filteredSt !== st));
+    } else {
+      setFilteredStatus(filteredStatus.concat([st]));
     }
   };
 
@@ -395,15 +394,15 @@ export default function Home() {
               <Row>
                 <Col n="2">
                   <CheckboxGroup
-                    hint="Filter results on selected datasources"
-                    legend="Source"
+                    hint="Filter results on selected status"
+                    legend="Status"
                   >
-                    {DATASOURCES.map((datasource) => (
+                    {Object.values(status).map((st) => (
                       <Checkbox
-                        checked={filteredDatasources.includes(datasource.key)}
-                        key={datasource.key}
-                        label={datasource.label}
-                        onChange={() => onDatasourcesChange(datasource)}
+                        checked={filteredStatus.includes(st.id)}
+                        key={st.id}
+                        label={st.label}
+                        onChange={() => onStatusChange(st.id)}
                         size="sm"
                       />
                     ))}
