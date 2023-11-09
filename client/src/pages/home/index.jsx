@@ -80,7 +80,6 @@ export default function Home() {
   const [allPublications, setAllPublications] = useState([]);
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
-  const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
@@ -88,7 +87,6 @@ export default function Home() {
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
-  const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
@@ -202,19 +200,16 @@ export default function Home() {
     }
     setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
-    const allTypes = [...new Set(allPublicationsTmp.map((publication) => publication?.type))];
-    setTypes(allTypes);
     const allYears = [...new Set(allPublicationsTmp.map((publication) => publication?.year))];
     setYears(allYears);
-    setFilteredTypes(allTypes);
     setFilteredYears(allYears);
     setFilteredPublications(allPublicationsTmp);
   }, [data, regexp]);
 
   useEffect(() => {
-    const filteredPublicationsTmp = allPublications.filter((publication) => filteredStatus.includes(publication.status) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
+    const filteredPublicationsTmp = allPublications.filter((publication) => filteredStatus.includes(publication.status) && filteredYears.includes(publication.year));
     setFilteredPublications(filteredPublicationsTmp);
-  }, [allPublications, filteredStatus, filteredTypes, filteredYears]);
+  }, [allPublications, filteredStatus, filteredYears]);
 
   useEffect(() => {
     groupByAffiliations();
@@ -276,14 +271,6 @@ export default function Home() {
       setFilteredStatus(filteredStatus.filter((filteredSt) => filteredSt !== st));
     } else {
       setFilteredStatus(filteredStatus.concat([st]));
-    }
-  };
-
-  const onTypesChange = (type) => {
-    if (filteredTypes.includes(type)) {
-      setFilteredTypes(filteredTypes.filter((filteredType) => filteredType !== type));
-    } else {
-      setFilteredTypes(filteredTypes.concat([type]));
     }
   };
 
@@ -392,20 +379,6 @@ export default function Home() {
                         key={st.id}
                         label={st.label}
                         onChange={() => onStatusChange(st.id)}
-                        size="sm"
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <CheckboxGroup
-                    hint="Filter results on selected types"
-                    legend="Types"
-                  >
-                    {types.map((type) => (
-                      <Checkbox
-                        checked={filteredTypes.includes(type)}
-                        key={type}
-                        label={type}
-                        onChange={() => onTypesChange(type)}
                         size="sm"
                       />
                     ))}
