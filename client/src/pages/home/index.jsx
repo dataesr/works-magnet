@@ -247,30 +247,14 @@ export default function Home() {
     setSelectedAffiliations([]);
   };
 
-  const renderAffiliationsButtons = (selected) => (
+  const renderButtons = (selected, fn) => (
     <>
       {Object.values(status).map((st) => (
         <Button
           className={`fr-mb-1w fr-mr-1w ${st.buttonClassName}`}
           disabled={!selected.length}
           icon={st.buttonIcon}
-          onClick={() => tagAffiliations(selected, st.id)}
-          size="sm"
-        >
-          {`${st.buttonLabel} (${selected.length})`}
-        </Button>
-      ))}
-    </>
-  );
-
-  const renderWorksButtons = (selected) => (
-    <>
-      {Object.values(status).map((st) => (
-        <Button
-          className={`fr-mb-1w fr-mr-1w ${st.buttonClassName}`}
-          disabled={!selected.length}
-          icon={st.buttonIcon}
-          onClick={() => tagWorks(selected, st.id)}
+          onClick={() => fn(selected, st.id)}
           size="sm"
         >
           {`${st.buttonLabel} (${selected.length})`}
@@ -351,7 +335,7 @@ export default function Home() {
             )}
             <Row>
               <Col n="4">
-                {renderAffiliationsButtons(selectedAffiliations)}
+                {renderButtons(selectedAffiliations, tagAffiliations)}
               </Col>
               <Col>
                 <Gauge
@@ -378,14 +362,14 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {renderAffiliationsButtons(selectedAffiliations)}
+                {renderButtons(selectedAffiliations, tagAffiliations)}
               </Col>
             </Row>
           </Tab>
           <Tab label="List all publications">
             <Row>
               <Col n="4">
-                {renderWorksButtons(selectedPublications)}
+                {renderButtons(selectedPublications, tagWorks)}
               </Col>
               <Col>
                 <Gauge
@@ -470,14 +454,14 @@ export default function Home() {
             )}
             <Row>
               <Col n="4">
-                {renderWorksButtons(selectedPublications)}
+                {renderButtons(selectedPublications, tagWorks)}
               </Col>
             </Row>
           </Tab>
           <Tab label="List all datasets">
             <Row>
               <Col>
-                {renderWorksButtons(selectedDatasets)}
+                {renderButtons(selectedDatasets, tagWorks)}
               </Col>
               <Col>
                 <Gauge
@@ -504,7 +488,7 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {renderWorksButtons(selectedDatasets)}
+                {renderButtons(selectedDatasets, tagWorks)}
               </Col>
             </Row>
           </Tab>
