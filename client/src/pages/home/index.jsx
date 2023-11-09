@@ -38,8 +38,6 @@ const {
   VITE_BSO_PUBLICATIONS_INDEX,
 } = import.meta.env;
 
-const FOSM_IDENTIFIERS = ['crossref', 'hal_id', 'datacite'];
-
 const getData = async (options) => {
   const promises1 = [getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX }), getOpenAlexPublications(options)];
   const publications = await Promise.all(promises1.flat());
@@ -80,7 +78,6 @@ export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
-  const [filteredFosmIdentifiers, setFilteredFosmIdentifiers] = useState(FOSM_IDENTIFIERS);
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
   const [filteredTypes, setFilteredTypes] = useState([]);
@@ -215,9 +212,9 @@ export default function Home() {
   }, [data, regexp]);
 
   useEffect(() => {
-    const filteredPublicationsTmp = allPublications.filter((publication) => filteredStatus.includes(publication.status) && ((!publication.datasource.includes('bso')) || (publication?.external_ids.map((id) => id.id_type).every((type) => filteredFosmIdentifiers.includes(type)))) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
+    const filteredPublicationsTmp = allPublications.filter((publication) => filteredStatus.includes(publication.status) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
     setFilteredPublications(filteredPublicationsTmp);
-  }, [allPublications, filteredFosmIdentifiers, filteredStatus, filteredTypes, filteredYears]);
+  }, [allPublications, filteredStatus, filteredTypes, filteredYears]);
 
   useEffect(() => {
     groupByAffiliations();
@@ -273,14 +270,6 @@ export default function Home() {
       ))}
     </>
   );
-
-  const onFosmIdentifiersChange = (fosmIdentifier) => {
-    if (filteredFosmIdentifiers.includes(fosmIdentifier)) {
-      setFilteredFosmIdentifiers(filteredFosmIdentifiers.filter((filteredFosmIdentifier) => filteredFosmIdentifier !== fosmIdentifier));
-    } else {
-      setFilteredFosmIdentifiers(filteredFosmIdentifiers.concat([fosmIdentifier]));
-    }
-  };
 
   const onStatusChange = (st) => {
     if (filteredStatus.includes(st)) {
@@ -403,20 +392,6 @@ export default function Home() {
                         key={st.id}
                         label={st.label}
                         onChange={() => onStatusChange(st.id)}
-                        size="sm"
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <CheckboxGroup
-                    hint="Filter results on selected identifiers"
-                    legend="FOSM identifiers"
-                  >
-                    {FOSM_IDENTIFIERS.map((fosmIdentifier) => (
-                      <Checkbox
-                        checked={filteredFosmIdentifiers.includes(fosmIdentifier)}
-                        key={fosmIdentifier}
-                        label={fosmIdentifier}
-                        onChange={() => onFosmIdentifiersChange(fosmIdentifier)}
                         size="sm"
                       />
                     ))}
