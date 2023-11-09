@@ -38,6 +38,8 @@ const {
   VITE_BSO_PUBLICATIONS_INDEX,
 } = import.meta.env;
 
+const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
+
 const getData = async (options) => {
   const promises1 = [getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX }), getOpenAlexPublications(options)];
   const publications = await Promise.all(promises1.flat());
@@ -78,6 +80,7 @@ export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
+  const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
   const [filteredYears, setFilteredYears] = useState([]);
@@ -207,9 +210,9 @@ export default function Home() {
   }, [data, regexp]);
 
   useEffect(() => {
-    const filteredPublicationsTmp = allPublications.filter((publication) => filteredStatus.includes(publication.status) && filteredYears.includes(publication.year));
+    const filteredPublicationsTmp = allPublications.filter((publication) => filteredDatasources.includes(publication.datasource) && filteredStatus.includes(publication.status) && filteredYears.includes(publication.year));
     setFilteredPublications(filteredPublicationsTmp);
-  }, [allPublications, filteredStatus, filteredYears]);
+  }, [allPublications, filteredDatasources, filteredStatus, filteredYears]);
 
   useEffect(() => {
     groupByAffiliations();
@@ -265,6 +268,14 @@ export default function Home() {
       ))}
     </>
   );
+
+  const onDatasourcesChange = (datasource) => {
+    if (filteredDatasources.includes(datasource.key)) {
+      setFilteredDatasources(filteredDatasources.filter((filteredDatasource) => filteredDatasource !== datasource.key));
+    } else {
+      setFilteredDatasources(filteredDatasources.concat([datasource.key]));
+    }
+  };
 
   const onStatusChange = (st) => {
     if (filteredStatus.includes(st)) {
@@ -379,6 +390,20 @@ export default function Home() {
                         key={st.id}
                         label={st.label}
                         onChange={() => onStatusChange(st.id)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
+                  <CheckboxGroup
+                    hint="Filter results on selected datasources"
+                    legend="Source"
+                  >
+                    {DATASOURCES.map((datasource) => (
+                      <Checkbox
+                        checked={filteredDatasources.includes(datasource.key)}
+                        key={datasource.key}
+                        label={datasource.label}
+                        onChange={() => onDatasourcesChange(datasource)}
                         size="sm"
                       />
                     ))}
