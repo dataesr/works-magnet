@@ -82,7 +82,7 @@ const getBsoWorks = async ({ allResults = [], index = VITE_BSO_PUBLICATIONS_INDE
       // eslint-disable-next-line no-param-reassign
       allResults = allResults.concat(hits.map((result) => ({
         ...result._source,
-        // Filter ids on uniq values
+        // Filter ids on unique values
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: result._source?.authors ?? [],
         datasource: 'bso',
@@ -248,9 +248,9 @@ const mergePublications = (publi1, publi2) => {
   return ({
     ...priorityPublication,
     affiliations: [...publi1.affiliations, ...publi2.affiliations],
-    // Filter allIds by uniq values
+    // Filter allIds by unique values
     allIds: Object.values([...publi1.allIds, ...publi2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
-    // Filter authors by uniq full_name
+    // Filter authors by unique full_name
     authors: Object.values([...publi1.authors, ...publi2.authors].reduce((acc, obj) => ({ ...acc, [obj.full_name]: obj }), {})),
     datasource: 'bso, openalex',
   });

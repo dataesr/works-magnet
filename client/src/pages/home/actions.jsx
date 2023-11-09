@@ -110,8 +110,8 @@ Actions.propTypes = {
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    publications: PropTypes.arrayOf(PropTypes.string).isRequired,
-    publicationsNumber: PropTypes.number.isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   allPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
