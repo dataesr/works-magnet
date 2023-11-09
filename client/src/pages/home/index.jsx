@@ -340,9 +340,7 @@ export default function Home() {
               <Col>
                 <Gauge
                   data={Object.values(status).map((st) => ({
-                    className: st.id,
-                    id: st.id,
-                    label: st.label,
+                    ...st,
                     value: allAffiliations.filter((affiliation) => affiliation.status === st.id).length,
                   }))}
                 />
@@ -373,11 +371,9 @@ export default function Home() {
               </Col>
               <Col>
                 <Gauge
-                  data={Object.keys(status).map((st) => ({
-                    className: status[st].id,
-                    id: status[st].id,
-                    label: status[st].label,
-                    value: allPublications.filter((publication) => publication.status === status[st].id).length,
+                  data={Object.values(status).map((st) => ({
+                    ...st,
+                    value: allPublications.filter((publication) => publication.status === st.id).length,
                   }))}
                 />
               </Col>
@@ -460,16 +456,14 @@ export default function Home() {
           </Tab>
           <Tab label="List all datasets">
             <Row>
-              <Col>
+              <Col n="4">
                 {renderButtons(selectedDatasets, tagWorks)}
               </Col>
               <Col>
                 <Gauge
-                  data={Object.keys(status).map((st) => ({
-                    className: status[st].id,
-                    id: status[st].id,
-                    label: status[st].label,
-                    value: allDatasets.filter((dataset) => dataset.status === status[st].id).length,
+                  data={Object.values(status).map((st) => ({
+                    ...st,
+                    value: allDatasets.filter((dataset) => dataset.status === st.id).length,
                   }))}
                 />
               </Col>
