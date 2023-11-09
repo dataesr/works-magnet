@@ -225,12 +225,20 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allPublications, regexp]);
 
-  const tagWorks = (publications, action) => {
+  const tagPublications = (publications, action) => {
     const allPublicationsTmp = [...allPublications];
     const publicationsIds = publications.map((publication) => publication.id);
     allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
     setAllPublications(allPublicationsTmp);
     setSelectedPublications([]);
+  };
+
+  const tagDatasets = (datasets, action) => {
+    const allDatasetsTmp = [...allDatasets];
+    const datasetsIds = datasets.map((dataset) => dataset.id);
+    allDatasetsTmp.filter((dataset) => datasetsIds.includes(dataset.id)).map((dataset) => dataset.status = action);
+    setAllDatasets(allDatasetsTmp);
+    setSelectedDatasets([]);
   };
 
   const tagAffiliations = (affiliations, action) => {
@@ -254,6 +262,7 @@ export default function Home() {
           className={`fr-mb-1w fr-mr-1w ${st.buttonClassName}`}
           disabled={!selected.length}
           icon={st.buttonIcon}
+          key={st.id}
           onClick={() => fn(selected, st.id)}
           size="sm"
         >
@@ -367,7 +376,7 @@ export default function Home() {
           <Tab label="List all publications">
             <Row>
               <Col n="4">
-                {renderButtons(selectedPublications, tagWorks)}
+                {renderButtons(selectedPublications, tagPublications)}
               </Col>
               <Col>
                 <Gauge
@@ -450,14 +459,14 @@ export default function Home() {
             )}
             <Row>
               <Col n="4">
-                {renderButtons(selectedPublications, tagWorks)}
+                {renderButtons(selectedPublications, tagPublications)}
               </Col>
             </Row>
           </Tab>
           <Tab label="List all datasets">
             <Row>
               <Col n="4">
-                {renderButtons(selectedDatasets, tagWorks)}
+                {renderButtons(selectedDatasets, tagDatasets)}
               </Col>
               <Col>
                 <Gauge
@@ -482,7 +491,7 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {renderButtons(selectedDatasets, tagWorks)}
+                {renderButtons(selectedDatasets, tagDatasets)}
               </Col>
             </Row>
           </Tab>
