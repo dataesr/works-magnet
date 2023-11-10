@@ -97,6 +97,7 @@ export default function Home() {
   const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
+  const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
@@ -106,6 +107,7 @@ export default function Home() {
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [timer, setTimer] = useState();
   const [timer2, setTimer2] = useState();
+  const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
@@ -224,6 +226,9 @@ export default function Home() {
     const allYears = [...new Set(allPublicationsTmp.map((publication) => publication?.year))];
     setYears(allYears);
     setFilteredYears(allYears);
+    const allTypes = [...new Set(allPublicationsTmp.map((publication) => publication?.type))];
+    setTypes(allTypes);
+    setFilteredTypes(allTypes);
   }, [data, regexp]);
 
   useEffect(() => {
@@ -231,13 +236,13 @@ export default function Home() {
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredPublicationsTmp = allPublications.filter((publication) => publication.affiliationsTooltip.includes(filteredAffiliationName) && filteredDatasources.includes(publication.datasource) && filteredStatus.includes(publication.status) && filteredYears.includes(publication.year));
+      const filteredPublicationsTmp = allPublications.filter((publication) => publication.affiliationsTooltip.includes(filteredAffiliationName) && filteredDatasources.includes(publication.datasource) && filteredStatus.includes(publication.status) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
       setFilteredPublications(filteredPublicationsTmp);
     }, 500);
     setTimer(timerTmp);
   // The timer should not be tracked
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allPublications, filteredAffiliationName, filteredDatasources, filteredStatus, filteredYears]);
+  }, [allPublications, filteredAffiliationName, filteredDatasources, filteredStatus, filteredTypes, filteredYears]);
 
   useEffect(() => {
     if (timer2) {
@@ -323,6 +328,14 @@ export default function Home() {
     }
   };
 
+  const onTypesChange = (type) => {
+    if (filteredTypes.includes(type)) {
+      setFilteredTypes(filteredTypes.filter((filteredType) => filteredType !== type));
+    } else {
+      setFilteredTypes(filteredTypes.concat([type]));
+    }
+  };
+
   const onYearsChange = (year) => {
     if (filteredYears.includes(year)) {
       setFilteredYears(filteredYears.filter((filteredYear) => filteredYear !== year));
@@ -373,7 +386,7 @@ export default function Home() {
               <Col n="4">
                 {renderButtons(selectedAffiliations, tagAffiliations)}
               </Col>
-              <Col>
+              <Col n="8">
                 <Gauge
                   data={Object.values(status).map((st) => ({
                     ...st,
@@ -392,7 +405,7 @@ export default function Home() {
                     value={filteredAffiliationName2}
                   />
                 </Col>
-                <Col>
+                <Col n="10">
                   <AffiliationsView
                     allAffiliations={filteredAffiliations.filter((affiliation) => !!affiliation.matches)}
                     selectedAffiliations={selectedAffiliations}
@@ -412,7 +425,7 @@ export default function Home() {
               <Col n="4">
                 {renderButtons(selectedPublications, tagPublications)}
               </Col>
-              <Col>
+              <Col n="8">
                 <Gauge
                   data={Object.values(status).map((st) => ({
                     ...st,
@@ -423,7 +436,7 @@ export default function Home() {
             </Row>
             {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
             {(!isFetching && !isLoading) && (
-              <Row>
+              <Row gutters>
                 <Col n="2">
                   <CheckboxGroup
                     hint="Filter results on selected status"
@@ -467,13 +480,27 @@ export default function Home() {
                       />
                     ))}
                   </CheckboxGroup>
+                  <CheckboxGroup
+                    hint="Filter results on selected types"
+                    legend="Types"
+                  >
+                    {types.map((type) => (
+                      <Checkbox
+                        checked={filteredTypes.includes(type)}
+                        key={type}
+                        label={type.toString()}
+                        onChange={() => onTypesChange(type)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
                   <TextInput
                     label="Filter on affiliations"
                     onChange={(e) => setFilteredAffiliationName(e.target.value)}
                     value={filteredAffiliationName}
                   />
                 </Col>
-                <Col>
+                <Col n="10">
                   <WorksView
                     selectedWorks={selectedPublications}
                     setSelectedWorks={setSelectedPublications}
@@ -493,7 +520,7 @@ export default function Home() {
               <Col n="4">
                 {renderButtons(selectedDatasets, tagDatasets)}
               </Col>
-              <Col>
+              <Col n="8">
                 <Gauge
                   data={Object.values(status).map((st) => ({
                     ...st,
