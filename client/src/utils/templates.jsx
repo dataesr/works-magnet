@@ -91,19 +91,6 @@ const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowDa
 
 const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
 
-const statusFilterTemplate = (options) => (
-  <Dropdown
-    className="p-column-filter"
-    itemTemplate={statusTemplate}
-    onChange={(e) => options.filterApplyCallback(e.value)}
-    options={Object.keys(status)}
-    placeholder=""
-    style={{ width: '6rem' }}
-    showClear
-    value={options.value}
-  />
-);
-
 export {
   affiliationsTemplate,
   allIdsTemplate,
@@ -115,6 +102,5 @@ export {
   getAuthorsHtmlField,
   getAuthorsTooltipField,
   nameTemplate,
-  statusFilterTemplate,
   statusTemplate,
 };

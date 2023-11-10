@@ -2,11 +2,7 @@ import PropTypes from 'prop-types';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 
-import {
-  nameTemplate,
-  statusFilterTemplate,
-  statusTemplate,
-} from '../../../utils/templates';
+import { nameTemplate, statusTemplate } from '../../../utils/templates';
 
 export default function AffiliationsView({
   allAffiliations,
@@ -37,8 +33,8 @@ export default function AffiliationsView({
       value={allAffiliations}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} />
-      <Column field="nameHtml" header="Affiliation" body={nameTemplate} filter filterField="name" filterMatchMode="contains" filterPlaceholder="Search by affiliation" />
+      <Column field="status" header="Status" body={statusTemplate} />
+      <Column field="nameHtml" header="Affiliation" body={nameTemplate} />
       <Column field="worksNumber" header="Number of works" sortable />
       <Column field="matches" header="Number of unique matches" sortable />
     </DataTable>
