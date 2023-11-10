@@ -2,7 +2,18 @@
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
-import { Button, Checkbox, CheckboxGroup, Col, Container, Notice, Row, Tab, Tabs } from '@dataesr/react-dsfr';
+import {
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  Col,
+  Container,
+  Notice,
+  Row,
+  Tab,
+  Tabs,
+  TextInput,
+} from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
@@ -80,6 +91,7 @@ export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
+  const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
@@ -90,6 +102,7 @@ export default function Home() {
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
+  const [timer, setTimer] = useState();
   const [years, setYears] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
@@ -210,9 +223,17 @@ export default function Home() {
   }, [data, regexp]);
 
   useEffect(() => {
-    const filteredPublicationsTmp = allPublications.filter((publication) => filteredDatasources.includes(publication.datasource) && filteredStatus.includes(publication.status) && filteredYears.includes(publication.year));
-    setFilteredPublications(filteredPublicationsTmp);
-  }, [allPublications, filteredDatasources, filteredStatus, filteredYears]);
+    if (timer) {
+      clearTimeout(timer);
+    }
+    const timerTmp = setTimeout(() => {
+      const filteredPublicationsTmp = allPublications.filter((publication) => publication.affiliationsTooltip.includes(filteredAffiliationName) && filteredDatasources.includes(publication.datasource) && filteredStatus.includes(publication.status) && filteredYears.includes(publication.year));
+      setFilteredPublications(filteredPublicationsTmp);
+    }, 500);
+    setTimer(timerTmp);
+  // The timer should not be tracked
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allPublications, filteredAffiliationName, filteredDatasources, filteredStatus, filteredYears]);
 
   useEffect(() => {
     groupByAffiliations();
@@ -422,6 +443,11 @@ export default function Home() {
                       />
                     ))}
                   </CheckboxGroup>
+                  <TextInput
+                    label="Filter on affiliations"
+                    onChange={(e) => setFilteredAffiliationName(e.target.value)}
+                    value={filteredAffiliationName}
+                  />
                 </Col>
                 <Col>
                   <WorksView
