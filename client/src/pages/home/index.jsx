@@ -91,7 +91,9 @@ export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
+  const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
+  const [filteredAffiliationName2, setFilteredAffiliationName2] = useState('');
   const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
@@ -103,6 +105,7 @@ export default function Home() {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [timer, setTimer] = useState();
+  const [timer2, setTimer2] = useState();
   const [years, setYears] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
@@ -167,8 +170,9 @@ export default function Home() {
     });
 
     allAffiliationsTmp = Object.values(allAffiliationsTmp)
-      .map((affiliation, index) => ({ ...affiliation, works: [...new Set(affiliation.works)], id: index.toString(), worksNumber: [...new Set(affiliation.works)].length }));
+      .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
     setAllAffiliations(allAffiliationsTmp);
+    setFilteredAffiliations(allAffiliationsTmp);
     setIsLoading(false);
   };
 
@@ -216,10 +220,10 @@ export default function Home() {
     }
     setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
+    setFilteredPublications(allPublicationsTmp);
     const allYears = [...new Set(allPublicationsTmp.map((publication) => publication?.year))];
     setYears(allYears);
     setFilteredYears(allYears);
-    setFilteredPublications(allPublicationsTmp);
   }, [data, regexp]);
 
   useEffect(() => {
@@ -234,6 +238,19 @@ export default function Home() {
   // The timer should not be tracked
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allPublications, filteredAffiliationName, filteredDatasources, filteredStatus, filteredYears]);
+
+  useEffect(() => {
+    if (timer2) {
+      clearTimeout(timer2);
+    }
+    const timerTmp2 = setTimeout(() => {
+      const filteredAffiliationsTmp = allAffiliations.filter((affiliation) => affiliation.name.includes(filteredAffiliationName2));
+      setFilteredAffiliations(filteredAffiliationsTmp);
+    }, 500);
+    setTimer2(timerTmp2);
+  // The timer should not be tracked
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allAffiliations, filteredAffiliationName2]);
 
   useEffect(() => {
     groupByAffiliations();
@@ -365,18 +382,25 @@ export default function Home() {
                 />
               </Col>
             </Row>
-            <Row>
-              <Col>
-                {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-                {!isFetching && !isLoading && (
+            {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
+            {!isFetching && !isLoading && (
+              <Row>
+                <Col n="2">
+                  <TextInput
+                    label="Filter on affiliations"
+                    onChange={(e) => setFilteredAffiliationName2(e.target.value)}
+                    value={filteredAffiliationName2}
+                  />
+                </Col>
+                <Col>
                   <AffiliationsView
-                    allAffiliations={allAffiliations.filter((affiliation) => !!affiliation.matches)}
+                    allAffiliations={filteredAffiliations.filter((affiliation) => !!affiliation.matches)}
                     selectedAffiliations={selectedAffiliations}
                     setSelectedAffiliations={setSelectedAffiliations}
                   />
-                )}
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            )}
             <Row>
               <Col>
                 {renderButtons(selectedAffiliations, tagAffiliations)}
