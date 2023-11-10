@@ -2,13 +2,24 @@
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
-import { Button, Checkbox, CheckboxGroup, Col, Container, Notice, Row, Tab, Tabs } from '@dataesr/react-dsfr';
+import {
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  Col,
+  Container,
+  Notice,
+  Row,
+  Tab,
+  Tabs,
+  TextInput,
+} from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import Actions from './actions';
 import Filters from './filters';
-import Metrics from './metrics';
+// import Metrics from './metrics';
 import AffiliationsView from './views/affiliations';
 import WorksView from './views/works';
 import Gauge from '../../components/gauge';
@@ -27,6 +38,7 @@ import {
   getOpenAlexPublications,
   mergePublications,
 } from '../../utils/works';
+import { status } from '../../config';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -38,10 +50,6 @@ const {
 } = import.meta.env;
 
 const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
-const FOSM_IDENTIFIERS = ['crossref', 'hal_id', 'datacite'];
-const STATUS_EXCLUDED = 'excluded';
-const STATUS_TO_BE_DECIDED = 'to be decided';
-const STATUS_VALIDATED = 'validated';
 
 const getData = async (options) => {
   const promises1 = [getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX }), getOpenAlexPublications(options)];
@@ -83,9 +91,13 @@ export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
+  const [filteredAffiliations, setFilteredAffiliations] = useState([]);
+  const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
+  const [filteredAffiliationName2, setFilteredAffiliationName2] = useState('');
   const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
-  const [filteredFosmIdentifiers, setFilteredFosmIdentifiers] = useState(FOSM_IDENTIFIERS);
   const [filteredPublications, setFilteredPublications] = useState([]);
+  const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
+  const [filteredStatus2, setFilteredStatus2] = useState(Object.keys(status));
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +106,8 @@ export default function Home() {
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
+  const [timer, setTimer] = useState();
+  const [timer2, setTimer2] = useState();
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
 
@@ -116,14 +130,14 @@ export default function Home() {
     .normalize('NFD')
     .replace(/[^a-zA-Z0-9]/g, '');
 
-  const groupByAffiliations = (publications) => {
+  const groupByAffiliations = () => {
     setIsLoading(true);
     // Save already decided affiliations
-    const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== STATUS_TO_BE_DECIDED);
-    // Compute distinct affiliations of the undecided publications
+    const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== status.tobedecided.id);
+    // Compute distinct affiliations of the undecided works
     let allAffiliationsTmp = {};
-    publications.filter((publication) => publication.status === STATUS_TO_BE_DECIDED).forEach((publication) => {
-      (publication?.affiliations ?? [])
+    [...allDatasets, ...allPublications].filter((work) => work.status === status.tobedecided.id).forEach((work) => {
+      (work?.affiliations ?? [])
         .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
         .forEach((affiliation) => {
           const ror = getAffiliationRor(affiliation);
@@ -133,7 +147,7 @@ export default function Home() {
             let matches = `${affiliation?.name}`?.match(regexp) ?? [];
             // Normalize matched strings
             matches = matches.map((name) => normalizedName(name));
-            // Filter matches as uniq
+            // Filter matches as unique
             matches = [...new Set(matches)];
             allAffiliationsTmp[normalizedAffiliationName] = {
               matches: matches.length,
@@ -141,11 +155,11 @@ export default function Home() {
               nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
               ror,
               rorHtml: ror?.replace(regexp, '<b>$&</b>'),
-              status: STATUS_TO_BE_DECIDED,
-              publications: [],
+              status: status.tobedecided.id,
+              works: [],
             };
           }
-          allAffiliationsTmp[normalizedAffiliationName].publications.push(publication.id);
+          allAffiliationsTmp[normalizedAffiliationName].works.push(work.id);
         });
     });
 
@@ -159,8 +173,9 @@ export default function Home() {
     });
 
     allAffiliationsTmp = Object.values(allAffiliationsTmp)
-      .map((affiliation, index) => ({ ...affiliation, publications: [...new Set(affiliation.publications)], id: index.toString(), publicationsNumber: [...new Set(affiliation.publications)].length }));
+      .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
     setAllAffiliations(allAffiliationsTmp);
+    setFilteredAffiliations(allAffiliationsTmp);
     setIsLoading(false);
   };
 
@@ -193,7 +208,7 @@ export default function Home() {
           allIdsHtml: getAllIdsHtmlField(dataset),
           authorsHtml: getAuthorsHtmlField(dataset),
           authorsTooltip: getAuthorsTooltipField(dataset),
-          status: STATUS_TO_BE_DECIDED,
+          status: status.tobedecided.id,
         }));
       allPublicationsTmp = data.publications
         .map((publication) => ({
@@ -203,29 +218,50 @@ export default function Home() {
           allIdsHtml: getAllIdsHtmlField(publication),
           authorsHtml: getAuthorsHtmlField(publication),
           authorsTooltip: getAuthorsTooltipField(publication),
-          status: STATUS_TO_BE_DECIDED,
+          status: status.tobedecided.id,
         }));
     }
     setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
-    const allTypes = [...new Set(allPublicationsTmp.map((publication) => publication?.type))];
-    setTypes(allTypes);
+    setFilteredPublications(allPublicationsTmp);
     const allYears = [...new Set(allPublicationsTmp.map((publication) => publication?.year))];
     setYears(allYears);
-    setFilteredTypes(allTypes);
     setFilteredYears(allYears);
-    setFilteredPublications(allPublicationsTmp);
+    const allTypes = [...new Set(allPublicationsTmp.map((publication) => publication?.type))];
+    setTypes(allTypes);
+    setFilteredTypes(allTypes);
   }, [data, regexp]);
 
   useEffect(() => {
-    const filteredPublicationsTmp = allPublications.filter((publication) => filteredDatasources.includes(publication.datasource) && ((!publication.datasource.includes('bso')) || (publication?.external_ids.map((id) => id.id_type).every((type) => filteredFosmIdentifiers.includes(type)))) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
-    setFilteredPublications(filteredPublicationsTmp);
-  }, [allPublications, filteredDatasources, filteredFosmIdentifiers, filteredTypes, filteredYears]);
+    if (timer) {
+      clearTimeout(timer);
+    }
+    const timerTmp = setTimeout(() => {
+      const filteredPublicationsTmp = allPublications.filter((publication) => publication.affiliationsTooltip.includes(filteredAffiliationName) && filteredDatasources.includes(publication.datasource) && filteredStatus.includes(publication.status) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
+      setFilteredPublications(filteredPublicationsTmp);
+    }, 500);
+    setTimer(timerTmp);
+  // The timer should not be tracked
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allPublications, filteredAffiliationName, filteredDatasources, filteredStatus, filteredTypes, filteredYears]);
 
   useEffect(() => {
-    groupByAffiliations(allPublications, regexp);
+    if (timer2) {
+      clearTimeout(timer2);
+    }
+    const timerTmp2 = setTimeout(() => {
+      const filteredAffiliationsTmp = allAffiliations.filter((affiliation) => affiliation.name.includes(filteredAffiliationName2) && filteredStatus2.includes(affiliation.status));
+      setFilteredAffiliations(filteredAffiliationsTmp);
+    }, 500);
+    setTimer2(timerTmp2);
+  // The timer should not be tracked
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allAffiliations, filteredAffiliationName2, filteredStatus2]);
+
+  useEffect(() => {
+    groupByAffiliations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allPublications, regexp]);
+  }, [allDatasets, allPublications, regexp]);
 
   const tagPublications = (publications, action) => {
     const allPublicationsTmp = [...allPublications];
@@ -235,12 +271,23 @@ export default function Home() {
     setSelectedPublications([]);
   };
 
+  const tagDatasets = (datasets, action) => {
+    const allDatasetsTmp = [...allDatasets];
+    const datasetsIds = datasets.map((dataset) => dataset.id);
+    allDatasetsTmp.filter((dataset) => datasetsIds.includes(dataset.id)).map((dataset) => dataset.status = action);
+    setAllDatasets(allDatasetsTmp);
+    setSelectedDatasets([]);
+  };
+
   const tagAffiliations = (affiliations, action) => {
-    if (action !== STATUS_EXCLUDED) {
+    if (action !== status.excluded.id) {
+      const worksIds = affiliations.map((affiliation) => affiliation.works).flat();
       const allPublicationsTmp = [...allPublications];
-      const publicationsIds = affiliations.map((affiliation) => affiliation.publications).flat();
-      allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
+      allPublicationsTmp.filter((publication) => worksIds.includes(publication.id)).map((publication) => publication.status = action);
       setAllPublications(allPublicationsTmp);
+      const allDatasetsTmp = [...allDatasets];
+      allDatasetsTmp.filter((dataset) => worksIds.includes(dataset.id)).map((dataset) => dataset.status = action);
+      setAllDatasets(allDatasetsTmp);
     }
     const allAffiliationsTmp = [...allAffiliations];
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
@@ -249,73 +296,20 @@ export default function Home() {
     setSelectedAffiliations([]);
   };
 
-  const renderAffiliationsButtons = () => (
+  const renderButtons = (selected, fn) => (
     <>
-      <Button
-        className="fr-mr-1w btn-keep"
-        disabled={!selectedAffiliations.length}
-        icon="ri-checkbox-circle-line"
-        onClick={() => tagAffiliations(selectedAffiliations, STATUS_VALIDATED)}
-        size="sm"
-      >
-        Validate
-        {` (${selectedAffiliations.length})`}
-      </Button>
-      <Button
-        className="fr-mr-1w btn-hide"
-        disabled={!selectedAffiliations.length}
-        icon="ri-indeterminate-circle-line"
-        onClick={() => tagAffiliations(selectedAffiliations, STATUS_EXCLUDED)}
-        size="sm"
-      >
-        Exclude
-        {` (${selectedAffiliations.length})`}
-      </Button>
-      <Button
-        className="fr-mb-1w btn-reset"
-        disabled={!selectedAffiliations.length}
-        icon="ri-reply-fill"
-        onClick={() => tagAffiliations(selectedAffiliations, STATUS_TO_BE_DECIDED)}
-        size="sm"
-      >
-        Reset status
-        {` (${selectedAffiliations.length})`}
-      </Button>
-    </>
-  );
-
-  const renderWorksButtons = (selected) => (
-    <>
-      <Button
-        className="fr-mr-1w btn-keep"
-        disabled={!selected.length}
-        icon="ri-checkbox-circle-line"
-        onClick={() => tagPublications(selected, STATUS_VALIDATED)}
-        size="sm"
-      >
-        Validate
-        {` (${selected.length})`}
-      </Button>
-      <Button
-        className="fr-mr-1w btn-hide"
-        disabled={!selected.length}
-        icon="ri-indeterminate-circle-line"
-        onClick={() => tagPublications(selected, STATUS_EXCLUDED)}
-        size="sm"
-      >
-        Exclude
-        {` (${selected.length})`}
-      </Button>
-      <Button
-        className="fr-mb-1w btn-reset"
-        disabled={!selected.length}
-        icon="ri-reply-fill"
-        onClick={() => tagPublications(selected, STATUS_TO_BE_DECIDED)}
-        size="sm"
-      >
-        Reset status
-        {` (${selected.length})`}
-      </Button>
+      {Object.values(status).map((st) => (
+        <Button
+          className={`fr-mb-1w fr-mr-1w ${st.buttonClassName}`}
+          disabled={!selected.length}
+          icon={st.buttonIcon}
+          key={st.id}
+          onClick={() => fn(selected, st.id)}
+          size="sm"
+        >
+          {`${st.buttonLabel} (${selected.length})`}
+        </Button>
+      ))}
     </>
   );
 
@@ -327,11 +321,19 @@ export default function Home() {
     }
   };
 
-  const onFosmIdentifiersChange = (fosmIdentifier) => {
-    if (filteredFosmIdentifiers.includes(fosmIdentifier)) {
-      setFilteredFosmIdentifiers(filteredFosmIdentifiers.filter((filteredFosmIdentifier) => filteredFosmIdentifier !== fosmIdentifier));
+  const onStatusChange = (st) => {
+    if (filteredStatus.includes(st)) {
+      setFilteredStatus(filteredStatus.filter((filteredSt) => filteredSt !== st));
     } else {
-      setFilteredFosmIdentifiers(filteredFosmIdentifiers.concat([fosmIdentifier]));
+      setFilteredStatus(filteredStatus.concat([st]));
+    }
+  };
+
+  const onStatusChange2 = (st) => {
+    if (filteredStatus2.includes(st)) {
+      setFilteredStatus2(filteredStatus2.filter((filteredSt2) => filteredSt2 !== st));
+    } else {
+      setFilteredStatus2(filteredStatus2.concat([st]));
     }
   };
 
@@ -374,74 +376,108 @@ export default function Home() {
           options={options}
           setAllAffiliations={setAllAffiliations}
           setAllPublications={setAllPublications}
+          tagAffiliations={tagAffiliations}
         />
         <Tabs defaultActiveTab={0}>
-          <Tab label="Affiliations">
+          <Tab label="Grouped affiliations of works">
             {affiliationsNotice && (
               <Row>
                 <Col n="12">
                   <Notice
                     className="fr-m-1w"
                     onClose={() => { setAffiliationsNotice(false); }}
-                    title="All the affiliations of the works found in the French OSM and OpenAlex are listed below. A filter is applied to view only the affiliations containing at least one of the matching query input."
+                    title="All the affiliations of the works found in the French OSM and OpenAlex are listed below. A filter is applied to view only the affiliations containing at least one of the matching query input"
                   />
                 </Col>
               </Row>
             )}
             <Row>
               <Col n="4">
-                {renderAffiliationsButtons()}
+                {renderButtons(selectedAffiliations, tagAffiliations)}
               </Col>
-              <Col>
+              <Col n="8">
                 <Gauge
-                  data={[
-                    { className: 'tobedecided', id: 'tobedecided', label: 'To be decided', value: allAffiliations.filter((affiliation) => affiliation.status === STATUS_TO_BE_DECIDED).length },
-                    { className: 'validated', id: 'validated', label: 'Validated', value: allAffiliations.filter((affiliation) => affiliation.status === STATUS_VALIDATED).length },
-                    { className: 'excluded', id: 'excluded', label: 'Excluded', value: allAffiliations.filter((affiliation) => affiliation.status === STATUS_EXCLUDED).length },
-                  ]}
+                  data={Object.values(status).map((st) => ({
+                    ...st,
+                    value: allAffiliations.filter((affiliation) => affiliation.status === st.id).length,
+                  }))}
                 />
               </Col>
             </Row>
-            <Row>
-              <Col>
-                {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-                {!isFetching && !isLoading && (
+            {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
+            {!isFetching && !isLoading && (
+              <Row gutters>
+                <Col n="2">
+                  <CheckboxGroup
+                    hint="Filter affiliations on selected status"
+                    legend="Status"
+                  >
+                    {Object.values(status).map((st) => (
+                      <Checkbox
+                        checked={filteredStatus2.includes(st.id)}
+                        key={st.id}
+                        label={st.label}
+                        onChange={() => onStatusChange2(st.id)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
+                  <TextInput
+                    label="Filter affiliations on affiliations name"
+                    onChange={(e) => setFilteredAffiliationName2(e.target.value)}
+                    value={filteredAffiliationName2}
+                  />
+                </Col>
+                <Col n="10">
                   <AffiliationsView
-                    allAffiliations={allAffiliations.filter((affiliation) => !!affiliation.matches)}
+                    allAffiliations={filteredAffiliations.filter((affiliation) => !!affiliation.matches)}
                     selectedAffiliations={selectedAffiliations}
                     setSelectedAffiliations={setSelectedAffiliations}
                   />
-                )}
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            )}
             <Row>
               <Col>
-                {renderAffiliationsButtons()}
+                {renderButtons(selectedAffiliations, tagAffiliations)}
               </Col>
             </Row>
           </Tab>
-          <Tab label="Publications">
+          <Tab label="List all publications">
             <Row>
               <Col n="4">
-                {renderWorksButtons(selectedPublications)}
+                {renderButtons(selectedPublications, tagPublications)}
               </Col>
-              <Col>
+              <Col n="8">
                 <Gauge
-                  data={[
-                    { className: 'tobedecided', id: 'tobedecided', label: 'To be decided', value: allPublications.filter((publication) => publication.status === STATUS_TO_BE_DECIDED).length },
-                    { className: 'validated', id: 'validated', label: 'Validated', value: allPublications.filter((publication) => publication.status === STATUS_VALIDATED).length },
-                    { className: 'excluded', id: 'excluded', label: 'Excluded', value: allPublications.filter((publication) => publication.status === STATUS_EXCLUDED).length },
-                  ]}
+                  data={Object.values(status).map((st) => ({
+                    ...st,
+                    value: allPublications.filter((publication) => publication.status === st.id).length,
+                  }))}
                 />
               </Col>
             </Row>
             {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
             {(!isFetching && !isLoading) && (
-              <Row>
+              <Row gutters>
                 <Col n="2">
                   <CheckboxGroup
-                    hint="Filter results on selected datasources"
-                    legend="Datasources"
+                    hint="Filter publications on selected status"
+                    legend="Status"
+                  >
+                    {Object.values(status).map((st) => (
+                      <Checkbox
+                        checked={filteredStatus.includes(st.id)}
+                        key={st.id}
+                        label={st.label}
+                        onChange={() => onStatusChange(st.id)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
+                  <CheckboxGroup
+                    hint="Filter publications on selected datasources"
+                    legend="Source"
                   >
                     {DATASOURCES.map((datasource) => (
                       <Checkbox
@@ -454,35 +490,7 @@ export default function Home() {
                     ))}
                   </CheckboxGroup>
                   <CheckboxGroup
-                    hint="Filter results on selected identifiers"
-                    legend="FOSM identifiers"
-                  >
-                    {FOSM_IDENTIFIERS.map((fosmIdentifier) => (
-                      <Checkbox
-                        checked={filteredFosmIdentifiers.includes(fosmIdentifier)}
-                        key={fosmIdentifier}
-                        label={fosmIdentifier}
-                        onChange={() => onFosmIdentifiersChange(fosmIdentifier)}
-                        size="sm"
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <CheckboxGroup
-                    hint="Filter results on selected types"
-                    legend="Types"
-                  >
-                    {types.map((type) => (
-                      <Checkbox
-                        checked={filteredTypes.includes(type)}
-                        key={type}
-                        label={type}
-                        onChange={() => onTypesChange(type)}
-                        size="sm"
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <CheckboxGroup
-                    hint="Filter results on selected years"
+                    hint="Filter publications on selected years"
                     legend="Years"
                   >
                     {years.map((year) => (
@@ -495,8 +503,27 @@ export default function Home() {
                       />
                     ))}
                   </CheckboxGroup>
+                  <CheckboxGroup
+                    hint="Filter publications on selected types"
+                    legend="Types"
+                  >
+                    {types.map((type) => (
+                      <Checkbox
+                        checked={filteredTypes.includes(type)}
+                        key={type}
+                        label={type.toString()}
+                        onChange={() => onTypesChange(type)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
+                  <TextInput
+                    label="Filter publications on affiliations name"
+                    onChange={(e) => setFilteredAffiliationName(e.target.value)}
+                    value={filteredAffiliationName}
+                  />
                 </Col>
-                <Col>
+                <Col n="10">
                   <WorksView
                     selectedWorks={selectedPublications}
                     setSelectedWorks={setSelectedPublications}
@@ -507,22 +534,21 @@ export default function Home() {
             )}
             <Row>
               <Col n="4">
-                {renderWorksButtons(selectedPublications)}
+                {renderButtons(selectedPublications, tagPublications)}
               </Col>
             </Row>
           </Tab>
-          <Tab label="Datasets">
+          <Tab label="List all datasets">
             <Row>
-              <Col>
-                {renderWorksButtons(selectedDatasets)}
+              <Col n="4">
+                {renderButtons(selectedDatasets, tagDatasets)}
               </Col>
-              <Col>
+              <Col n="8">
                 <Gauge
-                  data={[
-                    { className: 'tobedecided', id: 'tobedecided', label: 'To be decided', value: allDatasets.filter((dataset) => dataset.status === STATUS_TO_BE_DECIDED).length },
-                    { className: 'validated', id: 'validated', label: 'Validated', value: allDatasets.filter((dataset) => dataset.status === STATUS_VALIDATED).length },
-                    { className: 'excluded', id: 'excluded', label: 'Excluded', value: allDatasets.filter((dataset) => dataset.status === STATUS_EXCLUDED).length },
-                  ]}
+                  data={Object.values(status).map((st) => ({
+                    ...st,
+                    value: allDatasets.filter((dataset) => dataset.status === st.id).length,
+                  }))}
                 />
               </Col>
             </Row>
@@ -540,7 +566,7 @@ export default function Home() {
             </Row>
             <Row>
               <Col>
-                {renderWorksButtons(selectedDatasets)}
+                {renderButtons(selectedDatasets, tagDatasets)}
               </Col>
             </Row>
           </Tab>

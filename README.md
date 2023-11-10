@@ -1,6 +1,6 @@
 # Works finder
 
-Retrieve the scholarly outputs of your institution - Based on French OSM and OpenAlex 
+Retrieve the scholarly works of your institution - Based on French OSM and OpenAlex
 
 ## Build for production
 

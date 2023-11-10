@@ -2,11 +2,7 @@ import PropTypes from 'prop-types';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 
-import {
-  nameTemplate,
-  statusFilterTemplate,
-  statusTemplate,
-} from '../../../utils/templates';
+import { nameTemplate, statusTemplate } from '../../../utils/templates';
 
 export default function AffiliationsView({
   allAffiliations,
@@ -29,7 +25,7 @@ export default function AffiliationsView({
       selection={selectedAffiliations}
       selectionPageOnly
       size="small"
-      sortField="publicationsNumber"
+      sortField="worksNumber"
       sortOrder={-1}
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}
@@ -37,10 +33,10 @@ export default function AffiliationsView({
       value={allAffiliations}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} filter showFilterMenu={false} filterElement={statusFilterTemplate} />
-      <Column field="nameHtml" header="Affiliation" body={nameTemplate} filter filterField="name" filterMatchMode="contains" filterPlaceholder="Search by affiliation" />
-      <Column field="publicationsNumber" header="Number of publications" sortable />
-      <Column field="matches" header="Number of matches" sortable />
+      <Column field="status" header="Status" body={statusTemplate} />
+      <Column field="nameHtml" header="Affiliation" body={nameTemplate} />
+      <Column field="worksNumber" header="Number of works" sortable />
+      <Column field="matches" header="Number of unique matches" sortable />
     </DataTable>
   );
 }
@@ -51,18 +47,18 @@ AffiliationsView.propTypes = {
     matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
-    publications: PropTypes.arrayOf(PropTypes.string).isRequired,
-    publicationsNumber: PropTypes.number.isRequired,
     status: PropTypes.string.isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
-    publications: PropTypes.arrayOf(PropTypes.string).isRequired,
-    publicationsNumber: PropTypes.number.isRequired,
     status: PropTypes.string.isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,
 };

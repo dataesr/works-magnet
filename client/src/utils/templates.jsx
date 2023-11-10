@@ -5,6 +5,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { Tooltip } from 'react-tooltip';
 
 import { getIdLink } from './works';
+import { status } from '../config';
 
 const affiliationsTemplate = (rowData) => (
   <>
@@ -88,36 +89,7 @@ const getAuthorsTooltipField = (rowData) => {
 
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
-const getBadgeTypeByStatus = (status) => {
-  let type;
-  switch (status) {
-  case 'validated':
-    type = 'success';
-    break;
-  case 'excluded':
-    type = 'error';
-    break;
-  default:
-    type = 'info';
-    break;
-  }
-  return type;
-};
-
-const statusTemplate = (rowData) => <Badge text={rowData?.status ?? rowData} type={getBadgeTypeByStatus(rowData?.status ?? rowData)} />;
-
-const statusFilterTemplate = (options) => (
-  <Dropdown
-    className="p-column-filter"
-    itemTemplate={statusTemplate}
-    onChange={(e) => options.filterApplyCallback(e.value)}
-    options={['to be decided', 'validated', 'excluded']}
-    placeholder=""
-    style={{ width: '6rem' }}
-    showClear
-    value={options.value}
-  />
-);
+const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
 
 export {
   affiliationsTemplate,
@@ -130,6 +102,5 @@ export {
   getAuthorsHtmlField,
   getAuthorsTooltipField,
   nameTemplate,
-  statusFilterTemplate,
   statusTemplate,
 };
