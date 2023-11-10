@@ -55,8 +55,8 @@ export default function Filters({ sendQuery }) {
     <Row gutters alignItems="top">
       <Col n="5">
         <TagInput
-          hint="At least one of these affiliations should be present, OR operator"
-          label="Affiliations (Name, Grid, RNSR, RoR, HAL structId or viaf)"
+          hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
+          label="Affiliation raw name"
           message={message}
           messageType={messageType}
           onTagsChange={(affiliations) => setSearchParams({ ...currentSearchParams, affiliations })}
