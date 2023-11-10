@@ -97,6 +97,7 @@ export default function Home() {
   const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
+  const [filteredStatus2, setFilteredStatus2] = useState(Object.keys(status));
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -249,13 +250,13 @@ export default function Home() {
       clearTimeout(timer2);
     }
     const timerTmp2 = setTimeout(() => {
-      const filteredAffiliationsTmp = allAffiliations.filter((affiliation) => affiliation.name.includes(filteredAffiliationName2));
+      const filteredAffiliationsTmp = allAffiliations.filter((affiliation) => affiliation.name.includes(filteredAffiliationName2) && filteredStatus2.includes(affiliation.status));
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer2(timerTmp2);
   // The timer should not be tracked
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allAffiliations, filteredAffiliationName2]);
+  }, [allAffiliations, filteredAffiliationName2, filteredStatus2]);
 
   useEffect(() => {
     groupByAffiliations();
@@ -328,6 +329,14 @@ export default function Home() {
     }
   };
 
+  const onStatusChange2 = (st) => {
+    if (filteredStatus2.includes(st)) {
+      setFilteredStatus2(filteredStatus2.filter((filteredSt2) => filteredSt2 !== st));
+    } else {
+      setFilteredStatus2(filteredStatus2.concat([st]));
+    }
+  };
+
   const onTypesChange = (type) => {
     if (filteredTypes.includes(type)) {
       setFilteredTypes(filteredTypes.filter((filteredType) => filteredType !== type));
@@ -397,10 +406,24 @@ export default function Home() {
             </Row>
             {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
             {!isFetching && !isLoading && (
-              <Row>
+              <Row gutters>
                 <Col n="2">
+                  <CheckboxGroup
+                    hint="Filter affiliations on selected status"
+                    legend="Status"
+                  >
+                    {Object.values(status).map((st) => (
+                      <Checkbox
+                        checked={filteredStatus2.includes(st.id)}
+                        key={st.id}
+                        label={st.label}
+                        onChange={() => onStatusChange2(st.id)}
+                        size="sm"
+                      />
+                    ))}
+                  </CheckboxGroup>
                   <TextInput
-                    label="Filter on affiliations"
+                    label="Filter affiliations on affiliations name"
                     onChange={(e) => setFilteredAffiliationName2(e.target.value)}
                     value={filteredAffiliationName2}
                   />
@@ -439,7 +462,7 @@ export default function Home() {
               <Row gutters>
                 <Col n="2">
                   <CheckboxGroup
-                    hint="Filter results on selected status"
+                    hint="Filter publications on selected status"
                     legend="Status"
                   >
                     {Object.values(status).map((st) => (
@@ -453,7 +476,7 @@ export default function Home() {
                     ))}
                   </CheckboxGroup>
                   <CheckboxGroup
-                    hint="Filter results on selected datasources"
+                    hint="Filter publications on selected datasources"
                     legend="Source"
                   >
                     {DATASOURCES.map((datasource) => (
@@ -467,7 +490,7 @@ export default function Home() {
                     ))}
                   </CheckboxGroup>
                   <CheckboxGroup
-                    hint="Filter results on selected years"
+                    hint="Filter publications on selected years"
                     legend="Years"
                   >
                     {years.map((year) => (
@@ -481,7 +504,7 @@ export default function Home() {
                     ))}
                   </CheckboxGroup>
                   <CheckboxGroup
-                    hint="Filter results on selected types"
+                    hint="Filter publications on selected types"
                     legend="Types"
                   >
                     {types.map((type) => (
@@ -495,7 +518,7 @@ export default function Home() {
                     ))}
                   </CheckboxGroup>
                   <TextInput
-                    label="Filter on affiliations"
+                    label="Filter publications on affiliations name"
                     onChange={(e) => setFilteredAffiliationName(e.target.value)}
                     value={filteredAffiliationName}
                   />
