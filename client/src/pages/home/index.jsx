@@ -52,20 +52,15 @@ const {
 const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 
 const getData = async (options) => {
-  const promises1 = [getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX }), getOpenAlexPublications(options)];
-  const publications = await Promise.all(promises1.flat());
-  const promises2 = [getBsoWorks({ options, index: VITE_BSO_DATASETS_INDEX })];
-  const datasets = await Promise.all(promises2.flat());
   const data = { datasets: [], publications: [], total: {} };
+  const publications = await Promise.all([getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX }), getOpenAlexPublications(options)]);
   publications.forEach((publication) => {
     data.publications = [...data.publications, ...publication.results];
     data.total[publication.datasource] = publication.total;
   });
-  datasets.forEach((dataset) => {
-    data.datasets = [...data.datasets, ...dataset.results];
-    data.total.dataset = dataset.total;
-  });
-  // Correct BSO total if maximum is reached
+  const dataset = await getBsoWorks({ options, index: VITE_BSO_DATASETS_INDEX });
+  data.datasets = [...data.datasets, ...dataset.results];
+  data.total.dataset = dataset.total;
   if ((Number(data.total.bso) === 0) || (Number(data.total.bso) === Number(VITE_BSO_MAX_SIZE))) {
     const { count } = await getBsoCount(options);
     data.total.bso = count;
