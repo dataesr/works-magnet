@@ -7,9 +7,9 @@ router.route('/openalex')
   .get(async (req, res) => {
     let urlParams = req?.query ?? {};
     if (process?.env?.VITE_OPENALEX_KEY) {
-      urlParams = { api_key: process.env.VITE_OPENALEX_KEY, ...urlParams };
+      urlParams = { ...urlParams, api_key: process.env.VITE_OPENALEX_KEY };
     } else {
-      urlParams = { mailto: 'unknown@github.com', ...urlParams };
+      urlParams = { ...urlParams, mailto: 'bso@recherche.gouv.fr' };
     }
     const url = `https://api.openalex.org/works?${new URLSearchParams(urlParams)}`;
     try {
