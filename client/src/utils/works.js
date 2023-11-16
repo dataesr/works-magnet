@@ -1,108 +1,26 @@
 const {
-  VITE_BSO_AUTH,
-  VITE_BSO_MAX_SIZE,
-  VITE_BSO_PIT_KEEP_ALIVE,
-  VITE_BSO_PUBLICATIONS_INDEX,
-  VITE_BSO_SIZE,
-  VITE_BSO_URL,
+  VITE_API,
   VITE_OPENALEX_PER_PAGE,
   VITE_OPENALEX_SIZE,
-  VITE_OPENALEX_URL,
 } = import.meta.env;
 
 const VITE_OPENALEX_MAX_PAGE = Math.floor(VITE_OPENALEX_SIZE / VITE_OPENALEX_PER_PAGE);
 
-const getBsoQuery = (options, pit, searchAfter) => {
-  const query = { size: VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
-  const affiliationsFields = ['affiliations.grid', 'affiliations.name', 'affiliations.rnsr', 'affiliations.ror', 'affiliations.structId', 'affiliations.viaf'];
-  options.affiliations.forEach((affiliation) => {
-    query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
-  });
-  if (options?.startYear && options?.endYear) {
-    query.query.bool.filter.push({ range: { year: { gte: options.startYear, lte: options.endYear } } });
-  } else if (options?.startYear) {
-    query.query.bool.filter.push({ range: { year: { gte: options.startYear } } });
-  } else if (options?.endYear) {
-    query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
-  }
-  query.query.bool.minimum_should_match = 1;
-  query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'journal_name', 'title', 'year'];
-  query.sort = ['_shard_doc'];
-  if (pit) {
-    query.pit = { id: pit, keep_alive: VITE_BSO_PIT_KEEP_ALIVE };
-  }
-  if (searchAfter) {
-    query.search_after = searchAfter;
-    query.track_total_hits = false;
-  }
-  return query;
-};
-
 const getBsoCount = (options) => {
-  const body = getBsoQuery(options);
-  delete body._source;
-  delete body.size;
-  delete body.sort;
-  const params = {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      'content-type': 'application/json',
-      Authorization: VITE_BSO_AUTH,
-    },
-  };
-  return fetch(`${VITE_BSO_URL}/_count`, params)
+  const urlParams = new URLSearchParams(options).toString();
+  return fetch(`${VITE_API}/bso/count?${urlParams}`)
     .then((response) => {
       if (response.ok) return response.json();
       return 'Oops... BSO API request did not work';
     });
 };
 
-const getBsoWorks = async ({ allResults = [], index = VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
-  if (!pit) {
-    const response = await fetch(`${VITE_BSO_URL}/${index}/_pit?keep_alive=${VITE_BSO_PIT_KEEP_ALIVE}`, { method: 'POST', headers: { Authorization: VITE_BSO_AUTH } });
-    // eslint-disable-next-line no-param-reassign
-    pit = (await response.json()).id;
-  }
-  const params = {
-    method: 'POST',
-    body: JSON.stringify(getBsoQuery(options, pit, searchAfter)),
-    headers: {
-      'content-type': 'application/json',
-      Authorization: VITE_BSO_AUTH,
-    },
-  };
-  return fetch(`${VITE_BSO_URL}/_search`, params)
+const getBsoWorks = async ({ options, index }) => {
+  const urlParams = new URLSearchParams({ ...options, index }).toString();
+  return fetch(`${VITE_API}/bso/works?${urlParams}`)
     .then((response) => {
       if (response.ok) return response.json();
       return 'Oops... BSO API request did not work';
-    })
-    .then((response) => {
-      const hits = response?.hits?.hits ?? [];
-      // eslint-disable-next-line no-param-reassign
-      allResults = allResults.concat(hits.map((result) => ({
-        ...result._source,
-        // Filter ids on unique values
-        allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
-        authors: result._source?.authors ?? [],
-        datasource: 'bso',
-        id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
-        original: result,
-        type: result._source?.genre_raw ?? result._source.genre,
-      })));
-      if (hits.length > 0 && (Number(VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(VITE_BSO_MAX_SIZE))) {
-        // eslint-disable-next-line no-param-reassign
-        searchAfter = hits.at('-1').sort;
-        return getBsoWorks({ allResults, index, options, pit, searchAfter });
-      }
-      if (pit) {
-        fetch(`${VITE_BSO_URL}/_pit`, { method: 'DELETE', headers: { Authorization: VITE_BSO_AUTH, 'Content-type': 'application/json' }, body: JSON.stringify({ id: pit }) });
-      }
-      return ({
-        datasource: 'bso',
-        total: response?.hits?.total?.value ?? 0,
-        results: allResults,
-      });
     });
 };
 
@@ -196,7 +114,7 @@ const getTypeFromOpenAlex = (type) => {
 };
 
 const getOpenAlexPublications = (options, page = '1', previousResponse = []) => {
-  let url = `${VITE_OPENALEX_URL}per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
+  let url = `${VITE_API}/openalex?per_page=${Math.min(VITE_OPENALEX_SIZE, VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   if (options?.startYear && options?.endYear) {
     url += `,publication_year:${Number(options.startYear)}-${Number(options?.endYear)}`;
