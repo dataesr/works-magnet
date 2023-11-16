@@ -32,53 +32,14 @@ import {
   getAuthorsTooltipField,
 } from '../../utils/templates';
 import {
-  getBsoCount,
-  getBsoWorks,
-  getOpenAlexPublications,
-  mergePublications,
+  getData,
 } from '../../utils/works';
 import { status } from '../../config';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
-const {
-  VITE_BSO_MAX_SIZE,
-  VITE_BSO_DATASETS_INDEX,
-  VITE_BSO_PUBLICATIONS_INDEX,
-} = import.meta.env;
-
 const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
-
-const getData = async (options) => {
-  const data = { datasets: [], publications: [], total: {} };
-  const publications = await Promise.all([getBsoWorks({ options, index: VITE_BSO_PUBLICATIONS_INDEX }), getOpenAlexPublications(options)]);
-  publications.forEach((publication) => {
-    data.publications = [...data.publications, ...publication.results];
-    data.total[publication.datasource] = publication.total;
-  });
-  const dataset = await getBsoWorks({ options, index: VITE_BSO_DATASETS_INDEX });
-  data.datasets = [...data.datasets, ...dataset.results];
-  data.total.dataset = dataset.total;
-  if ((Number(data.total.bso) === 0) || (Number(data.total.bso) === Number(VITE_BSO_MAX_SIZE))) {
-    const { count } = await getBsoCount(options);
-    data.total.bso = count;
-  }
-  // Deduplicate publications by DOI or by hal_id
-  data.total.all = data.publications.length;
-  const deduplicatedPublications = {};
-  data.publications.forEach((publication) => {
-    const id = publication?.doi ?? publication?.primary_location?.landing_page_url?.split('/')?.pop() ?? publication.id;
-    if (!Object.keys(deduplicatedPublications).includes(id)) {
-      deduplicatedPublications[id] = publication;
-    } else {
-      deduplicatedPublications[id] = mergePublications(deduplicatedPublications[id], publication);
-    }
-  });
-  data.publications = Object.values(deduplicatedPublications);
-  data.total.deduplicated = Object.values(deduplicatedPublications).length;
-  return data;
-};
 
 export default function Home() {
   const [affiliationsNotice, setAffiliationsNotice] = useState(true);
@@ -218,7 +179,7 @@ export default function Home() {
     setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
     setFilteredPublications(allPublicationsTmp);
-    const allYears = [...new Set(allPublicationsTmp.map((publication) => publication?.year))];
+    const allYears = [...new Set(allPublicationsTmp.map((publication) => publication?.year).filter((year) => !!year))];
     setYears(allYears);
     setFilteredYears(allYears);
     const allTypes = [...new Set(allPublicationsTmp.map((publication) => publication?.type))];

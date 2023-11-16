@@ -13,7 +13,7 @@ router.route('/openalex')
     }
     const url = `https://api.openalex.org/works?${new URLSearchParams(urlParams)}`;
     try {
-      let response = await fetch(url, { method: 'GET' });
+      let response = await fetch(url);
       response = await response.json();
       res.status(200).json(response);
     } catch (err) {

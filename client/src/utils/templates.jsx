@@ -1,7 +1,6 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
 import { Badge } from '@dataesr/react-dsfr';
-import { Dropdown } from 'primereact/dropdown';
 import { Tooltip } from 'react-tooltip';
 
 import { getIdLink } from './works';
