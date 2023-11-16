@@ -19,7 +19,6 @@ import { useEffect, useState } from 'react';
 
 import Actions from './actions';
 import Filters from './filters';
-// import Metrics from './metrics';
 import AffiliationsView from './views/affiliations';
 import WorksView from './views/works';
 import Gauge from '../../components/gauge';
@@ -357,11 +356,6 @@ export default function Home() {
               sendQuery={sendQuery}
             />
           </Col>
-          {/*
-            <Col n="3">
-              {data && (<Metrics data={data} />)}
-            </Col>
-          */}
         </Row>
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
