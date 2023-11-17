@@ -19,7 +19,7 @@ router.route('/works')
         const results = await Promise.all([
           getBsoWorks({ options, index: process.env.VITE_BSO_PUBLICATIONS_INDEX }),
           getOpenAlexPublications(options),
-          getBsoWorks({ options, index: process.env.VITE_BSO_DATASETS_INDEX }),
+          getBsoWorks({ options, index: process.env.VITE_BSO_DATASETS_INDEX, filter: 'q=genre:dataset' }),
         ]);
         const data = { datasets: [], publications: [], total: {} };
         results.slice(0, 2).forEach((publication) => {

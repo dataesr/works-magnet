@@ -156,6 +156,7 @@ export default function Home() {
     let allPublicationsTmp = [];
     if (data) {
       allDatasetsTmp = data.datasets
+        .filter((dataset) => !!dataset?.affiliations)
         .map((dataset) => ({
           ...dataset,
           affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),

@@ -48,7 +48,9 @@ const getBsoCount = async (options) => {
   return 'Oops... BSO API request did not work';
 };
 
-const getBsoWorks = async ({ allResults = [], index = process.env.VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
+const getBsoWorks = async ({
+  allResults = [], filter, index = process.env.VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter,
+}) => {
   if (!pit) {
     const response = await fetch(
       `${process.env.VITE_BSO_URL}/${index}/_pit?keep_alive=${process.env.VITE_BSO_PIT_KEEP_ALIVE}`,
@@ -69,7 +71,11 @@ const getBsoWorks = async ({ allResults = [], index = process.env.VITE_BSO_PUBLI
       Authorization: process.env.VITE_BSO_AUTH,
     },
   };
-  return fetch(`${process.env.VITE_BSO_URL}/_search`, params)
+  let url = `${process.env.VITE_BSO_URL}/_search`;
+  if (filter) {
+    url += `?${filter}`;
+  }
+  return fetch(url, params)
     .then((response) => {
       if (response.ok) return response.json();
       return 'Oops... BSO API request did not work';
@@ -90,7 +96,7 @@ const getBsoWorks = async ({ allResults = [], index = process.env.VITE_BSO_PUBLI
       if (hits.length > 0 && (Number(process.env.VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(process.env.VITE_BSO_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
-        return getBsoWorks({ allResults, index, options, pit, searchAfter });
+        return getBsoWorks({ allResults, filter, index, options, pit, searchAfter });
       }
       if (pit) {
         fetch(
