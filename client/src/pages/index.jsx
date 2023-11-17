@@ -76,6 +76,9 @@ export default function Home() {
 
   const sendQuery = async (_options) => {
     setIsLoading(true);
+    setAllAffiliations([]);
+    setAllDatasets([]);
+    setAllPublications([]);
     await setOptions(_options);
     refetch();
   };
@@ -197,8 +200,8 @@ export default function Home() {
       setFilteredPublications(filteredPublicationsTmp);
     }, 500);
     setTimer(timerTmp);
-  // The timer should not be tracked
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // The timer should not be tracked
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allPublications, filteredAffiliationName, filteredDatasources, filteredStatus, filteredTypes, filteredYears]);
 
   useEffect(() => {
@@ -210,8 +213,8 @@ export default function Home() {
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer2(timerTmp2);
-  // The timer should not be tracked
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // The timer should not be tracked
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allAffiliations, filteredAffiliationName2, filteredStatus2]);
 
   useEffect(() => {
@@ -329,199 +332,202 @@ export default function Home() {
           setAllPublications={setAllPublications}
           tagAffiliations={tagAffiliations}
         />
-        <Tabs defaultActiveTab={0}>
-          <Tab label="Grouped affiliations of works">
-            {affiliationsNotice && (
+        {isLoading && <Container as="section"><PageSpinner /></Container>}
+        {allAffiliations.length > 0 && (
+          <Tabs defaultActiveTab={0}>
+            <Tab label="Grouped affiliations of works">
+              {affiliationsNotice && (
+                <Row>
+                  <Col n="12">
+                    <Notice
+                      className="fr-m-1w"
+                      onClose={() => { setAffiliationsNotice(false); }}
+                      title="All the affiliations of the works found in the French OSM and OpenAlex are listed below. A filter is applied to view only the affiliations containing at least one of the matching query input"
+                    />
+                  </Col>
+                </Row>
+              )}
               <Row>
-                <Col n="12">
-                  <Notice
-                    className="fr-m-1w"
-                    onClose={() => { setAffiliationsNotice(false); }}
-                    title="All the affiliations of the works found in the French OSM and OpenAlex are listed below. A filter is applied to view only the affiliations containing at least one of the matching query input"
+                <Col n="4">
+                  {renderButtons(selectedAffiliations, tagAffiliations)}
+                </Col>
+                <Col n="8">
+                  <Gauge
+                    data={Object.values(status).map((st) => ({
+                      ...st,
+                      value: allAffiliations.filter((affiliation) => affiliation.status === st.id).length,
+                    }))}
                   />
                 </Col>
               </Row>
-            )}
-            <Row>
-              <Col n="4">
-                {renderButtons(selectedAffiliations, tagAffiliations)}
-              </Col>
-              <Col n="8">
-                <Gauge
-                  data={Object.values(status).map((st) => ({
-                    ...st,
-                    value: allAffiliations.filter((affiliation) => affiliation.status === st.id).length,
-                  }))}
-                />
-              </Col>
-            </Row>
-            {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-            {!isFetching && !isLoading && (
-              <Row gutters>
-                <Col n="2">
-                  <CheckboxGroup
-                    hint="Filter affiliations on selected status"
-                    legend="Status"
-                  >
-                    {Object.values(status).map((st) => (
-                      <Checkbox
-                        checked={filteredStatus2.includes(st.id)}
-                        key={st.id}
-                        label={st.label}
-                        onChange={() => onStatusChange2(st.id)}
-                        size="sm"
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <TextInput
-                    label="Filter affiliations on affiliations name"
-                    onChange={(e) => setFilteredAffiliationName2(e.target.value)}
-                    value={filteredAffiliationName2}
-                  />
+              {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
+              {!isFetching && !isLoading && (
+                <Row gutters>
+                  <Col n="2">
+                    <CheckboxGroup
+                      hint="Filter affiliations on selected status"
+                      legend="Status"
+                    >
+                      {Object.values(status).map((st) => (
+                        <Checkbox
+                          checked={filteredStatus2.includes(st.id)}
+                          key={st.id}
+                          label={st.label}
+                          onChange={() => onStatusChange2(st.id)}
+                          size="sm"
+                        />
+                      ))}
+                    </CheckboxGroup>
+                    <TextInput
+                      label="Filter affiliations on affiliations name"
+                      onChange={(e) => setFilteredAffiliationName2(e.target.value)}
+                      value={filteredAffiliationName2}
+                    />
+                  </Col>
+                  <Col n="10">
+                    <AffiliationsView
+                      allAffiliations={filteredAffiliations.filter((affiliation) => !!affiliation.matches)}
+                      selectedAffiliations={selectedAffiliations}
+                      setSelectedAffiliations={setSelectedAffiliations}
+                    />
+                  </Col>
+                </Row>
+              )}
+              <Row>
+                <Col>
+                  {renderButtons(selectedAffiliations, tagAffiliations)}
                 </Col>
-                <Col n="10">
-                  <AffiliationsView
-                    allAffiliations={filteredAffiliations.filter((affiliation) => !!affiliation.matches)}
-                    selectedAffiliations={selectedAffiliations}
-                    setSelectedAffiliations={setSelectedAffiliations}
+              </Row>
+            </Tab>
+            <Tab label="List all publications">
+              <Row>
+                <Col n="4">
+                  {renderButtons(selectedPublications, tagPublications)}
+                </Col>
+                <Col n="8">
+                  <Gauge
+                    data={Object.values(status).map((st) => ({
+                      ...st,
+                      value: allPublications.filter((publication) => publication.status === st.id).length,
+                    }))}
                   />
                 </Col>
               </Row>
-            )}
-            <Row>
-              <Col>
-                {renderButtons(selectedAffiliations, tagAffiliations)}
-              </Col>
-            </Row>
-          </Tab>
-          <Tab label="List all publications">
-            <Row>
-              <Col n="4">
-                {renderButtons(selectedPublications, tagPublications)}
-              </Col>
-              <Col n="8">
-                <Gauge
-                  data={Object.values(status).map((st) => ({
-                    ...st,
-                    value: allPublications.filter((publication) => publication.status === st.id).length,
-                  }))}
-                />
-              </Col>
-            </Row>
-            {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-            {(!isFetching && !isLoading) && (
-              <Row gutters>
-                <Col n="2">
-                  <CheckboxGroup
-                    hint="Filter publications on selected status"
-                    legend="Status"
-                  >
-                    {Object.values(status).map((st) => (
-                      <Checkbox
-                        checked={filteredStatus.includes(st.id)}
-                        key={st.id}
-                        label={st.label}
-                        onChange={() => onStatusChange(st.id)}
-                        size="sm"
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <CheckboxGroup
-                    hint="Filter publications on selected datasources"
-                    legend="Source"
-                  >
-                    {DATASOURCES.map((datasource) => (
-                      <Checkbox
-                        checked={filteredDatasources.includes(datasource.key)}
-                        key={datasource.key}
-                        label={datasource.label}
-                        onChange={() => onDatasourcesChange(datasource)}
-                        size="sm"
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <CheckboxGroup
-                    hint="Filter publications on selected years"
-                    legend="Years"
-                  >
-                    {years.map((year) => (
-                      <Checkbox
-                        checked={filteredYears.includes(year)}
-                        key={year}
-                        label={year.toString()}
-                        onChange={() => onYearsChange(year)}
-                        size="sm"
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <CheckboxGroup
-                    hint="Filter publications on selected types"
-                    legend="Types"
-                  >
-                    {types.map((type) => (
-                      <Checkbox
-                        checked={filteredTypes.includes(type)}
-                        key={type}
-                        label={type.toString()}
-                        onChange={() => onTypesChange(type)}
-                        size="sm"
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <TextInput
-                    label="Filter publications on affiliations name"
-                    onChange={(e) => setFilteredAffiliationName(e.target.value)}
-                    value={filteredAffiliationName}
-                  />
+              {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
+              {(!isFetching && !isLoading) && (
+                <Row gutters>
+                  <Col n="2">
+                    <CheckboxGroup
+                      hint="Filter publications on selected status"
+                      legend="Status"
+                    >
+                      {Object.values(status).map((st) => (
+                        <Checkbox
+                          checked={filteredStatus.includes(st.id)}
+                          key={st.id}
+                          label={st.label}
+                          onChange={() => onStatusChange(st.id)}
+                          size="sm"
+                        />
+                      ))}
+                    </CheckboxGroup>
+                    <CheckboxGroup
+                      hint="Filter publications on selected datasources"
+                      legend="Source"
+                    >
+                      {DATASOURCES.map((datasource) => (
+                        <Checkbox
+                          checked={filteredDatasources.includes(datasource.key)}
+                          key={datasource.key}
+                          label={datasource.label}
+                          onChange={() => onDatasourcesChange(datasource)}
+                          size="sm"
+                        />
+                      ))}
+                    </CheckboxGroup>
+                    <CheckboxGroup
+                      hint="Filter publications on selected years"
+                      legend="Years"
+                    >
+                      {years.map((year) => (
+                        <Checkbox
+                          checked={filteredYears.includes(year)}
+                          key={year}
+                          label={year.toString()}
+                          onChange={() => onYearsChange(year)}
+                          size="sm"
+                        />
+                      ))}
+                    </CheckboxGroup>
+                    <CheckboxGroup
+                      hint="Filter publications on selected types"
+                      legend="Types"
+                    >
+                      {types.map((type) => (
+                        <Checkbox
+                          checked={filteredTypes.includes(type)}
+                          key={type}
+                          label={type.toString()}
+                          onChange={() => onTypesChange(type)}
+                          size="sm"
+                        />
+                      ))}
+                    </CheckboxGroup>
+                    <TextInput
+                      label="Filter publications on affiliations name"
+                      onChange={(e) => setFilteredAffiliationName(e.target.value)}
+                      value={filteredAffiliationName}
+                    />
+                  </Col>
+                  <Col n="10">
+                    <WorksView
+                      selectedWorks={selectedPublications}
+                      setSelectedWorks={setSelectedPublications}
+                      works={filteredPublications}
+                    />
+                  </Col>
+                </Row>
+              )}
+              <Row>
+                <Col n="4">
+                  {renderButtons(selectedPublications, tagPublications)}
                 </Col>
-                <Col n="10">
-                  <WorksView
-                    selectedWorks={selectedPublications}
-                    setSelectedWorks={setSelectedPublications}
-                    works={filteredPublications}
+              </Row>
+            </Tab>
+            <Tab label="List all datasets">
+              <Row>
+                <Col n="4">
+                  {renderButtons(selectedDatasets, tagDatasets)}
+                </Col>
+                <Col n="8">
+                  <Gauge
+                    data={Object.values(status).map((st) => ({
+                      ...st,
+                      value: allDatasets.filter((dataset) => dataset.status === st.id).length,
+                    }))}
                   />
                 </Col>
               </Row>
-            )}
-            <Row>
-              <Col n="4">
-                {renderButtons(selectedPublications, tagPublications)}
-              </Col>
-            </Row>
-          </Tab>
-          <Tab label="List all datasets">
-            <Row>
-              <Col n="4">
-                {renderButtons(selectedDatasets, tagDatasets)}
-              </Col>
-              <Col n="8">
-                <Gauge
-                  data={Object.values(status).map((st) => ({
-                    ...st,
-                    value: allDatasets.filter((dataset) => dataset.status === st.id).length,
-                  }))}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-                {!isFetching && !isLoading && (
-                  <WorksView
-                    selectedWorks={selectedDatasets}
-                    setSelectedWorks={setSelectedDatasets}
-                    works={allDatasets}
-                  />
-                )}
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                {renderButtons(selectedDatasets, tagDatasets)}
-              </Col>
-            </Row>
-          </Tab>
-        </Tabs>
+              <Row>
+                <Col>
+                  {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
+                  {!isFetching && !isLoading && (
+                    <WorksView
+                      selectedWorks={selectedDatasets}
+                      setSelectedWorks={setSelectedDatasets}
+                      works={allDatasets}
+                    />
+                  )}
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  {renderButtons(selectedDatasets, tagDatasets)}
+                </Col>
+              </Row>
+            </Tab>
+          </Tabs>
+        )}
       </Container>
     </>
   );
