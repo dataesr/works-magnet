@@ -2,24 +2,6 @@ const {
   VITE_API,
 } = import.meta.env;
 
-const getBsoCount = (options) => {
-  const urlParams = new URLSearchParams(options).toString();
-  return fetch(`${VITE_API}/bso/count?${urlParams}`)
-    .then((response) => {
-      if (response.ok) return response.json();
-      return 'Oops... BSO API request did not work';
-    });
-};
-
-const getBsoWorks = async ({ options, index }) => {
-  const urlParams = new URLSearchParams({ ...options, index }).toString();
-  return fetch(`${VITE_API}/bso/works?${urlParams}`)
-    .then((response) => {
-      if (response.ok) return response.json();
-      return 'Oops... BSO API request did not work';
-    });
-};
-
 const getData = async (options) => {
   const urlParams = new URLSearchParams(options).toString();
   return fetch(`${VITE_API}/works?${urlParams}`)
@@ -55,8 +37,6 @@ const getIdLink = (type, id) => {
 };
 
 export {
-  getBsoCount,
-  getBsoWorks,
   getData,
   getIdLink,
 };

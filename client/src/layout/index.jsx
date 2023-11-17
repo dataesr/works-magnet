@@ -1,8 +1,9 @@
+import { Container, SwitchTheme } from '@dataesr/react-dsfr';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Container, SwitchTheme } from '@dataesr/react-dsfr';
-import Header from './Header';
+
 import Footer from './Footer';
+import Header from './Header';
 
 export default function Layout() {
   const [isSwitchThemeOpen, setIsSwitchThemeOpen] = useState(false);
