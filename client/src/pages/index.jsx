@@ -19,8 +19,8 @@ import { useEffect, useState } from 'react';
 
 import Actions from './actions';
 import Filters from './filters';
-import AffiliationsView from './views/affiliations';
-import WorksView from './views/works';
+import AffiliationsView from './affiliationsView';
+import WorksView from './worksView';
 import Gauge from '../components/gauge';
 import { PageSpinner } from '../components/spinner';
 import {

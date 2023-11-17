@@ -7,7 +7,7 @@ import {
   allIdsTemplate,
   authorsTemplate,
   statusTemplate,
-} from '../../utils/templates';
+} from '../utils/templates';
 
 export default function WorksView({
   selectedWorks,
