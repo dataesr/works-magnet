@@ -16,18 +16,18 @@ router.route('/works')
       if (!options?.affiliations) {
         res.status(400).json({ message: 'You must provide at least one affiliation.' });
       } else {
-        const data = { datasets: [], publications: [], total: {} };
-        const publications = await Promise.all([
+        const results = await Promise.all([
           getBsoWorks({ options, index: process.env.VITE_BSO_PUBLICATIONS_INDEX }),
           getOpenAlexPublications(options),
+          getBsoWorks({ options, index: process.env.VITE_BSO_DATASETS_INDEX }),
         ]);
-        publications.forEach((publication) => {
+        const data = { datasets: [], publications: [], total: {} };
+        results.slice(0, 2).forEach((publication) => {
           data.publications = [...data.publications, ...publication.results];
           data.total[publication.datasource] = publication.total;
         });
-        const dataset = await getBsoWorks({ options, index: process.env.VITE_BSO_DATASETS_INDEX });
-        data.datasets = [...data.datasets, ...dataset.results];
-        data.total.dataset = dataset.total;
+        data.datasets = [...data.datasets, ...results[2].results];
+        data.total.dataset = results[2].total;
         if ((Number(data.total.bso) === 0) || (Number(data.total.bso) === Number(process.env.VITE_BSO_MAX_SIZE))) {
           const { count } = await getBsoCount(options);
           data.total.bso = count;
