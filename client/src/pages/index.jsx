@@ -21,8 +21,8 @@ import Actions from './actions';
 import Filters from './filters';
 import AffiliationsView from './views/affiliations';
 import WorksView from './views/works';
-import Gauge from '../../components/gauge';
-import { PageSpinner } from '../../components/spinner';
+import Gauge from '../components/gauge';
+import { PageSpinner } from '../components/spinner';
 import {
   getAllIdsHtmlField,
   getAffiliationRor,
@@ -30,11 +30,11 @@ import {
   getAffiliationsTooltipField,
   getAuthorsHtmlField,
   getAuthorsTooltipField,
-} from '../../utils/templates';
+} from '../utils/templates';
 import {
   getData,
-} from '../../utils/works';
-import { status } from '../../config';
+} from '../utils/works';
+import { status } from '../config';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';

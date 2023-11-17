@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip';
 
-import Button from '../../components/button';
-import { export2BsoCsv, export2json, importJson } from '../../utils/file';
-import { status } from '../../config';
+import Button from '../components/button';
+import { export2BsoCsv, export2json, importJson } from '../utils/file';
+import { status } from '../config';
 
 export default function Actions({
   allAffiliations,
