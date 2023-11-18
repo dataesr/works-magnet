@@ -3,12 +3,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
 import {
-  Button,
   Checkbox,
   CheckboxGroup,
   Col,
   Container,
-  Notice,
   Row,
   Tab,
   Tabs,
@@ -19,7 +17,7 @@ import { useEffect, useState } from 'react';
 
 import Actions from './actions';
 import Filters from './filters';
-import AffiliationsView from './affiliationsView';
+import AffiliationsTab from './affiliationsTab';
 import WorksView from './worksView';
 import Gauge from '../components/gauge';
 import { PageSpinner } from '../components/spinner';
@@ -33,7 +31,8 @@ import {
 } from '../utils/templates';
 import {
   getData,
-} from '../utils/works';
+  renderButtons,
+} from '../utils/works.jsx';
 import { status } from '../config';
 
 import 'primereact/resources/primereact.min.css';
@@ -42,27 +41,21 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 
 export default function Home() {
-  const [affiliationsNotice, setAffiliationsNotice] = useState(true);
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
-  const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
-  const [filteredAffiliationName2, setFilteredAffiliationName2] = useState('');
   const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
-  const [filteredStatus2, setFilteredStatus2] = useState(Object.keys(status));
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
-  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [timer, setTimer] = useState();
-  const [timer2, setTimer2] = useState();
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
 
@@ -89,7 +82,6 @@ export default function Home() {
     .replace(/[^a-zA-Z0-9]/g, '');
 
   const groupByAffiliations = () => {
-    setIsLoading(true);
     // Save already decided affiliations
     const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== status.tobedecided.id);
     // Compute distinct affiliations of the undecided works
@@ -133,7 +125,6 @@ export default function Home() {
     allAffiliationsTmp = Object.values(allAffiliationsTmp)
       .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
     setAllAffiliations(allAffiliationsTmp);
-    setFilteredAffiliations(allAffiliationsTmp);
     setIsLoading(false);
   };
 
@@ -205,19 +196,6 @@ export default function Home() {
   }, [allPublications, filteredAffiliationName, filteredDatasources, filteredStatus, filteredTypes, filteredYears]);
 
   useEffect(() => {
-    if (timer2) {
-      clearTimeout(timer2);
-    }
-    const timerTmp2 = setTimeout(() => {
-      const filteredAffiliationsTmp = allAffiliations.filter((affiliation) => affiliation.name.includes(filteredAffiliationName2) && filteredStatus2.includes(affiliation.status));
-      setFilteredAffiliations(filteredAffiliationsTmp);
-    }, 500);
-    setTimer2(timerTmp2);
-    // The timer should not be tracked
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allAffiliations, filteredAffiliationName2, filteredStatus2]);
-
-  useEffect(() => {
     groupByAffiliations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allDatasets, allPublications, regexp]);
@@ -252,25 +230,7 @@ export default function Home() {
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
     allAffiliationsTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
     setAllAffiliations(allAffiliationsTmp);
-    setSelectedAffiliations([]);
   };
-
-  const renderButtons = (selected, fn) => (
-    <>
-      {Object.values(status).map((st) => (
-        <Button
-          className={`fr-mb-1w fr-mr-1w ${st.buttonClassName}`}
-          disabled={!selected.length}
-          icon={st.buttonIcon}
-          key={st.id}
-          onClick={() => fn(selected, st.id)}
-          size="sm"
-        >
-          {`${st.buttonLabel} (${selected.length})`}
-        </Button>
-      ))}
-    </>
-  );
 
   const onDatasourcesChange = (datasource) => {
     if (filteredDatasources.includes(datasource.key)) {
@@ -285,14 +245,6 @@ export default function Home() {
       setFilteredStatus(filteredStatus.filter((filteredSt) => filteredSt !== st));
     } else {
       setFilteredStatus(filteredStatus.concat([st]));
-    }
-  };
-
-  const onStatusChange2 = (st) => {
-    if (filteredStatus2.includes(st)) {
-      setFilteredStatus2(filteredStatus2.filter((filteredSt2) => filteredSt2 !== st));
-    } else {
-      setFilteredStatus2(filteredStatus2.concat([st]));
     }
   };
 
@@ -332,73 +284,13 @@ export default function Home() {
           setAllPublications={setAllPublications}
           tagAffiliations={tagAffiliations}
         />
-        {isLoading && <Container as="section"><PageSpinner /></Container>}
         {allAffiliations.length > 0 && (
           <Tabs defaultActiveTab={0}>
-            <Tab label="Grouped affiliations of works">
-              {affiliationsNotice && (
-                <Row>
-                  <Col n="12">
-                    <Notice
-                      className="fr-m-1w"
-                      onClose={() => { setAffiliationsNotice(false); }}
-                      title="All the affiliations of the works found in the French OSM and OpenAlex are listed below. A filter is applied to view only the affiliations containing at least one of the matching query input"
-                    />
-                  </Col>
-                </Row>
-              )}
-              <Row>
-                <Col n="4">
-                  {renderButtons(selectedAffiliations, tagAffiliations)}
-                </Col>
-                <Col n="8">
-                  <Gauge
-                    data={Object.values(status).map((st) => ({
-                      ...st,
-                      value: allAffiliations.filter((affiliation) => affiliation.status === st.id).length,
-                    }))}
-                  />
-                </Col>
-              </Row>
-              {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-              {!isFetching && !isLoading && (
-                <Row gutters>
-                  <Col n="2">
-                    <CheckboxGroup
-                      hint="Filter affiliations on selected status"
-                      legend="Status"
-                    >
-                      {Object.values(status).map((st) => (
-                        <Checkbox
-                          checked={filteredStatus2.includes(st.id)}
-                          key={st.id}
-                          label={st.label}
-                          onChange={() => onStatusChange2(st.id)}
-                          size="sm"
-                        />
-                      ))}
-                    </CheckboxGroup>
-                    <TextInput
-                      label="Filter affiliations on affiliations name"
-                      onChange={(e) => setFilteredAffiliationName2(e.target.value)}
-                      value={filteredAffiliationName2}
-                    />
-                  </Col>
-                  <Col n="10">
-                    <AffiliationsView
-                      allAffiliations={filteredAffiliations.filter((affiliation) => !!affiliation.matches)}
-                      selectedAffiliations={selectedAffiliations}
-                      setSelectedAffiliations={setSelectedAffiliations}
-                    />
-                  </Col>
-                </Row>
-              )}
-              <Row>
-                <Col>
-                  {renderButtons(selectedAffiliations, tagAffiliations)}
-                </Col>
-              </Row>
-            </Tab>
+            <AffiliationsTab
+              affiliations={allAffiliations}
+              tagAffiliations={tagAffiliations}
+              label="Grouped affiliations of works"
+            />
             <Tab label="List all publications">
               <Row>
                 <Col n="4">

@@ -1,3 +1,7 @@
+import { Button } from '@dataesr/react-dsfr';
+
+import { status } from '../config';
+
 const {
   VITE_API,
 } = import.meta.env;
@@ -36,7 +40,25 @@ const getIdLink = (type, id) => {
   return (prefix !== null) ? `${prefix}${id}` : false;
 };
 
+const renderButtons = (selected, fn) => (
+  <>
+    {Object.values(status).map((st) => (
+      <Button
+        className={`fr-mb-1w fr-mr-1w ${st.buttonClassName}`}
+        disabled={!selected.length}
+        icon={st.buttonIcon}
+        key={st.id}
+        onClick={() => fn(selected, st.id)}
+        size="sm"
+      >
+        {`${st.buttonLabel} (${selected.length})`}
+      </Button>
+    ))}
+  </>
+);
+
 export {
   getData,
   getIdLink,
+  renderButtons,
 };

@@ -3,7 +3,7 @@
 import { Badge } from '@dataesr/react-dsfr';
 import { Tooltip } from 'react-tooltip';
 
-import { getIdLink } from './works';
+import { getIdLink } from './works.jsx';
 import { status } from '../config';
 
 const affiliationsTemplate = (rowData) => (
