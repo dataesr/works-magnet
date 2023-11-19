@@ -19,7 +19,6 @@ import Filters from './filters';
 import PublicationsTab from './publicationsTab';
 import {
   getAllIdsHtmlField,
-  getAffiliationRor,
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
   getAuthorsHtmlField,
@@ -52,57 +51,6 @@ export default function Home() {
     setAllPublications([]);
     await setOptions(_options);
     refetch();
-  };
-
-  const normalizedName = (name) => name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[^a-zA-Z0-9]/g, '');
-
-  const groupByAffiliations = () => {
-    // Save already decided affiliations
-    const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== status.tobedecided.id);
-    // Compute distinct affiliations of the undecided works
-    let allAffiliationsTmp = {};
-    [...allDatasets, ...allPublications].filter((work) => work.status === status.tobedecided.id).forEach((work) => {
-      (work?.affiliations ?? [])
-        .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
-        .forEach((affiliation) => {
-          const ror = getAffiliationRor(affiliation);
-          const normalizedAffiliationName = normalizedName(affiliation.name);
-          if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
-            // Check matches in affiliation name
-            let matches = `${affiliation?.name}`?.match(regexp) ?? [];
-            // Normalize matched strings
-            matches = matches.map((name) => normalizedName(name));
-            // Filter matches as unique
-            matches = [...new Set(matches)];
-            allAffiliationsTmp[normalizedAffiliationName] = {
-              matches: matches.length,
-              name: affiliation.name,
-              nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
-              ror,
-              rorHtml: ror?.replace(regexp, '<b>$&</b>'),
-              status: status.tobedecided.id,
-              works: [],
-            };
-          }
-          allAffiliationsTmp[normalizedAffiliationName].works.push(work.id);
-        });
-    });
-
-    decidedAffiliations.forEach((affiliation) => {
-      const affiliationName = normalizedName(affiliation.name);
-      if (!allAffiliationsTmp?.[affiliationName]) {
-        allAffiliationsTmp[affiliationName] = affiliation;
-      } else {
-        allAffiliationsTmp[affiliationName].status = affiliation.status;
-      }
-    });
-
-    allAffiliationsTmp = Object.values(allAffiliationsTmp)
-      .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
-    setAllAffiliations(allAffiliationsTmp);
   };
 
   useEffect(() => {
@@ -138,6 +86,7 @@ export default function Home() {
           status: status.tobedecided.id,
         }));
       allPublicationsTmp = data.publications
+        .filter((publication) => !!publication?.affiliations)
         .map((publication) => ({
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
@@ -151,11 +100,6 @@ export default function Home() {
     setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
   }, [data, regexp]);
-
-  useEffect(() => {
-    groupByAffiliations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allDatasets, allPublications, regexp]);
 
   const tagPublications = (publications, action) => {
     const allPublicationsTmp = [...allPublications];
@@ -209,7 +153,7 @@ export default function Home() {
           setAllPublications={setAllPublications}
           tagAffiliations={tagAffiliations}
         />
-        {allAffiliations.length > 0 && (
+        {data?.length && (
           <Tabs defaultActiveTab={0}>
             <Tab label="Grouped affiliations of works">
               <AffiliationsTab

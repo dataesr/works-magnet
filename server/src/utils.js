@@ -1,4 +1,27 @@
+import { status } from 'client/src/config';
+
 const VITE_OPENALEX_MAX_PAGE = Math.floor(process.env.VITE_OPENALEX_SIZE / process.env.VITE_OPENALEX_PER_PAGE);
+
+const getAffilitionsFromOpenAlex = (publication) => {
+  if (publication?.authorships) {
+    return publication?.authorships?.map((author) => {
+      if (author.raw_affiliation_strings.length === 1) {
+        const affiliation = { name: author.raw_affiliation_strings[0] };
+        if (author?.institutions?.[0]?.ror) affiliation.ror = author.institutions[0].ror;
+        return affiliation;
+      }
+      return author.raw_affiliation_strings.map((name) => ({ name }));
+    }).flat();
+  }
+  return publication.affiliations;
+};
+
+const getAffiliationRor = (affiliation) => {
+  if (!affiliation?.ror) return undefined;
+  if (Array.isArray(affiliation.ror)) return affiliation.ror.map((ror) => (ror.startsWith('https') ? ror : `https://ror.org/${ror}`)).join(' ');
+  if (!affiliation.ror.startsWith('https')) return `https://ror.org/${affiliation.ror}`;
+  return affiliation.ror;
+};
 
 const getBsoQuery = (options, pit, searchAfter) => {
   const query = { size: process.env.VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
@@ -89,7 +112,6 @@ const getBsoWorks = async ({
       }
       return ({
         datasource: 'bso',
-        total: response?.hits?.total?.value ?? 0,
         results: allResults,
       });
     });
@@ -104,20 +126,6 @@ const getIdValue = (id) => (
       .replace('https://www.ncbi.nlm.nih.gov/pmc/articles/', '')
     : null
 );
-
-const getAffilitionsFromOpenAlex = (publication) => {
-  if (publication?.authorships) {
-    return publication?.authorships?.map((author) => {
-      if (author.raw_affiliation_strings.length === 1) {
-        const affiliation = { name: author.raw_affiliation_strings[0] };
-        if (author?.institutions?.[0]?.ror) affiliation.ror = author.institutions[0].ror;
-        return affiliation;
-      }
-      return author.raw_affiliation_strings.map((name) => ({ name }));
-    }).flat();
-  }
-  return publication.affiliations;
-};
 
 const getTypeFromOpenAlex = (type) => {
   let newType = type;
@@ -197,7 +205,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
       if (Number(response.results.length) === Number(process.env.VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
         return getOpenAlexPublications(options, nextPage, results);
       }
-      return ({ total: response.meta.count, results });
+      return ({ results });
     })
     .then((response) => ({
       datasource: 'openalex',
@@ -215,6 +223,75 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
         year: Number(result?.publication_year) ?? Number(result.year),
       })),
     }));
+};
+
+const getRegexpFromOptions = (options) => {
+  const regex = new RegExp(`(${(options?.affiliations ?? [])
+    .map((affiliationQuery) => affiliationQuery
+      .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
+      .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
+      .replaceAll(/(i|ì|í|î|ï)/g, '(i|ì|í|î|ï)')
+      .replaceAll(/(o|ò|ó|ô|õ|ö|ø)/g, '(o|ò|ó|ô|õ|ö|ø)')
+      .replaceAll(/(u|ù|ú|û|ü)/g, '(u|ù|ú|û|ü)')
+      .replaceAll(/(y|ý|ÿ)/g, '(y|ý|ÿ)')
+      .replaceAll(/(n|ñ)/g, '(n|ñ)')
+      .replaceAll(/(c|ç)/g, '(c|ç)')
+      .replaceAll(/æ/g, '(æ|ae)')
+      .replaceAll(/œ/g, '(œ|oe)'))
+    .join('|')})`, 'gi');
+  return regex;
+};
+
+const normalizedName = (name) => name
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[^a-zA-Z0-9]/g, '');
+
+const groupByAffiliations = ({ datasets, options, publications }) => {
+  const regexp = getRegexpFromOptions(options);
+  // Save already decided affiliations
+  // const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== status.tobedecided.id);
+  // Compute distinct affiliations of the undecided works
+  let allAffiliationsTmp = {};
+  [...datasets, ...publications].filter((work) => work.status === status.tobedecided.id).forEach((work) => {
+    (work?.affiliations ?? [])
+      .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
+      .forEach((affiliation) => {
+        const ror = getAffiliationRor(affiliation);
+        const normalizedAffiliationName = normalizedName(affiliation.name);
+        if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
+          // Check matches in affiliation name
+          let matches = `${affiliation?.name}`?.match(regexp) ?? [];
+          // Normalize matched strings
+          matches = matches.map((name) => normalizedName(name));
+          // Filter matches as unique
+          matches = [...new Set(matches)];
+          allAffiliationsTmp[normalizedAffiliationName] = {
+            matches: matches.length,
+            name: affiliation.name,
+            nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
+            ror,
+            rorHtml: ror?.replace(regexp, '<b>$&</b>'),
+            status: status.tobedecided.id,
+            works: [],
+          };
+        }
+        allAffiliationsTmp[normalizedAffiliationName].works.push(work.id);
+      });
+  });
+
+  // decidedAffiliations.forEach((affiliation) => {
+  //   const affiliationName = normalizedName(affiliation.name);
+  //   if (!allAffiliationsTmp?.[affiliationName]) {
+  //     allAffiliationsTmp[affiliationName] = affiliation;
+  //   } else {
+  //     allAffiliationsTmp[affiliationName].status = affiliation.status;
+  //   }
+  // });
+
+  allAffiliationsTmp = Object.values(allAffiliationsTmp)
+    .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
+  return allAffiliationsTmp;
 };
 
 const mergePublications = (publi1, publi2) => {
@@ -236,5 +313,6 @@ export {
   getBsoQuery,
   getBsoWorks,
   getOpenAlexPublications,
+  groupByAffiliations,
   mergePublications,
 };

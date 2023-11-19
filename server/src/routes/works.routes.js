@@ -3,6 +3,7 @@ import express from 'express';
 import {
   getBsoWorks,
   getOpenAlexPublications,
+  groupByAffiliations,
   mergePublications,
 } from '../utils';
 
@@ -20,12 +21,9 @@ router.route('/works')
           getOpenAlexPublications(options),
           getBsoWorks({ options, index: process.env.VITE_BSO_DATASETS_INDEX, filter: 'q=genre:dataset' }),
         ]);
-        const data = { datasets: [], publications: [], total: {} };
-        results.slice(0, 2).forEach((publication) => {
-          data.publications = [...data.publications, ...publication.results];
-        });
-        data.datasets = [...data.datasets, ...results[2].results];
-
+        const data = {};
+        data.publications = [...results[0].results, ...results[1].results];
+        data.datasets = results[2].results;
         // Deduplicate publications by DOI or by hal_id
         const deduplicatedPublications = {};
         data.publications.forEach((publication) => {
@@ -37,6 +35,8 @@ router.route('/works')
           }
         });
         data.publications = Object.values(deduplicatedPublications);
+        // Goup by affiliations
+        data.affiliations = groupByAffiliations({ ...data, options });
         res.status(200).json(data);
       }
     } catch (err) {
