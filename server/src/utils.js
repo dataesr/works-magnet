@@ -27,27 +27,6 @@ const getBsoQuery = (options, pit, searchAfter) => {
   return query;
 };
 
-const getBsoCount = async (options) => {
-  const { affiliations } = options;
-  // eslint-disable-next-line no-param-reassign
-  options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
-  const body = getBsoQuery(options);
-  delete body._source;
-  delete body.size;
-  delete body.sort;
-  const params = {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      'content-type': 'application/json',
-      Authorization: process.env.VITE_BSO_AUTH,
-    },
-  };
-  const response = await fetch(`${process.env.VITE_BSO_URL}/_count`, params);
-  if (response.ok) return response.json();
-  return 'Oops... BSO API request did not work';
-};
-
 const getBsoWorks = async ({
   allResults = [], filter, index = process.env.VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter,
 }) => {
@@ -254,7 +233,6 @@ const mergePublications = (publi1, publi2) => {
 };
 
 export {
-  getBsoCount,
   getBsoQuery,
   getBsoWorks,
   getOpenAlexPublications,

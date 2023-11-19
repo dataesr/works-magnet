@@ -1,7 +1,6 @@
 import express from 'express';
 
 import {
-  getBsoCount,
   getBsoWorks,
   getOpenAlexPublications,
   mergePublications,
