@@ -3,7 +3,7 @@ import {
   Row,
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import WorksView from './worksView';
 import Gauge from '../components/gauge';
@@ -45,3 +45,16 @@ export default function DatasetsTab({ datasets, tagDatasets }) {
     </>
   );
 }
+
+DatasetsTab.propTypes = {
+  datasets: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    datasource: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+  })).isRequired,
+  tagDatasets: PropTypes.func.isRequired,
+};
