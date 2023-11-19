@@ -4,7 +4,6 @@ import {
   Col,
   Notice,
   Row,
-  Tab,
   TextInput,
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
@@ -49,7 +48,7 @@ export default function AffiliationsTab({ affiliations, tagAffiliations }) {
   };
 
   return (
-    <Tab>
+    <>
       {affiliationsNotice && (
         <Row>
           <Col n="12">
@@ -110,7 +109,7 @@ export default function AffiliationsTab({ affiliations, tagAffiliations }) {
           {renderButtons(selectedAffiliations, tagAffiliations)}
         </Col>
       </Row>
-    </Tab>
+    </>
   );
 }
 

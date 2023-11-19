@@ -3,21 +3,19 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-case-declarations */
 import {
-  Checkbox,
-  CheckboxGroup,
   Col,
   Container,
   Row,
   Tab,
   Tabs,
-  TextInput,
 } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import Actions from './actions';
-import Filters from './filters';
 import AffiliationsTab from './affiliationsTab';
+import Filters from './filters';
+import PublicationsTab from './publicationsTab';
 import WorksView from './worksView';
 import Gauge from '../components/gauge';
 import { PageSpinner } from '../components/spinner';
@@ -29,35 +27,20 @@ import {
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 } from '../utils/templates';
-import {
-  getData,
-  renderButtons,
-} from '../utils/works.jsx';
+import { getData, renderButtons } from '../utils/works';
 import { status } from '../config';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
-const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
-
 export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
-  const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
-  const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
-  const [filteredPublications, setFilteredPublications] = useState([]);
-  const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
-  const [filteredTypes, setFilteredTypes] = useState([]);
-  const [filteredYears, setFilteredYears] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
   const [selectedDatasets, setSelectedDatasets] = useState([]);
-  const [selectedPublications, setSelectedPublications] = useState([]);
-  const [timer, setTimer] = useState();
-  const [types, setTypes] = useState([]);
-  const [years, setYears] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -173,27 +156,7 @@ export default function Home() {
     }
     setAllDatasets(allDatasetsTmp);
     setAllPublications(allPublicationsTmp);
-    setFilteredPublications(allPublicationsTmp);
-    const allYears = [...new Set(allPublicationsTmp.map((publication) => publication?.year).filter((year) => !!year))];
-    setYears(allYears);
-    setFilteredYears(allYears);
-    const allTypes = [...new Set(allPublicationsTmp.map((publication) => publication?.type))];
-    setTypes(allTypes);
-    setFilteredTypes(allTypes);
   }, [data, regexp]);
-
-  useEffect(() => {
-    if (timer) {
-      clearTimeout(timer);
-    }
-    const timerTmp = setTimeout(() => {
-      const filteredPublicationsTmp = allPublications.filter((publication) => publication.affiliationsTooltip.includes(filteredAffiliationName) && filteredDatasources.includes(publication.datasource) && filteredStatus.includes(publication.status) && filteredTypes.includes(publication.type) && filteredYears.includes(publication.year));
-      setFilteredPublications(filteredPublicationsTmp);
-    }, 500);
-    setTimer(timerTmp);
-    // The timer should not be tracked
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allPublications, filteredAffiliationName, filteredDatasources, filteredStatus, filteredTypes, filteredYears]);
 
   useEffect(() => {
     groupByAffiliations();
@@ -205,7 +168,6 @@ export default function Home() {
     const publicationsIds = publications.map((publication) => publication.id);
     allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
     setAllPublications(allPublicationsTmp);
-    setSelectedPublications([]);
   };
 
   const tagDatasets = (datasets, action) => {
@@ -232,38 +194,6 @@ export default function Home() {
     setAllAffiliations(allAffiliationsTmp);
   };
 
-  const onDatasourcesChange = (datasource) => {
-    if (filteredDatasources.includes(datasource.key)) {
-      setFilteredDatasources(filteredDatasources.filter((filteredDatasource) => filteredDatasource !== datasource.key));
-    } else {
-      setFilteredDatasources(filteredDatasources.concat([datasource.key]));
-    }
-  };
-
-  const onStatusChange = (st) => {
-    if (filteredStatus.includes(st)) {
-      setFilteredStatus(filteredStatus.filter((filteredSt) => filteredSt !== st));
-    } else {
-      setFilteredStatus(filteredStatus.concat([st]));
-    }
-  };
-
-  const onTypesChange = (type) => {
-    if (filteredTypes.includes(type)) {
-      setFilteredTypes(filteredTypes.filter((filteredType) => filteredType !== type));
-    } else {
-      setFilteredTypes(filteredTypes.concat([type]));
-    }
-  };
-
-  const onYearsChange = (year) => {
-    if (filteredYears.includes(year)) {
-      setFilteredYears(filteredYears.filter((filteredYear) => filteredYear !== year));
-    } else {
-      setFilteredYears(filteredYears.concat([year]));
-    }
-  };
-
   return (
     <>
       <Container className="fr-my-5w" as="section" fluid>
@@ -286,105 +216,17 @@ export default function Home() {
         />
         {allAffiliations.length > 0 && (
           <Tabs defaultActiveTab={0}>
-            <AffiliationsTab
-              affiliations={allAffiliations}
-              tagAffiliations={tagAffiliations}
-              label="Grouped affiliations of works"
-            />
+            <Tab label="Grouped affiliations of works">
+              <AffiliationsTab
+                affiliations={allAffiliations}
+                tagAffiliations={tagAffiliations}
+              />
+            </Tab>
             <Tab label="List all publications">
-              <Row>
-                <Col n="4">
-                  {renderButtons(selectedPublications, tagPublications)}
-                </Col>
-                <Col n="8">
-                  <Gauge
-                    data={Object.values(status).map((st) => ({
-                      ...st,
-                      value: allPublications.filter((publication) => publication.status === st.id).length,
-                    }))}
-                  />
-                </Col>
-              </Row>
-              {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-              {(!isFetching && !isLoading) && (
-                <Row gutters>
-                  <Col n="2">
-                    <CheckboxGroup
-                      hint="Filter publications on selected status"
-                      legend="Status"
-                    >
-                      {Object.values(status).map((st) => (
-                        <Checkbox
-                          checked={filteredStatus.includes(st.id)}
-                          key={st.id}
-                          label={st.label}
-                          onChange={() => onStatusChange(st.id)}
-                          size="sm"
-                        />
-                      ))}
-                    </CheckboxGroup>
-                    <CheckboxGroup
-                      hint="Filter publications on selected datasources"
-                      legend="Source"
-                    >
-                      {DATASOURCES.map((datasource) => (
-                        <Checkbox
-                          checked={filteredDatasources.includes(datasource.key)}
-                          key={datasource.key}
-                          label={datasource.label}
-                          onChange={() => onDatasourcesChange(datasource)}
-                          size="sm"
-                        />
-                      ))}
-                    </CheckboxGroup>
-                    <CheckboxGroup
-                      hint="Filter publications on selected years"
-                      legend="Years"
-                    >
-                      {years.map((year) => (
-                        <Checkbox
-                          checked={filteredYears.includes(year)}
-                          key={year}
-                          label={year.toString()}
-                          onChange={() => onYearsChange(year)}
-                          size="sm"
-                        />
-                      ))}
-                    </CheckboxGroup>
-                    <CheckboxGroup
-                      hint="Filter publications on selected types"
-                      legend="Types"
-                    >
-                      {types.map((type) => (
-                        <Checkbox
-                          checked={filteredTypes.includes(type)}
-                          key={type}
-                          label={type.toString()}
-                          onChange={() => onTypesChange(type)}
-                          size="sm"
-                        />
-                      ))}
-                    </CheckboxGroup>
-                    <TextInput
-                      label="Filter publications on affiliations name"
-                      onChange={(e) => setFilteredAffiliationName(e.target.value)}
-                      value={filteredAffiliationName}
-                    />
-                  </Col>
-                  <Col n="10">
-                    <WorksView
-                      selectedWorks={selectedPublications}
-                      setSelectedWorks={setSelectedPublications}
-                      works={filteredPublications}
-                    />
-                  </Col>
-                </Row>
-              )}
-              <Row>
-                <Col n="4">
-                  {renderButtons(selectedPublications, tagPublications)}
-                </Col>
-              </Row>
+              <PublicationsTab
+                publications={allPublications}
+                tagPublications={tagPublications}
+              />
             </Tab>
             <Tab label="List all datasets">
               <Row>
