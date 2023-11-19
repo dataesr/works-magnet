@@ -71,10 +71,9 @@ export default function Home() {
   }, [options?.affiliations]);
 
   useEffect(() => {
-    let allDatasetsTmp = [];
-    let allPublicationsTmp = [];
     if (data) {
-      allDatasetsTmp = data.datasets
+      const allAffiliationsTmp = data?.affiliations ?? [];
+      const allDatasetsTmp = data.datasets
         .filter((dataset) => !!dataset?.affiliations)
         .map((dataset) => ({
           ...dataset,
@@ -85,7 +84,7 @@ export default function Home() {
           authorsTooltip: getAuthorsTooltipField(dataset),
           status: status.tobedecided.id,
         }));
-      allPublicationsTmp = data.publications
+      const allPublicationsTmp = data.publications
         .filter((publication) => !!publication?.affiliations)
         .map((publication) => ({
           ...publication,
@@ -96,9 +95,10 @@ export default function Home() {
           authorsTooltip: getAuthorsTooltipField(publication),
           status: status.tobedecided.id,
         }));
+      setAllAffiliations(allAffiliationsTmp);
+      setAllDatasets(allDatasetsTmp);
+      setAllPublications(allPublicationsTmp);
     }
-    setAllDatasets(allDatasetsTmp);
-    setAllPublications(allPublicationsTmp);
   }, [data, regexp]);
 
   const tagPublications = (publications, action) => {
@@ -153,7 +153,7 @@ export default function Home() {
           setAllPublications={setAllPublications}
           tagAffiliations={tagAffiliations}
         />
-        {data?.length && (
+        {data && (
           <Tabs defaultActiveTab={0}>
             <Tab label="Grouped affiliations of works">
               <AffiliationsTab

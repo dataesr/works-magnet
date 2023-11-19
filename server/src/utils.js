@@ -1,5 +1,3 @@
-import { status } from 'client/src/config';
-
 const VITE_OPENALEX_MAX_PAGE = Math.floor(process.env.VITE_OPENALEX_SIZE / process.env.VITE_OPENALEX_PER_PAGE);
 
 const getAffilitionsFromOpenAlex = (publication) => {
@@ -93,6 +91,7 @@ const getBsoWorks = async ({
         datasource: 'bso',
         id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
         original: result,
+        status: 'tobedecided',
         type: result._source?.genre_raw ?? result._source.genre,
       })));
       if (hits.length > 0 && (Number(process.env.VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(process.env.VITE_BSO_MAX_SIZE))) {
@@ -218,6 +217,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
         doi: getIdValue(result?.doi),
         id: result?.doi ? getIdValue(result.doi) : result.id,
         original: result,
+        status: 'tobedecided',
         title: result?.display_name ?? result.title,
         type: getTypeFromOpenAlex(result.type),
         year: Number(result?.publication_year) ?? Number(result.year),
@@ -253,7 +253,7 @@ const groupByAffiliations = ({ datasets, options, publications }) => {
   // const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== status.tobedecided.id);
   // Compute distinct affiliations of the undecided works
   let allAffiliationsTmp = {};
-  [...datasets, ...publications].filter((work) => work.status === status.tobedecided.id).forEach((work) => {
+  [...datasets, ...publications].filter((work) => work.status === 'tobedecided').forEach((work) => {
     (work?.affiliations ?? [])
       .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
       .forEach((affiliation) => {
@@ -272,7 +272,7 @@ const groupByAffiliations = ({ datasets, options, publications }) => {
             nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
             ror,
             rorHtml: ror?.replace(regexp, '<b>$&</b>'),
-            status: status.tobedecided.id,
+            status: 'tobedecided',
             works: [],
           };
         }
