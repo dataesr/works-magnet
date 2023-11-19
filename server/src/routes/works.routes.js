@@ -24,16 +24,10 @@ router.route('/works')
         const data = { datasets: [], publications: [], total: {} };
         results.slice(0, 2).forEach((publication) => {
           data.publications = [...data.publications, ...publication.results];
-          data.total[publication.datasource] = publication.total;
         });
         data.datasets = [...data.datasets, ...results[2].results];
-        data.total.dataset = results[2].total;
-        if ((Number(data.total.bso) === 0) || (Number(data.total.bso) === Number(process.env.VITE_BSO_MAX_SIZE))) {
-          const { count } = await getBsoCount(options);
-          data.total.bso = count;
-        }
+
         // Deduplicate publications by DOI or by hal_id
-        data.total.all = data.publications.length;
         const deduplicatedPublications = {};
         data.publications.forEach((publication) => {
           const id = publication?.doi ?? publication?.primary_location?.landing_page_url?.split('/')?.pop() ?? publication.id;
@@ -44,7 +38,6 @@ router.route('/works')
           }
         });
         data.publications = Object.values(deduplicatedPublications);
-        data.total.deduplicated = Object.values(deduplicatedPublications).length;
         res.status(200).json(data);
       }
     } catch (err) {
