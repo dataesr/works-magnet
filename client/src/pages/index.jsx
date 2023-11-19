@@ -14,11 +14,9 @@ import { useEffect, useState } from 'react';
 
 import Actions from './actions';
 import AffiliationsTab from './affiliationsTab';
+import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import PublicationsTab from './publicationsTab';
-import WorksView from './worksView';
-import Gauge from '../components/gauge';
-import { PageSpinner } from '../components/spinner';
 import {
   getAllIdsHtmlField,
   getAffiliationRor,
@@ -27,7 +25,7 @@ import {
   getAuthorsHtmlField,
   getAuthorsTooltipField,
 } from '../utils/templates';
-import { getData, renderButtons } from '../utils/works';
+import { getData } from '../utils/works';
 import { status } from '../config';
 
 import 'primereact/resources/primereact.min.css';
@@ -37,12 +35,10 @@ export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
-  const [selectedDatasets, setSelectedDatasets] = useState([]);
 
-  const { data, isFetching, refetch } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(options),
     enabled: false,
@@ -51,7 +47,6 @@ export default function Home() {
   });
 
   const sendQuery = async (_options) => {
-    setIsLoading(true);
     setAllAffiliations([]);
     setAllDatasets([]);
     setAllPublications([]);
@@ -108,7 +103,6 @@ export default function Home() {
     allAffiliationsTmp = Object.values(allAffiliationsTmp)
       .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
     setAllAffiliations(allAffiliationsTmp);
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -168,6 +162,7 @@ export default function Home() {
     const publicationsIds = publications.map((publication) => publication.id);
     allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
     setAllPublications(allPublicationsTmp);
+    // setSelectedPublications([]);
   };
 
   const tagDatasets = (datasets, action) => {
@@ -175,7 +170,7 @@ export default function Home() {
     const datasetsIds = datasets.map((dataset) => dataset.id);
     allDatasetsTmp.filter((dataset) => datasetsIds.includes(dataset.id)).map((dataset) => dataset.status = action);
     setAllDatasets(allDatasetsTmp);
-    setSelectedDatasets([]);
+    // setSelectedDatasets([]);
   };
 
   const tagAffiliations = (affiliations, action) => {
@@ -229,36 +224,10 @@ export default function Home() {
               />
             </Tab>
             <Tab label="List all datasets">
-              <Row>
-                <Col n="4">
-                  {renderButtons(selectedDatasets, tagDatasets)}
-                </Col>
-                <Col n="8">
-                  <Gauge
-                    data={Object.values(status).map((st) => ({
-                      ...st,
-                      value: allDatasets.filter((dataset) => dataset.status === st.id).length,
-                    }))}
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  {(isFetching || isLoading) && (<Container as="section"><PageSpinner /></Container>)}
-                  {!isFetching && !isLoading && (
-                    <WorksView
-                      selectedWorks={selectedDatasets}
-                      setSelectedWorks={setSelectedDatasets}
-                      works={allDatasets}
-                    />
-                  )}
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  {renderButtons(selectedDatasets, tagDatasets)}
-                </Col>
-              </Row>
+              <DatasetsTab
+                datasets={allDatasets}
+                tagDatasets={tagDatasets}
+              />
             </Tab>
           </Tabs>
         )}
