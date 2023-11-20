@@ -218,7 +218,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
         status: 'tobedecided',
         title: result?.display_name ?? result.title,
         type: getTypeFromOpenAlex(result.type),
-        year: Number(result?.publication_year) ?? Number(result.year),
+        year: result?.publication_year ?? result.year,
       })),
     }));
 };
