@@ -24,7 +24,8 @@ router.route('/works')
         ]);
         const data = {};
         data.publications = [...results[0].results, ...results[1].results];
-        data.datasets = [...results[2].results, ...results[3].results];
+        // data.datasets = [...results[2].results, ...results[3].results];
+        data.datasets = [...results[2].results];
         // Deduplicate publications by DOI or by hal_id
         const deduplicatedPublications = {};
         data.publications.forEach((publication) => {
