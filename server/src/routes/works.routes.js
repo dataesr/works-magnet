@@ -17,10 +17,10 @@ router.route('/works')
         res.status(400).json({ message: 'You must provide at least one affiliation.' });
       } else {
         const results = await Promise.all([
-          getBsoWorks({ options, index: process.env.VITE_BSO_PUBLICATIONS_INDEX, filter: 'q=genre_raw:!dataset' }),
+          getBsoWorks({ options, index: process.env.VITE_BSO_PUBLICATIONS_INDEX }),
           getOpenAlexPublications(options),
           getBsoWorks({ options, index: process.env.VITE_BSO_DATASETS_INDEX, filter: 'q=genre:dataset' }),
-          getBsoWorks({ options, index: process.env.VITE_BSO_PUBLICATIONS_INDEX, filter: 'q=genre_raw:dataset' }),
+          // getBsoWorks({ options, index: process.env.VITE_BSO_PUBLICATIONS_INDEX, filter: 'q=genre_raw:dataset' }),
         ]);
         const data = {};
         data.publications = [...results[0].results, ...results[1].results];
