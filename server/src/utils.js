@@ -90,7 +90,6 @@ const getBsoWorks = async ({
         authors: result._source?.authors ?? [],
         datasource: 'bso',
         id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
-        original: result,
         status: 'tobedecided',
         type: result._source?.genre_raw ?? result._source.genre,
       })));
@@ -216,7 +215,6 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
         datasource: 'openalex',
         doi: getIdValue(result?.doi),
         id: result?.doi ? getIdValue(result.doi) : result.id,
-        original: result,
         status: 'tobedecided',
         title: result?.display_name ?? result.title,
         type: getTypeFromOpenAlex(result.type),
