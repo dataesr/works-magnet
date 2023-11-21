@@ -35,7 +35,7 @@ router.route('/works')
         data.datasets.results = data.datasets.results.filter((dataset) => !!dataset?.affiliations);
         // Deduplicate publications by DOI or by hal_id
         const deduplicatedPublications = {};
-        [...data.publications.results, ...data.datasets.results].forEach((publication) => {
+        data.publications.results.forEach((publication) => {
           const id = publication?.doi ?? publication?.primary_location?.landing_page_url?.split('/')?.pop() ?? publication.id;
           if (!Object.keys(deduplicatedPublications).includes(id)) {
             deduplicatedPublications[id] = publication;
