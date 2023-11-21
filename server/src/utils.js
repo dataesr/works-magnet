@@ -36,7 +36,7 @@ const getBsoQuery = (options, pit, searchAfter) => {
     query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
   }
   query.query.bool.minimum_should_match = 1;
-  query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'hal_id', 'id', 'journal_name', 'title', 'year'];
+  query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'journal_name', 'title', 'year'];
   query.sort = ['_shard_doc'];
   if (pit) {
     query.pit = { id: pit, keep_alive: process.env.VITE_BSO_PIT_KEEP_ALIVE };
@@ -218,7 +218,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
         status: 'tobedecided',
         title: result?.display_name ?? result.title,
         type: getTypeFromOpenAlex(result.type),
-        year: result?.publication_year ?? result.year,
+        year: result?.publication_year,
       })),
     }));
 };
@@ -251,7 +251,7 @@ const groupByAffiliations = ({ datasets, options, publications }) => {
   // const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== status.tobedecided.id);
   // Compute distinct affiliations of the undecided works
   let allAffiliationsTmp = {};
-  [...datasets, ...publications].filter((work) => work.status === 'tobedecided').forEach((work) => {
+  [...datasets.results, ...publications.results].filter((work) => work.status === 'tobedecided').forEach((work) => {
     (work?.affiliations ?? [])
       .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
       .forEach((affiliation) => {

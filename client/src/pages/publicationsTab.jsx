@@ -15,27 +15,21 @@ import { renderButtons } from '../utils/works';
 
 const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 
-export default function PublicationsTab({ publications, tagPublications }) {
-  const [filteredPublications, setFilteredPublications] = useState([]);
+export default function PublicationsTab({ publications, tagPublications, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
+  const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [timer, setTimer] = useState();
-  const [types, setTypes] = useState([]);
-  const [years, setYears] = useState([]);
 
   useEffect(() => {
     setFilteredPublications(publications);
-    const allYears = [...new Set(publications.map((publication) => publication?.year).filter((year) => !!year))];
-    setYears(allYears);
-    setFilteredYears(allYears);
-    const allTypes = [...new Set(publications.map((publication) => publication?.type))];
-    setTypes(allTypes);
-    setFilteredTypes(allTypes);
-  }, [publications]);
+    setFilteredYears(years);
+    setFilteredTypes(types);
+  }, [publications, types, years]);
 
   useEffect(() => {
     if (timer) {
@@ -43,10 +37,10 @@ export default function PublicationsTab({ publications, tagPublications }) {
     }
     const timerTmp = setTimeout(() => {
       const filteredPublicationsTmp = publications.filter((publication) => publication.affiliationsTooltip.includes(filteredAffiliationName)
-          && filteredDatasources.includes(publication.datasource)
-          && filteredStatus.includes(publication.status)
-          && filteredTypes.includes(publication.type)
-          && filteredYears.includes(publication.year));
+        && filteredDatasources.includes(publication.datasource)
+        && filteredStatus.includes(publication.status)
+        && filteredTypes.includes(publication.type)
+        && filteredYears.includes(publication.year));
       setFilteredPublications(filteredPublicationsTmp);
     }, 500);
     setTimer(timerTmp);
@@ -193,4 +187,6 @@ PublicationsTab.propTypes = {
     type: PropTypes.string.isRequired,
   })).isRequired,
   tagPublications: PropTypes.func.isRequired,
+  types: PropTypes.arrayOf(PropTypes.string).isRequired,
+  years: PropTypes.arrayOf(PropTypes.number).isRequired,
 };

@@ -73,8 +73,7 @@ export default function Home() {
   useEffect(() => {
     if (data) {
       const allAffiliationsTmp = data?.affiliations ?? [];
-      const allDatasetsTmp = data.datasets
-        .filter((dataset) => !!dataset?.affiliations)
+      const allDatasetsTmp = data.datasets.results
         .map((dataset) => ({
           ...dataset,
           affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
@@ -84,8 +83,7 @@ export default function Home() {
           authorsTooltip: getAuthorsTooltipField(dataset),
           status: status.tobedecided.id,
         }));
-      const allPublicationsTmp = data.publications
-        .filter((publication) => !!publication?.affiliations)
+      const allPublicationsTmp = data.publications.results
         .map((publication) => ({
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
@@ -165,12 +163,16 @@ export default function Home() {
               <PublicationsTab
                 publications={allPublications}
                 tagPublications={tagPublications}
+                types={data.publications.types}
+                years={data.publications.years}
               />
             </Tab>
             <Tab label="List all datasets">
               <DatasetsTab
                 datasets={allDatasets}
                 tagDatasets={tagDatasets}
+                types={data.datasets.types}
+                years={data.datasets.years}
               />
             </Tab>
           </Tabs>

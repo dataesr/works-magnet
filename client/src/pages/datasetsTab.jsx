@@ -1,17 +1,84 @@
 import {
+  Checkbox,
+  CheckboxGroup,
   Col,
   Row,
+  TextInput,
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import WorksView from './worksView';
 import Gauge from '../components/gauge';
 import { status } from '../config';
 import { renderButtons } from '../utils/works';
 
-export default function DatasetsTab({ datasets, tagDatasets }) {
+const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
+
+export default function DatasetsTab({ datasets, tagDatasets, types, years }) {
+  const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
+  const [filteredDatasets, setFilteredDatasets] = useState([]);
+  const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
+  const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
+  const [filteredTypes, setFilteredTypes] = useState([]);
+  const [filteredYears, setFilteredYears] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
+  const [timer, setTimer] = useState();
+
+  useEffect(() => {
+    setFilteredDatasets(datasets);
+    setFilteredYears(years);
+    setFilteredTypes(types);
+  }, [datasets, types, years]);
+
+  useEffect(() => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    const timerTmp = setTimeout(() => {
+      const filteredDatasetsTmp = datasets.filter((dataset) => dataset.affiliationsTooltip.includes(filteredAffiliationName)
+        && filteredDatasources.includes(dataset.datasource)
+        && filteredStatus.includes(dataset.status)
+        && filteredTypes.includes(dataset.type)
+        && filteredYears.includes(dataset.year));
+      setFilteredDatasets(filteredDatasetsTmp);
+    }, 500);
+    setTimer(timerTmp);
+    // The timer should not be tracked
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [datasets, filteredAffiliationName, filteredDatasources, filteredStatus, filteredTypes, filteredYears]);
+
+  const onDatasourcesChange = (datasource) => {
+    if (filteredDatasources.includes(datasource.key)) {
+      setFilteredDatasources(filteredDatasources.filter((filteredDatasource) => filteredDatasource !== datasource.key));
+    } else {
+      setFilteredDatasources(filteredDatasources.concat([datasource.key]));
+    }
+  };
+
+  const onStatusChange = (st) => {
+    if (filteredStatus.includes(st)) {
+      setFilteredStatus(filteredStatus.filter((filteredSt) => filteredSt !== st));
+    } else {
+      setFilteredStatus(filteredStatus.concat([st]));
+    }
+  };
+
+  const onTypesChange = (type) => {
+    if (filteredTypes.includes(type)) {
+      setFilteredTypes(filteredTypes.filter((filteredType) => filteredType !== type));
+    } else {
+      setFilteredTypes(filteredTypes.concat([type]));
+    }
+  };
+
+  const onYearsChange = (year) => {
+    if (filteredYears.includes(year)) {
+      setFilteredYears(filteredYears.filter((filteredYear) => filteredYear !== year));
+    } else {
+      setFilteredYears(filteredYears.concat([year]));
+    }
+  };
 
   return (
     <>
@@ -29,11 +96,74 @@ export default function DatasetsTab({ datasets, tagDatasets }) {
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col n="2">
+          <CheckboxGroup
+            hint="Filter publications on selected status"
+            legend="Status"
+          >
+            {Object.values(status).map((st) => (
+              <Checkbox
+                checked={filteredStatus.includes(st.id)}
+                key={st.id}
+                label={st.label}
+                onChange={() => onStatusChange(st.id)}
+                size="sm"
+              />
+            ))}
+          </CheckboxGroup>
+          <CheckboxGroup
+            hint="Filter publications on selected datasources"
+            legend="Source"
+          >
+            {DATASOURCES.map((datasource) => (
+              <Checkbox
+                checked={filteredDatasources.includes(datasource.key)}
+                key={datasource.key}
+                label={datasource.label}
+                onChange={() => onDatasourcesChange(datasource)}
+                size="sm"
+              />
+            ))}
+          </CheckboxGroup>
+          <CheckboxGroup
+            hint="Filter publications on selected years"
+            legend="Years"
+          >
+            {years.map((year) => (
+              <Checkbox
+                checked={filteredYears.includes(year)}
+                key={year}
+                label={year.toString()}
+                onChange={() => onYearsChange(year)}
+                size="sm"
+              />
+            ))}
+          </CheckboxGroup>
+          <CheckboxGroup
+            hint="Filter publications on selected types"
+            legend="Types"
+          >
+            {types.map((type) => (
+              <Checkbox
+                checked={filteredTypes.includes(type)}
+                key={type}
+                label={type.toString()}
+                onChange={() => onTypesChange(type)}
+                size="sm"
+              />
+            ))}
+          </CheckboxGroup>
+          <TextInput
+            label="Filter publications on affiliations name"
+            onChange={(e) => setFilteredAffiliationName(e.target.value)}
+            value={filteredAffiliationName}
+          />
+        </Col>
+        <Col n="10">
           <WorksView
             selectedWorks={selectedDatasets}
             setSelectedWorks={setSelectedDatasets}
-            works={datasets}
+            works={filteredDatasets}
           />
         </Col>
       </Row>
@@ -57,4 +187,6 @@ DatasetsTab.propTypes = {
     type: PropTypes.string.isRequired,
   })).isRequired,
   tagDatasets: PropTypes.func.isRequired,
+  types: PropTypes.arrayOf(PropTypes.string).isRequired,
+  years: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
