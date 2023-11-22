@@ -23,8 +23,7 @@ const getAffiliationRor = (affiliation) => {
 
 const getBsoQuery = (options, pit, searchAfter) => {
   const query = { size: process.env.VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
-  const affiliationsFields = [
-    'affiliations.grid', 'affiliations.name', 'affiliations.rnsr', 'affiliations.ror', 'affiliations.structId', 'affiliations.viaf'];
+  const affiliationsFields = ['affiliations.name'];
   options.affiliations.forEach((affiliation) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
   });
