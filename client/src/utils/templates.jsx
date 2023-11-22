@@ -3,7 +3,7 @@
 import { Badge } from '@dataesr/react-dsfr';
 import { Tooltip } from 'react-tooltip';
 
-import { getIdLink } from './works.jsx';
+import { getIdLink } from './works';
 import { status } from '../config';
 
 const affiliationsTemplate = (rowData) => (
@@ -28,9 +28,8 @@ const authorsTemplate = (rowData) => (
 
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
-    .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
-    .sort((a, b) => (b.name.match(regexp)?.length ?? 0) - (a.name.match(regexp)?.length ?? 0))
-    .map((affiliation) => affiliation.name.replace(regexp, '<b>$&</b>'))
+    .sort((a, b) => (b.match(regexp)?.length ?? 0) - (a.match(regexp)?.length ?? 0))
+    .map((affiliation) => affiliation.replace(regexp, '<b>$&</b>'))
     .filter((affiliation) => affiliation?.length ?? 0)
     .flat();
   affiliations = [...new Set(affiliations)];
@@ -45,7 +44,7 @@ const getAffiliationsHtmlField = (rowData, regexp) => {
 
 const getAffiliationsTooltipField = (rowData) => {
   let html = '<ul>';
-  html += rowData.affiliations.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation.name}</li>`).join('');
+  html += rowData.affiliations.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation}</li>`).join('');
   html += '</ul>';
   return html;
 };

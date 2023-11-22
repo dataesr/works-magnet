@@ -30,9 +30,6 @@ router.route('/works')
           ...responses[0].results.filter((result) => result.genre_raw === 'dataset'),
           ...responses[2].results,
         ] };
-        // Remove works without affiliations
-        data.publications.results = data.publications.results.filter((publication) => !!publication?.affiliations);
-        data.datasets.results = data.datasets.results.filter((dataset) => !!dataset?.affiliations);
         // Deduplicate publications by DOI or by hal_id
         const deduplicatedPublications = {};
         data.publications.results.forEach((publication) => {

@@ -1,26 +1,5 @@
 const VITE_OPENALEX_MAX_PAGE = Math.floor(process.env.VITE_OPENALEX_SIZE / process.env.VITE_OPENALEX_PER_PAGE);
 
-const getAffilitionsFromOpenAlex = (publication) => {
-  if (publication?.authorships) {
-    return publication?.authorships?.map((author) => {
-      if (author.raw_affiliation_strings.length === 1) {
-        const affiliation = { name: author.raw_affiliation_strings[0] };
-        if (author?.institutions?.[0]?.ror) affiliation.ror = author.institutions[0].ror;
-        return affiliation;
-      }
-      return author.raw_affiliation_strings.map((name) => ({ name }));
-    }).flat();
-  }
-  return publication.affiliations;
-};
-
-const getAffiliationRor = (affiliation) => {
-  if (!affiliation?.ror) return undefined;
-  if (Array.isArray(affiliation.ror)) return affiliation.ror.map((ror) => (ror.startsWith('https') ? ror : `https://ror.org/${ror}`)).join(' ');
-  if (!affiliation.ror.startsWith('https')) return `https://ror.org/${affiliation.ror}`;
-  return affiliation.ror;
-};
-
 const getBsoQuery = (options, pit, searchAfter) => {
   const query = { size: process.env.VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   const affiliationsFields = ['affiliations.name'];
@@ -85,6 +64,7 @@ const getBsoWorks = async ({
       allResults = allResults.concat(hits.map((result) => ({
         ...result._source,
         // Filter ids on unique values
+        affiliations: result._source.affiliations.map((affiliation) => affiliation.name),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: result._source?.authors ?? [],
         datasource: 'bso',
@@ -182,8 +162,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
     url += `,publication_year:-${Number(options.endYear)}`;
   }
   if (options.affiliations.length) {
-    url += ',raw_affiliation_string.search:';
-    if (options.affiliations.length) url += `(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
+    url += `,raw_affiliation_string.search:(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
   }
   if (process?.env?.VITE_OPENALEX_KEY) {
     url += `&api_key=${process.env.VITE_OPENALEX_KEY}`;
@@ -194,6 +173,10 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
   return fetch(`${url}&page=${page}`)
     .then((response) => {
       if (response.ok) return response.json();
+      console.error(response);
+      console.error(url);
+      console.error(response.status);
+      console.error(response.statusText);
       return 'Oops... OpenAlex API request did not work';
     })
     .then((response) => {
@@ -206,9 +189,8 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
     })
     .then((response) => ({
       datasource: 'openalex',
-      total: response.total,
       results: response.results.map((result) => ({
-        affiliations: getAffilitionsFromOpenAlex(result),
+        affiliations: [...(result?.authorships ?? []), ...(result?.authors ?? [])].map((author) => author.raw_affiliation_strings).flat(),
         allIds: result?.ids ? Object.keys(result.ids).map((key) => ({ id_type: key, id_value: getIdValue(result.ids[key]) })) : result.allIds,
         authors: result?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? result.authors,
         datasource: 'openalex',
@@ -219,6 +201,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
         type: getTypeFromOpenAlex(result.type),
         year: result?.publication_year,
       })),
+      total: response.total,
     }));
 };
 
@@ -252,23 +235,19 @@ const groupByAffiliations = ({ datasets, options, publications }) => {
   let allAffiliationsTmp = {};
   [...datasets.results, ...publications.results].filter((work) => work.status === 'tobedecided').forEach((work) => {
     (work?.affiliations ?? [])
-      .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
       .forEach((affiliation) => {
-        const ror = getAffiliationRor(affiliation);
-        const normalizedAffiliationName = normalizedName(affiliation.name);
+        const normalizedAffiliationName = normalizedName(affiliation);
         if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
           // Check matches in affiliation name
-          let matches = `${affiliation?.name}`?.match(regexp) ?? [];
+          let matches = affiliation?.match(regexp) ?? [];
           // Normalize matched strings
-          matches = matches.map((name) => normalizedName(name));
+          matches = matches.map((macth) => normalizedName(macth));
           // Filter matches as unique
           matches = [...new Set(matches)];
           allAffiliationsTmp[normalizedAffiliationName] = {
             matches: matches.length,
-            name: affiliation.name,
-            nameHtml: affiliation.name.replace(regexp, '<b>$&</b>'),
-            ror,
-            rorHtml: ror?.replace(regexp, '<b>$&</b>'),
+            name: affiliation,
+            nameHtml: affiliation.replace(regexp, '<b>$&</b>'),
             status: 'tobedecided',
             works: [],
           };
