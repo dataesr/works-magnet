@@ -67,7 +67,7 @@ const getBsoWorks = async ({
         affiliations: result._source.affiliations.map((affiliation) => affiliation.name),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: result._source?.authors ?? [],
-        datasource: 'bso',
+        datasource: ['bso'],
         id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
         status: 'tobedecided',
         type: result._source?.genre_raw ?? result._source.genre,
@@ -193,7 +193,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
         affiliations: [...(result?.authorships ?? []), ...(result?.authors ?? [])].map((author) => author.raw_affiliation_strings).flat(),
         allIds: result?.ids ? Object.keys(result.ids).map((key) => ({ id_type: key, id_value: getIdValue(result.ids[key]) })) : result.allIds,
         authors: result?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? result.authors,
-        datasource: 'openalex',
+        datasource: ['openalex'],
         doi: getIdValue(result?.doi),
         id: result?.doi ? getIdValue(result.doi) : result.id,
         status: 'tobedecided',
@@ -281,7 +281,7 @@ const mergePublications = (publi1, publi2) => {
     allIds: Object.values([...publi1.allIds, ...publi2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
     // Filter authors by unique full_name
     authors: Object.values([...publi1.authors, ...publi2.authors].reduce((acc, obj) => ({ ...acc, [obj.full_name]: obj }), {})),
-    datasource: 'bso, openalex',
+    datasource: ['bso', 'openalex'],
   });
 };
 

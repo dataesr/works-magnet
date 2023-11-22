@@ -37,7 +37,7 @@ export default function PublicationsTab({ publications, tagPublications, types, 
     }
     const timerTmp = setTimeout(() => {
       const filteredPublicationsTmp = publications.filter((publication) => publication.affiliationsTooltip.includes(filteredAffiliationName)
-        && filteredDatasources.includes(publication.datasource)
+        && filteredDatasources.filter((filteredDatasource) => publication.datasource.includes(filteredDatasource)).length
         && filteredStatus.includes(publication.status)
         && filteredTypes.includes(publication.type)
         && filteredYears.includes(publication.year));
@@ -181,7 +181,7 @@ PublicationsTab.propTypes = {
     affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.string.isRequired,
+    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,

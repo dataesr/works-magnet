@@ -37,7 +37,7 @@ export default function DatasetsTab({ datasets, tagDatasets, types, years }) {
     }
     const timerTmp = setTimeout(() => {
       const filteredDatasetsTmp = datasets.filter((dataset) => dataset.affiliationsTooltip.includes(filteredAffiliationName)
-        && filteredDatasources.includes(dataset.datasource)
+        && filteredDatasources.filter((filteredDatasource) => dataset.datasource.includes(filteredDatasource)).length
         && filteredStatus.includes(dataset.status)
         && filteredTypes.includes(dataset.type)
         && filteredYears.includes(dataset.year));
@@ -181,7 +181,7 @@ DatasetsTab.propTypes = {
     affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.string.isRequired,
+    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
