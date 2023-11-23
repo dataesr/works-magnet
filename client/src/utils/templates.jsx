@@ -63,7 +63,7 @@ const getAllIdsHtmlField = (rowData) => {
 
 const getAuthorsHtmlField = (rowData) => {
   let html = `<ul data-tooltip-id="tooltip-author-${rowData.id}">`;
-  html += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author.full_name}</li>`).join('');
+  html += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author}</li>`).join('');
   if (rowData.authors.length > 3) {
     html += `<li>et al. (${rowData.authors.length - 3})</li>`;
   }
@@ -73,7 +73,7 @@ const getAuthorsHtmlField = (rowData) => {
 
 const getAuthorsTooltipField = (rowData) => {
   let html = '<ul>';
-  html += rowData.authors.map((author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author.full_name}</li>`).join('');
+  html += rowData.authors.map((author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author}</li>`).join('');
   html += '</ul>';
   return html;
 };

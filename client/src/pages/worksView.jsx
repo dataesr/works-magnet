@@ -52,7 +52,7 @@ WorksView.propTypes = {
   selectedWorks: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
@@ -62,7 +62,7 @@ WorksView.propTypes = {
   works: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,

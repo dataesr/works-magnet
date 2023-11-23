@@ -56,6 +56,8 @@ const getBsoWorks = async ({
   return fetch(url, params)
     .then((response) => {
       if (response.ok) return response.json();
+      console.error(`Error while fetching ${url} :`);
+      console.error(`${response.status} | ${response.statusText}`);
       return 'Oops... BSO API request did not work';
     })
     .then((response) => {
@@ -66,7 +68,7 @@ const getBsoWorks = async ({
         // Filter ids on unique values
         affiliations: result._source.affiliations.map((affiliation) => affiliation.name),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
-        authors: result._source?.authors ?? [],
+        authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['bso'],
         id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
         status: 'tobedecided',
@@ -173,26 +175,16 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
   return fetch(`${url}&page=${page}`)
     .then((response) => {
       if (response.ok) return response.json();
-      console.error(response);
-      console.error(url);
-      console.error(response.status);
-      console.error(response.statusText);
+      console.error(`Error while fetching ${url} :`);
+      console.error(`${response.status} | ${response.statusText}`);
       return 'Oops... OpenAlex API request did not work';
     })
     .then((response) => {
-      const results = [...previousResponse, ...response.results];
-      const nextPage = Number(page) + 1;
-      if (Number(response.results.length) === Number(process.env.VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexPublications(options, nextPage, results);
-      }
-      return ({ results });
-    })
-    .then((response) => ({
-      datasource: 'openalex',
-      results: response.results.map((result) => ({
-        affiliations: [...(result?.authorships ?? []), ...(result?.authors ?? [])].map((author) => author.raw_affiliation_strings).flat(),
+      const hits = response?.results ?? [];
+      const results = previousResponse.concat(hits.map((result) => ({
+        affiliations: result?.authorships?.map((author) => author.raw_affiliation_strings).flat(),
         allIds: result?.ids ? Object.keys(result.ids).map((key) => ({ id_type: key, id_value: getIdValue(result.ids[key]) })) : result.allIds,
-        authors: result?.authorships?.map((author) => ({ ...author, full_name: author.author.display_name })) ?? result.authors,
+        authors: result?.authorships?.map((author) => author.author.display_name),
         datasource: ['openalex'],
         doi: getIdValue(result?.doi),
         id: result?.doi ? getIdValue(result.doi) : result.id,
@@ -200,9 +192,16 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
         title: result?.display_name ?? result.title,
         type: getTypeFromOpenAlex(result.type),
         year: result?.publication_year,
-      })),
-      total: response.total,
-    }));
+      })));
+      const nextPage = Number(page) + 1;
+      if (Number(response.results.length) === Number(process.env.VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
+        return getOpenAlexPublications(options, nextPage, results);
+      }
+      return ({
+        datasource: 'openalex',
+        results,
+      });
+    });
 };
 
 const getRegexpFromOptions = (options) => {
@@ -226,6 +225,7 @@ const normalizedName = (name) => name
   .toLowerCase()
   .normalize('NFD')
   .replace(/[^a-zA-Z0-9]/g, '');
+// TODO replace multiple spaces by a single space
 
 const groupByAffiliations = ({ datasets, options, publications }) => {
   const regexp = getRegexpFromOptions(options);
@@ -270,17 +270,18 @@ const groupByAffiliations = ({ datasets, options, publications }) => {
   return allAffiliationsTmp;
 };
 
-const mergePublications = (publi1, publi2) => {
-  const priorityPublication = [publi1, publi2].some((publi) => publi.datasource === 'bso')
-    ? [publi1, publi2].find((publi) => publi.datasource === 'bso')
-    : publi1;
+const mergePublications = (publication1, publication2) => {
+  // Any publication from FOSM is prioritized among others
+  const priorityPublication = [publication1, publication2].some((publi) => publi.datasource === 'bso')
+    ? [publication1, publication2].find((publi) => publi.datasource === 'bso')
+    : publication1;
   return ({
     ...priorityPublication,
-    affiliations: [...publi1.affiliations, ...publi2.affiliations],
+    affiliations: [...publication1.affiliations, ...publication2.affiliations],
     // Filter allIds by unique values
-    allIds: Object.values([...publi1.allIds, ...publi2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
+    allIds: Object.values([...publication1.allIds, ...publication2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
     // Filter authors by unique full_name
-    authors: Object.values([...publi1.authors, ...publi2.authors].reduce((acc, obj) => ({ ...acc, [obj.full_name]: obj }), {})),
+    authors: Object.values([...publication1.authors, ...publication2.authors].reduce((acc, obj) => ({ ...acc, [obj.full_name]: obj }), {})),
     datasource: ['bso', 'openalex'],
   });
 };
