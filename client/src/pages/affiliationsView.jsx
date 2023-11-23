@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
+import PropTypes from 'prop-types';
 
-import { nameTemplate, statusTemplate } from '../../../utils/templates';
+import { nameTemplate, statusTemplate } from '../utils/templates';
 
 export default function AffiliationsView({
   allAffiliations,

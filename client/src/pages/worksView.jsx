@@ -7,7 +7,7 @@ import {
   allIdsTemplate,
   authorsTemplate,
   statusTemplate,
-} from '../../../utils/templates';
+} from '../utils/templates';
 
 export default function WorksView({
   selectedWorks,
@@ -50,20 +50,20 @@ export default function WorksView({
 
 WorksView.propTypes = {
   selectedWorks: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.string.isRequired,
+    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
   setSelectedWorks: PropTypes.func.isRequired,
   works: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.string.isRequired,
+    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,

@@ -1,9 +1,9 @@
 import express from 'express';
 
-import openalexRouter from './routes/openalex';
+import worksRouter from './routes/works.routes';
 
 const router = new express.Router();
 
-router.use(openalexRouter);
+router.use(worksRouter);
 
 export default router;

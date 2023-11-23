@@ -1,7 +1,6 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
 import { Badge } from '@dataesr/react-dsfr';
-import { Dropdown } from 'primereact/dropdown';
 import { Tooltip } from 'react-tooltip';
 
 import { getIdLink } from './works';
@@ -27,18 +26,10 @@ const authorsTemplate = (rowData) => (
   </>
 );
 
-const getAffiliationRor = (affiliation) => {
-  if (!affiliation?.ror) return undefined;
-  if (Array.isArray(affiliation.ror)) return affiliation.ror.map((ror) => (ror.startsWith('https') ? ror : `https://ror.org/${ror}`)).join(' ');
-  if (!affiliation.ror.startsWith('https')) return `https://ror.org/${affiliation.ror}`;
-  return affiliation.ror;
-};
-
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
-    .filter((affiliation) => Object.keys(affiliation).length && affiliation?.name)
-    .sort((a, b) => (b.name.match(regexp)?.length ?? 0) - (a.name.match(regexp)?.length ?? 0))
-    .map((affiliation) => affiliation.name.replace(regexp, '<b>$&</b>'))
+    .sort((a, b) => (b.match(regexp)?.length ?? 0) - (a.match(regexp)?.length ?? 0))
+    .map((affiliation) => affiliation.replace(regexp, '<b>$&</b>'))
     .filter((affiliation) => affiliation?.length ?? 0)
     .flat();
   affiliations = [...new Set(affiliations)];
@@ -53,7 +44,7 @@ const getAffiliationsHtmlField = (rowData, regexp) => {
 
 const getAffiliationsTooltipField = (rowData) => {
   let html = '<ul>';
-  html += rowData.affiliations.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation.name}</li>`).join('');
+  html += rowData.affiliations.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation}</li>`).join('');
   html += '</ul>';
   return html;
 };
@@ -72,7 +63,7 @@ const getAllIdsHtmlField = (rowData) => {
 
 const getAuthorsHtmlField = (rowData) => {
   let html = `<ul data-tooltip-id="tooltip-author-${rowData.id}">`;
-  html += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author.full_name}</li>`).join('');
+  html += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author}</li>`).join('');
   if (rowData.authors.length > 3) {
     html += `<li>et al. (${rowData.authors.length - 3})</li>`;
   }
@@ -82,7 +73,7 @@ const getAuthorsHtmlField = (rowData) => {
 
 const getAuthorsTooltipField = (rowData) => {
   let html = '<ul>';
-  html += rowData.authors.map((author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author.full_name}</li>`).join('');
+  html += rowData.authors.map((author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author}</li>`).join('');
   html += '</ul>';
   return html;
 };
@@ -95,7 +86,6 @@ export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
-  getAffiliationRor,
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
   getAllIdsHtmlField,

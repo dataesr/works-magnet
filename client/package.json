@@ -1,6 +1,5 @@
 {
   "name": "client",
-  "homepage": "https://dataesr.github.io/works-finder",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -20,8 +19,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.1",
-    "react-tooltip": "^5.18.1",
-    "swagger-ui-react": "^4.18.3"
+    "react-tooltip": "^5.18.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

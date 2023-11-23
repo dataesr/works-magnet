@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip';
 
-import Button from '../../components/button';
-import { export2BsoCsv, export2json, importJson } from '../../utils/file';
-import { status } from '../../config';
+import Button from '../components/button';
+import { export2BsoCsv, export2json, importJson } from '../utils/file';
+import { status } from '../config';
 
 export default function Actions({
   allAffiliations,
@@ -114,9 +114,9 @@ Actions.propTypes = {
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   allPublications: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.string.isRequired,
+    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,

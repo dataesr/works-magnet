@@ -1,6 +1,5 @@
 {
   "name": "server",
-  "homepage": "https://dataesr.github.io/works-finder",
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
