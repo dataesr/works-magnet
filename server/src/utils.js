@@ -265,8 +265,8 @@ const mergePublications = (publication1, publication2) => {
     affiliations: [...publication1.affiliations, ...publication2.affiliations],
     // Filter allIds by unique values
     allIds: Object.values([...publication1.allIds, ...publication2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
-    // Filter authors by unique full_name
-    authors: Object.values([...publication1.authors, ...publication2.authors].reduce((acc, obj) => ({ ...acc, [obj.full_name]: obj }), {})),
+    // Filter authors by unique
+    authors: [...new Set([...publication1.authors, ...publication2.authors])],
     datasource: ['bso', 'openalex'],
   });
 };
