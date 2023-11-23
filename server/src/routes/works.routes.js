@@ -16,11 +16,14 @@ router.route('/works')
       if (!options?.affiliations) {
         res.status(400).json({ message: 'You must provide at least one affiliation.' });
       } else {
+        console.time(`0. Requests ${options.affiliations}`);
         const responses = await Promise.all([
           getBsoWorks({ options, index: process.env.VITE_BSO_PUBLICATIONS_INDEX }),
           getOpenAlexPublications(options),
           getBsoWorks({ options, index: process.env.VITE_BSO_DATASETS_INDEX, filter: 'q=genre:dataset' }),
         ]);
+        console.timeEnd(`0. Requests ${options.affiliations}`);
+        console.time(`1. Filter ${options.affiliations}`);
         const data = {};
         data.publications = { results: [
           ...responses[0].results.filter((result) => result.genre_raw !== 'dataset'),
@@ -30,6 +33,8 @@ router.route('/works')
           ...responses[0].results.filter((result) => result.genre_raw === 'dataset'),
           ...responses[2].results,
         ] };
+        console.timeEnd(`1. Filter ${options.affiliations}`);
+        console.time(`2. Dedup ${options.affiliations}`);
         // Deduplicate publications by DOI or by hal_id
         const deduplicatedPublications = {};
         data.publications.results.forEach((publication) => {
@@ -41,7 +46,9 @@ router.route('/works')
           }
         });
         data.publications.results = Object.values(deduplicatedPublications);
+        console.timeEnd(`2. Dedup ${options.affiliations}`);
         // Compute distinct types & years for facet
+        console.time(`3. Facet ${options.affiliations}`);
         data.publications.years = [...new Set(
           data.publications.results.filter((publication) => !!publication?.year).map((publication) => Number(publication.year)),
         )].sort((a, b) => b - a);
@@ -50,9 +57,14 @@ router.route('/works')
         )].sort((a, b) => b - a);
         data.publications.types = [...new Set(data.publications.results.map((publication) => publication?.type))];
         data.datasets.types = [...new Set(data.datasets.results.map((dataset) => dataset?.type))];
+        console.timeEnd(`3. Facet ${options.affiliations}`);
         // Goup by affiliations
+        console.time(`4. GroupBy ${options.affiliations}`);
         data.affiliations = groupByAffiliations({ ...data, options });
+        console.timeEnd(`4. GroupBy ${options.affiliations}`);
+        console.time(`5. Serialization ${options.affiliations}`);
         res.status(200).json(data);
+        console.timeEnd(`5. Serialization ${options.affiliations}`);
       }
     } catch (err) {
       console.error(err);
