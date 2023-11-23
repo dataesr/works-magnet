@@ -72,7 +72,11 @@ export default function Home() {
 
   useEffect(() => {
     if (data) {
-      const allAffiliationsTmp = data?.affiliations ?? [];
+      const allAffiliationsTmp = data.affiliations
+        .map((affiliation) => ({
+          ...affiliation,
+          status: status.tobedecided.id,
+        }));
       const allDatasetsTmp = data.datasets.results
         .map((dataset) => ({
           ...dataset,

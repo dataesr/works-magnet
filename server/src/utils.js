@@ -64,14 +64,12 @@ const getBsoWorks = async ({
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
       allResults = allResults.concat(hits.map((result) => ({
-        ...result._source,
         // Filter ids on unique values
         affiliations: result._source.affiliations.map((affiliation) => affiliation.name),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['bso'],
         id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
-        status: 'tobedecided',
         type: result._source?.genre_raw ?? result._source.genre,
       })));
       if (hits.length > 0 && (Number(process.env.VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(process.env.VITE_BSO_MAX_SIZE))) {
@@ -188,7 +186,6 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
         datasource: ['openalex'],
         doi: getIdValue(result?.doi),
         id: result?.doi ? getIdValue(result.doi) : result.id,
-        status: 'tobedecided',
         title: result?.display_name ?? result.title,
         type: getTypeFromOpenAlex(result.type),
         year: result?.publication_year,
@@ -229,11 +226,9 @@ const normalizedName = (name) => name
 
 const groupByAffiliations = ({ datasets, options, publications }) => {
   const regexp = getRegexpFromOptions(options);
-  // Save already decided affiliations
-  // const decidedAffiliations = Object.values(allAffiliations).filter((affiliation) => affiliation.status !== status.tobedecided.id);
   // Compute distinct affiliations of the undecided works
   let allAffiliationsTmp = {};
-  [...datasets.results, ...publications.results].filter((work) => work.status === 'tobedecided').forEach((work) => {
+  [...datasets.results, ...publications.results].forEach((work) => {
     (work?.affiliations ?? [])
       .forEach((affiliation) => {
         const normalizedAffiliationName = normalizedName(affiliation);
@@ -248,22 +243,12 @@ const groupByAffiliations = ({ datasets, options, publications }) => {
             matches: matches.length,
             name: affiliation,
             nameHtml: affiliation.replace(regexp, '<b>$&</b>'),
-            status: 'tobedecided',
             works: [],
           };
         }
         allAffiliationsTmp[normalizedAffiliationName].works.push(work.id);
       });
   });
-
-  // decidedAffiliations.forEach((affiliation) => {
-  //   const affiliationName = normalizedName(affiliation.name);
-  //   if (!allAffiliationsTmp?.[affiliationName]) {
-  //     allAffiliationsTmp[affiliationName] = affiliation;
-  //   } else {
-  //     allAffiliationsTmp[affiliationName].status = affiliation.status;
-  //   }
-  // });
 
   allAffiliationsTmp = Object.values(allAffiliationsTmp)
     .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
