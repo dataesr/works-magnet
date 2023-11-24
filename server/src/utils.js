@@ -13,13 +13,7 @@ const getBsoQuery = (options, pit, searchAfter) => {
   options.affiliations.forEach((affiliation) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
   });
-  if (options?.startYear && options?.endYear) {
-    query.query.bool.filter.push({ range: { year: { gte: options.startYear, lte: options.endYear } } });
-  } else if (options?.startYear) {
-    query.query.bool.filter.push({ range: { year: { gte: options.startYear } } });
-  } else if (options?.endYear) {
-    query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
-  }
+  query.query.bool.filter.push({ range: { year: { gte: options.year, lte: options.year } } });
   if (options?.filter) {
     query.query.bool.filter.push({ term: { [options.filter.field]: options.filter.value } });
   }
@@ -36,7 +30,7 @@ const getBsoQuery = (options, pit, searchAfter) => {
   return query;
 };
 
-const getBsoWorks = async ({ allResults = [], index = process.env.VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
+const getBsoWorksByYear = async ({ allResults = [], index = process.env.VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
   if (!pit) {
     console.time(`bsoworks - ${index} - ${options.affiliations}`);
     const response = await fetch(
@@ -82,7 +76,7 @@ const getBsoWorks = async ({ allResults = [], index = process.env.VITE_BSO_PUBLI
       if (hits.length > 0 && (Number(process.env.VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(process.env.VITE_BSO_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
-        return getBsoWorks({ allResults, index, options, pit, searchAfter });
+        return getBsoWorksByYear({ allResults, index, options, pit, searchAfter });
       }
       if (pit) {
         fetch(
@@ -95,11 +89,19 @@ const getBsoWorks = async ({ allResults = [], index = process.env.VITE_BSO_PUBLI
         );
       }
       console.timeEnd(`bsoworks - ${index} - ${options.affiliations}`);
-      return ({
-        datasource: 'bso',
-        results: allResults,
-      });
+      return allResults;
     });
+};
+
+const getBsoWorks = async (options) => {
+  const { endYear, startYear } = options;
+  const years = range(startYear, endYear);
+  const promises = years.map((year) => getBsoWorksByYear({ ...options, year }));
+  const allResults = await Promise.all(promises);
+  return ({
+    datasource: 'bso',
+    results: allResults.flat(),
+  });
 };
 
 const getIdValue = (id) => (
