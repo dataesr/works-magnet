@@ -1,5 +1,12 @@
 const VITE_OPENALEX_MAX_PAGE = Math.floor(process.env.VITE_OPENALEX_SIZE / process.env.VITE_OPENALEX_PER_PAGE);
 
+const range = (startYear, endYear = new Date().getFullYear()) => {
+  const start = Number(startYear);
+  const end = Number(endYear);
+  if (start === end) return [start];
+  return [start, ...range(start + 1, end)];
+};
+
 const getBsoQuery = (options, pit, searchAfter) => {
   const query = { size: process.env.VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   const affiliationsFields = ['affiliations.name'];
@@ -43,7 +50,6 @@ const getBsoWorks = async ({ allResults = [], index = process.env.VITE_BSO_PUBLI
   // eslint-disable-next-line no-param-reassign
   options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
   const body = getBsoQuery(options, pit, searchAfter);
-  console.log(JSON.stringify(body, null, 4));
   const params = {
     method: 'POST',
     body: JSON.stringify(body),
@@ -150,7 +156,7 @@ const getTypeFromOpenAlex = (type) => {
   return newType;
 };
 
-const getOpenAlexPublications = (options, page = '1', previousResponse = []) => {
+const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = []) => {
   if (page === '1') {
     console.time(`openalexworks - ${options.affiliations}`);
   }
@@ -159,13 +165,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
   options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
   let url = `https://api.openalex.org/works?per_page=${Math.min(process.env.VITE_OPENALEX_SIZE, process.env.VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
-  if (options?.startYear && options?.endYear) {
-    url += `,publication_year:${Number(options.startYear)}-${Number(options?.endYear)}`;
-  } else if (options?.startYear) {
-    url += `,publication_year:${Number(options.startYear)}-`;
-  } else if (options?.endYear) {
-    url += `,publication_year:-${Number(options.endYear)}`;
-  }
+  url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
   if (options.affiliations.length) {
     url += `,raw_affiliation_string.search:(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
   }
@@ -197,14 +197,22 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
       })));
       const nextPage = Number(page) + 1;
       if (Number(response.results.length) === Number(process.env.VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
-        return getOpenAlexPublications(options, nextPage, results);
+        return getOpenAlexPublicationsByYear(options, nextPage, results);
       }
       console.timeEnd(`openalexworks - ${options.affiliations}`);
-      return ({
-        datasource: 'openalex',
-        results,
-      });
+      return results;
     });
+};
+
+const getOpenAlexPublications = async (options) => {
+  const { endYear, startYear } = options;
+  const years = range(startYear, endYear);
+  const promises = years.map((year) => getOpenAlexPublicationsByYear({ ...options, year }));
+  const allResults = await Promise.all(promises);
+  return ({
+    datasource: 'openalex',
+    results: allResults.flat(),
+  });
 };
 
 const getRegexpFromOptions = (options) => {
