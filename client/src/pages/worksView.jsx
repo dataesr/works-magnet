@@ -6,6 +6,7 @@ import {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  datasourceTemplate,
   statusTemplate,
 } from '../utils/templates';
 
@@ -37,7 +38,7 @@ export default function WorksView({
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} />
       <Column field="allIdsHtml" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by id" />
-      <Column field="datasource" header="Source" />
+      <Column field="datasource" header="Source" body={datasourceTemplate} />
       <Column field="type" header="Type" />
       <Column field="year" header="Year" />
       <Column field="journal_name" header="Journal" />

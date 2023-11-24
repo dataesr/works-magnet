@@ -26,6 +26,11 @@ const authorsTemplate = (rowData) => (
   </>
 );
 
+const datasourceTemplate = (rowData) => {
+  const tmp = `<ul>${rowData.datasource.map((source) => `<li key="source-${source}">${source}</li>`).join('')}</ul>`;
+  return <span dangerouslySetInnerHTML={{ __html: tmp }} />;
+};
+
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
     .sort((a, b) => (b.match(regexp)?.length ?? 0) - (a.match(regexp)?.length ?? 0))
@@ -34,7 +39,7 @@ const getAffiliationsHtmlField = (rowData, regexp) => {
     .flat();
   affiliations = [...new Set(affiliations)];
   let html = `<ul data-tooltip-id="tooltip-affiliation-${rowData.id}">`;
-  html += affiliations.slice(0, 3).map((affiliation, index) => `<li key=affilition-${index}>${affiliation}</li>`).join('');
+  html += affiliations.slice(0, 3).map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
   if (affiliations.length > 3) {
     html += `<li>et al. (${affiliations.length - 3})</li>`;
   }
@@ -86,6 +91,7 @@ export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  datasourceTemplate,
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
   getAllIdsHtmlField,
