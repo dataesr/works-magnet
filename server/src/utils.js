@@ -7,6 +7,16 @@ const range = (startYear, endYear = new Date().getFullYear()) => {
   return [start, ...range(start + 1, end)];
 };
 
+const cleanId = (id) => (
+  id
+    ? id
+      .replace('https://doi.org/', '')
+      .replace('https://openalex.org/', '')
+      .replace('https://pubmed.ncbi.nlm.nih.gov/', '')
+      .replace('https://www.ncbi.nlm.nih.gov/pmc/articles/', '')
+    : null
+);
+
 const getBsoQuery = (options, pit, searchAfter) => {
   const query = { size: process.env.VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   const affiliationsFields = ['affiliations.name'];
@@ -39,9 +49,6 @@ const getBsoWorksByYear = async ({ allResults = [], index = process.env.VITE_BSO
     // eslint-disable-next-line no-param-reassign
     pit = (await response.json()).id;
   }
-  const { affiliations } = options;
-  // eslint-disable-next-line no-param-reassign
-  options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
   const body = getBsoQuery(options, pit, searchAfter);
   const params = {
     method: 'POST',
@@ -68,7 +75,7 @@ const getBsoWorksByYear = async ({ allResults = [], index = process.env.VITE_BSO
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['bso'],
-        id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
+        id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
         type: result._source?.genre_raw ?? result._source.genre,
         year: result._source.year,
       })));
@@ -91,26 +98,16 @@ const getBsoWorksByYear = async ({ allResults = [], index = process.env.VITE_BSO
     });
 };
 
-const getBsoWorks = async (options) => {
-  const { endYear, startYear } = options.options;
+const getBsoWorks = async ({ options }) => {
+  const { endYear, startYear } = options;
   const years = range(startYear, endYear);
-  const promises = years.map((year) => getBsoWorksByYear({ ...options, year }));
+  const promises = years.map((year) => getBsoWorksByYear({ options: { ...options, year } }));
   const allResults = await Promise.all(promises);
   return ({
     datasource: 'bso',
     results: allResults.flat(),
   });
 };
-
-const getIdValue = (id) => (
-  id
-    ? id
-      .replace('https://doi.org/', '')
-      .replace('https://openalex.org/', '')
-      .replace('https://pubmed.ncbi.nlm.nih.gov/', '')
-      .replace('https://www.ncbi.nlm.nih.gov/pmc/articles/', '')
-    : null
-);
 
 const getTypeFromOpenAlex = (type) => {
   let newType = type;
@@ -157,9 +154,6 @@ const getTypeFromOpenAlex = (type) => {
 };
 
 const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = []) => {
-  const { affiliations } = options;
-  // eslint-disable-next-line no-param-reassign
-  options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
   let url = `https://api.openalex.org/works?per_page=${Math.min(process.env.VITE_OPENALEX_SIZE, process.env.VITE_OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
@@ -183,12 +177,12 @@ const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = [
       const hits = response?.results ?? [];
       const results = previousResponse.concat(hits.map((result) => ({
         affiliations: result?.authorships?.map((author) => author.raw_affiliation_strings).flat(),
-        allIds: result?.ids ? Object.keys(result.ids).map((key) => ({ id_type: key, id_value: getIdValue(result.ids[key]) })) : result.allIds,
+        allIds: Object.keys(result.ids).map((key) => ({ id_type: key, id_value: cleanId(result.ids[key]) })),
         authors: result?.authorships?.map((author) => author.author.display_name),
         datasource: ['openalex'],
-        doi: getIdValue(result?.doi),
-        id: result?.doi ? getIdValue(result.doi) : result.id,
-        title: result?.display_name ?? result.title,
+        doi: cleanId(result?.doi),
+        id: cleanId(result?.ids?.doi ?? result?.primary_location?.landing_page_url?.split('/')?.pop() ?? result?.ids?.openalex),
+        title: result?.display_name,
         type: getTypeFromOpenAlex(result.type),
         year: result?.publication_year,
       })));
@@ -200,8 +194,8 @@ const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = [
     });
 };
 
-const getOpenAlexPublications = async (options) => {
-  const { endYear, startYear } = options.options;
+const getOpenAlexPublications = async ({ options }) => {
+  const { endYear, startYear } = options;
   const years = range(startYear, endYear);
   const promises = years.map((year) => getOpenAlexPublicationsByYear({ ...options, year }));
   const allResults = await Promise.all(promises);

@@ -16,6 +16,8 @@ router.route('/works')
       if (!options?.affiliations) {
         res.status(400).json({ message: 'You must provide at least one affiliation.' });
       } else {
+        const { affiliations } = options;
+        options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
         console.time(`0. Requests ${options.affiliations}`);
         const responses = await Promise.all([
           getBsoWorks({ options, index: process.env.VITE_BSO_PUBLICATIONS_INDEX }),
@@ -25,21 +27,27 @@ router.route('/works')
         console.timeEnd(`0. Requests ${options.affiliations}`);
         console.time(`1. Filter ${options.affiliations}`);
         const data = {};
-        data.publications = { results: [
-          ...responses[0].results.filter((result) => result.genre_raw !== 'dataset'),
-          ...responses[1].results,
-        ] };
-        data.datasets = { results: [
-          ...responses[0].results.filter((result) => result.genre_raw === 'dataset'),
-          ...responses[2].results,
-        ] };
+        data.publications = {
+          results: [
+            ...responses[0].results.filter((result) => result.genre_raw !== 'dataset'),
+            ...responses[1].results,
+          ],
+        };
+        data.datasets = {
+          results: [
+            ...responses[0].results.filter((result) => result.genre_raw === 'dataset'),
+            ...responses[2].results,
+          ],
+        };
         console.timeEnd(`1. Filter ${options.affiliations}`);
         console.time(`2. Dedup ${options.affiliations}`);
         // Deduplicate publications by DOI or by hal_id
         const deduplicatedPublications = {};
+        const uniquesId = [];
         data.publications.results.forEach((publication) => {
-          const id = publication?.doi ?? publication?.primary_location?.landing_page_url?.split('/')?.pop() ?? publication.id;
-          if (!Object.keys(deduplicatedPublications).includes(id)) {
+          const { id } = publication;
+          if (!uniquesId.includes(id)) {
+            uniquesId.push(id);
             deduplicatedPublications[id] = publication;
           } else {
             deduplicatedPublications[id] = mergePublications(deduplicatedPublications[id], publication);
