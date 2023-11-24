@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 
 import Actions from './actions';
 import AffiliationsTab from './affiliationsTab';
+import { PageSpinner } from '../components/spinner';
 import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import PublicationsTab from './publicationsTab';
@@ -37,7 +38,7 @@ export default function Home() {
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
 
-  const { data, refetch } = useQuery({
+  const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(options),
     enabled: false,
@@ -155,7 +156,10 @@ export default function Home() {
           setAllPublications={setAllPublications}
           tagAffiliations={tagAffiliations}
         />
-        {data && (
+        {isFetching && (
+          <PageSpinner />
+        )}
+        {!isFetching && data && (
           <Tabs defaultActiveTab={0}>
             <Tab label="Grouped affiliations of works">
               <AffiliationsTab
