@@ -40,7 +40,7 @@ export default function DatasetsTab({ datasets, tagDatasets, types, years }) {
         && filteredDatasources.filter((filteredDatasource) => dataset.datasource.includes(filteredDatasource)).length
         && filteredStatus.includes(dataset.status)
         && filteredTypes.includes(dataset.type)
-        && filteredYears.includes(dataset.year));
+        && filteredYears.includes(Number(dataset.year)));
       setFilteredDatasets(filteredDatasetsTmp);
     }, 500);
     setTimer(timerTmp);

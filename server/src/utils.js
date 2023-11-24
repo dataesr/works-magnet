@@ -13,6 +13,9 @@ const getBsoQuery = (options, pit, searchAfter) => {
   } else if (options?.endYear) {
     query.query.bool.filter.push({ range: { year: { lte: options.endYear } } });
   }
+  if (options?.filter) {
+    query.query.bool.filter.push({ term: { [options.filter.field]: options.filter.value } });
+  }
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'journal_name', 'title', 'year'];
   query.sort = ['_shard_doc'];
@@ -26,10 +29,9 @@ const getBsoQuery = (options, pit, searchAfter) => {
   return query;
 };
 
-const getBsoWorks = async ({
-  allResults = [], filter, index = process.env.VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter,
-}) => {
+const getBsoWorks = async ({ allResults = [], index = process.env.VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
   if (!pit) {
+    console.time(`bsoworks - ${index} - ${options.affiliations}`);
     const response = await fetch(
       `${process.env.VITE_BSO_URL}/${index}/_pit?keep_alive=${process.env.VITE_BSO_PIT_KEEP_ALIVE}`,
       { method: 'POST', headers: { Authorization: process.env.VITE_BSO_AUTH } },
@@ -41,6 +43,7 @@ const getBsoWorks = async ({
   // eslint-disable-next-line no-param-reassign
   options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
   const body = getBsoQuery(options, pit, searchAfter);
+  console.log(JSON.stringify(body, null, 4));
   const params = {
     method: 'POST',
     body: JSON.stringify(body),
@@ -49,10 +52,7 @@ const getBsoWorks = async ({
       Authorization: process.env.VITE_BSO_AUTH,
     },
   };
-  let url = `${process.env.VITE_BSO_URL}/_search`;
-  if (filter) {
-    url += `?${filter}`;
-  }
+  const url = `${process.env.VITE_BSO_URL}/_search`;
   return fetch(url, params)
     .then((response) => {
       if (response.ok) return response.json();
@@ -71,11 +71,12 @@ const getBsoWorks = async ({
         datasource: ['bso'],
         id: result._source?.doi ?? result._source?.hal_id ?? result._source.id,
         type: result._source?.genre_raw ?? result._source.genre,
+        year: result._source.year,
       })));
       if (hits.length > 0 && (Number(process.env.VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(process.env.VITE_BSO_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
-        return getBsoWorks({ allResults, filter, index, options, pit, searchAfter });
+        return getBsoWorks({ allResults, index, options, pit, searchAfter });
       }
       if (pit) {
         fetch(
@@ -87,6 +88,7 @@ const getBsoWorks = async ({
           },
         );
       }
+      console.timeEnd(`bsoworks - ${index} - ${options.affiliations}`);
       return ({
         datasource: 'bso',
         results: allResults,
@@ -149,6 +151,9 @@ const getTypeFromOpenAlex = (type) => {
 };
 
 const getOpenAlexPublications = (options, page = '1', previousResponse = []) => {
+  if (page === '1') {
+    console.time(`openalexworks - ${options.affiliations}`);
+  }
   const { affiliations } = options;
   // eslint-disable-next-line no-param-reassign
   options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
@@ -194,6 +199,7 @@ const getOpenAlexPublications = (options, page = '1', previousResponse = []) => 
       if (Number(response.results.length) === Number(process.env.VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
         return getOpenAlexPublications(options, nextPage, results);
       }
+      console.timeEnd(`openalexworks - ${options.affiliations}`);
       return ({
         datasource: 'openalex',
         results,
