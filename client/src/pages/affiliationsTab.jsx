@@ -2,7 +2,6 @@ import {
   Checkbox,
   CheckboxGroup,
   Col,
-  Notice,
   Row,
   TextInput,
 } from '@dataesr/react-dsfr';
@@ -15,7 +14,6 @@ import { status } from '../config';
 import { renderButtons } from '../utils/works';
 
 export default function AffiliationsTab({ affiliations, tagAffiliations }) {
-  const [affiliationsNotice, setAffiliationsNotice] = useState(true);
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
@@ -49,18 +47,6 @@ export default function AffiliationsTab({ affiliations, tagAffiliations }) {
 
   return (
     <>
-      {affiliationsNotice && (
-        <Row>
-          <Col n="12">
-            <Notice
-              className="fr-m-1w"
-              onClose={() => { setAffiliationsNotice(false); }}
-              title="All the affiliations of the works found in the French OSM and OpenAlex are listed below.
-                A filter is applied to view only the affiliations containing at least one of the matching query input"
-            />
-          </Col>
-        </Row>
-      )}
       <Row>
         <Col n="4">
           {renderButtons(selectedAffiliations, tagAffiliations)}
