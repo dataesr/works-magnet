@@ -19,7 +19,7 @@ router.route('/works')
         console.time(`0. Requests ${options.affiliations}`);
         const responses = await Promise.all([
           getBsoWorks({ options, index: process.env.VITE_BSO_PUBLICATIONS_INDEX }),
-          getOpenAlexPublications(options),
+          getOpenAlexPublications({ options }),
           getBsoWorks({ options: { ...options, filter: { field: 'genre', value: 'dataset' } }, index: process.env.VITE_BSO_DATASETS_INDEX }),
         ]);
         console.timeEnd(`0. Requests ${options.affiliations}`);

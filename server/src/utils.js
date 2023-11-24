@@ -32,7 +32,6 @@ const getBsoQuery = (options, pit, searchAfter) => {
 
 const getBsoWorksByYear = async ({ allResults = [], index = process.env.VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
   if (!pit) {
-    console.time(`bsoworks - ${index} - ${options.affiliations}`);
     const response = await fetch(
       `${process.env.VITE_BSO_URL}/${index}/_pit?keep_alive=${process.env.VITE_BSO_PIT_KEEP_ALIVE}`,
       { method: 'POST', headers: { Authorization: process.env.VITE_BSO_AUTH } },
@@ -88,13 +87,12 @@ const getBsoWorksByYear = async ({ allResults = [], index = process.env.VITE_BSO
           },
         );
       }
-      console.timeEnd(`bsoworks - ${index} - ${options.affiliations}`);
       return allResults;
     });
 };
 
 const getBsoWorks = async (options) => {
-  const { endYear, startYear } = options;
+  const { endYear, startYear } = options.options;
   const years = range(startYear, endYear);
   const promises = years.map((year) => getBsoWorksByYear({ ...options, year }));
   const allResults = await Promise.all(promises);
@@ -159,9 +157,6 @@ const getTypeFromOpenAlex = (type) => {
 };
 
 const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = []) => {
-  if (page === '1') {
-    console.time(`openalexworks - ${options.affiliations}`);
-  }
   const { affiliations } = options;
   // eslint-disable-next-line no-param-reassign
   options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
@@ -201,13 +196,12 @@ const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = [
       if (Number(response.results.length) === Number(process.env.VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
         return getOpenAlexPublicationsByYear(options, nextPage, results);
       }
-      console.timeEnd(`openalexworks - ${options.affiliations}`);
       return results;
     });
 };
 
 const getOpenAlexPublications = async (options) => {
-  const { endYear, startYear } = options;
+  const { endYear, startYear } = options.options;
   const years = range(startYear, endYear);
   const promises = years.map((year) => getOpenAlexPublicationsByYear({ ...options, year }));
   const allResults = await Promise.all(promises);
@@ -237,8 +231,9 @@ const getRegexpFromOptions = (options) => {
 const normalizedName = (name) => name
   .toLowerCase()
   .normalize('NFD')
-  .replace(/[^a-zA-Z0-9]/g, '');
-// TODO replace multiple spaces by a single space
+  .replace(/[^a-zA-Z0-9]/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
 
 const groupByAffiliations = ({ datasets, options, publications }) => {
   const regexp = getRegexpFromOptions(options);
