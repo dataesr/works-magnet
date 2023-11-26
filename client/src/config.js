@@ -1,3 +1,5 @@
+const datasources = [{ key: 'fosm', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
+
 const status = {
   validated: {
     badgeType: 'success',
@@ -25,4 +27,4 @@ const status = {
   },
 };
 
-export { status };
+export { datasources, status };

@@ -197,12 +197,12 @@ const mergePublications = (publication1, publication2) => {
     : publication1;
   return ({
     ...priorityPublication,
-    affiliations: [...publication1.affiliations, ...publication2.affiliations],
+    affiliations: [...new Set([...publication1.affiliations, ...publication2.affiliations])],
     // Filter allIds by unique values
     allIds: Object.values([...publication1.allIds, ...publication2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
     // Filter authors by unique
     authors: [...new Set([...publication1.authors, ...publication2.authors])],
-    datasource: ['fosm', 'openalex'],
+    datasource: [...new Set([...publication1.datasource, ...publication2.datasource])].sort(),
   });
 };
 

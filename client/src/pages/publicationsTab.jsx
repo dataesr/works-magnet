@@ -10,14 +10,12 @@ import { useEffect, useState } from 'react';
 
 import WorksView from './worksView';
 import Gauge from '../components/gauge';
-import { status } from '../config';
+import { datasources, status } from '../config';
 import { renderButtons } from '../utils/works';
-
-const DATASOURCES = [{ key: 'fosm', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 
 export default function PublicationsTab({ publications, tagPublications, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
-  const [filteredDatasources, setFilteredDatasources] = useState(DATASOURCES.map((datasource) => datasource.key));
+  const [filteredDatasources, setFilteredDatasources] = useState(datasources.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
   const [filteredTypes, setFilteredTypes] = useState([]);
@@ -115,7 +113,7 @@ export default function PublicationsTab({ publications, tagPublications, types, 
             hint="Filter publications on selected datasources"
             legend="Source"
           >
-            {DATASOURCES.map((datasource) => (
+            {datasources.map((datasource) => (
               <Checkbox
                 checked={filteredDatasources.includes(datasource.key)}
                 key={datasource.key}
