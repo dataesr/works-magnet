@@ -1,11 +1,7 @@
 import express from 'express';
 
-import {
-  getFosmWorks,
-  getOpenAlexPublications,
-  groupByAffiliations,
-  mergePublications,
-} from '../utils';
+import { groupByAffiliations } from '../utils/utils';
+import { getFosmWorks, getOpenAlexPublications, mergePublications } from '../utils/works';
 
 const router = new express.Router();
 
