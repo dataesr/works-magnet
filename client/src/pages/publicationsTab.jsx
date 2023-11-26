@@ -13,7 +13,7 @@ import Gauge from '../components/gauge';
 import { status } from '../config';
 import { renderButtons } from '../utils/works';
 
-const DATASOURCES = [{ key: 'bso', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
+const DATASOURCES = [{ key: 'fosm', label: 'French OSM' }, { key: 'openalex', label: 'OpenAlex' }];
 
 export default function PublicationsTab({ publications, tagPublications, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');

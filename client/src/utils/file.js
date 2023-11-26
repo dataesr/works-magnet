@@ -1,6 +1,6 @@
 import { status } from '../config';
 
-const export2BsoCsv = (allPublications) => {
+const export2FosmCsv = (allPublications) => {
   const csvHeader = ['doi', 'hal_id', 'nnt_id'].join(';');
   const validatedPublications = allPublications.filter((publication) => publication.status === status.validated.id);
   const getValue = (row, idType) => {
@@ -23,7 +23,7 @@ const export2BsoCsv = (allPublications) => {
 
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csvFile], { type: 'text/csv;charset=utf-8' }));
-  link.setAttribute('download', 'works-finder-to-bso.csv');
+  link.setAttribute('download', 'works-finder-to-fosm.csv');
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -61,7 +61,7 @@ const importJson = (e, optionsInit, setAllAffiliations, setAllPublications, setS
 };
 
 export {
-  export2BsoCsv,
+  export2FosmCsv,
   export2json,
   importJson,
 };

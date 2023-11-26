@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip';
 
 import Button from '../components/button';
-import { export2BsoCsv, export2json, importJson } from '../utils/file';
+import { export2FosmCsv, export2json, importJson } from '../utils/file';
 import { status } from '../config';
 
 export default function Actions({
@@ -77,7 +77,7 @@ export default function Actions({
             data-tooltip-id="export-fosm-button"
             disabled={!allPublications.length}
             icon="ri-save-line"
-            onClick={() => export2BsoCsv(allPublications)}
+            onClick={() => export2FosmCsv(allPublications)}
             size="sm"
           >
             Export French OSM

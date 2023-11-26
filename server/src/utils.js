@@ -17,8 +17,8 @@ const cleanId = (id) => (
     : null
 );
 
-const getBsoQuery = (options, pit, searchAfter) => {
-  const query = { size: process.env.VITE_BSO_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
+const getFosmQuery = (options, pit, searchAfter) => {
+  const query = { size: process.env.VITE_FOSM_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   const affiliationsFields = ['affiliations.name'];
   options.affiliations.forEach((affiliation) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
@@ -31,7 +31,7 @@ const getBsoQuery = (options, pit, searchAfter) => {
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'journal_name', 'title', 'year'];
   query.sort = ['_shard_doc'];
   if (pit) {
-    query.pit = { id: pit, keep_alive: process.env.VITE_BSO_PIT_KEEP_ALIVE };
+    query.pit = { id: pit, keep_alive: process.env.VITE_FOSM_PIT_KEEP_ALIVE };
   }
   if (searchAfter) {
     query.search_after = searchAfter;
@@ -40,31 +40,31 @@ const getBsoQuery = (options, pit, searchAfter) => {
   return query;
 };
 
-const getBsoWorksByYear = async ({ allResults = [], index = process.env.VITE_BSO_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
+const getFosmWorksByYear = async ({ allResults = [], index = process.env.VITE_FOSM_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
-      `${process.env.VITE_BSO_URL}/${index}/_pit?keep_alive=${process.env.VITE_BSO_PIT_KEEP_ALIVE}`,
-      { method: 'POST', headers: { Authorization: process.env.VITE_BSO_AUTH } },
+      `${process.env.VITE_FOSM_URL}/${index}/_pit?keep_alive=${process.env.VITE_FOSM_PIT_KEEP_ALIVE}`,
+      { method: 'POST', headers: { Authorization: process.env.VITE_FOSM_AUTH } },
     );
     // eslint-disable-next-line no-param-reassign
     pit = (await response.json()).id;
   }
-  const body = getBsoQuery(options, pit, searchAfter);
+  const body = getFosmQuery(options, pit, searchAfter);
   const params = {
     method: 'POST',
     body: JSON.stringify(body),
     headers: {
       'content-type': 'application/json',
-      Authorization: process.env.VITE_BSO_AUTH,
+      Authorization: process.env.VITE_FOSM_AUTH,
     },
   };
-  const url = `${process.env.VITE_BSO_URL}/_search`;
+  const url = `${process.env.VITE_FOSM_URL}/_search`;
   return fetch(url, params)
     .then((response) => {
       if (response.ok) return response.json();
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
-      return 'Oops... BSO API request did not work';
+      return 'Oops... FOSM API request did not work';
     })
     .then((response) => {
       const hits = response?.hits?.hits ?? [];
@@ -74,22 +74,22 @@ const getBsoWorksByYear = async ({ allResults = [], index = process.env.VITE_BSO
         affiliations: result._source.affiliations.map((affiliation) => affiliation.name),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
-        datasource: ['bso'],
+        datasource: ['fosm'],
         id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
         type: result._source?.genre_raw ?? result._source.genre,
         year: result._source.year,
       })));
-      if (hits.length > 0 && (Number(process.env.VITE_BSO_MAX_SIZE) === 0 || allResults.length < Number(process.env.VITE_BSO_MAX_SIZE))) {
+      if (hits.length > 0 && (Number(process.env.VITE_FOSM_MAX_SIZE) === 0 || allResults.length < Number(process.env.VITE_FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
-        return getBsoWorksByYear({ allResults, index, options, pit, searchAfter });
+        return getFosmWorksByYear({ allResults, index, options, pit, searchAfter });
       }
       if (pit) {
         fetch(
-          `${process.env.VITE_BSO_URL}/_pit`,
+          `${process.env.VITE_FOSM_URL}/_pit`,
           {
             body: JSON.stringify({ id: pit }),
-            headers: { Authorization: process.env.VITE_BSO_AUTH, 'Content-type': 'application/json' },
+            headers: { Authorization: process.env.VITE_FOSM_AUTH, 'Content-type': 'application/json' },
             method: 'DELETE',
           },
         );
@@ -98,13 +98,13 @@ const getBsoWorksByYear = async ({ allResults = [], index = process.env.VITE_BSO
     });
 };
 
-const getBsoWorks = async ({ options }) => {
+const getFosmWorks = async ({ options }) => {
   const { endYear, startYear } = options;
   const years = range(startYear, endYear);
-  const promises = years.map((year) => getBsoWorksByYear({ options: { ...options, year } }));
+  const promises = years.map((year) => getFosmWorksByYear({ options: { ...options, year } }));
   const allResults = await Promise.all(promises);
   return ({
-    datasource: 'bso',
+    datasource: 'fosm',
     results: allResults.flat(),
   });
 };
@@ -262,8 +262,8 @@ const groupByAffiliations = ({ datasets, options, publications }) => {
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
-  const priorityPublication = [publication1, publication2].some((publi) => publi.datasource === 'bso')
-    ? [publication1, publication2].find((publi) => publi.datasource === 'bso')
+  const priorityPublication = [publication1, publication2].some((publi) => publi.datasource === 'fosm')
+    ? [publication1, publication2].find((publi) => publi.datasource === 'fosm')
     : publication1;
   return ({
     ...priorityPublication,
@@ -272,13 +272,13 @@ const mergePublications = (publication1, publication2) => {
     allIds: Object.values([...publication1.allIds, ...publication2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
     // Filter authors by unique
     authors: [...new Set([...publication1.authors, ...publication2.authors])],
-    datasource: ['bso', 'openalex'],
+    datasource: ['fosm', 'openalex'],
   });
 };
 
 export {
-  getBsoQuery,
-  getBsoWorks,
+  getFosmQuery,
+  getFosmWorks,
   getOpenAlexPublications,
   groupByAffiliations,
   mergePublications,

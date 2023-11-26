@@ -11,7 +11,7 @@ const getData = async (options) => {
   return fetch(`${VITE_API}/works?${urlParams}`)
     .then((response) => {
       if (response.ok) return response.json();
-      return 'Oops... BSO API request did not work';
+      return 'Oops... FOSM API request did not work';
     });
 };
 
