@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { groupByAffiliations } from '../utils/utils';
-import { getFosmWorks, getOpenAlexPublications, mergePublications } from '../utils/works';
+import { deduplicateWorks, getFosmWorks, getOpenAlexPublications } from '../utils/works';
 
 const router = new express.Router();
 
@@ -37,19 +37,8 @@ router.route('/works')
         };
         console.timeEnd(`1. Filter ${options.affiliations}`);
         console.time(`2. Dedup ${options.affiliations}`);
-        // Deduplicate publications by id
-        const deduplicatedPublications = data.publications.results.reduce((deduplicatedPublicationsTmp, publication) => {
-          const { id } = publication;
-          if (!deduplicatedPublicationsTmp[id]) {
-            // eslint-disable-next-line no-param-reassign
-            deduplicatedPublicationsTmp[id] = publication;
-          } else {
-            // eslint-disable-next-line no-param-reassign
-            deduplicatedPublicationsTmp[id] = mergePublications(deduplicatedPublicationsTmp[id], publication);
-          }
-          return deduplicatedPublicationsTmp;
-        }, {});
-        data.publications.results = Object.values(deduplicatedPublications);
+        // Deduplicate publications by ids
+        data.publications.results = deduplicateWorks(data.publications.results);
         console.timeEnd(`2. Dedup ${options.affiliations}`);
         // Compute distinct types & years for facet
         console.time(`3. Facet ${options.affiliations}`);

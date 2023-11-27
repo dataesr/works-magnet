@@ -2,6 +2,32 @@ import { cleanId, range } from './utils';
 
 const VITE_OPENALEX_MAX_PAGE = Math.floor(process.env.VITE_OPENALEX_SIZE / process.env.VITE_OPENALEX_PER_PAGE);
 
+const mergePublications = (publication1, publication2) => {
+  // Any publication from FOSM is prioritized among others
+  const priorityPublication = [publication1, publication2].some((publi) => publi.datasource === 'fosm')
+    ? [publication1, publication2].find((publi) => publi.datasource === 'fosm')
+    : publication1;
+  return ({
+    ...priorityPublication,
+    affiliations: [...new Set([...publication1.affiliations, ...publication2.affiliations])],
+    // Filter allIds by unique values
+    allIds: Object.values([...publication1.allIds, ...publication2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
+    // Filter authors by unique
+    authors: [...new Set([...publication1.authors, ...publication2.authors])],
+    datasource: [...new Set([...publication1.datasource, ...publication2.datasource])].sort(),
+  });
+};
+
+const deduplicateWorks = (works) => {
+  const deduplicatedWorks = works.reduce((deduplicatedWorksTmp, work) => {
+    const { id } = work;
+    // eslint-disable-next-line no-param-reassign
+    deduplicatedWorksTmp[id] = deduplicatedWorksTmp[id] ? mergePublications(deduplicatedWorksTmp[id], work) : work;
+    return deduplicatedWorksTmp;
+  }, {});
+  return Object.values(deduplicatedWorks);
+};
+
 const getFosmQuery = (options, pit, searchAfter) => {
   const query = { size: process.env.VITE_FOSM_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   const affiliationsFields = ['affiliations.name'];
@@ -190,24 +216,8 @@ const getOpenAlexPublications = async ({ options }) => {
   });
 };
 
-const mergePublications = (publication1, publication2) => {
-  // Any publication from FOSM is prioritized among others
-  const priorityPublication = [publication1, publication2].some((publi) => publi.datasource === 'fosm')
-    ? [publication1, publication2].find((publi) => publi.datasource === 'fosm')
-    : publication1;
-  return ({
-    ...priorityPublication,
-    affiliations: [...new Set([...publication1.affiliations, ...publication2.affiliations])],
-    // Filter allIds by unique values
-    allIds: Object.values([...publication1.allIds, ...publication2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
-    // Filter authors by unique
-    authors: [...new Set([...publication1.authors, ...publication2.authors])],
-    datasource: [...new Set([...publication1.datasource, ...publication2.datasource])].sort(),
-  });
-};
-
 export {
+  deduplicateWorks,
   getFosmWorks,
   getOpenAlexPublications,
-  mergePublications,
 };
