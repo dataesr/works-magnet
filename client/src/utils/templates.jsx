@@ -15,20 +15,41 @@ const affiliationsTemplate = (rowData) => (
   </>
 );
 
-const allIdsTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.allIdsHtml }} />;
+const allIdsTemplate = (rowData) => {
+  let html = '<ul>';
+  rowData.allIds.forEach((id) => {
+    html += `<li key="${id.id_value}">${id.id_type}: `;
+    const idLink = getIdLink(id.id_type, id.id_value);
+    html += idLink ? `<a target="_blank" href="${idLink}">${id.id_value}</a>` : `<span>${id.id_value}</span>`;
+    html += '</li>';
+  });
+  html += '</ul>';
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+};
 
-const authorsTemplate = (rowData) => (
-  <>
-    <span dangerouslySetInnerHTML={{ __html: rowData.authorsHtml }} />
-    <Tooltip id={`tooltip-author-${rowData.id}`}>
-      <span dangerouslySetInnerHTML={{ __html: rowData.authorsTooltip }} />
-    </Tooltip>
-  </>
-);
+const authorsTemplate = (rowData) => {
+  let authorsHtml = `<ul data-tooltip-id="tooltip-author-${rowData.id}">`;
+  authorsHtml += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author}</li>`).join('');
+  if (rowData.authors.length > 3) {
+    authorsHtml += `<li>et al. (${rowData.authors.length - 3})</li>`;
+  }
+  authorsHtml += '</ul>';
+  let authorsTooltip = '<ul>';
+  authorsTooltip += rowData.authors.map((author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author}</li>`).join('');
+  authorsTooltip += '</ul>';
+  return (
+    <>
+      <span dangerouslySetInnerHTML={{ __html: authorsHtml }} />
+      <Tooltip id={`tooltip-author-${rowData.id}`}>
+        <span dangerouslySetInnerHTML={{ __html: authorsTooltip }} />
+      </Tooltip>
+    </>
+  );
+};
 
 const datasourceTemplate = (rowData) => {
-  const tmp = `<ul>${rowData.datasource.map((source) => `<li key="source-${source}">${source}</li>`).join('')}</ul>`;
-  return <span dangerouslySetInnerHTML={{ __html: tmp }} />;
+  const html = `<ul>${rowData.datasource.map((source) => `<li key="source-${source}">${source}</li>`).join('')}</ul>`;
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
 const getAffiliationsHtmlField = (rowData, regexp) => {
@@ -54,35 +75,6 @@ const getAffiliationsTooltipField = (rowData) => {
   return html;
 };
 
-const getAllIdsHtmlField = (rowData) => {
-  let html = '<ul>';
-  rowData.allIds.forEach((id) => {
-    html += `<li key="${id.id_value}">${id.id_type}: `;
-    const idLink = getIdLink(id.id_type, id.id_value);
-    html += idLink ? `<a target="_blank" href="${idLink}">${id.id_value}</a>` : `<span>${id.id_value}</span>`;
-    html += '</li>';
-  });
-  html += '</ul>';
-  return html;
-};
-
-const getAuthorsHtmlField = (rowData) => {
-  let html = `<ul data-tooltip-id="tooltip-author-${rowData.id}">`;
-  html += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author}</li>`).join('');
-  if (rowData.authors.length > 3) {
-    html += `<li>et al. (${rowData.authors.length - 3})</li>`;
-  }
-  html += '</ul>';
-  return html;
-};
-
-const getAuthorsTooltipField = (rowData) => {
-  let html = '<ul>';
-  html += rowData.authors.map((author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author}</li>`).join('');
-  html += '</ul>';
-  return html;
-};
-
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
 const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
@@ -94,9 +86,6 @@ export {
   datasourceTemplate,
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
-  getAllIdsHtmlField,
-  getAuthorsHtmlField,
-  getAuthorsTooltipField,
   nameTemplate,
   statusTemplate,
 };

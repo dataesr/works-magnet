@@ -18,13 +18,7 @@ import { PageSpinner } from '../components/spinner';
 import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import PublicationsTab from './publicationsTab';
-import {
-  getAllIdsHtmlField,
-  getAffiliationsHtmlField,
-  getAffiliationsTooltipField,
-  getAuthorsHtmlField,
-  getAuthorsTooltipField,
-} from '../utils/templates';
+import { getAffiliationsHtmlField, getAffiliationsTooltipField } from '../utils/templates';
 import { getData } from '../utils/works';
 import { status } from '../config';
 
@@ -83,9 +77,6 @@ export default function Home() {
           ...dataset,
           affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(dataset),
-          allIdsHtml: getAllIdsHtmlField(dataset),
-          authorsHtml: getAuthorsHtmlField(dataset),
-          authorsTooltip: getAuthorsTooltipField(dataset),
           status: status.tobedecided.id,
         }));
       const allPublicationsTmp = data.publications.results
@@ -93,9 +84,6 @@ export default function Home() {
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(publication),
-          allIdsHtml: getAllIdsHtmlField(publication),
-          authorsHtml: getAuthorsHtmlField(publication),
-          authorsTooltip: getAuthorsTooltipField(publication),
           status: status.tobedecided.id,
         }));
       setAllAffiliations(allAffiliationsTmp);

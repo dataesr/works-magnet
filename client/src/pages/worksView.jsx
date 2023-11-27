@@ -37,13 +37,13 @@ export default function WorksView({
     >
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} />
-      <Column field="allIdsHtml" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by id" />
+      <Column field="allIds" header="Ids" body={allIdsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by id" />
       <Column field="datasource" header="Source" body={datasourceTemplate} />
       <Column field="type" header="Type" />
       <Column field="year" header="Year" />
       <Column field="journal_name" header="Journal" />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} />
-      <Column field="authorsHtml" header="Authors" body={authorsTemplate} filter filterField="authorsTooltip" filterMatchMode="contains" filterPlaceholder="Search by author" style={{ minWidth: '10px' }} />
+      <Column field="authors" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by author" style={{ minWidth: '10px' }} />
       <Column field="title" header="Title" filter filterMatchMode="contains" showFilterMenu={false} filterPlaceholder="Search by title" style={{ minWidth: '10px' }} />
     </DataTable>
   );
