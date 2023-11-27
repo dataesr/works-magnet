@@ -39,39 +39,9 @@ const normalizedName = (name) => name
   .replace(/\s+/g, ' ')
   .trim();
 
-const groupByAffiliations = ({ datasets, options, publications }) => {
-  const regexp = getRegexpFromOptions(options);
-  // Compute distinct affiliations of the undecided works
-  let allAffiliationsTmp = {};
-  [...datasets.results, ...publications.results].forEach((work) => {
-    (work?.affiliations ?? [])
-      .forEach((affiliation) => {
-        const normalizedAffiliationName = normalizedName(affiliation);
-        if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
-          // Check matches in affiliation name
-          let matches = affiliation?.match(regexp) ?? [];
-          // Normalize matched strings
-          matches = matches.map((match) => normalizedName(match));
-          // Filter matches as unique
-          matches = [...new Set(matches)];
-          allAffiliationsTmp[normalizedAffiliationName] = {
-            matches: matches.length,
-            name: affiliation,
-            nameHtml: affiliation.replace(regexp, '<b>$&</b>'),
-            works: [],
-          };
-        }
-        allAffiliationsTmp[normalizedAffiliationName].works.push(work.id);
-      });
-  });
-
-  allAffiliationsTmp = Object.values(allAffiliationsTmp)
-    .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
-  return allAffiliationsTmp;
-};
-
 export {
   cleanId,
-  groupByAffiliations,
+  getRegexpFromOptions,
+  normalizedName,
   range,
 };

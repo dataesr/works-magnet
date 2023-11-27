@@ -1,7 +1,6 @@
 import express from 'express';
 
-import { groupByAffiliations } from '../utils/utils';
-import { deduplicateWorks, getFosmWorks, getOpenAlexPublications } from '../utils/works';
+import { deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
 
 const router = new express.Router();
 
@@ -21,43 +20,60 @@ router.route('/works')
           getFosmWorks({ options: { ...options, filter: { field: 'genre', value: 'dataset' } }, index: process.env.VITE_FOSM_DATASETS_INDEX }),
         ]);
         console.timeEnd(`0. Requests ${options.affiliations}`);
-        console.time(`1. Filter ${options.affiliations}`);
-        const data = {};
-        data.publications = {
-          results: [
-            ...responses[0].results.filter((result) => result.genre_raw !== 'dataset'),
-            ...responses[1].results,
-          ],
-        };
-        data.datasets = {
-          results: [
-            ...responses[0].results.filter((result) => result.genre_raw === 'dataset'),
-            ...responses[2].results,
-          ],
-        };
-        console.timeEnd(`1. Filter ${options.affiliations}`);
+        console.time(`1. Concat ${options.affiliations}`);
+        const works = [
+          ...responses[0],
+          ...responses[1],
+          ...responses[2],
+        ];
+        console.timeEnd(`1. Concat ${options.affiliations}`);
         console.time(`2. Dedup ${options.affiliations}`);
         // Deduplicate publications by ids
-        data.publications.results = deduplicateWorks(data.publications.results);
+        const deduplicatedWorks = deduplicateWorks(works);
         console.timeEnd(`2. Dedup ${options.affiliations}`);
-        // Compute distinct types & years for facet
-        console.time(`3. Facet ${options.affiliations}`);
-        data.publications.years = [...new Set(
-          data.publications.results.filter((publication) => !!publication?.year).map((publication) => Number(publication.year)),
-        )].sort((a, b) => b - a);
-        data.datasets.years = [...new Set(
-          data.datasets.results.filter((dataset) => !!dataset?.year).map((dataset) => Number(dataset.year)),
-        )].sort((a, b) => b - a);
-        data.publications.types = [...new Set(data.publications.results.map((publication) => publication?.type))];
-        data.datasets.types = [...new Set(data.datasets.results.map((dataset) => dataset?.type))];
-        console.timeEnd(`3. Facet ${options.affiliations}`);
         // Goup by affiliations
-        console.time(`4. GroupBy ${options.affiliations}`);
-        data.affiliations = groupByAffiliations({ ...data, options });
-        console.timeEnd(`4. GroupBy ${options.affiliations}`);
-        console.time(`5. Serialization ${options.affiliations}`);
-        res.status(200).json(data);
-        console.timeEnd(`5. Serialization ${options.affiliations}`);
+        console.time(`3. GroupBy ${options.affiliations}`);
+        const uniqueAffiliations = groupByAffiliations({ options, works: deduplicatedWorks });
+        console.timeEnd(`3. GroupBy ${options.affiliations}`);
+        // Sort between publications and datasets
+        console.time(`4. Sort ${options.affiliations}`);
+        const publications = [];
+        const datasets = [];
+        deduplicatedWorks.forEach((deduplicatedWork) => {
+          if (
+            (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.genre_raw !== 'dataset')
+            || (deduplicatedWork.datasource.includes('openalex') && deduplicatedWork.type !== 'dataset')
+          ) {
+            publications.push(deduplicatedWork);
+          } else if (
+            (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.genre_raw === 'dataset')
+            || (deduplicatedWork.datasource.includes('openalex') && deduplicatedWork.type === 'dataset')
+          ) {
+            datasets.push(deduplicatedWork);
+          } else {
+            console.log(`Work not sort : ${JSON.stringify(deduplicatedWork)}`);
+          }
+        });
+        console.timeEnd(`4. Sort ${options.affiliations}`);
+        // Compute distinct types & years for facet
+        console.time(`5. Facet ${options.affiliations}`);
+        const publicationsYears = [...new Set(
+          publications.filter((publication) => !!publication?.year).map((publication) => Number(publication.year)),
+        )].sort((a, b) => b - a);
+        const datasetsYears = [...new Set(
+          datasets.filter((dataset) => !!dataset?.year).map((dataset) => Number(dataset.year)),
+        )].sort((a, b) => b - a);
+        const publicationsTypes = [...new Set(publications.map((publication) => publication?.type))];
+        const datasetsTypes = [...new Set(datasets.map((dataset) => dataset?.type))];
+        console.timeEnd(`5. Facet ${options.affiliations}`);
+        // Build and serialize response
+        console.time(`6. Serialization ${options.affiliations}`);
+        res.status(200).json({
+          affiliations: uniqueAffiliations,
+          datasets: { results: datasets, types: datasetsTypes, years: datasetsYears },
+          publications: { results: publications, types: publicationsTypes, years: publicationsYears },
+        });
+        console.timeEnd(`6. Serialization ${options.affiliations}`);
       }
     } catch (err) {
       console.error(err);

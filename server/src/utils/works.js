@@ -1,4 +1,4 @@
-import { cleanId, range } from './utils';
+import { cleanId, getRegexpFromOptions, normalizedName, range } from './utils';
 
 const VITE_OPENALEX_MAX_PAGE = Math.floor(process.env.VITE_OPENALEX_SIZE / process.env.VITE_OPENALEX_PER_PAGE);
 
@@ -114,10 +114,7 @@ const getFosmWorks = async ({ options }) => {
   const years = range(startYear, endYear);
   const promises = years.map((year) => getFosmWorksByYear({ options: { ...options, year } }));
   const allResults = await Promise.all(promises);
-  return ({
-    datasource: 'fosm',
-    results: allResults.flat(),
-  });
+  return allResults.flat();
 };
 
 const getTypeFromOpenAlex = (type) => {
@@ -210,14 +207,43 @@ const getOpenAlexPublications = async ({ options }) => {
   const years = range(startYear, endYear);
   const promises = years.map((year) => getOpenAlexPublicationsByYear({ ...options, year }));
   const allResults = await Promise.all(promises);
-  return ({
-    datasource: 'openalex',
-    results: allResults.flat(),
+  return allResults.flat();
+};
+
+const groupByAffiliations = ({ options, works }) => {
+  const regexp = getRegexpFromOptions(options);
+  // Compute distinct affiliations of works
+  let allAffiliationsTmp = {};
+  works.forEach((work) => {
+    (work?.affiliations ?? [])
+      .forEach((affiliation) => {
+        const normalizedAffiliationName = normalizedName(affiliation);
+        if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
+          // Check matches in affiliation name
+          let matches = affiliation?.match(regexp) ?? [];
+          // Normalize matched strings
+          matches = matches.map((match) => normalizedName(match));
+          // Filter matches as unique
+          matches = [...new Set(matches)];
+          allAffiliationsTmp[normalizedAffiliationName] = {
+            matches: matches.length,
+            name: affiliation,
+            nameHtml: affiliation.replace(regexp, '<b>$&</b>'),
+            works: [],
+          };
+        }
+        allAffiliationsTmp[normalizedAffiliationName].works.push(work.id);
+      });
   });
+
+  allAffiliationsTmp = Object.values(allAffiliationsTmp)
+    .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
+  return allAffiliationsTmp;
 };
 
 export {
   deduplicateWorks,
   getFosmWorks,
   getOpenAlexPublications,
+  groupByAffiliations,
 };
