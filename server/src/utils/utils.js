@@ -51,7 +51,7 @@ const groupByAffiliations = ({ datasets, options, publications }) => {
           // Check matches in affiliation name
           let matches = affiliation?.match(regexp) ?? [];
           // Normalize matched strings
-          matches = matches.map((macth) => normalizedName(macth));
+          matches = matches.map((match) => normalizedName(match));
           // Filter matches as unique
           matches = [...new Set(matches)];
           allAffiliationsTmp[normalizedAffiliationName] = {

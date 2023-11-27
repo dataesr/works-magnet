@@ -37,18 +37,18 @@ router.route('/works')
         };
         console.timeEnd(`1. Filter ${options.affiliations}`);
         console.time(`2. Dedup ${options.affiliations}`);
-        // Deduplicate publications by DOI or by hal_id
-        const deduplicatedPublications = {};
-        const uniquesId = [];
-        data.publications.results.forEach((publication) => {
+        // Deduplicate publications by id
+        const deduplicatedPublications = data.publications.results.reduce((deduplicatedPublicationsTmp, publication) => {
           const { id } = publication;
-          if (!uniquesId.includes(id)) {
-            uniquesId.push(id);
-            deduplicatedPublications[id] = publication;
+          if (!deduplicatedPublicationsTmp[id]) {
+            // eslint-disable-next-line no-param-reassign
+            deduplicatedPublicationsTmp[id] = publication;
           } else {
-            deduplicatedPublications[id] = mergePublications(deduplicatedPublications[id], publication);
+            // eslint-disable-next-line no-param-reassign
+            deduplicatedPublicationsTmp[id] = mergePublications(deduplicatedPublicationsTmp[id], publication);
           }
-        });
+          return deduplicatedPublicationsTmp;
+        }, {});
         data.publications.results = Object.values(deduplicatedPublications);
         console.timeEnd(`2. Dedup ${options.affiliations}`);
         // Compute distinct types & years for facet
