@@ -14,7 +14,6 @@ router.route('/works')
       } else {
         const { affiliations } = options;
         options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
-        console.log('process env', process.env);
         console.time(`0. Requests ${options.affiliations}`);
         const responses = await Promise.all([
           getFosmWorks({ options, index: process.env.VITE_FOSM_PUBLICATIONS_INDEX }),
