@@ -1,7 +1,5 @@
 import { cleanId, getRegexpFromOptions, normalizeName, range } from './utils';
 
-const OPENALEX_MAX_PAGE = Math.floor(process.env.OPENALEX_SIZE / process.env.OPENALEX_PER_PAGE);
-
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
   const priorityPublication = [publication1, publication2].some((publi) => publi.datasource === 'fosm')
@@ -49,7 +47,7 @@ const getFosmQuery = (options, pit, searchAfter) => {
   return query;
 };
 
-const getFosmWorksByYear = async ({ allResults = [], options, pit, searchAfter }) => {
+const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
       `${process.env.FOSM_URL}/${process.env.FOSM_INDEX}/_pit?keep_alive=${process.env.FOSM_PIT_KEEP_ALIVE}`,
@@ -78,7 +76,7 @@ const getFosmWorksByYear = async ({ allResults = [], options, pit, searchAfter }
     .then((response) => {
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
-      allResults = allResults.concat(hits.map((result) => ({
+      results = results.concat(hits.map((result) => ({
         // Filter ids on unique values
         affiliations: result._source.affiliations.map((affiliation) => affiliation.name).filter((affiliation) => !!affiliation),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
@@ -88,10 +86,10 @@ const getFosmWorksByYear = async ({ allResults = [], options, pit, searchAfter }
         type: result._source?.genre_raw ?? result._source.genre,
         year: result._source.year,
       })));
-      if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || allResults.length < Number(process.env.FOSM_MAX_SIZE))) {
+      if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || results.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
-        return getFosmWorksByYear({ allResults, options, pit, searchAfter });
+        return getFosmWorksByYear({ results, options, pit, searchAfter });
       }
       if (pit) {
         fetch(
@@ -103,7 +101,7 @@ const getFosmWorksByYear = async ({ allResults = [], options, pit, searchAfter }
           },
         );
       }
-      return allResults;
+      return results;
     });
 };
 
@@ -111,8 +109,8 @@ const getFosmWorks = async ({ options }) => {
   const { endYear, startYear } = options;
   const years = range(startYear, endYear);
   const promises = years.map((year) => getFosmWorksByYear({ options: { ...options, year } }));
-  const allResults = await Promise.all(promises);
-  return allResults.flat();
+  const results = await Promise.all(promises);
+  return results.flat();
 };
 
 const getTypeFromOpenAlex = (type) => {
@@ -161,8 +159,8 @@ const getTypeFromOpenAlex = (type) => {
   return newType;
 };
 
-const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = []) => {
-  let url = `https://api.openalex.org/works?per_page=${Math.min(process.env.OPENALEX_SIZE, process.env.OPENALEX_PER_PAGE)}`;
+const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = []) => {
+  let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
   if (options.affiliations.length) {
@@ -173,8 +171,8 @@ const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = [
   } else {
     url += '&mailto=bso@recherche.gouv.fr';
   }
-  url += '&select=authorships,display_name,doi,id,ids,publication_year,type';
-  return fetch(`${url}&page=${page}`)
+  url += '&select=authorships,display_name,doi,id,ids,publication_year,type&cursor=*';
+  return fetch(`${url}&cursor=${cursor}`)
     .then((response) => {
       if (response.ok) return response.json();
       console.error(`Error while fetching ${url} :`);
@@ -194,9 +192,9 @@ const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = [
         type: getTypeFromOpenAlex(result.type),
         year: result?.publication_year,
       })));
-      const nextPage = Number(page) + 1;
-      if (Number(response.results.length) === Number(process.env.OPENALEX_PER_PAGE) && nextPage <= OPENALEX_MAX_PAGE) {
-        return getOpenAlexPublicationsByYear(options, nextPage, results);
+      const nextCursor = response?.meta?.next_cursor;
+      if (nextCursor && hits.length > 0 && (Number(process.env.OPENALEX_MAX_SIZE) === 0 || results.length < Number(process.env.OPENALEX_MAX_SIZE))) {
+        return getOpenAlexPublicationsByYear(options, nextCursor, results);
       }
       return results;
     });
@@ -206,8 +204,8 @@ const getOpenAlexPublications = async ({ options }) => {
   const { endYear, startYear } = options;
   const years = range(startYear, endYear);
   const promises = years.map((year) => getOpenAlexPublicationsByYear({ ...options, year }));
-  const allResults = await Promise.all(promises);
-  return allResults.flat();
+  const results = await Promise.all(promises);
+  return results.flat();
 };
 
 const groupByAffiliations = ({ options, works }) => {

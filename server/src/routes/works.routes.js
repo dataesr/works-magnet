@@ -48,7 +48,7 @@ router.route('/works')
           ) {
             datasets.push(deduplicatedWork);
           } else {
-            console.log(`Work not sorted : ${JSON.stringify(deduplicatedWork)}`);
+            console.error(`Work not sorted : ${JSON.stringify(deduplicatedWork)}`);
           }
         });
         console.timeEnd(`4. Sort ${options.affiliations}`);
