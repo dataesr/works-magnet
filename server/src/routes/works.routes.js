@@ -15,9 +15,9 @@ router.route('/works')
         options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
         console.time(`0. Requests ${options.affiliations}`);
         const responses = await Promise.all([
-          getFosmWorks({ options, index: process.env.VITE_FOSM_PUBLICATIONS_INDEX }),
+          getFosmWorks({ options, index: process.env.FOSM_PUBLICATIONS_INDEX }),
           getOpenAlexPublications({ options }),
-          getFosmWorks({ options: { ...options, filter: { field: 'genre', value: 'dataset' } }, index: process.env.VITE_FOSM_DATASETS_INDEX }),
+          getFosmWorks({ options: { ...options, filter: { field: 'genre', value: 'dataset' } }, index: process.env.FOSM_DATASETS_INDEX }),
         ]);
         console.timeEnd(`0. Requests ${options.affiliations}`);
         console.time(`1. Concat ${options.affiliations}`);

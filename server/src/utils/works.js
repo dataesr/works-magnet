@@ -1,6 +1,6 @@
 import { cleanId, getRegexpFromOptions, normalizeName, range } from './utils';
 
-const VITE_OPENALEX_MAX_PAGE = Math.floor(process.env.VITE_OPENALEX_SIZE / process.env.VITE_OPENALEX_PER_PAGE);
+const OPENALEX_MAX_PAGE = Math.floor(process.env.OPENALEX_SIZE / process.env.OPENALEX_PER_PAGE);
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
@@ -29,7 +29,7 @@ const deduplicateWorks = (works) => {
 };
 
 const getFosmQuery = (options, pit, searchAfter) => {
-  const query = { size: process.env.VITE_FOSM_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
+  const query = { size: process.env.FOSM_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   const affiliationsFields = ['affiliations.name'];
   options.affiliations.forEach((affiliation) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
@@ -42,7 +42,7 @@ const getFosmQuery = (options, pit, searchAfter) => {
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'journal_name', 'title', 'year'];
   query.sort = ['_shard_doc'];
   if (pit) {
-    query.pit = { id: pit, keep_alive: process.env.VITE_FOSM_PIT_KEEP_ALIVE };
+    query.pit = { id: pit, keep_alive: process.env.FOSM_PIT_KEEP_ALIVE };
   }
   if (searchAfter) {
     query.search_after = searchAfter;
@@ -51,11 +51,11 @@ const getFosmQuery = (options, pit, searchAfter) => {
   return query;
 };
 
-const getFosmWorksByYear = async ({ allResults = [], index = process.env.VITE_FOSM_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
+const getFosmWorksByYear = async ({ allResults = [], index = process.env.FOSM_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
-      `${process.env.VITE_FOSM_URL}/${index}/_pit?keep_alive=${process.env.VITE_FOSM_PIT_KEEP_ALIVE}`,
-      { method: 'POST', headers: { Authorization: process.env.VITE_FOSM_AUTH } },
+      `${process.env.FOSM_URL}/${index}/_pit?keep_alive=${process.env.FOSM_PIT_KEEP_ALIVE}`,
+      { method: 'POST', headers: { Authorization: process.env.FOSM_AUTH } },
     );
     // eslint-disable-next-line no-param-reassign
     pit = (await response.json()).id;
@@ -66,10 +66,10 @@ const getFosmWorksByYear = async ({ allResults = [], index = process.env.VITE_FO
     body: JSON.stringify(body),
     headers: {
       'content-type': 'application/json',
-      Authorization: process.env.VITE_FOSM_AUTH,
+      Authorization: process.env.FOSM_AUTH,
     },
   };
-  const url = `${process.env.VITE_FOSM_URL}/_search`;
+  const url = `${process.env.FOSM_URL}/_search`;
   return fetch(url, params)
     .then((response) => {
       if (response.ok) return response.json();
@@ -90,17 +90,17 @@ const getFosmWorksByYear = async ({ allResults = [], index = process.env.VITE_FO
         type: result._source?.genre_raw ?? result._source.genre,
         year: result._source.year,
       })));
-      if (hits.length > 0 && (Number(process.env.VITE_FOSM_MAX_SIZE) === 0 || allResults.length < Number(process.env.VITE_FOSM_MAX_SIZE))) {
+      if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || allResults.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
         return getFosmWorksByYear({ allResults, index, options, pit, searchAfter });
       }
       if (pit) {
         fetch(
-          `${process.env.VITE_FOSM_URL}/_pit`,
+          `${process.env.FOSM_URL}/_pit`,
           {
             body: JSON.stringify({ id: pit }),
-            headers: { Authorization: process.env.VITE_FOSM_AUTH, 'Content-type': 'application/json' },
+            headers: { Authorization: process.env.FOSM_AUTH, 'Content-type': 'application/json' },
             method: 'DELETE',
           },
         );
@@ -164,14 +164,14 @@ const getTypeFromOpenAlex = (type) => {
 };
 
 const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = []) => {
-  let url = `https://api.openalex.org/works?per_page=${Math.min(process.env.VITE_OPENALEX_SIZE, process.env.VITE_OPENALEX_PER_PAGE)}`;
+  let url = `https://api.openalex.org/works?per_page=${Math.min(process.env.OPENALEX_SIZE, process.env.OPENALEX_PER_PAGE)}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
   if (options.affiliations.length) {
     url += `,raw_affiliation_string.search:(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
   }
-  if (process?.env?.VITE_OPENALEX_KEY) {
-    url += `&api_key=${process.env.VITE_OPENALEX_KEY}`;
+  if (process?.env?.OPENALEX_KEY) {
+    url += `&api_key=${process.env.OPENALEX_KEY}`;
   } else {
     url += '&mailto=bso@recherche.gouv.fr';
   }
@@ -197,7 +197,7 @@ const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = [
         year: result?.publication_year,
       })));
       const nextPage = Number(page) + 1;
-      if (Number(response.results.length) === Number(process.env.VITE_OPENALEX_PER_PAGE) && nextPage <= VITE_OPENALEX_MAX_PAGE) {
+      if (Number(response.results.length) === Number(process.env.OPENALEX_PER_PAGE) && nextPage <= OPENALEX_MAX_PAGE) {
         return getOpenAlexPublicationsByYear(options, nextPage, results);
       }
       return results;
