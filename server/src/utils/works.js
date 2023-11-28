@@ -34,10 +34,8 @@ const getFosmQuery = (options, pit, searchAfter) => {
   options.affiliations.forEach((affiliation) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
   });
-  query.query.bool.filter.push({ range: { year: { gte: options.year, lte: options.year } } });
-  if (options?.filter) {
-    query.query.bool.filter.push({ term: { [options.filter.field]: options.filter.value } });
-  }
+  query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
+  query.query.bool.must_not.push({ term: { genre: 'file' } });
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'journal_name', 'title', 'year'];
   query.sort = ['_shard_doc'];
@@ -51,10 +49,10 @@ const getFosmQuery = (options, pit, searchAfter) => {
   return query;
 };
 
-const getFosmWorksByYear = async ({ allResults = [], index = process.env.FOSM_PUBLICATIONS_INDEX, options, pit, searchAfter }) => {
+const getFosmWorksByYear = async ({ allResults = [], options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
-      `${process.env.FOSM_URL}/${index}/_pit?keep_alive=${process.env.FOSM_PIT_KEEP_ALIVE}`,
+      `${process.env.FOSM_URL}/${process.env.FOSM_INDEX}/_pit?keep_alive=${process.env.FOSM_PIT_KEEP_ALIVE}`,
       { method: 'POST', headers: { Authorization: process.env.FOSM_AUTH } },
     );
     // eslint-disable-next-line no-param-reassign
@@ -82,7 +80,7 @@ const getFosmWorksByYear = async ({ allResults = [], index = process.env.FOSM_PU
       // eslint-disable-next-line no-param-reassign
       allResults = allResults.concat(hits.map((result) => ({
         // Filter ids on unique values
-        affiliations: result._source.affiliations.map((affiliation) => affiliation.name),
+        affiliations: result._source.affiliations.map((affiliation) => affiliation.name).filter((affiliation) => !!affiliation),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['fosm'],
@@ -93,7 +91,7 @@ const getFosmWorksByYear = async ({ allResults = [], index = process.env.FOSM_PU
       if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || allResults.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
-        return getFosmWorksByYear({ allResults, index, options, pit, searchAfter });
+        return getFosmWorksByYear({ allResults, options, pit, searchAfter });
       }
       if (pit) {
         fetch(
@@ -186,7 +184,7 @@ const getOpenAlexPublicationsByYear = (options, page = '1', previousResponse = [
     .then((response) => {
       const hits = response?.results ?? [];
       const results = previousResponse.concat(hits.map((result) => ({
-        affiliations: result?.authorships?.map((author) => author.raw_affiliation_strings).flat(),
+        affiliations: result?.authorships?.map((author) => author.raw_affiliation_strings).flat().filter((affiliation) => !!affiliation),
         allIds: Object.keys(result.ids).map((key) => ({ id_type: key, id_value: cleanId(result.ids[key]) })),
         authors: result?.authorships?.map((author) => author.author.display_name),
         datasource: ['openalex'],
