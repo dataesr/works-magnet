@@ -11,8 +11,7 @@ router.route('/works')
       if (!options?.affiliations) {
         res.status(400).json({ message: 'You must provide at least one affiliation.' });
       } else {
-        const { affiliations } = options;
-        options.affiliations = Array.isArray(affiliations) ? affiliations : [affiliations];
+        options.affiliations = options.affiliations.split(',');
         console.time(`0. Requests ${options.affiliations}`);
         const responses = await Promise.all([
           getFosmWorks({ options }),
