@@ -32,7 +32,7 @@ const getRegexpFromOptions = (options) => {
   return regex;
 };
 
-const normalizedName = (name) => name
+const normalizeName = (name) => name
   .toLowerCase()
   .normalize('NFD')
   .replace(/[^a-zA-Z0-9]/g, ' ')
@@ -42,6 +42,6 @@ const normalizedName = (name) => name
 export {
   cleanId,
   getRegexpFromOptions,
-  normalizedName,
+  normalizeName,
   range,
 };

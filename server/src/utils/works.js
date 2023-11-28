@@ -1,4 +1,4 @@
-import { cleanId, getRegexpFromOptions, normalizedName, range } from './utils';
+import { cleanId, getRegexpFromOptions, normalizeName, range } from './utils';
 
 const VITE_OPENALEX_MAX_PAGE = Math.floor(process.env.VITE_OPENALEX_SIZE / process.env.VITE_OPENALEX_PER_PAGE);
 
@@ -157,6 +157,8 @@ const getTypeFromOpenAlex = (type) => {
     case 'posted-content':
       newType = 'preprint';
       break;
+    default:
+      newType = type;
   }
   return newType;
 };
@@ -217,12 +219,12 @@ const groupByAffiliations = ({ options, works }) => {
   works.forEach((work) => {
     (work?.affiliations ?? [])
       .forEach((affiliation) => {
-        const normalizedAffiliationName = normalizedName(affiliation);
+        const normalizedAffiliationName = normalizeName(affiliation);
         if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
           // Check matches in affiliation name
           let matches = affiliation?.match(regexp) ?? [];
           // Normalize matched strings
-          matches = matches.map((match) => normalizedName(match));
+          matches = matches.map((match) => normalizeName(match));
           // Filter matches as unique
           matches = [...new Set(matches)];
           allAffiliationsTmp[normalizedAffiliationName] = {
@@ -235,9 +237,16 @@ const groupByAffiliations = ({ options, works }) => {
         allAffiliationsTmp[normalizedAffiliationName].works.push(work.id);
       });
   });
-
   allAffiliationsTmp = Object.values(allAffiliationsTmp)
-    .map((affiliation, index) => ({ ...affiliation, id: index.toString(), works: [...new Set(affiliation.works)], worksNumber: [...new Set(affiliation.works)].length }));
+    .map((affiliation, index) => {
+      const uniqueWorks = [...new Set(affiliation.works)];
+      return ({
+        ...affiliation,
+        id: index.toString(),
+        works: uniqueWorks,
+        worksNumber: uniqueWorks.length,
+      });
+    });
   return allAffiliationsTmp;
 };
 

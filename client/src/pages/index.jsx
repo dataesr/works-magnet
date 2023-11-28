@@ -122,6 +122,7 @@ export default function Home() {
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
     allAffiliationsTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
     setAllAffiliations(allAffiliationsTmp);
+    // setSelectedAffiliations([]);
   };
 
   return (

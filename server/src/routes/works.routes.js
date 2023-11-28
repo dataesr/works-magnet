@@ -41,12 +41,12 @@ router.route('/works')
         const datasets = [];
         deduplicatedWorks.forEach((deduplicatedWork) => {
           if (
-            (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.genre_raw !== 'dataset')
+            (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.type !== 'dataset')
             || (deduplicatedWork.datasource.includes('openalex') && deduplicatedWork.type !== 'dataset')
           ) {
             publications.push(deduplicatedWork);
           } else if (
-            (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.genre_raw === 'dataset')
+            (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.type === 'dataset')
             || (deduplicatedWork.datasource.includes('openalex') && deduplicatedWork.type === 'dataset')
           ) {
             datasets.push(deduplicatedWork);
