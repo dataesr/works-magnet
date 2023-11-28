@@ -13,14 +13,13 @@ import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
 import { renderButtons } from '../utils/works';
 
-export default function PublicationsTab({ publications, tagPublications, types, years }) {
+export default function PublicationsTab({ publications, selectedPublications, setSelectedPublications, tagPublications, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasources, setFilteredDatasources] = useState(datasources.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
-  const [selectedPublications, setSelectedPublications] = useState([]);
   const [timer, setTimer] = useState();
 
   useEffect(() => {
@@ -184,6 +183,16 @@ PublicationsTab.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
+  selectedPublications: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
+    id: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+  })).isRequired,
+  setSelectedPublications: PropTypes.func.isRequired,
   tagPublications: PropTypes.func.isRequired,
   types: PropTypes.arrayOf(PropTypes.string).isRequired,
   years: PropTypes.arrayOf(PropTypes.number).isRequired,

@@ -31,6 +31,9 @@ export default function Home() {
   const [allPublications, setAllPublications] = useState([]);
   const [options, setOptions] = useState({});
   const [regexp, setRegexp] = useState();
+  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
+  const [selectedDatasets, setSelectedDatasets] = useState([]);
+  const [selectedPublications, setSelectedPublications] = useState([]);
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -97,7 +100,7 @@ export default function Home() {
     const publicationsIds = publications.map((publication) => publication.id);
     allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
     setAllPublications(allPublicationsTmp);
-    // setSelectedPublications([]);
+    setSelectedPublications([]);
   };
 
   const tagDatasets = (datasets, action) => {
@@ -105,7 +108,7 @@ export default function Home() {
     const datasetsIds = datasets.map((dataset) => dataset.id);
     allDatasetsTmp.filter((dataset) => datasetsIds.includes(dataset.id)).map((dataset) => dataset.status = action);
     setAllDatasets(allDatasetsTmp);
-    // setSelectedDatasets([]);
+    setSelectedDatasets([]);
   };
 
   const tagAffiliations = (affiliations, action) => {
@@ -122,7 +125,7 @@ export default function Home() {
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
     allAffiliationsTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
     setAllAffiliations(allAffiliationsTmp);
-    // setSelectedAffiliations([]);
+    setSelectedAffiliations([]);
   };
 
   return (
@@ -153,12 +156,16 @@ export default function Home() {
             <Tab label="Grouped affiliations of works">
               <AffiliationsTab
                 affiliations={allAffiliations}
+                selectedAffiliations={selectedAffiliations}
+                setSelectedAffiliations={setSelectedAffiliations}
                 tagAffiliations={tagAffiliations}
               />
             </Tab>
             <Tab label="List all publications">
               <PublicationsTab
                 publications={allPublications}
+                selectedPublications={selectedPublications}
+                setSelectedPublications={setSelectedPublications}
                 tagPublications={tagPublications}
                 types={data.publications.types}
                 years={data.publications.years}
@@ -167,6 +174,8 @@ export default function Home() {
             <Tab label="List all datasets">
               <DatasetsTab
                 datasets={allDatasets}
+                selectedDatasets={selectedDatasets}
+                setSelectedDatasets={setSelectedDatasets}
                 tagDatasets={tagDatasets}
                 types={data.datasets.types}
                 years={data.datasets.years}

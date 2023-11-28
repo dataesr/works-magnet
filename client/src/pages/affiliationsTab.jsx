@@ -13,11 +13,10 @@ import Gauge from '../components/gauge';
 import { status } from '../config';
 import { renderButtons } from '../utils/works';
 
-export default function AffiliationsTab({ affiliations, tagAffiliations }) {
+export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
-  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [timer, setTimer] = useState();
 
   useEffect(() => {
@@ -109,5 +108,15 @@ AffiliationsTab.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
+  selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    matches: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    nameHtml: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    worksNumber: PropTypes.number.isRequired,
+  })).isRequired,
+  setSelectedAffiliations: PropTypes.func.isRequired,
   tagAffiliations: PropTypes.func.isRequired,
 };

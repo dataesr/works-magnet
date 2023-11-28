@@ -13,14 +13,13 @@ import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
 import { renderButtons } from '../utils/works';
 
-export default function DatasetsTab({ datasets, tagDatasets, types, years }) {
+export default function DatasetsTab({ datasets, selectedDatasets, setSelectedDatasets, tagDatasets, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasets, setFilteredDatasets] = useState([]);
   const [filteredDatasources, setFilteredDatasources] = useState(datasources.map((datasource) => datasource.key));
   const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
-  const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [timer, setTimer] = useState();
 
   useEffect(() => {
@@ -184,6 +183,16 @@ DatasetsTab.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
+  selectedDatasets: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
+    id: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+  })).isRequired,
+  setSelectedDatasets: PropTypes.func.isRequired,
   tagDatasets: PropTypes.func.isRequired,
   types: PropTypes.arrayOf(PropTypes.string).isRequired,
   years: PropTypes.arrayOf(PropTypes.number).isRequired,
