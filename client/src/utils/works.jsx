@@ -40,6 +40,13 @@ const getIdLink = (type, id) => {
   return (prefix !== null) ? `${prefix}${id}` : false;
 };
 
+const normalizeName = (name) => name
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[^a-zA-Z0-9]/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+
 const renderButtons = (selected, fn) => (
   <>
     {Object.values(status).map((st) => (
@@ -60,5 +67,6 @@ const renderButtons = (selected, fn) => (
 export {
   getData,
   getIdLink,
+  normalizeName,
   renderButtons,
 };

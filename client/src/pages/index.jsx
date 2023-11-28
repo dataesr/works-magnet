@@ -98,6 +98,7 @@ export default function Home() {
   const tagPublications = (publications, action) => {
     const allPublicationsTmp = [...allPublications];
     const publicationsIds = publications.map((publication) => publication.id);
+    // eslint-disable-next-line no-return-assign, no-param-reassign
     allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
     setAllPublications(allPublicationsTmp);
     setSelectedPublications([]);
@@ -106,6 +107,7 @@ export default function Home() {
   const tagDatasets = (datasets, action) => {
     const allDatasetsTmp = [...allDatasets];
     const datasetsIds = datasets.map((dataset) => dataset.id);
+    // eslint-disable-next-line no-return-assign, no-param-reassign
     allDatasetsTmp.filter((dataset) => datasetsIds.includes(dataset.id)).map((dataset) => dataset.status = action);
     setAllDatasets(allDatasetsTmp);
     setSelectedDatasets([]);
@@ -115,14 +117,17 @@ export default function Home() {
     if (action !== status.excluded.id) {
       const worksIds = affiliations.map((affiliation) => affiliation.works).flat();
       const allPublicationsTmp = [...allPublications];
+      // eslint-disable-next-line no-return-assign, no-param-reassign
       allPublicationsTmp.filter((publication) => worksIds.includes(publication.id)).map((publication) => publication.status = action);
       setAllPublications(allPublicationsTmp);
       const allDatasetsTmp = [...allDatasets];
+      // eslint-disable-next-line no-return-assign, no-param-reassign
       allDatasetsTmp.filter((dataset) => worksIds.includes(dataset.id)).map((dataset) => dataset.status = action);
       setAllDatasets(allDatasetsTmp);
     }
     const allAffiliationsTmp = [...allAffiliations];
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
+    // eslint-disable-next-line no-return-assign, no-param-reassign
     allAffiliationsTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
     setAllAffiliations(allAffiliationsTmp);
     setSelectedAffiliations([]);

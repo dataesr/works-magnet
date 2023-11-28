@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import AffiliationsView from './affiliationsView';
 import Gauge from '../components/gauge';
 import { status } from '../config';
-import { renderButtons } from '../utils/works';
+import { normalizeName, renderButtons } from '../utils/works';
 
 export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -28,7 +28,8 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.name.includes(filteredAffiliationName) && filteredStatus.includes(affiliation.status));
+      const filteredAffiliationsTmp = affiliations.filter((affiliation) => normalizeName(affiliation.name).includes(normalizeName(filteredAffiliationName))
+        && filteredStatus.includes(affiliation.status));
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
