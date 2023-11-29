@@ -94,6 +94,11 @@ export default function PublicationsTab({ publications, selectedPublications, se
       </Row>
       <Row gutters>
         <Col n="2">
+          <TextInput
+            label="Search publications on affiliations name"
+            onChange={(e) => setFilteredAffiliationName(e.target.value)}
+            value={filteredAffiliationName}
+          />
           <CheckboxGroup
             hint="Filter publications on selected status"
             legend="Status"
@@ -150,11 +155,6 @@ export default function PublicationsTab({ publications, selectedPublications, se
               />
             ))}
           </CheckboxGroup>
-          <TextInput
-            label="Filter publications on affiliations name"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
         </Col>
         <Col n="10">
           <WorksView

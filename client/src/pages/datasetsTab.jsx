@@ -94,6 +94,11 @@ export default function DatasetsTab({ datasets, selectedDatasets, setSelectedDat
       </Row>
       <Row>
         <Col n="2">
+          <TextInput
+            label="Search datasets on affiliations name"
+            onChange={(e) => setFilteredAffiliationName(e.target.value)}
+            value={filteredAffiliationName}
+          />
           <CheckboxGroup
             hint="Filter publications on selected status"
             legend="Status"
@@ -150,11 +155,6 @@ export default function DatasetsTab({ datasets, selectedDatasets, setSelectedDat
               />
             ))}
           </CheckboxGroup>
-          <TextInput
-            label="Filter publications on affiliations name"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
         </Col>
         <Col n="10">
           <WorksView

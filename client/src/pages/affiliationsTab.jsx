@@ -62,6 +62,11 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       </Row>
       <Row gutters>
         <Col n="2">
+          <TextInput
+            label="Search affiliations on name"
+            onChange={(e) => setFilteredAffiliationName(e.target.value)}
+            value={filteredAffiliationName}
+          />
           <CheckboxGroup
             hint="Filter affiliations on selected status"
             legend="Status"
@@ -76,11 +81,6 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
               />
             ))}
           </CheckboxGroup>
-          <TextInput
-            label="Filter affiliations on affiliations name"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
         </Col>
         <Col n="10">
           <AffiliationsView
