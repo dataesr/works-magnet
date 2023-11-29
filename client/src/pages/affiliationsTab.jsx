@@ -55,7 +55,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
-              value: affiliations.filter((affiliation) => affiliation.status === st.id).length,
+              value: affiliations.filter((affiliation) => !!affiliation.matches && affiliation.status === st.id).length,
             }))}
           />
         </Col>
