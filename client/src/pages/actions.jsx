@@ -26,30 +26,6 @@ export default function Actions({
       <Row className="fr-mb-1w">
         <Col className="text-right">
           <Button
-            data-tooltip-id="save-session-button"
-            disabled={!allAffiliations.length || !allPublications.length}
-            icon="ri-save-line"
-            onClick={() => export2json({ allAffiliations, allPublications, options })}
-            size="sm"
-          >
-            Save session
-          </Button>
-          <Tooltip id="save-session-button" hidden={!allAffiliations.length || !allPublications.length}>
-            Save your ongoing work into a file that could be restored later
-          </Tooltip>
-          <Button
-            data-tooltip-id="restore-session-button"
-            icon="ri-file-upload-line"
-            onClick={() => setDisplayFileUpload(true)}
-            secondary
-            size="sm"
-          >
-            Restore session
-          </Button>
-          <Tooltip id="restore-session-button">
-            Restore a previous work from saved file
-          </Tooltip>
-          <Button
             data-tooltip-id="save-affiliations-button"
             disabled={!decidedAffiliations.length}
             icon="ri-save-line"
