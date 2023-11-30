@@ -175,6 +175,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   return fetch(`${url}&cursor=${cursor}`)
     .then((response) => {
       if (response.ok) return response.json();
+      if (response.status === 429) return new Promise((resolve) => setTimeout(resolve, 100)).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
       return 'Oops... OpenAlex API request did not work';

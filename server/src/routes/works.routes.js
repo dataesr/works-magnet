@@ -28,7 +28,7 @@ router.route('/works')
         // Deduplicate publications by ids
         const deduplicatedWorks = deduplicateWorks(works);
         console.timeEnd(`2. Dedup ${options.affiliations}`);
-        // Goup by affiliations
+        // Compute distinct affiliations of works
         console.time(`3. GroupBy ${options.affiliations}`);
         const uniqueAffiliations = groupByAffiliations({ options, works: deduplicatedWorks });
         console.timeEnd(`3. GroupBy ${options.affiliations}`);
