@@ -66,7 +66,6 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
     },
   };
   const url = `${process.env.FOSM_URL}/_search`;
-  console.log(url);
   return fetch(url, params)
     .then((response) => {
       if (response.ok) return response.json();
@@ -173,14 +172,11 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     url += '&mailto=bso@recherche.gouv.fr';
   }
   url += '&select=authorships,display_name,doi,id,ids,publication_year,type';
-  console.log(`${url}&cursor=${cursor}`);
   return fetch(`${url}&cursor=${cursor}`)
     .then((response) => {
-      console.log(response.status);
       if (response.ok) return response.json();
       if (response.status === 429) {
-        console.log('ERROR');
-        return new Promise((resolve) => setTimeout(resolve, 2000)).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
+        return new Promise((resolve) => setTimeout(resolve, 500)).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
       }
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
@@ -201,7 +197,6 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
       })));
       const nextCursor = response?.meta?.next_cursor;
       if (nextCursor && hits.length > 0 && (Number(process.env.OPENALEX_MAX_SIZE) === 0 || results.length < Number(process.env.OPENALEX_MAX_SIZE))) {
-        console.log(results.length);
         return getOpenAlexPublicationsByYear(options, nextCursor, results);
       }
       return results;
