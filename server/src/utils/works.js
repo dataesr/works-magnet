@@ -201,6 +201,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
       })));
       const nextCursor = response?.meta?.next_cursor;
       if (nextCursor && hits.length > 0 && (Number(process.env.OPENALEX_MAX_SIZE) === 0 || results.length < Number(process.env.OPENALEX_MAX_SIZE))) {
+        console.log(results.length);
         return getOpenAlexPublicationsByYear(options, nextCursor, results);
       }
       return results;
