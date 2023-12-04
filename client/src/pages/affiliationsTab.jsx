@@ -55,7 +55,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
-              value: affiliations.filter((affiliation) => !!affiliation.matches && affiliation.status === st.id).length,
+              value: affiliations.filter((affiliation) => affiliation.status === st.id).length,
             }))}
           />
         </Col>
@@ -84,7 +84,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
         </Col>
         <Col n="10">
           <AffiliationsView
-            allAffiliations={filteredAffiliations.filter((affiliation) => !!affiliation.matches)}
+            allAffiliations={filteredAffiliations}
             selectedAffiliations={selectedAffiliations}
             setSelectedAffiliations={setSelectedAffiliations}
           />
@@ -102,7 +102,6 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
 AffiliationsTab.propTypes = {
   affiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
-    matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
@@ -111,7 +110,6 @@ AffiliationsTab.propTypes = {
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
-    matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,

@@ -36,7 +36,6 @@ export default function AffiliationsView({
       <Column field="status" header="Status" body={statusTemplate} />
       <Column field="nameHtml" header="Affiliation" body={nameTemplate} />
       <Column field="worksNumber" header="Number of works" sortable />
-      <Column field="matches" header="Number of unique matches" sortable />
     </DataTable>
   );
 }
@@ -44,7 +43,6 @@ export default function AffiliationsView({
 AffiliationsView.propTypes = {
   allAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
-    matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
@@ -53,7 +51,6 @@ AffiliationsView.propTypes = {
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
-    matches: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,

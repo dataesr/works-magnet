@@ -33,9 +33,10 @@ router.route('/works')
         const uniqueAffiliations = groupByAffiliations({ options, works: deduplicatedWorks });
         console.timeEnd(`3. GroupBy ${options.affiliations}`);
         // Sort between publications and datasets
-        console.time(`4. Sort ${options.affiliations}`);
+        console.time(`4. Sort works ${options.affiliations}`);
         const publications = [];
         const datasets = [];
+        // TODO IMPROVE PERF by replacing the forEach by a for loop
         deduplicatedWorks.forEach((deduplicatedWork) => {
           if (
             (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.type !== 'dataset')
@@ -51,7 +52,7 @@ router.route('/works')
             console.error(`Work not sorted : ${JSON.stringify(deduplicatedWork)}`);
           }
         });
-        console.timeEnd(`4. Sort ${options.affiliations}`);
+        console.timeEnd(`4. Sort works ${options.affiliations}`);
         // Compute distinct types & years for facet
         console.time(`5. Facet ${options.affiliations}`);
         const publicationsYears = [...new Set(

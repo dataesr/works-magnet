@@ -1,4 +1,4 @@
-import { cleanId, getRegexpFromOptions, normalizeName, range } from './utils';
+import { cleanId, range, removeDiacritics } from './utils';
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
@@ -212,30 +212,30 @@ const getOpenAlexPublications = async ({ options }) => {
 };
 
 const groupByAffiliations = ({ options, works }) => {
-  const regexp = getRegexpFromOptions(options);
+  const normalizedAffiliations = options.affiliations.map((affiliation) => removeDiacritics(affiliation));
   // Compute distinct affiliations of works
-  let allAffiliationsTmp = {};
-  works.forEach((work) => {
-    (work?.affiliations ?? [])
-      .forEach((affiliation) => {
-        const normalizedAffiliationName = normalizeName(affiliation);
-        if (!allAffiliationsTmp?.[normalizedAffiliationName]) {
-          // Check matches in affiliation name
-          let matches = affiliation?.match(regexp) ?? [];
-          // Normalize matched strings
-          matches = matches.map((match) => normalizeName(match));
-          // Filter matches as unique
-          matches = [...new Set(matches)];
-          allAffiliationsTmp[normalizedAffiliationName] = {
-            matches: matches.length,
+  let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
+    const { affiliations = [], id } = work;
+    const { length } = affiliations;
+    for (let i = 0; i < length; i += 1) {
+      const affiliation = affiliations[i];
+      const normalizedAffiliation = removeDiacritics(affiliation);
+      if (normalizedAffiliations.some((aff) => normalizedAffiliation.includes(aff))) {
+        if (deduplicatedAffiliations?.[normalizedAffiliation]) {
+          deduplicatedAffiliations[normalizedAffiliation].works.push(id);
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          deduplicatedAffiliations[normalizedAffiliation] = {
             name: affiliation,
-            nameHtml: affiliation.replace(regexp, '<b>$&</b>'),
-            works: [],
+            nameHtml: normalizedAffiliation.replace(normalizedAffiliations[0], `<b>${normalizedAffiliations[0]}</b>`),
+            works: [id],
           };
         }
-        allAffiliationsTmp[normalizedAffiliationName].works.push(work.id);
-      });
-  });
+      }
+    }
+    return deduplicatedAffiliations;
+  }, {});
+
   allAffiliationsTmp = Object.values(allAffiliationsTmp)
     .map((affiliation, index) => {
       const uniqueWorks = [...new Set(affiliation.works)];
