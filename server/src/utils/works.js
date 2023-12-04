@@ -172,7 +172,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   } else {
     url += '&mailto=bso@recherche.gouv.fr';
   }
-  url += '&select=authorships,display_name,doi,id,ids,publication_year,type&cursor=*';
+  url += '&select=authorships,display_name,doi,id,ids,publication_year,type';
   console.log(`${url}&cursor=${cursor}`);
   return fetch(`${url}&cursor=${cursor}`)
     .then((response) => {
