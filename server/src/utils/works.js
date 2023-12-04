@@ -66,6 +66,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
     },
   };
   const url = `${process.env.FOSM_URL}/_search`;
+  console.log(url);
   return fetch(url, params)
     .then((response) => {
       if (response.ok) return response.json();
@@ -172,10 +173,14 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     url += '&mailto=bso@recherche.gouv.fr';
   }
   url += '&select=authorships,display_name,doi,id,ids,publication_year,type&cursor=*';
+  console.log(`${url}&cursor=${cursor}`);
   return fetch(`${url}&cursor=${cursor}`)
     .then((response) => {
       if (response.ok) return response.json();
-      if (response.status === 429) return new Promise((resolve) => setTimeout(resolve, 2000)).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
+      if (response.status === 429) {
+        console.log('ERROR');
+        return new Promise((resolve) => setTimeout(resolve, 2000)).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
+      }
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
       return 'Oops... OpenAlex API request did not work';
