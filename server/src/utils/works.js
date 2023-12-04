@@ -176,6 +176,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   console.log(`${url}&cursor=${cursor}`);
   return fetch(`${url}&cursor=${cursor}`)
     .then((response) => {
+      console.log(response.status);
       if (response.ok) return response.json();
       if (response.status === 429) {
         console.log('ERROR');
