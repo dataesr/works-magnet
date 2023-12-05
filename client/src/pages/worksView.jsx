@@ -43,7 +43,7 @@ export default function WorksView({
       <Column field="year" header="Year" />
       <Column field="journal_name" header="Journal" />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} />
-      <Column field="authors" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" filterPlaceholder="Search by author" style={{ minWidth: '10px' }} />
+      <Column field="authors" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" showFilterMenu={false} filterPlaceholder="Search by author" style={{ minWidth: '200px' }} />
       <Column field="title" header="Title" filter filterMatchMode="contains" showFilterMenu={false} filterPlaceholder="Search by title" style={{ minWidth: '10px' }} />
     </DataTable>
   );
