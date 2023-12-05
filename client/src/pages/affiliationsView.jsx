@@ -34,7 +34,7 @@ export default function AffiliationsView({
     >
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} />
-      <Column field="nameHtml" header="Affiliation" body={nameTemplate} />
+      <Column field="nameHtml" header="Affiliation" body={nameTemplate} sortable />
       <Column field="worksNumber" header="Number of works" sortable />
     </DataTable>
   );
