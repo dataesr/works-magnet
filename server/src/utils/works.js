@@ -215,20 +215,20 @@ const groupByAffiliations = ({ options, works }) => {
   const normalizedAffiliations = options.affiliations.map((affiliation) => removeDiacritics(affiliation));
   // Compute distinct affiliations of works
   let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
-    const { affiliations = [], id } = work;
-    const { length } = affiliations;
-    for (let i = 0; i < length; i += 1) {
+    const { affiliations = [] } = work;
+    for (let i = 0; i < affiliations.length; i += 1) {
       const affiliation = affiliations[i];
       const normalizedAffiliation = removeDiacritics(affiliation);
       if (normalizedAffiliations.some((aff) => normalizedAffiliation.includes(aff))) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
-          deduplicatedAffiliations[normalizedAffiliation].works.push(id);
+          // eslint-disable-next-line operator-assignment, no-param-reassign
+          deduplicatedAffiliations[normalizedAffiliation].worksNumber = deduplicatedAffiliations[normalizedAffiliation].worksNumber + 1;
         } else {
           // eslint-disable-next-line no-param-reassign
           deduplicatedAffiliations[normalizedAffiliation] = {
             name: affiliation,
             nameHtml: normalizedAffiliation.replace(normalizedAffiliations[0], `<b>${normalizedAffiliations[0]}</b>`),
-            works: [id],
+            worksNumber: 1,
           };
         }
       }
@@ -237,15 +237,10 @@ const groupByAffiliations = ({ options, works }) => {
   }, {});
 
   allAffiliationsTmp = Object.values(allAffiliationsTmp)
-    .map((affiliation, index) => {
-      const uniqueWorks = [...new Set(affiliation.works)];
-      return ({
-        ...affiliation,
-        id: index.toString(),
-        works: uniqueWorks,
-        worksNumber: uniqueWorks.length,
-      });
-    });
+    .map((affiliation, index) => ({
+      ...affiliation,
+      id: index.toString(),
+    }));
   return allAffiliationsTmp;
 };
 

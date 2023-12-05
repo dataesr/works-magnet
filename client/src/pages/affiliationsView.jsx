@@ -46,7 +46,6 @@ AffiliationsView.propTypes = {
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
@@ -54,7 +53,6 @@ AffiliationsView.propTypes = {
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,

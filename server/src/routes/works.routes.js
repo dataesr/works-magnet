@@ -55,6 +55,7 @@ router.route('/works')
         console.timeEnd(`4. Sort works ${options.affiliations}`);
         // Compute distinct types & years for facet
         console.time(`5. Facet ${options.affiliations}`);
+        // TODO chek if Set is optim
         const publicationsYears = [...new Set(
           publications.filter((publication) => !!publication?.year).map((publication) => Number(publication.year)),
         )].sort((a, b) => b - a);
