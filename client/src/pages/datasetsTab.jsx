@@ -17,7 +17,7 @@ export default function DatasetsTab({ datasets, selectedDatasets, setSelectedDat
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasets, setFilteredDatasets] = useState([]);
   const [filteredDatasources, setFilteredDatasources] = useState(datasources.map((datasource) => datasource.key));
-  const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
+  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [timer, setTimer] = useState();

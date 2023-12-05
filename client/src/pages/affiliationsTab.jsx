@@ -16,7 +16,7 @@ import { normalizeName, renderButtons } from '../utils/works';
 export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
-  const [filteredStatus, setFilteredStatus] = useState(Object.keys(status));
+  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id]);
   const [timer, setTimer] = useState();
 
   useEffect(() => {
