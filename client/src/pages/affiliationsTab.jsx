@@ -101,14 +101,12 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
 
 AffiliationsTab.propTypes = {
   affiliations: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,

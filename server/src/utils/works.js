@@ -214,7 +214,7 @@ const getOpenAlexPublications = async ({ options }) => {
 const groupByAffiliations = ({ options, works }) => {
   const normalizedAffiliations = options.affiliations.map((affiliation) => removeDiacritics(affiliation));
   // Compute distinct affiliations of works
-  let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
+  const allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
     const { affiliations = [] } = work;
     for (let i = 0; i < affiliations.length; i += 1) {
       const affiliation = affiliations[i];
@@ -236,12 +236,7 @@ const groupByAffiliations = ({ options, works }) => {
     return deduplicatedAffiliations;
   }, {});
 
-  allAffiliationsTmp = Object.values(allAffiliationsTmp)
-    .map((affiliation, index) => ({
-      ...affiliation,
-      id: index.toString(),
-    }));
-  return allAffiliationsTmp;
+  return Object.values(allAffiliationsTmp);
 };
 
 export {

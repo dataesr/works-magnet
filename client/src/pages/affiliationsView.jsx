@@ -12,7 +12,7 @@ export default function AffiliationsView({
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
-      dataKey="id"
+      dataKey="name"
       filterDisplay="row"
       metaKeySelection
       onSelectionChange={(e) => setSelectedAffiliations(e.value)}
@@ -42,14 +42,12 @@ export default function AffiliationsView({
 
 AffiliationsView.propTypes = {
   allAffiliations: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
