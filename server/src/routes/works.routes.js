@@ -36,8 +36,9 @@ router.route('/works')
         console.time(`4. Sort works ${options.affiliations}`);
         const publications = [];
         const datasets = [];
-        // TODO IMPROVE PERF by replacing the forEach by a for loop
-        deduplicatedWorks.forEach((deduplicatedWork) => {
+        const deduplicatedWorksLength = deduplicatedWorks.length;
+        for (let i = 0; i < deduplicatedWorksLength; i += 1) {
+          const deduplicatedWork = deduplicatedWorks[i];
           if (
             (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.type !== 'dataset')
             || (deduplicatedWork.datasource.includes('openalex') && deduplicatedWork.type !== 'dataset')
@@ -51,7 +52,7 @@ router.route('/works')
           } else {
             console.error(`Work not sorted : ${JSON.stringify(deduplicatedWork)}`);
           }
-        });
+        }
         console.timeEnd(`4. Sort works ${options.affiliations}`);
         // Compute distinct types & years for facet
         console.time(`5. Facet ${options.affiliations}`);

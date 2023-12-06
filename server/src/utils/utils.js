@@ -113,10 +113,12 @@ const defaultDiacriticsRemovalMap = [
 ];
 
 const diacriticsMap = {};
-for (let i = 0; i < defaultDiacriticsRemovalMap.length; i += 1) {
-  const { letters } = defaultDiacriticsRemovalMap[i];
-  for (let j = 0; j < letters.length; j += 1) {
-    diacriticsMap[letters[j]] = defaultDiacriticsRemovalMap[i].base;
+const defaultDiacriticsRemovalMapLength = defaultDiacriticsRemovalMap.length;
+for (let i = 0; i < defaultDiacriticsRemovalMapLength; i += 1) {
+  const { base, letters } = defaultDiacriticsRemovalMap[i];
+  const lettersLength = letters.length;
+  for (let j = 0; j < lettersLength; j += 1) {
+    diacriticsMap[letters[j]] = base;
   }
 }
 

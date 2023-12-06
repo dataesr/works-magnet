@@ -216,7 +216,8 @@ const groupByAffiliations = ({ options, works }) => {
   // Compute distinct affiliations of works
   const allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
     const { affiliations = [] } = work;
-    for (let i = 0; i < affiliations.length; i += 1) {
+    const affiliationsLength = affiliations.length;
+    for (let i = 0; i < affiliationsLength; i += 1) {
       const affiliation = affiliations[i];
       const normalizedAffiliation = removeDiacritics(affiliation);
       if (normalizedAffiliations.some((aff) => normalizedAffiliation.includes(aff))) {
