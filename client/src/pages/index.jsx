@@ -70,11 +70,7 @@ export default function Home() {
 
   useEffect(() => {
     if (data) {
-      const allAffiliationsTmp = data.affiliations
-        .map((affiliation) => ({
-          ...affiliation,
-          status: status.tobedecided.id,
-        }));
+      // TODO do it on the API
       const allDatasetsTmp = data.datasets.results
         .map((dataset) => ({
           ...dataset,
@@ -89,7 +85,7 @@ export default function Home() {
           affiliationsTooltip: getAffiliationsTooltipField(publication),
           status: status.tobedecided.id,
         }));
-      setAllAffiliations(allAffiliationsTmp);
+      setAllAffiliations(data.affiliations);
       setAllDatasets(allDatasetsTmp);
       setAllPublications(allPublicationsTmp);
     }

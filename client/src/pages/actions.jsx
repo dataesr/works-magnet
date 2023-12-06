@@ -81,7 +81,6 @@ export default function Actions({
 
 Actions.propTypes = {
   allAffiliations: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,

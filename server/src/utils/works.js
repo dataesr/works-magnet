@@ -228,6 +228,7 @@ const groupByAffiliations = ({ options, works }) => {
           deduplicatedAffiliations[normalizedAffiliation] = {
             name: affiliation,
             nameHtml: normalizedAffiliation.replace(normalizedAffiliations[0], `<b>${normalizedAffiliations[0]}</b>`),
+            status: 'tobedecided',
             worksNumber: 1,
           };
         }
