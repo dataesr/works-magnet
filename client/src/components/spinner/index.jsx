@@ -1,7 +1,9 @@
-import React, { useEffect, useId } from 'react';
 import PropTypes from 'prop-types';
+import React, { useEffect, useId } from 'react';
+
+import { Row } from '@dataesr/react-dsfr';
+
 import './index.scss';
-import { Row, Text } from '@dataesr/react-dsfr';
 
 function Spinner({ size }) {
   const id = useId();
@@ -24,23 +26,6 @@ Spinner.defaultProps = {
   size: 48,
 };
 
-function OverlaySpinner({ text, size }) {
-  return (
-    <Row alignItems="middle" justifyContent="center" className="spinner-overlay">
-      <Spinner size={size} />
-      {text && <Text size="lead" bold>{text}</Text>}
-    </Row>
-  );
-}
-OverlaySpinner.propTypes = {
-  size: PropTypes.number,
-  text: PropTypes.string,
-};
-OverlaySpinner.defaultProps = {
-  text: null,
-  size: 48,
-};
-
 function PageSpinner({ size }) {
   return <Row className="fr-my-2w flex--space-around fullwidth"><Spinner size={size} /></Row>;
 }
@@ -52,4 +37,4 @@ PageSpinner.defaultProps = {
   size: 48,
 };
 
-export { Spinner, OverlaySpinner, PageSpinner };
+export { PageSpinner };
