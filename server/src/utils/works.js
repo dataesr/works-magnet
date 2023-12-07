@@ -228,6 +228,7 @@ const groupByAffiliations = ({ options, works }) => {
           deduplicatedAffiliations[normalizedAffiliation] = {
             name: affiliation,
             nameHtml: normalizedAffiliation.replace(normalizedAffiliations[0], `<b>${normalizedAffiliations[0]}</b>`),
+            status: 'tobedecided',
             works: [id],
           };
         }
@@ -237,10 +238,11 @@ const groupByAffiliations = ({ options, works }) => {
   }, {});
 
   allAffiliationsTmp = Object.values(allAffiliationsTmp)
-    .map((affiliation) => {
+    .map((affiliation, index) => {
       const uniqueWorks = [...new Set(affiliation.works)];
       return ({
         ...affiliation,
+        id: index.toString(),
         works: uniqueWorks,
         worksNumber: uniqueWorks.length,
       });
