@@ -26,7 +26,7 @@ export default function WorksView({
       paginatorPosition="both"
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={50}
-      rowsPerPageOptions={[25, 50, 100, 200]}
+      rowsPerPageOptions={[25, 50, 100, 200, 500, 1000, 5000]}
       scrollable
       selection={selectedWorks}
       selectionPageOnly
