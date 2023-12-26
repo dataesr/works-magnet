@@ -63,7 +63,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       <Row gutters>
         <Col n="2">
           <TextInput
-            label="Search affiliations on name"
+            label="Filter affiliations on name"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
             value={filteredAffiliationName}
           />

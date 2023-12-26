@@ -153,7 +153,7 @@ export default function Home() {
         {isFetching && (
           <PageSpinner />
         )}
-        {!isFetching && allPublications.length > 0 && (
+        {!isFetching && (allAffiliations.length > 0 || allDatasets.length > 0 || allPublications.length > 0) && (
           <Tabs defaultActiveTab={0}>
             <Tab label="Grouped affiliations of works">
               <AffiliationsTab

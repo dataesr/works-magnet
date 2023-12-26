@@ -33,6 +33,7 @@ const getFosmQuery = (options, pit, searchAfter) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
   });
   query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
+  // Exclude files for Datacite
   query.query.bool.must_not.push({ term: { genre: 'file' } });
   query.query.bool.minimum_should_match = 1;
   query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'journal_name', 'title', 'year'];
@@ -43,6 +44,9 @@ const getFosmQuery = (options, pit, searchAfter) => {
   if (searchAfter) {
     query.search_after = searchAfter;
     query.track_total_hits = false;
+  }
+  if (options.datasets) {
+    query.query.bool.must.push({ term: { genre_raw: 'dataset' } });
   }
   return query;
 };
@@ -164,6 +168,9 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
   if (options.affiliations.length) {
     url += `,raw_affiliation_string.search:(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
+  }
+  if (options.datasets) {
+    url += ',type:dataset';
   }
   if (process?.env?.OPENALEX_KEY) {
     url += `&api_key=${process.env.OPENALEX_KEY}`;

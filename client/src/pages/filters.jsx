@@ -1,5 +1,7 @@
 import {
   Button,
+  Checkbox,
+  CheckboxGroup,
   Col,
   Row,
   Select,
@@ -23,12 +25,14 @@ export default function Filters({ sendQuery }) {
     if (searchParams.size === 0) {
       setSearchParams({
         affiliations: [],
+        datasets: false,
         endYear: '2021',
         startYear: '2021',
       });
     } else {
       setCurrentSearchParams({
         affiliations: searchParams.getAll('affiliations'),
+        datasets: searchParams.get('datasets') === 'true',
         endYear: searchParams.get('endYear'),
         startYear: searchParams.get('startYear'),
       });
@@ -56,7 +60,7 @@ export default function Filters({ sendQuery }) {
       <Col n="5">
         <TagInput
           hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-          label="Affiliation raw name"
+          label="Affiliation name"
           message={message}
           messageType={messageType}
           onTagsChange={(affiliations) => setSearchParams({ ...currentSearchParams, affiliations })}
@@ -64,7 +68,7 @@ export default function Filters({ sendQuery }) {
           onInputHandler={setOnInputAffiliationsHandler}
         />
       </Col>
-      <Col n="2">
+      <Col n="1">
         <Select
           hint="&nbsp;"
           label="Start year"
@@ -73,7 +77,7 @@ export default function Filters({ sendQuery }) {
           onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
         />
       </Col>
-      <Col n="2">
+      <Col n="1">
         <Select
           hint="&nbsp;"
           label="End year"
@@ -82,7 +86,19 @@ export default function Filters({ sendQuery }) {
           onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
         />
       </Col>
-      <Col>
+      <Col n="2">
+        <CheckboxGroup
+          hint="&nbsp;"
+          legend="&nbsp;"
+        >
+          <Checkbox
+            label="Search for datasets only"
+            checked={currentSearchParams.datasets}
+            onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
+          />
+        </CheckboxGroup>
+      </Col>
+      <Col n="2">
         <Button
           icon="ri-search-line"
           onClick={checkAndSendQuery}

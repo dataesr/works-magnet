@@ -12,8 +12,9 @@ router.route('/works')
       if (!options?.affiliations) {
         res.status(400).json({ message: 'You must provide at least one affiliation.' });
       } else {
-        options.affiliations = options.affiliations.split(',');
         console.time(`0. Requests ${options.affiliations}`);
+        options.affiliations = options.affiliations.split(',');
+        options.datasets = options.datasets === 'true';
         options.years = range(options.startYear, options.endYear);
         const responses = await Promise.all([
           getFosmWorks({ options }),
@@ -37,22 +38,18 @@ router.route('/works')
         // Sort between publications and datasets
         console.time(`4. Sort works ${options.affiliations}`);
         const publications = [];
-        const datasets = [];
+        let datasets = [];
         const deduplicatedWorksLength = deduplicatedWorks.length;
-        for (let i = 0; i < deduplicatedWorksLength; i += 1) {
-          const deduplicatedWork = deduplicatedWorks[i];
-          if (
-            (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.type !== 'dataset')
-            || (deduplicatedWork.datasource.includes('openalex') && deduplicatedWork.type !== 'dataset')
-          ) {
-            publications.push(deduplicatedWork);
-          } else if (
-            (deduplicatedWork.datasource.includes('fosm') && deduplicatedWork.type === 'dataset')
-            || (deduplicatedWork.datasource.includes('openalex') && deduplicatedWork.type === 'dataset')
-          ) {
-            datasets.push(deduplicatedWork);
-          } else {
-            console.error(`Work not sorted : ${JSON.stringify(deduplicatedWork)}`);
+        if (options.datasets) {
+          datasets = deduplicatedWorks;
+        } else {
+          for (let i = 0; i < deduplicatedWorksLength; i += 1) {
+            const deduplicatedWork = deduplicatedWorks[i];
+            if (deduplicatedWork.type !== 'dataset') {
+              publications.push(deduplicatedWork);
+            } else {
+              datasets.push(deduplicatedWork);
+            }
           }
         }
         console.timeEnd(`4. Sort works ${options.affiliations}`);
