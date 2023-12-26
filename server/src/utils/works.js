@@ -1,4 +1,4 @@
-import { cleanId, range, removeDiacritics } from './utils';
+import { cleanId, removeDiacritics } from './utils';
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
@@ -106,9 +106,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
 };
 
 const getFosmWorks = async ({ options }) => {
-  const { endYear, startYear } = options;
-  const years = range(startYear, endYear);
-  const promises = years.map((year) => getFosmWorksByYear({ options: { ...options, year } }));
+  const promises = options.years.map((year) => getFosmWorksByYear({ options: { ...options, year } }));
   const results = await Promise.all(promises);
   return results.flat();
 };
@@ -204,9 +202,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
 };
 
 const getOpenAlexPublications = async ({ options }) => {
-  const { endYear, startYear } = options;
-  const years = range(startYear, endYear);
-  const promises = years.map((year) => getOpenAlexPublicationsByYear({ ...options, year }));
+  const promises = options.years.map((year) => getOpenAlexPublicationsByYear({ ...options, year }));
   const results = await Promise.all(promises);
   return results.flat();
 };

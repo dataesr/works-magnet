@@ -1,5 +1,6 @@
 import express from 'express';
 
+import { range } from '../utils/utils';
 import { deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
 
 const router = new express.Router();
@@ -13,6 +14,7 @@ router.route('/works')
       } else {
         options.affiliations = options.affiliations.split(',');
         console.time(`0. Requests ${options.affiliations}`);
+        options.years = range(options.startYear, options.endYear);
         const responses = await Promise.all([
           getFosmWorks({ options }),
           getOpenAlexPublications({ options }),
