@@ -83,6 +83,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['fosm'],
         id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
+        title: result._source.title,
         type: result._source?.genre_raw ?? result._source.genre,
         year: result._source.year,
       })));
