@@ -224,7 +224,7 @@ const groupByAffiliations = ({ options, works }) => {
           // eslint-disable-next-line no-param-reassign
           deduplicatedAffiliations[normalizedAffiliation] = {
             name: affiliation,
-            nameHtml: normalizedAffiliation.replace(normalizedAffiliations[0], `<b>${normalizedAffiliations[0]}</b>`),
+            nameHtml: normalizedAffiliations.reduce((acc, cur) => acc.replace(cur, `<b>${cur}</b>`), normalizedAffiliation),
             status: 'tobedecided',
             works: [id],
           };
