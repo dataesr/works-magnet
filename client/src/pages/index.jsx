@@ -11,6 +11,7 @@ import {
 } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
 
 import Actions from './actions';
 import AffiliationsTab from './affiliationsTab';
@@ -41,6 +42,11 @@ export default function Home() {
     enabled: false,
     staleTime: Infinity,
     cacheTime: Infinity,
+  });
+
+  useWebSocket('ws://127.0.0.1:8080', {
+    onMessage: (message) => console.log(message.data),
+    share: true,
   });
 
   const sendQuery = async (_options) => {

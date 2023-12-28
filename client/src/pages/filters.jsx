@@ -93,7 +93,7 @@ export default function Filters({ sendQuery }) {
         >
           <Checkbox
             label="Search for datasets only"
-            checked={currentSearchParams.datasets}
+            checked={currentSearchParams?.datasets ?? false}
             onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
           />
         </CheckboxGroup>
