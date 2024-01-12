@@ -71,14 +71,26 @@ router.route('/works')
         )].sort((a, b) => b - a);
         const publicationsTypes = [...new Set(publications.map((publication) => publication?.type))];
         const datasetsTypes = [...new Set(datasets.map((dataset) => dataset?.type))];
+        const publicationsPublishers = [...new Set(publications.map((publication) => publication?.publisher))];
+        const datasetsPublishers = [...new Set(datasets.map((dataset) => dataset?.publisher))];
         console.timeEnd(`5. Facet ${options.affiliations}`);
         webSocketServer.broadcast('step_5');
         // Build and serialize response
         console.time(`6. Serialization ${options.affiliations}`);
         res.status(200).json({
           affiliations: uniqueAffiliations,
-          datasets: { results: datasets, types: datasetsTypes, years: datasetsYears },
-          publications: { results: publications, types: publicationsTypes, years: publicationsYears },
+          datasets: {
+            publishers: datasetsPublishers,
+            results: datasets,
+            types: datasetsTypes,
+            years: datasetsYears,
+          },
+          publications: {
+            publishers: publicationsPublishers,
+            results: publications,
+            types: publicationsTypes,
+            years: publicationsYears,
+          },
         });
         console.timeEnd(`6. Serialization ${options.affiliations}`);
         webSocketServer.broadcast('step_6');

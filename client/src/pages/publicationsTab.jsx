@@ -13,10 +13,11 @@ import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
 import { renderButtons } from '../utils/works';
 
-export default function PublicationsTab({ publications, selectedPublications, setSelectedPublications, tagPublications, types, years }) {
+export default function PublicationsTab({ publications, publishers, selectedPublications, setSelectedPublications, tagPublications, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasources, setFilteredDatasources] = useState(datasources.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
+  const [filteredPublishers, setFilteredPublishers] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
@@ -24,9 +25,10 @@ export default function PublicationsTab({ publications, selectedPublications, se
 
   useEffect(() => {
     setFilteredPublications(publications);
+    setFilteredPublishers(publishers);
     setFilteredYears(years);
     setFilteredTypes(types);
-  }, [publications, types, years]);
+  }, [publications, publishers, types, years]);
 
   useEffect(() => {
     if (timer) {
@@ -35,6 +37,7 @@ export default function PublicationsTab({ publications, selectedPublications, se
     const timerTmp = setTimeout(() => {
       const filteredPublicationsTmp = publications.filter((publication) => publication.affiliationsTooltip.includes(filteredAffiliationName)
         && filteredDatasources.filter((filteredDatasource) => publication.datasource.includes(filteredDatasource)).length
+        && filteredPublishers.includes(publication.publisher)
         && filteredStatus.includes(publication.status)
         && filteredTypes.includes(publication.type)
         && filteredYears.includes(publication.year));
@@ -43,13 +46,21 @@ export default function PublicationsTab({ publications, selectedPublications, se
     setTimer(timerTmp);
     // The timer should not be tracked
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publications, filteredAffiliationName, filteredDatasources, filteredStatus, filteredTypes, filteredYears]);
+  }, [publications, filteredAffiliationName, filteredDatasources, filteredPublishers, filteredStatus, filteredTypes, filteredYears]);
 
   const onDatasourcesChange = (datasource) => {
     if (filteredDatasources.includes(datasource.key)) {
       setFilteredDatasources(filteredDatasources.filter((filteredDatasource) => filteredDatasource !== datasource.key));
     } else {
       setFilteredDatasources(filteredDatasources.concat([datasource.key]));
+    }
+  };
+
+  const onPublishersChange = (publisher) => {
+    if (filteredPublishers.includes(publisher)) {
+      setFilteredPublishers(filteredPublishers.filter((filteredPublisher) => filteredPublisher !== publisher));
+    } else {
+      setFilteredPublishers(filteredPublishers.concat([publisher]));
     }
   };
 
@@ -155,6 +166,20 @@ export default function PublicationsTab({ publications, selectedPublications, se
               />
             ))}
           </CheckboxGroup>
+          <CheckboxGroup
+            hint="Filter publications on selected publishers"
+            legend="Publishers"
+          >
+            {publishers.map((publisher) => (
+              <Checkbox
+                checked={filteredPublishers.includes(publisher)}
+                key={publisher}
+                label={publisher.toString()}
+                onChange={() => onPublishersChange(publisher)}
+                size="sm"
+              />
+            ))}
+          </CheckboxGroup>
         </Col>
         <Col n="10">
           <WorksView
@@ -180,15 +205,18 @@ PublicationsTab.propTypes = {
     authors: PropTypes.arrayOf(PropTypes.string).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
+    publisher: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
+  publishers: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.string).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
+    publisher: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,

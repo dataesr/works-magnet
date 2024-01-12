@@ -173,6 +173,7 @@ export default function Home() {
             </Tab>
             <Tab label="List all publications">
               <PublicationsTab
+                publishers={data.publications.publishers}
                 publications={allPublications}
                 selectedPublications={selectedPublications}
                 setSelectedPublications={setSelectedPublications}
@@ -184,6 +185,7 @@ export default function Home() {
             <Tab label="List all datasets">
               <DatasetsTab
                 datasets={allDatasets}
+                publishers={data.datasets.publishers}
                 selectedDatasets={selectedDatasets}
                 setSelectedDatasets={setSelectedDatasets}
                 tagDatasets={tagDatasets}
