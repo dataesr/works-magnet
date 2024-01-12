@@ -15,7 +15,7 @@ import useWebSocket from 'react-use-websocket';
 
 import Actions from './actions';
 import AffiliationsTab from './affiliationsTab';
-import { PageSpinner } from '../components/spinner';
+import StepProgress from '../components/step-progress';
 import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import PublicationsTab from './publicationsTab';
@@ -33,6 +33,7 @@ export default function Home() {
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
   const [options, setOptions] = useState({});
+  const [current, setCurrent] = useState(1);
   const [regexp, setRegexp] = useState();
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
@@ -47,7 +48,7 @@ export default function Home() {
   });
 
   useWebSocket(VITE_WS_HOST, {
-    onMessage: (message) => console.log(message.data),
+    onMessage: (message) => setCurrent(Number(message.data) + 1),
     share: true,
   });
 
@@ -158,7 +159,7 @@ export default function Home() {
           tagAffiliations={tagAffiliations}
         />
         {isFetching && (
-          <PageSpinner />
+          <StepProgress current={current} />
         )}
         {!isFetching && (allAffiliations.length > 0 || allDatasets.length > 0 || allPublications.length > 0) && (
           <Tabs defaultActiveTab={0}>

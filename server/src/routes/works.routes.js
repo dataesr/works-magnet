@@ -14,7 +14,7 @@ router.route('/works')
         res.status(400).json({ message: 'You must provide at least one affiliation.' });
       } else {
         webSocketServer.broadcast('start');
-        console.time(`0. Requests ${options.affiliations}`);
+        console.time(`1. Requests ${options.affiliations}`);
         options.affiliations = options.affiliations.split(',');
         options.datasets = options.datasets === 'true';
         options.years = range(options.startYear, options.endYear);
@@ -22,27 +22,27 @@ router.route('/works')
           getFosmWorks({ options }),
           getOpenAlexPublications({ options }),
         ]);
-        console.timeEnd(`0. Requests ${options.affiliations}`);
-        webSocketServer.broadcast('step_0');
-        console.time(`1. Concat ${options.affiliations}`);
+        console.timeEnd(`1. Requests ${options.affiliations}`);
+        webSocketServer.broadcast(1);
+        console.time(`2. Concat ${options.affiliations}`);
         const works = [
           ...responses[0],
           ...responses[1],
         ];
-        console.timeEnd(`1. Concat ${options.affiliations}`);
-        webSocketServer.broadcast('step_1');
-        console.time(`2. Dedup ${options.affiliations}`);
+        console.timeEnd(`2. Concat ${options.affiliations}`);
+        webSocketServer.broadcast(2);
+        console.time(`3. Dedup ${options.affiliations}`);
         // Deduplicate publications by ids
         const deduplicatedWorks = deduplicateWorks(works);
-        console.timeEnd(`2. Dedup ${options.affiliations}`);
-        webSocketServer.broadcast('step_2');
+        console.timeEnd(`3. Dedup ${options.affiliations}`);
+        webSocketServer.broadcast(3);
         // Compute distinct affiliations of works
-        console.time(`3. GroupBy ${options.affiliations}`);
+        console.time(`4. GroupBy ${options.affiliations}`);
         const uniqueAffiliations = groupByAffiliations({ options, works: deduplicatedWorks });
-        console.timeEnd(`3. GroupBy ${options.affiliations}`);
-        webSocketServer.broadcast('step_3');
+        console.timeEnd(`4. GroupBy ${options.affiliations}`);
+        webSocketServer.broadcast(4);
         // Sort between publications and datasets
-        console.time(`4. Sort works ${options.affiliations}`);
+        console.time(`5. Sort works ${options.affiliations}`);
         const publications = [];
         let datasets = [];
         const deduplicatedWorksLength = deduplicatedWorks.length;
@@ -58,20 +58,20 @@ router.route('/works')
             }
           }
         }
-        console.timeEnd(`4. Sort works ${options.affiliations}`);
-        webSocketServer.broadcast('step_4');
+        console.timeEnd(`5. Sort works ${options.affiliations}`);
+        webSocketServer.broadcast(5);
         // Compute distinct types & years for facet
-        console.time(`5. Facet ${options.affiliations}`);
+        console.time(`6. Facet ${options.affiliations}`);
         const publicationsYears = countUniqueValues({ data: publications, field: 'year' });
         const datasetsYears = countUniqueValues({ data: datasets, field: 'year' });
         const publicationsTypes = countUniqueValues({ data: publications, field: 'type' });
         const datasetsTypes = countUniqueValues({ data: datasets, field: 'type' });
         const publicationsPublishers = countUniqueValues({ data: publications, field: 'publisher' });
         const datasetsPublishers = countUniqueValues({ data: datasets, field: 'publisher' });
-        console.timeEnd(`5. Facet ${options.affiliations}`);
-        webSocketServer.broadcast('step_5');
+        console.timeEnd(`6. Facet ${options.affiliations}`);
+        webSocketServer.broadcast(6);
         // Build and serialize response
-        console.time(`6. Serialization ${options.affiliations}`);
+        console.time(`7. Serialization ${options.affiliations}`);
         res.status(200).json({
           affiliations: uniqueAffiliations,
           datasets: {
@@ -87,8 +87,8 @@ router.route('/works')
             years: publicationsYears,
           },
         });
-        console.timeEnd(`6. Serialization ${options.affiliations}`);
-        webSocketServer.broadcast('step_6');
+        console.timeEnd(`7. Serialization ${options.affiliations}`);
+        webSocketServer.broadcast(7);
       }
     } catch (err) {
       console.error(err);

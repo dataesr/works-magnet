@@ -4,7 +4,7 @@ import React from 'react';
 
 import { Tooltip } from 'react-tooltip';
 
-import './gauge.scss';
+import './index.scss';
 
 export default function Gauge({ data }) {
   const dataWithPercent = data.map((item) => (
