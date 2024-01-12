@@ -41,7 +41,7 @@ export default function WorksView({
       <Column field="datasource" header="Source" body={datasourceTemplate} />
       <Column field="type" header="Type" />
       <Column field="year" header="Year" />
-      <Column field="journal_name" header="Journal" />
+      <Column field="publisher" header="Publisher" />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} />
       <Column field="authors" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" showFilterMenu={false} filterPlaceholder="Search by author" style={{ minWidth: '200px' }} />
       <Column field="title" header="Title" filter filterMatchMode="contains" showFilterMenu={false} filterPlaceholder="Search by title" style={{ minWidth: '10px' }} />

@@ -36,7 +36,10 @@ const getFosmQuery = (options, pit, searchAfter) => {
   // Exclude files for Datacite
   query.query.bool.must_not.push({ term: { genre: 'file' } });
   query.query.bool.minimum_should_match = 1;
-  query._source = ['affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'journal_name', 'title', 'year'];
+  query._source = [
+    'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher',
+    'publisher_dissemination', 'title', 'year',
+  ];
   query.sort = ['_shard_doc'];
   if (pit) {
     query.pit = { id: pit, keep_alive: process.env.FOSM_PIT_KEEP_ALIVE };
@@ -87,6 +90,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['fosm'],
         id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
+        publisher: result._source?.publisher_dissemination ?? result._source?.publisher,
         title: result._source.title,
         type: result._source?.genre_raw ?? result._source.genre,
         year: result._source.year,
@@ -177,7 +181,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   } else {
     url += '&mailto=bso@recherche.gouv.fr';
   }
-  url += '&select=authorships,display_name,doi,id,ids,publication_year,type';
+  url += '&select=authorships,display_name,doi,id,ids,primary_location,publication_year,type';
   return fetch(`${url}&cursor=${cursor}`)
     .then((response) => {
       if (response.ok) return response.json();
@@ -197,6 +201,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
         datasource: ['openalex'],
         doi: cleanId(result?.doi),
         id: cleanId(result?.ids?.doi ?? result?.primary_location?.landing_page_url?.split('/')?.pop() ?? result?.ids?.openalex),
+        publisher: result?.primary_location?.source?.host_organization_name,
         title: result?.display_name,
         type: getTypeFromOpenAlex(result.type),
         year: result?.publication_year,
