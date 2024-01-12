@@ -25,9 +25,9 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
 
   useEffect(() => {
     setFilteredPublications(publications);
-    setFilteredPublishers(publishers);
-    setFilteredYears(years);
-    setFilteredTypes(types);
+    setFilteredPublishers(Object.keys(publishers));
+    setFilteredYears(Object.keys(years));
+    setFilteredTypes(Object.keys(types));
   }, [publications, publishers, types, years]);
 
   useEffect(() => {
@@ -142,11 +142,11 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
             hint="Filter publications on selected years"
             legend="Years"
           >
-            {years.map((year) => (
+            {Object.keys(years).sort().reverse().map((year) => (
               <Checkbox
                 checked={filteredYears.includes(year)}
                 key={year}
-                label={year.toString()}
+                label={`${year} (${years[year]})`}
                 onChange={() => onYearsChange(year)}
                 size="sm"
               />
@@ -156,11 +156,11 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
             hint="Filter publications on selected types"
             legend="Types"
           >
-            {types.map((type) => (
+            {Object.keys(types).map((type) => (
               <Checkbox
                 checked={filteredTypes.includes(type)}
                 key={type}
-                label={type.toString()}
+                label={`${type} (${types[type]})`}
                 onChange={() => onTypesChange(type)}
                 size="sm"
               />
@@ -170,11 +170,11 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
             hint="Filter publications on selected publishers"
             legend="Publishers"
           >
-            {publishers.map((publisher) => (
+            {Object.keys(publishers).map((publisher) => (
               <Checkbox
                 checked={filteredPublishers.includes(publisher)}
                 key={publisher}
-                label={publisher.toString()}
+                label={`${publisher} (${publishers[publisher]})`}
                 onChange={() => onPublishersChange(publisher)}
                 size="sm"
               />
@@ -209,7 +209,7 @@ PublicationsTab.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  publishers: PropTypes.arrayOf(PropTypes.string).isRequired,
+  publishers: PropTypes.object.isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -222,6 +222,6 @@ PublicationsTab.propTypes = {
   })).isRequired,
   setSelectedPublications: PropTypes.func.isRequired,
   tagPublications: PropTypes.func.isRequired,
-  types: PropTypes.arrayOf(PropTypes.string).isRequired,
-  years: PropTypes.arrayOf(PropTypes.number).isRequired,
+  types: PropTypes.object.isRequired,
+  years: PropTypes.object.isRequired,
 };

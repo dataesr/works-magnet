@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { range } from '../utils/utils';
+import { range, countUniqueValues } from '../utils/utils';
 import { deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
 import webSocketServer from '../webSocketServer';
 
@@ -62,17 +62,12 @@ router.route('/works')
         webSocketServer.broadcast('step_4');
         // Compute distinct types & years for facet
         console.time(`5. Facet ${options.affiliations}`);
-        // TODO chek if Set is optim
-        const publicationsYears = [...new Set(
-          publications.filter((publication) => !!publication?.year).map((publication) => Number(publication.year)),
-        )].sort((a, b) => b - a);
-        const datasetsYears = [...new Set(
-          datasets.filter((dataset) => !!dataset?.year).map((dataset) => Number(dataset.year)),
-        )].sort((a, b) => b - a);
-        const publicationsTypes = [...new Set(publications.map((publication) => publication?.type))];
-        const datasetsTypes = [...new Set(datasets.map((dataset) => dataset?.type))];
-        const publicationsPublishers = [...new Set(publications.map((publication) => publication?.publisher))];
-        const datasetsPublishers = [...new Set(datasets.map((dataset) => dataset?.publisher))];
+        const publicationsYears = countUniqueValues({ data: publications, field: 'year' });
+        const datasetsYears = countUniqueValues({ data: datasets, field: 'year' });
+        const publicationsTypes = countUniqueValues({ data: publications, field: 'type' });
+        const datasetsTypes = countUniqueValues({ data: datasets, field: 'type' });
+        const publicationsPublishers = countUniqueValues({ data: publications, field: 'publisher' });
+        const datasetsPublishers = countUniqueValues({ data: datasets, field: 'publisher' });
         console.timeEnd(`5. Facet ${options.affiliations}`);
         webSocketServer.broadcast('step_5');
         // Build and serialize response

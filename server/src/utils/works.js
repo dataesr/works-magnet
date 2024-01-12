@@ -93,7 +93,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
         publisher: result._source?.publisher_dissemination ?? result._source?.publisher ?? '',
         title: result._source.title,
         type: result._source?.genre_raw ?? result._source.genre,
-        year: result._source.year,
+        year: result?._source?.year?.toString() ?? '',
       })));
       if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || results.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
@@ -204,7 +204,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
         publisher: result?.primary_location?.source?.host_organization_name ?? '',
         title: result?.display_name,
         type: getTypeFromOpenAlex(result.type),
-        year: result?.publication_year,
+        year: result?.publication_year?.toString() ?? '',
       })));
       const nextCursor = response?.meta?.next_cursor;
       if (nextCursor && hits.length > 0 && (Number(process.env.OPENALEX_MAX_SIZE) === 0 || results.length < Number(process.env.OPENALEX_MAX_SIZE))) {

@@ -8,6 +8,16 @@ const cleanId = (id) => (
     : null
 );
 
+const countUniqueValues = ({ data = [], field }) => {
+  const map = data
+    .map((item) => item?.[field] ?? '')
+    .reduce((acc, curr) => {
+      acc[curr] = acc?.[curr] ? acc[curr] + 1 : 1;
+      return acc;
+    }, {});
+  return Object.fromEntries(Object.entries(map).sort(([, a], [, b]) => b - a));
+};
+
 // See https://stackoverflow.com/a/18391901
 const defaultDiacriticsRemovalMap = [
   { base: 'A', letters: '\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F' },
@@ -122,6 +132,7 @@ const range = (startYear, endYear = new Date().getFullYear()) => {
 
 export {
   cleanId,
+  countUniqueValues,
   range,
   removeDiacritics,
 };

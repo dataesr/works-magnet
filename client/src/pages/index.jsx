@@ -149,7 +149,6 @@ export default function Home() {
         </Row>
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
-        {/* TODO add Datasets ? */}
         <Actions
           allAffiliations={allAffiliations}
           allPublications={allPublications}
