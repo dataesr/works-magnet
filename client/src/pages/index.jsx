@@ -16,6 +16,7 @@ import useWebSocket from 'react-use-websocket';
 import Actions from './actions';
 import AffiliationsTab from './affiliationsTab';
 import StepProgress from '../components/step-progress';
+import Beta from '../components/beta';
 import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import PublicationsTab from './publicationsTab';
@@ -140,6 +141,7 @@ export default function Home() {
 
   return (
     <>
+      <Beta />
       <Container className="fr-my-5w" as="section" fluid>
         <Row className="fr-px-5w">
           <Col>
