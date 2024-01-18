@@ -27,7 +27,7 @@ import { status } from '../config';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
-const { VITE_WS_HOST } = import.meta.env;
+const { VITE_WS_HOST, VITE_WS_PORT } = import.meta.env;
 
 export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
@@ -48,7 +48,7 @@ export default function Home() {
     cacheTime: Infinity,
   });
 
-  useWebSocket(VITE_WS_HOST, {
+  useWebSocket(`${VITE_WS_HOST}:${VITE_WS_PORT}`, {
     onMessage: (message) => setCurrent(Number(message.data) + 1),
     share: true,
   });
