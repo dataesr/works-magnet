@@ -152,6 +152,7 @@ export default function Home() {
       <Container className="fr-mx-5w" as="section" fluid>
         <Actions
           allAffiliations={allAffiliations}
+          allDatasets={allDatasets}
           allPublications={allPublications}
           options={options}
           setAllAffiliations={setAllAffiliations}

@@ -5,11 +5,12 @@ import { useSearchParams } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip';
 
 import Button from '../components/button';
-import { export2FosmCsv, export2json, importJson } from '../utils/file';
+import { export2Csv, export2FosmCsv, export2json, importJson } from '../utils/file';
 import { status } from '../config';
 
 export default function Actions({
   allAffiliations,
+  allDatasets,
   allPublications,
   options,
   setAllAffiliations,
@@ -50,6 +51,18 @@ export default function Actions({
             Restore affiliations from saved file
           </Tooltip>
           <Button
+            data-tooltip-id="export-datasets-button"
+            disabled={!allDatasets.length}
+            icon="ri-save-line"
+            onClick={() => export2Csv(allDatasets)}
+            size="sm"
+          >
+            Export datasets
+          </Button>
+          <Tooltip id="export-datasets-button" hidden={!allPublications.length}>
+            Export the validated datasets in CSV
+          </Tooltip>
+          <Button
             data-tooltip-id="export-fosm-button"
             disabled={!allPublications.length}
             icon="ri-save-line"
@@ -59,7 +72,7 @@ export default function Actions({
             Export French OSM
           </Button>
           <Tooltip id="export-fosm-button" hidden={!allPublications.length}>
-            Export the selected publications in the format needed to build a local French OSM
+            Export the validated publications in the format needed to build a local French OSM
           </Tooltip>
         </Col>
       </Row>
@@ -86,6 +99,14 @@ Actions.propTypes = {
     status: PropTypes.string.isRequired,
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
+  })).isRequired,
+  allDatasets: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
+    id: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
   })).isRequired,
   allPublications: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
