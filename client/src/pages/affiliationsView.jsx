@@ -17,10 +17,10 @@ export default function AffiliationsView({
       metaKeySelection
       onSelectionChange={(e) => setSelectedAffiliations(e.value)}
       paginator
-      paginatorPosition="both"
-      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+      paginatorPosition="bottom"
+      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink RowsPerPageDropdown"
       rows={50}
-      rowsPerPageOptions={[25, 50, 100, 200, 500, 1000, 5000]}
+      rowsPerPageOptions={[50, 200, 1000, 5000]}
       scrollable
       selection={selectedAffiliations}
       selectionPageOnly

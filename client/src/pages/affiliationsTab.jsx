@@ -48,10 +48,10 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
   return (
     <>
       <Row>
-        <Col n="4">
-          {renderButtons(selectedAffiliations, tagAffiliations)}
+        <Col n="9">
+          {renderButtons(selectedAffiliations, tagAffiliations, 'affiliations')}
         </Col>
-        <Col n="8">
+        <Col n="3">
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
@@ -61,15 +61,19 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
         </Col>
       </Row>
       <Row gutters>
-        <Col n="2">
+        <Col n="9" offset="2">
           <TextInput
-            label="Filter affiliations on name"
+            label="Search in affiliations name"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
             value={filteredAffiliationName}
           />
+        </Col>
+      </Row>
+      <Row gutters>
+        <Col n="2">
           <CheckboxGroup
-            hint="Filter affiliations on selected status"
-            legend="Status"
+            hint="Filter affilitions on the decisions already made"
+            legend="Filter on decision status"
           >
             {Object.values(status).map((st) => (
               <Checkbox
@@ -88,11 +92,6 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
             selectedAffiliations={selectedAffiliations}
             setSelectedAffiliations={setSelectedAffiliations}
           />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          {renderButtons(selectedAffiliations, tagAffiliations)}
         </Col>
       </Row>
     </>

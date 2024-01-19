@@ -91,10 +91,10 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
   return (
     <>
       <Row>
-        <Col n="4">
-          {renderButtons(selectedDatasets, tagDatasets)}
+        <Col n="9">
+          {renderButtons(selectedDatasets, tagDatasets, 'datasets')}
         </Col>
-        <Col n="8">
+        <Col n="3">
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
@@ -103,16 +103,20 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
           />
         </Col>
       </Row>
-      <Row>
-        <Col n="2">
+      <Row gutters>
+        <Col n="9" offset="2">
           <TextInput
-            label="Search datasets on affiliations name"
+            label="Search in affiliations name"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
             value={filteredAffiliationName}
           />
+        </Col>
+      </Row>
+      <Row gutters>
+        <Col n="2">
           <CheckboxGroup
-            hint="Filter publications on selected status"
-            legend="Status"
+            hint="Filter datasets according to the choices made on affiliations"
+            legend="Filter on decision status"
           >
             {Object.values(status).map((st) => (
               <Checkbox
@@ -187,11 +191,6 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
             setSelectedWorks={setSelectedDatasets}
             works={filteredDatasets}
           />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          {renderButtons(selectedDatasets, tagDatasets)}
         </Col>
       </Row>
     </>

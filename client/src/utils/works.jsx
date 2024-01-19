@@ -47,7 +47,7 @@ const normalizeName = (name) => name
   .replace(/\s+/g, ' ')
   .trim();
 
-const renderButtons = (selected, fn) => (
+const renderButtons = (selected, fn, entityLabel) => (
   <>
     {Object.values(status).map((st) => (
       <Button
@@ -56,9 +56,9 @@ const renderButtons = (selected, fn) => (
         icon={st.buttonIcon}
         key={st.id}
         onClick={() => fn(selected, st.id)}
-        size="sm"
+        size="lg"
       >
-        {`${st.buttonLabel} (${selected.length})`}
+        {`${st.buttonLabel} ${selected.length} ${entityLabel}`}
       </Button>
     ))}
   </>

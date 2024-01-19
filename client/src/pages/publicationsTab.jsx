@@ -91,10 +91,10 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
   return (
     <>
       <Row>
-        <Col n="4">
-          {renderButtons(selectedPublications, tagPublications)}
+        <Col n="9">
+          {renderButtons(selectedPublications, tagPublications, 'publications')}
         </Col>
-        <Col n="8">
+        <Col n="3">
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
@@ -104,15 +104,19 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
         </Col>
       </Row>
       <Row gutters>
-        <Col n="2">
+        <Col n="9" offset="2">
           <TextInput
-            label="Search publications on affiliations name"
+            label="Search in affiliations name"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
             value={filteredAffiliationName}
           />
+        </Col>
+      </Row>
+      <Row gutters>
+        <Col n="2">
           <CheckboxGroup
-            hint="Filter publications on selected status"
-            legend="Status"
+            hint="Filter publications according to the choices made on affiliations"
+            legend="Filter on decision status"
           >
             {Object.values(status).map((st) => (
               <Checkbox
@@ -187,11 +191,6 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
             setSelectedWorks={setSelectedPublications}
             works={filteredPublications}
           />
-        </Col>
-      </Row>
-      <Row>
-        <Col n="4">
-          {renderButtons(selectedPublications, tagPublications)}
         </Col>
       </Row>
     </>
