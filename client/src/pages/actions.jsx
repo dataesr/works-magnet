@@ -54,13 +54,25 @@ export default function Actions({
             data-tooltip-id="export-datasets-button"
             disabled={!allDatasets.length}
             icon="ri-save-line"
-            onClick={() => export2Csv(allDatasets)}
+            onClick={() => export2Csv(allDatasets, 'datasets')}
             size="sm"
           >
             Export datasets
           </Button>
-          <Tooltip id="export-datasets-button" hidden={!allPublications.length}>
-            Export the validated datasets in CSV
+          <Tooltip id="export-datasets-button" hidden={!allDatasets.length}>
+            Export all the datasets in CSV
+          </Tooltip>
+          <Button
+            data-tooltip-id="export-publications-button"
+            disabled={!allPublications.length}
+            icon="ri-save-line"
+            onClick={() => export2Csv(allPublications, 'publications')}
+            size="sm"
+          >
+            Export publications
+          </Button>
+          <Tooltip id="export-publications-button" hidden={!allPublications.length}>
+            Export all the publications in CSV
           </Tooltip>
           <Button
             data-tooltip-id="export-fosm-button"

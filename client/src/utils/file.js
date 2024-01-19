@@ -29,17 +29,16 @@ const export2FosmCsv = (allPublications) => {
   document.body.removeChild(link);
 };
 
-const export2Csv = (allWorks) => {
-  const validatedWorks = allWorks.filter((publication) => publication.status === status.validated.id);
-  const headers = Object.keys(validatedWorks?.[0] ?? {});
+const export2Csv = (allWorks, label) => {
+  const headers = Object.keys(allWorks?.[0] ?? {});
   const csvFile = [
     headers,
-    ...validatedWorks.map((item) => Object.values(item)),
+    ...allWorks.map((item) => Object.values(item)),
   ].map((e) => e.join(',')).join('\n');
 
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csvFile], { type: 'text/csv;charset=utf-8' }));
-  link.setAttribute('download', 'works-finder-datasets.csv');
+  link.setAttribute('download', `works-finder-${label}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
