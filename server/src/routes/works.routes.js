@@ -13,7 +13,7 @@ router.route('/works')
       if (!options?.affiliations) {
         res.status(400).json({ message: 'You must provide at least one affiliation.' });
       } else {
-        webSocketServer.broadcast('start');
+        webSocketServer.broadcast(0);
         console.time(`1. Requests ${options.affiliations}`);
         options.affiliations = options.affiliations.split(',');
         options.datasets = options.datasets === 'true';
