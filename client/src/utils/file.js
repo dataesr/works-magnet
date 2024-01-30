@@ -30,10 +30,23 @@ const export2FosmCsv = (allPublications) => {
 };
 
 const export2Csv = (allWorks, label) => {
+  allWorks.forEach((work) => {
+    work.allIds?.forEach((id) => {
+      work[id.id_type] = id.id_value;
+    });
+    delete work.affiliations;
+    delete work.affiliationsHtml;
+    delete work.affiliationsTooltip;
+    delete work.allIds;
+    delete work.authors;
+    delete work.datasource;
+    delete work.id;
+    return work;
+  });
   const headers = Object.keys(allWorks?.[0] ?? {});
   const csvFile = [
     headers,
-    ...allWorks.map((item) => Object.values(item)),
+    ...allWorks.map((item) => Object.values(item).map((cell) => JSON.stringify(cell))),
   ].map((e) => e.join(',')).join('\n');
 
   const link = document.createElement('a');
