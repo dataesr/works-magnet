@@ -1,7 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable indent */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable no-case-declarations */
 import {
   Col,
   Container,
@@ -15,6 +11,7 @@ import useWebSocket from 'react-use-websocket';
 
 import Actions from './actions';
 import AffiliationsTab from './affiliationsTab';
+import { PageSpinner } from '../components/spinner';
 import StepProgress from '../components/step-progress';
 import Beta from '../components/beta';
 import DatasetsTab from './datasetsTab';
@@ -162,7 +159,10 @@ export default function Home() {
           tagAffiliations={tagAffiliations}
         />
         {isFetching && (
-          <StepProgress current={current} />
+          <>
+            <StepProgress current={current} />
+            <PageSpinner />
+          </>
         )}
         {!isFetching && (allAffiliations.length > 0 || allDatasets.length > 0 || allPublications.length > 0) && (
           <Tabs defaultActiveTab={0}>
