@@ -46,7 +46,7 @@ export default function Home() {
   });
 
   useWebSocket(`${VITE_WS_HOST}:${VITE_WS_PORT}`, {
-    onMessage: (message) => setCurrent(Number(message.data) + 1),
+    onMessage: (message) => setCurrent(Number(message.data)),
     share: true,
   });
 

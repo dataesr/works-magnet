@@ -29,8 +29,8 @@ const export2FosmCsv = (allPublications) => {
   document.body.removeChild(link);
 };
 
-const export2Csv = (allWorks, label) => {
-  allWorks.forEach((work) => {
+const export2Csv = ({ data, label }) => {
+  data.forEach((work) => {
     work.allIds?.forEach((id) => {
       work[id.id_type] = id.id_value;
     });
@@ -43,24 +43,35 @@ const export2Csv = (allWorks, label) => {
     delete work.id;
     return work;
   });
-  const headers = Object.keys(allWorks?.[0] ?? {});
+  const headers = Object.keys(data?.[0] ?? {});
   const csvFile = [
     headers,
-    ...allWorks.map((item) => Object.values(item).map((cell) => JSON.stringify(cell))),
+    ...data.map((item) => Object.values(item).map((cell) => JSON.stringify(cell))),
   ].map((e) => e.join(',')).join('\n');
-
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csvFile], { type: 'text/csv;charset=utf-8' }));
-  link.setAttribute('download', `works-finder-${label}.csv`);
+  const fileName = label ? `works-finder-${label}.csv` : 'works-finder.csv';
+  link.setAttribute('download', fileName);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
-const export2json = (data) => {
+const export2json = ({ data, label }) => {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-  link.setAttribute('download', 'works-finder.json');
+  const fileName = label ? `works-finder-${label}.json` : 'works-finder.json';
+  link.setAttribute('download', fileName);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const export2jsonl = ({ data, label }) => {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([data.map(JSON.stringify).join('\n')], { type: 'application/jsonl+json' }));
+  const fileName = label ? `works-finder-${label}.jsonl` : 'works-finder.jsonl';
+  link.setAttribute('download', fileName);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -92,5 +103,6 @@ export {
   export2Csv,
   export2FosmCsv,
   export2json,
+  export2jsonl,
   importJson,
 };
