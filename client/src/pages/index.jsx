@@ -12,7 +12,7 @@ import useWebSocket from 'react-use-websocket';
 import Actions from './actions';
 import AffiliationsTab from './affiliationsTab';
 import { PageSpinner } from '../components/spinner';
-import StepProgress from '../components/step-progress';
+import Stepper from '../components/stepper';
 import Beta from '../components/beta';
 import DatasetsTab from './datasetsTab';
 import Filters from './filters';
@@ -160,7 +160,7 @@ export default function Home() {
         />
         {isFetching && (
           <>
-            <StepProgress current={current} />
+            <Stepper current={current} />
             <PageSpinner />
           </>
         )}

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 import './index.scss';
 
-export default function StepProgress({ current }) {
+export default function Stepper({ current }) {
   return (
     <div className="arrow-steps clearfix">
       <div className={`step ${ current === 0 ? 'current' : null } ${ current > 0 ? 'done' : null } `}>
@@ -30,6 +30,6 @@ export default function StepProgress({ current }) {
   );
 }
 
-StepProgress.propTypes = {
+Stepper.propTypes = {
   current: PropTypes.number.isRequired,
 };
