@@ -5,7 +5,8 @@ import { useSearchParams } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip';
 
 import Button from '../components/button';
-import { export2Csv, export2FosmCsv, export2json, export2jsonl, importJson } from '../utils/file';
+import ButtonDropdown from '../components/button-dropdown';
+import { export2json, importJson } from '../utils/file';
 import { status } from '../config';
 
 export default function Actions({
@@ -50,70 +51,8 @@ export default function Actions({
           <Tooltip id="restore-affiliations-button">
             Restore affiliations from saved file
           </Tooltip>
-          <Button
-            data-tooltip-id="export-datasets-csv-button"
-            disabled={!allDatasets.length}
-            icon="ri-save-line"
-            onClick={() => export2Csv({ data: allDatasets, label: 'datasets' })}
-            size="sm"
-          >
-            Export datasets (minimal data)
-          </Button>
-          <Tooltip id="export-datasets-csv-button" hidden={!allDatasets.length}>
-            Export all datasets in CSV
-          </Tooltip>
-          <Button
-            data-tooltip-id="export-datasets-jsonl-button"
-            disabled={!allDatasets.length}
-            icon="ri-save-line"
-            onClick={() => export2jsonl({ data: allDatasets, label: 'datasets' })}
-            size="sm"
-          >
-            Export datasets (complete data)
-          </Button>
-          <Tooltip id="export-datasets-jsonl-button" hidden={!allDatasets.length}>
-            Export all datasets in JSONL
-          </Tooltip>
-          <Button
-            data-tooltip-id="export-publications-csv-button"
-            disabled={!allPublications.length}
-            icon="ri-save-line"
-            onClick={() => export2Csv({ data: allPublications, label: 'publications' })}
-            size="sm"
-          >
-            Export publications (minimal data)
-          </Button>
-          <Tooltip id="export-publications-csv-button" hidden={!allPublications.length}>
-            Export all publications in CSV
-          </Tooltip>
-          <Button
-            data-tooltip-id="export-publications-jsonl-button"
-            disabled={!allPublications.length}
-            icon="ri-save-line"
-            onClick={() => export2jsonl({ data: allPublications, label: 'publications' })}
-            size="sm"
-          >
-            Export publications (complete data)
-          </Button>
-          <Tooltip id="export-publications-jsonl-button" hidden={!allPublications.length}>
-            Export all publications in JSONL
-          </Tooltip>
-          <Button
-            data-tooltip-id="export-fosm-button"
-            disabled={!allPublications.length}
-            icon="ri-save-line"
-            onClick={() => export2FosmCsv(allPublications)}
-            size="sm"
-          >
-            Custom export for French OSM
-          </Button>
-          <Tooltip id="export-fosm-button" hidden={!allPublications.length}>
-            Export the
-            {' '}
-            <b>validated</b>
-            {' '}
-            publications in the format needed to build a local French OSM in CSV
-          </Tooltip>
+          <ButtonDropdown data={allDatasets} label="datasets" />
+          <ButtonDropdown data={allPublications} label="publications" />
         </Col>
       </Row>
       {displayFileUpload && (

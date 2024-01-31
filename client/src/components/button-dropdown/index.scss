@@ -1,0 +1,15 @@
+.dropdown {
+  display: inline-block;
+  position: relative;
+
+  .dropdown-content {
+    display: none;
+    min-width: 160px;
+    position: absolute;
+    z-index: 1;
+  }
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
