@@ -18,7 +18,7 @@ export default function Actions({
   setAllPublications,
   tagAffiliations,
 }) {
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
 
   const decidedAffiliations = allAffiliations.filter((affiliation) => affiliation.status !== status.tobedecided.id);
@@ -51,8 +51,8 @@ export default function Actions({
           <Tooltip id="restore-affiliations-button">
             Restore affiliations from saved file
           </Tooltip>
-          <ButtonDropdown data={allDatasets} label="datasets" />
-          <ButtonDropdown data={allPublications} label="publications" />
+          <ButtonDropdown data={allDatasets} label="datasets" searchParams={searchParams} />
+          <ButtonDropdown data={allPublications} label="publications" searchParams={searchParams} />
         </Col>
       </Row>
       {displayFileUpload && (

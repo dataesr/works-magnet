@@ -6,7 +6,7 @@ import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/file';
 
 import './index.scss';
 
-export default function ButtonDropdown({ data, label }) {
+export default function ButtonDropdown({ data, label, searchParams }) {
   return (
     <div className={`dropdown ${data.length > 0 ? 'enabled' : 'disabled'}`}>
       <Button
@@ -20,20 +20,20 @@ export default function ButtonDropdown({ data, label }) {
       </Button>
       <div className="dropdown-content">
         <Button
-          onClick={() => export2Csv({ data, label })}
+          onClick={() => export2Csv({ data, label, searchParams })}
           size="sm"
         >
           Export in CSV (minimal data)
         </Button>
         <Button
-          onClick={() => export2jsonl({ data, label })}
+          onClick={() => export2jsonl({ data, label, searchParams })}
           size="sm"
         >
           Export in JSONL (complete data)
         </Button>
         {label === 'publications' && (
           <Button
-            onClick={() => export2FosmCsv(data)}
+            onClick={() => export2FosmCsv({ data })}
             size="sm"
           >
             Custom export for French OSM
@@ -47,4 +47,5 @@ export default function ButtonDropdown({ data, label }) {
 ButtonDropdown.propTypes = {
   data: PropTypes.array.isRequired,
   label: PropTypes.string.isRequired,
+  searchParams: PropTypes.object.isRequired,
 };

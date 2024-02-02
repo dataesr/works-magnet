@@ -1,6 +1,31 @@
 import { status } from '../config';
 
-const export2FosmCsv = (allPublications) => {
+const hashCode = (str) => {
+  let hash = 0;
+  if (str.length === 0) return hash;
+  for (let i = 0; i < str.length; i += 1) {
+    const chr = str.charCodeAt(i);
+    // eslint-disable-next-line no-bitwise
+    hash = ((hash << 5) - hash) + chr;
+    // eslint-disable-next-line no-bitwise
+    hash |= 0; // Convert to 32bit integer
+  }
+  // return positive numbers only
+  return hash + 2147483647 + 1;
+};
+
+const getFileName = ({ extension, label, searchParams }) => {
+  let fileName = 'works_finder';
+  fileName += label ? `_${label}` : '';
+  fileName += `_${hashCode(searchParams.get('affiliations'))}`;
+  fileName += `_${searchParams.get('startYear')}`;
+  fileName += `_${searchParams.get('endYear')}`;
+  fileName += `_${Date.now()}`;
+  fileName += `.${extension}`;
+  return fileName;
+};
+
+const export2FosmCsv = ({ data: allPublications }) => {
   const csvHeader = ['doi', 'hal_id', 'nnt_id'].join(';');
   const validatedPublications = allPublications.filter((publication) => publication.status === status.validated.id);
   const getValue = (row, idType) => {
@@ -29,7 +54,7 @@ const export2FosmCsv = (allPublications) => {
   document.body.removeChild(link);
 };
 
-const export2Csv = ({ data, label }) => {
+const export2Csv = ({ data, label, searchParams }) => {
   data.forEach((work) => {
     work.allIds?.forEach((id) => {
       work[id.id_type] = id.id_value;
@@ -41,7 +66,6 @@ const export2Csv = ({ data, label }) => {
     delete work.authors;
     delete work.datasource;
     delete work.id;
-    return work;
   });
   const headers = Object.keys(data?.[0] ?? {});
   const csvFile = [
@@ -50,27 +74,27 @@ const export2Csv = ({ data, label }) => {
   ].map((e) => e.join(',')).join('\n');
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csvFile], { type: 'text/csv;charset=utf-8' }));
-  const fileName = label ? `works-finder-${label}.csv` : 'works-finder.csv';
+  const fileName = getFileName({ extension: 'csv', label, searchParams });
   link.setAttribute('download', fileName);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
-const export2json = ({ data, label }) => {
+const export2json = ({ data, label, searchParams }) => {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-  const fileName = label ? `works-finder-${label}.json` : 'works-finder.json';
+  const fileName = getFileName({ extension: 'json', label, searchParams });
   link.setAttribute('download', fileName);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
-const export2jsonl = ({ data, label }) => {
+const export2jsonl = ({ data, label, searchParams }) => {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([data.map(JSON.stringify).join('\n')], { type: 'application/jsonl+json' }));
-  const fileName = label ? `works-finder-${label}.jsonl` : 'works-finder.jsonl';
+  const fileName = getFileName({ extension: 'jsonl', label, searchParams });
   link.setAttribute('download', fileName);
   document.body.appendChild(link);
   link.click();

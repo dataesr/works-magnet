@@ -1,6 +1,7 @@
 .dropdown {
   display: inline-block;
   position: relative;
+  z-index: 2;
 
   .dropdown-content {
     display: none;
@@ -10,6 +11,6 @@
   }
 }
 
-.dropdown:hover .dropdown-content {
+.dropdown.enabled:hover .dropdown-content {
   display: block;
 }
