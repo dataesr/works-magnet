@@ -37,7 +37,7 @@ jobs:
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository }}
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          docker build -t ${{ github.repository }} -t $IMAGE_ID:staging $IMAGE_ID:latest .
+          docker build -t ${{ github.repository }} -t $IMAGE_ID:staging -t $IMAGE_ID:latest .
 
       - name: 📦 Push Docker image
         run: |
