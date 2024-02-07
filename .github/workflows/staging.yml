@@ -24,7 +24,7 @@ jobs:
         id: tag
         run: echo "tag=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
-      - name: 🔑 Login Docker
+      - name: 🔑 Login ghcr.io
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🏗️ Build app
@@ -67,7 +67,7 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - uses: dataesr/mm-notifier-action@v1.0.1
+      - uses: dataesr/mm-notifier-action@v1.0.2
         with:
           deployment_url: ${{ env.DEPLOYMENT_URL }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
