@@ -43,6 +43,7 @@ jobs:
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository }}
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          docker push $IMAGE_ID:staging
           docker push $IMAGE_ID:latest
 
   deploy:
