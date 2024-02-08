@@ -18,30 +18,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🏁 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🏷️ Get tag
         id: tag
         run: echo "tag=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
-      - name: 🔑 Login Docker
+      - name: 🔑 Login ghcr.io
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build client
-        uses: actions/setup-node@v3
+      - name: 🏗️ Build app
+        uses: actions/setup-node@v4
         with:
           node-version: 18
       - run: npm ci --silent && npm run build --mode=staging
 
       - name: 🐋 Build Docker image
-        run: docker build -t ${{ github.repository }} .
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository }}
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          docker build -t $IMAGE_ID:staging -t $IMAGE_ID:latest .
 
       - name: 📦 Push Docker image
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository }}
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          docker tag ${{ github.repository }} $IMAGE_ID:${{ steps.tag.outputs.tag }}
-          docker push $IMAGE_ID:${{ steps.tag.outputs.tag }}
+          docker push $IMAGE_ID:staging
+          docker push $IMAGE_ID:latest
 
   deploy:
     name: Update staging deployment
@@ -49,7 +52,7 @@ jobs:
     needs: publish-ghcr
     steps:
       - name: Check Out Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy to Cluster
         id: kubectl-deploy
@@ -65,7 +68,7 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - uses: dataesr/mm-notifier-action@v1
+      - uses: dataesr/mm-notifier-action@v1.0.2
         with:
           deployment_url: ${{ env.DEPLOYMENT_URL }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
