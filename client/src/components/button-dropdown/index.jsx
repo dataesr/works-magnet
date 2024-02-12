@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types';
 
 import Button from '../button';
-import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/file';
+import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/files';
 
 import './index.scss';
 

@@ -13,7 +13,7 @@ import { useSearchParams } from 'react-router-dom';
 import TagInput from '../components/tag-input';
 
 const START_YEAR = 2010;
-const years = [...Array(new Date().getFullYear() - START_YEAR).keys()].map((item) => (item + START_YEAR).toString());
+const years = [...Array(new Date().getFullYear() - START_YEAR).keys()].map((year) => (year + START_YEAR).toString()).map((year) => ({ label: year, value: year }));
 
 export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();

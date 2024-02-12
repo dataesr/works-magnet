@@ -6,7 +6,7 @@ import { Tooltip } from 'react-tooltip';
 
 import Button from '../components/button';
 import ButtonDropdown from '../components/button-dropdown';
-import { export2json, importJson } from '../utils/file';
+import { export2json, importJson } from '../utils/files';
 import { status } from '../config';
 
 export default function Actions({
@@ -31,7 +31,7 @@ export default function Actions({
             data-tooltip-id="save-affiliations-button"
             disabled={!decidedAffiliations.length}
             icon="ri-save-line"
-            onClick={() => export2json({ decidedAffiliations })}
+            onClick={() => export2json({ decidedAffiliations, label: 'affiliations', searchParams })}
             size="sm"
           >
             Save decided affiliations
