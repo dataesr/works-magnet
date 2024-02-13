@@ -9,6 +9,7 @@ import {
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { getRorNames } from '../utils/ror';
 
 import TagInput from '../components/tag-input';
 
@@ -41,19 +42,9 @@ export default function Filters({ sendQuery }) {
   }, [searchParams, setSearchParams]);
 
   const onTagsChange = async (affiliations) => {
-    const queries = [];
-    for (let i = 0; i < affiliations.length; i += 1) {
-      // https://ror.readme.io/docs/ror-identifier-pattern
-      const isRor = /^0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
-      const affiliation = affiliations[i].replace('https://ror.org/', '').replace('ror.org/', '');
-      if (isRor.test(affiliation)) {
-        queries.push(fetch(`https://api.ror.org/organizations/${affiliation}`));
-      }
-    }
-    let responses = await Promise.all(queries);
-    responses = await Promise.all(responses.map((response) => response.json()));
-    let allNames = responses.map((response) => [response.name, ...response.acronyms, ...response.aliases, ...response.labels.map((item) => item.label)]).flat();
-    allNames = [...affiliations, ...allNames];
+    const queries = affiliations.map((affiliation) => getRorNames(affiliation));
+    let allNames = await Promise.all(queries);
+    allNames = [...affiliations, ...allNames.flat()];
     allNames = [...new Set(allNames.map((name) => name.toLowerCase()))];
     setSearchParams({ ...currentSearchParams, affiliations: allNames });
   };
