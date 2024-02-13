@@ -63,7 +63,7 @@ export default function TagInput({
             />
           </Col>
         </Row>
-        <Row>
+        <Row style={{ 'max-height': '225px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
           <Col className="fr-pt-2w">
             <TagGroup>
               {values.map((tag) => (
