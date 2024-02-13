@@ -18,7 +18,10 @@ export default function TagInput({
   const handleKeyDown = (e) => {
     if ([9, 13].includes(e.keyCode) && input) {
       e.preventDefault();
-      if (values.includes(input.trim())) return;
+      if (values.includes(input.trim())) {
+        setInput('');
+        return;
+      }
       const newValues = [...values, input.trim()];
       setValues(newValues);
       setInput('');

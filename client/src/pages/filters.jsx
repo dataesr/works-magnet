@@ -40,6 +40,24 @@ export default function Filters({ sendQuery }) {
     }
   }, [searchParams, setSearchParams]);
 
+  const onTagsChange = async (affiliations) => {
+    const queries = [];
+    for (let i = 0; i < affiliations.length; i += 1) {
+      // https://ror.readme.io/docs/ror-identifier-pattern
+      const isRor = /^0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
+      const affiliation = affiliations[i].replace('https://ror.org/', '').replace('ror.org/', '');
+      if (isRor.test(affiliation)) {
+        queries.push(fetch(`https://api.ror.org/organizations/${affiliation}`));
+      }
+    }
+    let responses = await Promise.all(queries);
+    responses = await Promise.all(responses.map((response) => response.json()));
+    let allNames = responses.map((response) => [response.name, ...response.acronyms, ...response.aliases, ...response.labels.map((item) => item.label)]).flat();
+    allNames = [...affiliations, ...allNames];
+    allNames = [...new Set(allNames.map((name) => name.toLowerCase()))];
+    setSearchParams({ ...currentSearchParams, affiliations: allNames });
+  };
+
   const checkAndSendQuery = () => {
     if (onInputAffiliationsHandler) {
       setMessageType('error');
@@ -64,7 +82,7 @@ export default function Filters({ sendQuery }) {
           label="Affiliation name"
           message={message}
           messageType={messageType}
-          onTagsChange={(affiliations) => setSearchParams({ ...currentSearchParams, affiliations })}
+          onTagsChange={onTagsChange}
           tags={currentSearchParams.affiliations}
           onInputHandler={setOnInputAffiliationsHandler}
         />
