@@ -48,7 +48,8 @@ export default function Filters({ sendQuery }) {
           ...affiliations.map((affiliation) => ({ label: affiliation, source: 'user' })),
           ...rorNames.flat().map((name) => ({ label: name, source: 'ror' })),
         ];
-        allTags = [...new Map(allTags.map((v) => [v.label.toLowerCase(), v])).values()];
+        // Remove duplicates
+        allTags = [...new Map(allTags.reverse().map((v) => [v.label.toLowerCase(), v])).values()].reverse();
         setTags(allTags);
       }
     };
