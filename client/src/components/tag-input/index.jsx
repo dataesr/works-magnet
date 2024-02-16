@@ -22,7 +22,7 @@ export default function TagInput({
         setInput('');
         return;
       }
-      const newValues = [...values, { color: 'brown-cafe-creme', label: input.trim() }];
+      const newValues = [...values, { label: input.trim(), source: 'user' }];
       setValues(newValues);
       setInput('');
       onTagsChange(newValues);
@@ -69,8 +69,7 @@ export default function TagInput({
               {values.map((tag) => (
                 <Tag
                   className="fr-mr-1w"
-                  // brown-cafe-creme, brown-caramel, brown-opera
-                  colorFamily={tag?.color ?? 'brown-cafe-creme'}
+                  colorFamily={(tag?.source ?? 'user') === 'user' ? 'brown-cafe-creme' : 'brown-caramel'}
                   key={tag.label}
                   onClick={() => handleDeleteClick(tag)}
                 >

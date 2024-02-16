@@ -25,30 +25,38 @@ export default function Filters({ sendQuery }) {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    if (searchParams.size === 0) {
-      setSearchParams({
-        affiliations: [],
-        datasets: false,
-        endYear: '2021',
-        startYear: '2021',
-      });
-    } else {
-      setCurrentSearchParams({
-        affiliations: searchParams.getAll('affiliations'),
-        datasets: searchParams.get('datasets') === 'true',
-        endYear: searchParams.get('endYear'),
-        startYear: searchParams.get('startYear'),
-      });
-      setTags(searchParams.getAll('affiliations').map((affiliation) => ({ color: 'brown-cafe-creme', label: affiliation })));
-    }
+    const getData = async () => {
+      if (searchParams.size === 0) {
+        setSearchParams({
+          affiliations: [],
+          datasets: false,
+          endYear: '2021',
+          startYear: '2021',
+        });
+        setTags([]);
+      } else {
+        setCurrentSearchParams({
+          affiliations: searchParams.getAll('affiliations'),
+          datasets: searchParams.get('datasets') === 'true',
+          endYear: searchParams.get('endYear'),
+          startYear: searchParams.get('startYear'),
+        });
+        const affiliations = searchParams.getAll('affiliations');
+        const queries = affiliations.map((affiliation) => getRorNames(affiliation));
+        const rorNames = await Promise.all(queries);
+        let allTags = [
+          ...affiliations.map((affiliation) => ({ label: affiliation, source: 'user' })),
+          ...rorNames.flat().map((name) => ({ label: name, source: 'ror' })),
+        ];
+        allTags = [...new Map(allTags.map((v) => [v.label.toLowerCase(), v])).values()];
+        setTags(allTags);
+      }
+    };
+    getData();
   }, [searchParams, setSearchParams]);
 
   const onTagsChange = async (affiliations) => {
-    const queries = affiliations.map((affiliation) => getRorNames(affiliation.label));
-    let allNames = await Promise.all(queries);
-    allNames = [...affiliations.map((affiliation) => affiliation.label), ...allNames.flat()];
-    allNames = [...new Set(allNames.map((name) => name.toLowerCase()))];
-    setSearchParams({ ...currentSearchParams, affiliations: allNames });
+    setSearchParams({ ...currentSearchParams, affiliations: affiliations.filter((affiliation) => affiliation.source === 'user').map((affiliation) => affiliation.label) });
   };
 
   const checkAndSendQuery = () => {
