@@ -22,6 +22,7 @@ export default function Filters({ sendQuery }) {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
+  const [tags, setTags] = useState([]);
 
   useEffect(() => {
     if (searchParams.size === 0) {
@@ -38,13 +39,14 @@ export default function Filters({ sendQuery }) {
         endYear: searchParams.get('endYear'),
         startYear: searchParams.get('startYear'),
       });
+      setTags(searchParams.getAll('affiliations').map((affiliation) => ({ color: 'brown-cafe-creme', label: affiliation })));
     }
   }, [searchParams, setSearchParams]);
 
   const onTagsChange = async (affiliations) => {
-    const queries = affiliations.map((affiliation) => getRorNames(affiliation));
+    const queries = affiliations.map((affiliation) => getRorNames(affiliation.label));
     let allNames = await Promise.all(queries);
-    allNames = [...affiliations, ...allNames.flat()];
+    allNames = [...affiliations.map((affiliation) => affiliation.label), ...allNames.flat()];
     allNames = [...new Set(allNames.map((name) => name.toLowerCase()))];
     setSearchParams({ ...currentSearchParams, affiliations: allNames });
   };
@@ -74,7 +76,7 @@ export default function Filters({ sendQuery }) {
           message={message}
           messageType={messageType}
           onTagsChange={onTagsChange}
-          tags={currentSearchParams.affiliations}
+          tags={tags}
           onInputHandler={setOnInputAffiliationsHandler}
         />
       </Col>

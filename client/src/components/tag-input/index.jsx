@@ -18,11 +18,11 @@ export default function TagInput({
   const handleKeyDown = (e) => {
     if ([9, 13].includes(e.keyCode) && input) {
       e.preventDefault();
-      if (values.includes(input.trim())) {
+      if (values.map((value) => value.label).includes(input.trim())) {
         setInput('');
         return;
       }
-      const newValues = [...values, input.trim()];
+      const newValues = [...values, { color: 'brown-cafe-creme', label: input.trim() }];
       setValues(newValues);
       setInput('');
       onTagsChange(newValues);
@@ -69,10 +69,12 @@ export default function TagInput({
               {values.map((tag) => (
                 <Tag
                   className="fr-mr-1w"
-                  key={tag}
+                  // brown-cafe-creme, brown-caramel, brown-opera
+                  colorFamily={tag?.color ?? 'brown-cafe-creme'}
+                  key={tag.label}
                   onClick={() => handleDeleteClick(tag)}
                 >
-                  {tag}
+                  {tag.label}
                   <Icon iconPosition="right" name="ri-close-line" />
                 </Tag>
               ))}
@@ -92,7 +94,7 @@ TagInput.propTypes = {
   onInputHandler: PropTypes.func,
   onTagsChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  tags: PropTypes.arrayOf(PropTypes.string),
+  tags: PropTypes.arrayOf(PropTypes.object),
 };
 
 TagInput.defaultProps = {
