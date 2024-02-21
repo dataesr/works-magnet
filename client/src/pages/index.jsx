@@ -59,7 +59,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const regexpTmp = new RegExp(`(${(options?.affiliations ?? [])
+    const regexpTmp = new RegExp(`(${(options?.affiliationStrings ?? [])
       .map((affiliationQuery) => affiliationQuery
         .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
         .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
@@ -73,7 +73,7 @@ export default function Home() {
         .replaceAll(/œ/g, '(œ|oe)'))
       .join('|')})`, 'gi');
     setRegexp(regexpTmp);
-  }, [options?.affiliations]);
+  }, [options?.affiliationStrings]);
 
   useEffect(() => {
     if (data) {

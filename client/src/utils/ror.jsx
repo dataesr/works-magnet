@@ -3,7 +3,7 @@ const rorRegex = /^0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
 
 const isRor = (affiliation) => rorRegex.test(affiliation);
 
-const getRorNames = async (affiliation) => {
+const getRorData = async (affiliation) => {
   const affiliationId = affiliation.replace('https://ror.org/', '').replace('ror.org/', '');
   if (!isRor(affiliationId)) return [];
   let response = await fetch(`https://api.ror.org/organizations/${affiliationId}`);
@@ -12,14 +12,13 @@ const getRorNames = async (affiliation) => {
   let childrenRes = [];
   const childrenQueries = [];
   children.forEach((child) => {
-    childrenQueries.push(getRorNames(child.id));
+    childrenQueries.push(getRorData(child.id));
   });
   if (childrenQueries.length > 0) {
     childrenRes = await Promise.all(childrenQueries);
   }
   const topLevel = [{
     rorId: affiliationId,
-    children,
     names: [
       response.name,
       ...response.acronyms,
@@ -31,5 +30,6 @@ const getRorNames = async (affiliation) => {
 };
 
 export {
-  getRorNames,
+  getRorData,
+  isRor,
 };

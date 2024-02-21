@@ -17,7 +17,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasets, setFilteredDatasets] = useState([]);
   const [filteredDatasources, setFilteredDatasources] = useState(datasources.map((datasource) => datasource.key));
-  const [filteredStatus, setFilteredStatus] = useState([status.validated.id]);
+  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [filteredPublishers, setFilteredPublishers] = useState([]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);

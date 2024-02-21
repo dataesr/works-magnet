@@ -9,12 +9,14 @@ import {
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getRorNames } from '../utils/ror';
+import { getRorData, isRor } from '../utils/ror';
 
 import TagInput from '../components/tag-input';
 
 const START_YEAR = 2010;
 const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()].map((year) => (year + START_YEAR).toString()).map((year) => ({ label: year, value: year }));
+
+const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
 
 export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,33 +44,31 @@ export default function Filters({ sendQuery }) {
           startYear: searchParams.get('startYear'),
         });
         const affiliations = searchParams.getAll('affiliations');
-        const queries = affiliations.map((affiliation) => getRorNames(affiliation));
+        const queries = affiliations.map((affiliation) => getRorData(affiliation));
         const rorNames = await Promise.all(queries);
         const allTags = [];
         const knownTags = {};
         affiliations.forEach((affiliation) => {
-          allTags.push({ label: affiliation, source: 'user' });
+          if (isRor(affiliation)) {
+            allTags.push({ label: affiliation.replace('https://ror.org/', '').replace('ror.org/', ''), source: 'user', type: 'rorId' });
+          } else {
+            allTags.push({ label: affiliation, source: 'user', type: 'affiliationString' });
+          }
           knownTags[affiliation.toLowerCase()] = 1;
         });
         rorNames.flat().forEach((rorElt) => {
           if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
-            allTags.push({ label: rorElt.rorId, source: 'rorId' });
+            allTags.push({ label: rorElt.rorId, source: 'ror', type: 'rorId' });
             knownTags[rorElt.rorId.toLowerCase()] = 1;
           }
           rorElt.names.forEach((rorName) => {
             if (knownTags[rorName.toLowerCase()] === undefined) {
-              allTags.push({ label: rorName, source: 'rorName' });
+              const isDangerous = rorName.length < 4;
+              allTags.push({ label: rorName, source: 'ror', type: 'affiliationString', rorId: rorElt.rorId, isDangerous });
               knownTags[rorName.toLowerCase()] = 1;
             }
           });
         });
-        // let allTags = [
-        //  ...affiliations.map((affiliation) => ({ label: affiliation, source: 'user' })),
-        //  ...rorNames.flat().map((name) => ({ label: name, source: 'ror' })),
-        // ];
-        // Remove duplicates
-        // allTags = [...new Map(allTags.reverse().map((v) => [v.label.toLowerCase(), v])).values()].reverse();
-        console.log('allTags', allTags);
         setTags(allTags);
       }
     };
@@ -92,7 +92,10 @@ export default function Filters({ sendQuery }) {
     }
     setMessageType('');
     setMessage('');
-    sendQuery(currentSearchParams);
+    const queryParams = { datasets: currentSearchParams.datasets, startYear: currentSearchParams.startYear, endYear: currentSearchParams.endYear };
+    queryParams.affiliationStrings = tags.filter((tag) => tag.type === 'affiliationString').map((tag) => normalizeStr(tag.label));
+    queryParams.rors = tags.filter((tag) => tag.type === 'rorId').map((tag) => tag.label);
+    sendQuery(queryParams);
   };
 
   return (

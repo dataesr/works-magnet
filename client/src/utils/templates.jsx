@@ -70,7 +70,7 @@ const getAffiliationsHtmlField = (rowData, regexp) => {
 
 const getAffiliationsTooltipField = (rowData) => {
   let html = '<ul>';
-  html += rowData.affiliations.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation}</li>`).join('');
+  html += rowData.affiliations?.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation}</li>`).join('');
   html += '</ul>';
   return html;
 };

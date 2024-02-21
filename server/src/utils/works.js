@@ -29,8 +29,11 @@ const deduplicateWorks = (works) => {
 const getFosmQuery = (options, pit, searchAfter) => {
   const query = { size: process.env.FOSM_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   const affiliationsFields = ['affiliations.name'];
-  options.affiliations.forEach((affiliation) => {
+  options.affiliationStrings.forEach((affiliation) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
+  });
+  options.rors.forEach((ror) => {
+    query.query.bool.should.push({ match: { rors: ror } });
   });
   query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
   // Exclude files for Datacite
@@ -85,7 +88,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
       // eslint-disable-next-line no-param-reassign
       results = results.concat(hits.map((result) => ({
         // Filter ids on unique values
-        affiliations: result._source.affiliations.map((affiliation) => affiliation.name).filter((affiliation) => !!affiliation),
+        affiliations: result._source.affiliations?.map((affiliation) => affiliation.name).filter((affiliation) => !!affiliation),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['fosm'],
@@ -170,8 +173,8 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
-  if (options.affiliations.length) {
-    url += `,raw_affiliation_string.search:(${options.affiliations.map((aff) => `"${aff}"`).join(' OR ')})`;
+  if (options.affiliationStrings.length) {
+    url += `,raw_affiliation_string.search:(${options.affiliationStrings.map((aff) => `"${aff}"`).join(' OR ')})`;
   }
   if (options.datasets) {
     url += ',type:dataset';
@@ -221,7 +224,7 @@ const getOpenAlexPublications = async ({ options }) => {
 };
 
 const groupByAffiliations = ({ options, works }) => {
-  const normalizedAffiliations = options.affiliations.map((affiliation) => removeDiacritics(affiliation));
+  const normalizedAffiliations = options.affiliationStrings.map((affiliation) => removeDiacritics(affiliation));
   // Compute distinct affiliations of works
   let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
     const { affiliations = [], id } = work;

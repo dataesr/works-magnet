@@ -18,7 +18,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
   const [filteredDatasources, setFilteredDatasources] = useState(datasources.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredPublishers, setFilteredPublishers] = useState([]);
-  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id]);
+  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [timer, setTimer] = useState();

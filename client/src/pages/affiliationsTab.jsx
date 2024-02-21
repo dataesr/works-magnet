@@ -16,7 +16,7 @@ import { normalizeName, renderButtons } from '../utils/works';
 export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
-  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id]);
+  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [timer, setTimer] = useState();
 
   useEffect(() => {
@@ -70,7 +70,8 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
         </Col>
       </Row>
       <Row gutters>
-        <Col n="2">
+        { /*
+        <Col n="1">
           <CheckboxGroup
             hint="Filter affilitions on the decisions already made"
             legend="Filter on decision status"
@@ -86,6 +87,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
             ))}
           </CheckboxGroup>
         </Col>
+      */ }
         <Col n="10">
           <AffiliationsView
             allAffiliations={filteredAffiliations}
