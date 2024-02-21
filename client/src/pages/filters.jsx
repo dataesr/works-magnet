@@ -44,12 +44,31 @@ export default function Filters({ sendQuery }) {
         const affiliations = searchParams.getAll('affiliations');
         const queries = affiliations.map((affiliation) => getRorNames(affiliation));
         const rorNames = await Promise.all(queries);
-        let allTags = [
-          ...affiliations.map((affiliation) => ({ label: affiliation, source: 'user' })),
-          ...rorNames.flat().map((name) => ({ label: name, source: 'ror' })),
-        ];
+        const allTags = [];
+        const knownTags = {};
+        affiliations.forEach((affiliation) => {
+          allTags.push({ label: affiliation, source: 'user' });
+          knownTags[affiliation.toLowerCase()] = 1;
+        });
+        rorNames.flat().forEach((rorElt) => {
+          if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
+            allTags.push({ label: rorElt.rorId, source: 'rorId' });
+            knownTags[rorElt.rorId.toLowerCase()] = 1;
+          }
+          rorElt.names.forEach((rorName) => {
+            if (knownTags[rorName.toLowerCase()] === undefined) {
+              allTags.push({ label: rorName, source: 'rorName' });
+              knownTags[rorName.toLowerCase()] = 1;
+            }
+          });
+        });
+        // let allTags = [
+        //  ...affiliations.map((affiliation) => ({ label: affiliation, source: 'user' })),
+        //  ...rorNames.flat().map((name) => ({ label: name, source: 'ror' })),
+        // ];
         // Remove duplicates
-        allTags = [...new Map(allTags.reverse().map((v) => [v.label.toLowerCase(), v])).values()].reverse();
+        // allTags = [...new Map(allTags.reverse().map((v) => [v.label.toLowerCase(), v])).values()].reverse();
+        console.log('allTags', allTags);
         setTags(allTags);
       }
     };
@@ -78,18 +97,7 @@ export default function Filters({ sendQuery }) {
 
   return (
     <Row gutters alignItems="top">
-      <Col n="5">
-        <TagInput
-          hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-          label="Affiliation name"
-          message={message}
-          messageType={messageType}
-          onTagsChange={onTagsChange}
-          tags={tags}
-          onInputHandler={setOnInputAffiliationsHandler}
-        />
-      </Col>
-      <Col n="1">
+      <Col n="2">
         <Select
           hint="&nbsp;"
           label="Start year"
@@ -98,7 +106,7 @@ export default function Filters({ sendQuery }) {
           onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
         />
       </Col>
-      <Col n="1">
+      <Col n="2">
         <Select
           hint="&nbsp;"
           label="End year"
@@ -107,7 +115,7 @@ export default function Filters({ sendQuery }) {
           onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
         />
       </Col>
-      <Col n="2">
+      <Col n="4">
         <CheckboxGroup
           hint="&nbsp;"
           legend="&nbsp;"
@@ -126,6 +134,17 @@ export default function Filters({ sendQuery }) {
         >
           Search works
         </Button>
+      </Col>
+      <Col n="12">
+        <TagInput
+          hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
+          label="Affiliation name"
+          message={message}
+          messageType={messageType}
+          onTagsChange={onTagsChange}
+          tags={tags}
+          onInputHandler={setOnInputAffiliationsHandler}
+        />
       </Col>
     </Row>
   );

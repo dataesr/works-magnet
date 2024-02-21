@@ -6,20 +6,28 @@ const isRor = (affiliation) => rorRegex.test(affiliation);
 const getRorNames = async (affiliation) => {
   const affiliationId = affiliation.replace('https://ror.org/', '').replace('ror.org/', '');
   if (!isRor(affiliationId)) return [];
-  let response = await fetch(`https://api.ror.org/organizations/${affiliation}`);
+  let response = await fetch(`https://api.ror.org/organizations/${affiliationId}`);
   response = await response.json();
-  const queries = response.relationships.filter((relationship) => relationship.type === 'Child').map((relationship) => getRorNames(relationship.id));
-  let childrenNames = [];
-  if (queries.length > 0) {
-    childrenNames = await Promise.all(queries);
+  const children = response.relationships.filter((relationship) => relationship.type === 'Child');
+  let childrenRes = [];
+  const childrenQueries = [];
+  children.forEach((child) => {
+    childrenQueries.push(getRorNames(child.id));
+  });
+  if (childrenQueries.length > 0) {
+    childrenRes = await Promise.all(childrenQueries);
   }
-  return [
-    response.name,
-    ...response.acronyms,
-    ...response.aliases,
-    ...response.labels.map((item) => item.label),
-    ...childrenNames.flat(),
-  ];
+  const topLevel = [{
+    rorId: affiliationId,
+    children,
+    names: [
+      response.name,
+      ...response.acronyms,
+      ...response.aliases,
+      ...response.labels.map((item) => item.label),
+    ] }];
+  const ans = topLevel.concat(childrenRes.flat());
+  return ans;
 };
 
 export {
