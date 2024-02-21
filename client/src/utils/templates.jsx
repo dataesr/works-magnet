@@ -18,7 +18,7 @@ const affiliationsTemplate = (rowData) => (
 const allIdsTemplate = (rowData) => {
   let html = '<ul>';
   rowData.allIds.forEach((id) => {
-    html += `<li key="${id.id_value}">${id.id_type}: `;
+    html += `<li key="${id.id_value}">${id.id_type}:<br>`;
     const idLink = getIdLink(id.id_type, id.id_value);
     html += idLink ? `<a target="_blank" href="${idLink}">${id.id_value}</a>` : `<span>${id.id_value}</span>`;
     html += '</li>';

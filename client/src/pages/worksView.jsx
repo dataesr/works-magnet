@@ -45,6 +45,9 @@ export default function WorksView({
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} />
       <Column field="authors" header="Authors" body={authorsTemplate} filter filterMatchMode="contains" showFilterMenu={false} filterPlaceholder="Search by author" style={{ minWidth: '200px' }} />
       <Column field="title" header="Title" filter filterMatchMode="contains" showFilterMenu={false} filterPlaceholder="Search by title" style={{ minWidth: '10px' }} />
+      <Column field="fr_publications_linked" header="Linked Article" />
+      <Column field="fr_authors_orcid" header="My institution author ORCID" />
+      <Column field="fr_authors_name" header="My institution author name" />
     </DataTable>
   );
 }

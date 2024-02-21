@@ -16,32 +16,40 @@ router.route('/works')
         webSocketServer.broadcast(0);
         console.time(`1. Requests ${options}`);
         options.affiliationStrings = options.affiliationStrings.split(',');
-        if (options?.rors) {
+        if (options?.rors?.length > 0) {
           options.rors = options.rors.split(',');
         }
         options.datasets = options.datasets === 'true';
         options.years = range(options.startYear, options.endYear);
         const optionsWithAffiliationStringsOnly = {
-          datasets: options.datasets, years: options.years, affiliationStrings: options.affiliationStrings, rors: [],
+          datasets: options.datasets, years: options.years, affiliationStrings: options.affiliationStrings.slice(0, 10), rors: [],
         };
-        const optionsWithRorOnly = {
-          datasets: options.datasets, years: options.years, affiliationStrings: [], rors: options.rors,
-        };
-        console.log('options00A', options);
-        console.log('options00', optionsWithAffiliationStringsOnly);
-        const responses = await Promise.all([
-          getFosmWorks({ options }),
-          getOpenAlexPublications({ options: optionsWithAffiliationStringsOnly }),
-          getOpenAlexPublications({ options: optionsWithRorOnly }),
-        ]);
+        const queries = [];
+        queries.push(getFosmWorks({ options }));
+        queries.push(getOpenAlexPublications({ options: optionsWithAffiliationStringsOnly }));
+        if (options.rors?.length > 0) {
+          const optionsWithRorOnly = {
+            datasets: options.datasets, years: options.years, affiliationStrings: [], rors: options.rors,
+          };
+          queries.push(getOpenAlexPublications({ options: optionsWithRorOnly }));
+        }
+        const responses = await Promise.all(queries);
         console.timeEnd(`1. Requests ${options}`);
         webSocketServer.broadcast(1);
         console.time(`2. Concat ${options}`);
-        const works = [
-          ...responses[0],
-          ...responses[1],
-          ...responses[2],
-        ];
+        let works = [];
+        if (options.rors?.length > 0) {
+          works = [
+            ...responses[0],
+            ...responses[1],
+            ...responses[2],
+          ];
+        } else {
+          works = [
+            ...responses[0],
+            ...responses[1],
+          ];
+        }
         console.timeEnd(`2. Concat ${options}`);
         webSocketServer.broadcast(2);
         console.time(`3. Dedup ${options}`);

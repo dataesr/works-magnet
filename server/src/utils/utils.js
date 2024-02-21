@@ -8,6 +8,18 @@ const cleanId = (id) => (
     : null
 );
 
+const intersectArrays = (array1, array2) => {
+  const res = array1.filter((value) => array2.includes(value));
+  return res.length > 0;
+};
+
+const getAuthorOrcid = (elt) => {
+  const name = elt?.author?.name?.replace(',', ' ') || '';
+  const orcid = elt?.author?.nameIdentifiers?.filter((ident) => ident.nameIdentifierScheme === 'ORCID')[0].nameIdentifier;
+  const res = name.concat(' ').concat(orcid);
+  return res;
+};
+
 const countUniqueValues = ({ data = [], field }) => {
   const map = data
     .map((item) => item?.[field] ?? '')
@@ -133,6 +145,8 @@ const range = (startYear, endYear = new Date().getFullYear()) => {
 export {
   cleanId,
   countUniqueValues,
+  getAuthorOrcid,
+  intersectArrays,
   range,
   removeDiacritics,
 };

@@ -1,4 +1,4 @@
-import { cleanId, removeDiacritics } from './utils';
+import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics } from './utils';
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
@@ -32,16 +32,18 @@ const getFosmQuery = (options, pit, searchAfter) => {
   options.affiliationStrings.forEach((affiliation) => {
     query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
   });
-  options.rors.forEach((ror) => {
-    query.query.bool.should.push({ match: { rors: ror } });
-  });
+  if (options.rors?.length > 0) {
+    options.rors.forEach((ror) => {
+      query.query.bool.should.push({ match: { rors: ror } });
+    });
+  }
   query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
   // Exclude files for Datacite
   query.query.bool.must_not.push({ terms: { genre: ['file', 'version', 'file_'] } });
   query.query.bool.minimum_should_match = 1;
   query._source = [
-    'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher',
-    'publisher_dissemination', 'publisher_raw', 'title', 'year',
+    'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher', 'format',
+    'publisher_dissemination', 'publisher_raw', 'title', 'year', 'fr_reasons_concat', 'fr_publications_linked', 'fr_authors_name', 'fr_authors_orcid',
   ];
   query.sort = ['_shard_doc'];
   if (pit) {
@@ -93,10 +95,16 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['fosm'],
         id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
-        publisher: result._source?.publisher_dissemination ?? result._source?.publisher ?? '',
+        publisher: result._source?.publisher_dissemination ?? result._source?.publisher ?? result._source?.publisher_raw ?? '',
         title: result._source.title,
         type: result._source?.genre_raw ?? result._source.genre,
         year: result?._source?.year?.toString() ?? '',
+        format: result?._source?.format?.toString() ?? '',
+        fr_reasons: result?._source?.fr_reasons_concat?.toString() ?? '',
+        fr_publications_linked: result?._source?.fr_publications_linked?.toString() ?? '',
+        fr_publications_linked: result?._source?.fr_publications_linked?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => el.doi).toString() ?? '',
+        fr_authors_name: result?._source?.fr_authors_name?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => el.author.name).toString() ?? '',
+        fr_authors_orcid: result?._source?.fr_authors_orcid?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => getAuthorOrcid(el)).toString() ?? '',
       })));
       if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || results.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
