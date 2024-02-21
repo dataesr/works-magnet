@@ -21,9 +21,18 @@ router.route('/works')
         }
         options.datasets = options.datasets === 'true';
         options.years = range(options.startYear, options.endYear);
+        const optionsWithAffiliationStringsOnly = {
+          datasets: options.datasets, years: options.years, affiliationStrings: options.affiliationStrings, rors: [],
+        };
+        const optionsWithRorOnly = {
+          datasets: options.datasets, years: options.years, affiliationStrings: [], rors: options.rors,
+        };
+        console.log('options00A', options);
+        console.log('options00', optionsWithAffiliationStringsOnly);
         const responses = await Promise.all([
           getFosmWorks({ options }),
-          getOpenAlexPublications({ options }),
+          getOpenAlexPublications({ options: optionsWithAffiliationStringsOnly }),
+          getOpenAlexPublications({ options: optionsWithRorOnly }),
         ]);
         console.timeEnd(`1. Requests ${options}`);
         webSocketServer.broadcast(1);
@@ -31,6 +40,7 @@ router.route('/works')
         const works = [
           ...responses[0],
           ...responses[1],
+          ...responses[2],
         ];
         console.timeEnd(`2. Concat ${options}`);
         webSocketServer.broadcast(2);

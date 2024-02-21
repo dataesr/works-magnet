@@ -41,7 +41,7 @@ const getFosmQuery = (options, pit, searchAfter) => {
   query.query.bool.minimum_should_match = 1;
   query._source = [
     'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher',
-    'publisher_dissemination', 'title', 'year',
+    'publisher_dissemination', 'publisher_raw', 'title', 'year',
   ];
   query.sort = ['_shard_doc'];
   if (pit) {
@@ -175,6 +175,9 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
   if (options.affiliationStrings.length) {
     url += `,raw_affiliation_string.search:(${options.affiliationStrings.map((aff) => `"${aff}"`).join(' OR ')})`;
+  }
+  if (options.rors.length) {
+    url += `,authorships.institutions.ror:(${options.rors.join('|')})`;
   }
   if (options.datasets) {
     url += ',type:dataset';
