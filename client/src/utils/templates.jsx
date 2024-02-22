@@ -27,6 +27,19 @@ const allIdsTemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
+//TODO: is there a way not to duplicate code : linkedDOITemplate and allIdsTemplate are the same but do not use the same field
+const linkedDOITemplate = (rowData) => {
+  let html = '<ul>';
+  rowData.fr_publications_linked.forEach((id) => {
+    html += `<li key="${id.id_value}">${id.id_type}:<br>`;
+    const idLink = getIdLink(id.id_type, id.id_value);
+    html += idLink ? `<a target="_blank" href="${idLink}">${id.id_value}</a>` : `<span>${id.id_value}</span>`;
+    html += '</li>';
+  });
+  html += '</ul>';
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
 const rorTemplate = (rowData) => {
   let html = '<ul>';
   rowData.rors.forEach((id) => {
@@ -99,6 +112,7 @@ export {
   datasourceTemplate,
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
+  linkedDOITemplate,
   nameTemplate,
   rorTemplate,
   statusTemplate,

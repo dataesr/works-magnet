@@ -67,6 +67,15 @@ const getFosmAffiliation = (aff) => {
   return { rawAffiliation, source, key, label };
 };
 
+const getLinkedDoi = (frPublicationsLinked, options) => {
+  const relevantPubli = frPublicationsLinked?.filter((el) => intersectArrays(el?.rors || [], options.rors)) || [];
+  const res = [];
+  relevantPubli.forEach((p) => {
+    res.push({ id_value: p.doi, id_type: 'doi' });
+  });
+  return res;
+};
+
 const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
@@ -98,7 +107,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
       // eslint-disable-next-line no-param-reassign
       results = results.concat(hits.map((result) => ({
         // Filter ids on unique values
-	      affiliations: result._source.affiliations?.map((affiliation) => getFosmAffiliation(affiliation)).filter((affiliation) => !!affiliation?.rawAffiliation),
+        affiliations: result._source.affiliations?.map((affiliation) => getFosmAffiliation(affiliation)).filter((affiliation) => !!affiliation?.rawAffiliation),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['fosm'],
@@ -109,8 +118,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
         year: result?._source?.year?.toString() ?? '',
         format: result?._source?.format?.toString() ?? '',
         fr_reasons: result?._source?.fr_reasons_concat?.toString() ?? '',
-        fr_publications_linked: result?._source?.fr_publications_linked?.toString() ?? '',
-        fr_publications_linked: result?._source?.fr_publications_linked?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => el.doi).toString() ?? '',
+        fr_publications_linked: getLinkedDoi(result?._source?.fr_publications_linked, options),
         fr_authors_name: result?._source?.fr_authors_name?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => el.author.name).toString() ?? '',
         fr_authors_orcid: result?._source?.fr_authors_orcid?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => getAuthorOrcid(el)).toString() ?? '',
       })));

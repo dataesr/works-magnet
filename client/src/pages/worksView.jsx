@@ -7,6 +7,7 @@ import {
   allIdsTemplate,
   authorsTemplate,
   datasourceTemplate,
+  linkedDOITemplate,
   statusTemplate,
 } from '../utils/templates';
 
@@ -45,7 +46,7 @@ export default function WorksView({
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} />
       <Column field="authors" header="Authors" body={authorsTemplate} style={{ minWidth: '200px' }} />
       <Column field="title" header="Title" style={{ minWidth: '200px' }} />
-      <Column field="fr_publications_linked" header="Linked Article" />
+      <Column field="fr_publications_linked" header="Linked Article" body={linkedDOITemplate} />
       <Column field="fr_authors_orcid" header="My institution author ORCID" />
       <Column field="fr_authors_name" header="My institution author name" />
     </DataTable>

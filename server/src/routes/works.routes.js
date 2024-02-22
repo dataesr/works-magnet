@@ -21,6 +21,7 @@ router.route('/works')
         }
         options.datasets = options.datasets === 'true';
         options.years = range(options.startYear, options.endYear);
+        // TODO make multiple call rather than using only the first 10!
         const optionsWithAffiliationStringsOnly = {
           datasets: options.datasets, years: options.years, affiliationStrings: options.affiliationStrings.slice(0, 10), rors: [],
         };

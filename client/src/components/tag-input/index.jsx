@@ -39,6 +39,7 @@ export default function TagInput({
 
   const handleDeleteClick = (tag) => {
     const newValues = [...values.filter((el) => el !== tag)];
+    // TODO this is buggy now, deleted tags should be memorized in the URL (searchParams)
     setValues(newValues);
     onTagsChange(newValues);
   };
