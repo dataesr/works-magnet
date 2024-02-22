@@ -28,7 +28,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => normalizeName(affiliation.name).includes(normalizeName(filteredAffiliationName))
+      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName))
         && filteredStatus.includes(affiliation.status));
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
@@ -61,7 +61,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
         </Col>
       </Row>
       <Row gutters>
-        <Col n="9" offset="2">
+        <Col n="12" offset="0">
           <TextInput
             label="Search in affiliations name"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
@@ -88,9 +88,9 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
           </CheckboxGroup>
         </Col>
       */ }
-        <Col n="10">
+        <Col n="12">
           <AffiliationsView
-            allAffiliations={filteredAffiliations}
+            allAffiliations={filteredAffiliations.slice(1)}
             selectedAffiliations={selectedAffiliations}
             setSelectedAffiliations={setSelectedAffiliations}
           />

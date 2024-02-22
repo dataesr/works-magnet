@@ -59,6 +59,14 @@ const getFosmQuery = (options, pit, searchAfter) => {
   return query;
 };
 
+const getFosmAffiliation = (aff) => {
+  const source = 'FOSM';
+  const rawAffiliation = aff.name || '';
+  const key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
+  const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
+  return { rawAffiliation, source, key, label };
+};
+
 const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
@@ -90,7 +98,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
       // eslint-disable-next-line no-param-reassign
       results = results.concat(hits.map((result) => ({
         // Filter ids on unique values
-        affiliations: result._source.affiliations?.map((affiliation) => affiliation.name).filter((affiliation) => !!affiliation),
+	      affiliations: result._source.affiliations?.map((affiliation) => getFosmAffiliation(affiliation)).filter((affiliation) => !!affiliation?.rawAffiliation),
         allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
         authors: (result._source?.authors ?? []).map((author) => author.full_name),
         datasource: ['fosm'],
@@ -177,6 +185,22 @@ const getTypeFromOpenAlex = (type) => {
   return newType;
 };
 
+const getOpenAlexAffiliation = (author) => {
+  const source = 'OpenAlex';
+  const rawAffiliation = author.raw_affiliation_string;
+  let key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
+  const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
+  const rors = [];
+  author?.institutions?.forEach((inst) => {
+    if (inst.ror) {
+      const rorElt = { rorId: (inst.ror).replace('https://ror.org/', ''), rorName: inst.display_name, rorCountry: inst.country_code };
+      key = key.concat('##').concat(rorElt.rorId);
+      rors.push(rorElt);
+    }
+  });
+  return { rawAffiliation, rors, source, key, label };
+};
+
 const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = []) => {
   let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
@@ -209,7 +233,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     .then((response) => {
       const hits = response?.results ?? [];
       const results = previousResponse.concat(hits.map((result) => ({
-        affiliations: result?.authorships?.map((author) => author.raw_affiliation_strings).flat().filter((affiliation) => !!affiliation),
+        affiliations: result?.authorships?.map((author) => getOpenAlexAffiliation(author)).flat().filter((affiliation) => !!affiliation.rawAffiliation),
         allIds: Object.keys(result.ids).map((key) => ({ id_type: key, id_value: cleanId(result.ids[key]) })),
         authors: result?.authorships?.map((author) => author.author.display_name),
         datasource: ['openalex'],
@@ -235,25 +259,36 @@ const getOpenAlexPublications = async ({ options }) => {
 };
 
 const groupByAffiliations = ({ options, works }) => {
-  const normalizedAffiliations = options.affiliationStrings.map((affiliation) => removeDiacritics(affiliation));
+  // const normalizedAffiliations = options.affiliationStrings.map((affiliation) => removeDiacritics(affiliation));
+  const inputAffiliationsNormalized = options.affiliationStrings.map((affiliation) => removeDiacritics(affiliation));
+  const rgxStr = inputAffiliationsNormalized.map((x) => '\\b'.concat(x).concat('\\b')).join('|');
+  const rgx = new RegExp(rgxStr, 'gi');
+
   // Compute distinct affiliations of works
   let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
     const { affiliations = [], id } = work;
     const { length } = affiliations;
     for (let i = 0; i < length; i += 1) {
       const affiliation = affiliations[i];
-      const normalizedAffiliation = removeDiacritics(affiliation);
-      if (normalizedAffiliations.some((aff) => normalizedAffiliation.includes(aff))) {
+      const normalizedAffiliation = affiliation.key;
+      const displayAffiliation = affiliation.label.replace(rgx, '<b>$&</b>');
+      if (displayAffiliation.includes('</b>')) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
           deduplicatedAffiliations[normalizedAffiliation].works.push(id);
         } else {
           // eslint-disable-next-line no-param-reassign
           deduplicatedAffiliations[normalizedAffiliation] = {
-            name: affiliation,
-            nameHtml: normalizedAffiliations.reduce((acc, cur) => acc.replace(cur, `<b>${cur}</b>`), normalizedAffiliation),
+            name: affiliation.rawAffiliation,
+            rors: affiliation.rors || [],
+            // nameHtml: displayAffiliation.reduce((acc, cur) => acc.replace(cur, `<b>${cur}</b>`), displayAffiliation),
+            nameHtml: displayAffiliation,
+            key: affiliation.key,
             status: 'tobedecided',
             works: [id],
           };
+          if (affiliation.key.includes('essec business school cergy [ source: OpenAlex ]')) {
+            console.log('ttttt', affiliation.key);
+          }
         }
       }
     }

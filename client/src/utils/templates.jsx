@@ -27,6 +27,18 @@ const allIdsTemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
+const rorTemplate = (rowData) => {
+  let html = '<ul>';
+  rowData.rors.forEach((id) => {
+    html += `<li key="${id.rorId}">ror: `;
+    const idLink = 'https://ror.org/'.concat(id.rorId);
+    html += idLink ? `<a target="_blank" href="${idLink}">${id.rorId} (${id.rorName})</a>` : `<span>${id.rorId}</span>`;
+    html += '</li>';
+  });
+  html += '</ul>';
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
 const authorsTemplate = (rowData) => {
   let authorsHtml = `<ul data-tooltip-id="tooltip-author-${rowData.id}">`;
   authorsHtml += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author}</li>`).join('');
@@ -54,6 +66,7 @@ const datasourceTemplate = (rowData) => {
 
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
+    .map((a) => a.rawAffiliation)
     .sort((a, b) => (b.match(regexp)?.length ?? 0) - (a.match(regexp)?.length ?? 0))
     .map((affiliation) => affiliation.replace(regexp, '<b>$&</b>'))
     .filter((affiliation) => affiliation?.length ?? 0)
@@ -87,5 +100,6 @@ export {
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
   nameTemplate,
+  rorTemplate,
   statusTemplate,
 };

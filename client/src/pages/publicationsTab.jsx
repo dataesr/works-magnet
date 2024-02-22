@@ -199,7 +199,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
 
 PublicationsTab.propTypes = {
   publications: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.string).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -210,7 +210,7 @@ PublicationsTab.propTypes = {
   })).isRequired,
   publishers: PropTypes.object.isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.string).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,

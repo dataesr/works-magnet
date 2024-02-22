@@ -20,7 +20,6 @@ export default function Actions({
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
-
   const decidedAffiliations = allAffiliations.filter((affiliation) => affiliation.status !== status.tobedecided.id);
 
   return (
@@ -75,12 +74,13 @@ Actions.propTypes = {
   allAffiliations: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
+    key: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   allDatasets: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
@@ -88,7 +88,7 @@ Actions.propTypes = {
     type: PropTypes.string.isRequired,
   })).isRequired,
   allPublications: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,

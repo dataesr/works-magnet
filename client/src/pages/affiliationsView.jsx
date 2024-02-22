@@ -2,7 +2,7 @@ import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import PropTypes from 'prop-types';
 
-import { nameTemplate, statusTemplate } from '../utils/templates';
+import { nameTemplate, rorTemplate, statusTemplate } from '../utils/templates';
 
 export default function AffiliationsView({
   allAffiliations,
@@ -12,7 +12,7 @@ export default function AffiliationsView({
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
-      dataKey="name"
+      dataKey="key"
       filterDisplay="row"
       metaKeySelection
       onSelectionChange={(e) => setSelectedAffiliations(e.value)}
@@ -35,6 +35,7 @@ export default function AffiliationsView({
       <Column selectionMode="multiple" />
       <Column field="status" header="Status" body={statusTemplate} />
       <Column field="nameHtml" header="Affiliation" body={nameTemplate} sortable />
+      <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} sortable />
       <Column field="worksNumber" header="Number of works" sortable />
     </DataTable>
   );

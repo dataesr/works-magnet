@@ -199,7 +199,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
 
 DatasetsTab.propTypes = {
   datasets: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.string).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -210,7 +210,7 @@ DatasetsTab.propTypes = {
   })).isRequired,
   publishers: PropTypes.object.isRequired,
   selectedDatasets: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     authors: PropTypes.arrayOf(PropTypes.string).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
