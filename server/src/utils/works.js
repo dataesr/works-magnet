@@ -7,7 +7,7 @@ const mergePublications = (publication1, publication2) => {
     : publication1;
   return ({
     ...priorityPublication,
-    affiliations: [...new Set([...publication1.affiliations, ...publication2.affiliations])],
+    affiliations: [...new Set([...publication1.affiliations || [], ...publication2.affiliations])].filter((aff) => aff.length > 0),
     // Filter allIds by unique values
     allIds: Object.values([...publication1.allIds, ...publication2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
     // Filter authors by unique
