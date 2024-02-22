@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import WorksView from './worksView';
 import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
-import { renderButtons } from '../utils/works';
+import { normalizeName, renderButtons } from '../utils/works';
 
 export default function DatasetsTab({ datasets, publishers, selectedDatasets, setSelectedDatasets, tagDatasets, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
@@ -35,7 +35,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredDatasetsTmp = datasets.filter((dataset) => dataset.affiliationsTooltip.includes(filteredAffiliationName)
+      const filteredDatasetsTmp = datasets.filter((dataset) => normalizeName(dataset.affiliationsTooltip).includes(normalizeName(filteredAffiliationName))
         && filteredDatasources.filter((filteredDatasource) => dataset.datasource.includes(filteredDatasource)).length
         && filteredPublishers.includes(dataset.publisher)
         && filteredStatus.includes(dataset.status)

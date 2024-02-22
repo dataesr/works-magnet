@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import WorksView from './worksView';
 import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
-import { renderButtons } from '../utils/works';
+import { normalizeName, renderButtons } from '../utils/works';
 
 export default function PublicationsTab({ publications, publishers, selectedPublications, setSelectedPublications, tagPublications, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
@@ -35,7 +35,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredPublicationsTmp = publications.filter((publication) => publication.affiliationsTooltip.includes(filteredAffiliationName)
+      const filteredPublicationsTmp = publications.filter((publication) => normalizeName(publication.affiliationsTooltip).includes(normalizeName(filteredAffiliationName))
         && filteredDatasources.filter((filteredDatasource) => publication.datasource.includes(filteredDatasource)).length
         && filteredPublishers.includes(publication.publisher)
         && filteredStatus.includes(publication.status)
