@@ -145,7 +145,7 @@ export default function Filters({ sendQuery }) {
           message={message}
           messageType={messageType}
           onTagsChange={onTagsChange}
-          tags={tags}
+          tags={tags} // TODO better UI needed when too much tags, accordion or something
           onInputHandler={setOnInputAffiliationsHandler}
         />
       </Col>
