@@ -8,7 +8,7 @@ import {
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-import WorksView from './worksView';
+import DatasetsView from './datasetsView';
 import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
 import { normalizeName, renderButtons } from '../utils/works';
@@ -186,7 +186,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
           </CheckboxGroup>
         </Col>
         <Col n="10">
-          <WorksView
+          <DatasetsView
             selectedWorks={selectedDatasets}
             setSelectedWorks={setSelectedDatasets}
             works={filteredDatasets}

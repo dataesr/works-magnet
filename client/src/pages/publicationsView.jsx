@@ -11,7 +11,7 @@ import {
   statusTemplate,
 } from '../utils/templates';
 
-export default function WorksView({
+export default function PublicationsView({
   selectedWorks,
   setSelectedWorks,
   works,
@@ -37,23 +37,20 @@ export default function WorksView({
       value={works}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} />
-      <Column field="allIds" header="Ids" body={allIdsTemplate} />
-      <Column field="datasource" header="Source" body={datasourceTemplate} />
-      <Column field="type" header="Type" />
-      <Column field="year" header="Year" />
-      <Column field="publisher" header="Publisher" />
-      <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} />
-      <Column field="authors" header="Authors" body={authorsTemplate} style={{ minWidth: '200px' }} />
-      <Column field="title" header="Title" style={{ minWidth: '200px' }} />
-      <Column field="fr_publications_linked" header="Linked Article" body={linkedDOITemplate} />
-      <Column field="fr_authors_orcid" header="My institution author ORCID" />
-      <Column field="fr_authors_name" header="My institution author name" />
+      <Column field="status" header="Status" body={statusTemplate} style={{ maxWidth: '100px' }} />
+      <Column field="allIds" header="Ids" body={allIdsTemplate} style={{ maxWidth: '180px' }} />
+      <Column field="datasource" header="Source" body={datasourceTemplate} style={{ maxWidth: '80px' }} />
+      <Column field="type" header="Type" style={{ maxWidth: '90px' }} />
+      <Column field="year" header="Year" style={{ maxWidth: '70px' }} />
+      <Column field="publisher" header="Publisher" style={{ maxWidth: '70px' }} />
+      <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} style={{ maxWidth: '220px' }} />
+      <Column field="authors" header="Authors" body={authorsTemplate} style={{ minWidth: '150px' }} />
+      <Column field="title" header="Title" style={{ minWidth: '150px' }} />
     </DataTable>
   );
 }
 
-WorksView.propTypes = {
+PublicationsView.propTypes = {
   selectedWorks: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
