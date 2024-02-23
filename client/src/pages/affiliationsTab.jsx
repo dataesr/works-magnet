@@ -30,6 +30,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
     const timerTmp = setTimeout(() => {
       const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName))
         && filteredStatus.includes(affiliation.status));
+      console.log('tttfilteredAffiliationsTmp', filteredAffiliationsTmp);
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
@@ -44,7 +45,6 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       setFilteredStatus(filteredStatus.concat([st]));
     }
   };
-
   return (
     <>
       <Row>
@@ -90,7 +90,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       */ }
         <Col n="12">
           <AffiliationsView
-            allAffiliations={filteredAffiliations.slice(1)}
+            allAffiliations={filteredAffiliations}
             selectedAffiliations={selectedAffiliations}
             setSelectedAffiliations={setSelectedAffiliations}
           />
