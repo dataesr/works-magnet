@@ -96,11 +96,11 @@ const formatResultFosm = (result, options) => {
   ans.nbOrcid = ans.fr_authors_orcid.length;
   ans.nbAuthorsName = ans.fr_authors_name.length;
   ans.nbPublicationsLinked = ans.fr_publications_linked.length;
-  let levelCertainty = 'medium';
+  let levelCertainty = '2.medium';
   if (ans.nbPublicationsLinked > 0 || ans.nbOrcid > 1 || ans.nbAuthorsName > 1) {
-    levelCertainty = 'high';
+    levelCertainty = '1.high';
   } else if (ans.nbAuthorsName === 1) {
-    levelCertainty = 'low';
+    levelCertainty = '3.low';
   }
   ans.levelCertainty = levelCertainty;
   return ans;

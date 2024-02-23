@@ -45,7 +45,7 @@ export default function DatasetsView({
       <Column field="year" header="Year" style={{ maxWidth: '70px' }} />
       <Column field="publisher" header="Publisher" style={{ maxWidth: '70px' }} />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} style={{ maxWidth: '220px' }} />
-      <Column field="levelCertainty" header="Certainty" style={{ maxWidth: '70px' }} />
+      <Column field="levelCertainty" header="Certainty" style={{ maxWidth: '90px' }} sortable />
       <Column field="fr_publications_linked" header="Linked Article" body={linkedDOITemplate} style={{ maxWidth: '180px' }} />
       <Column field="fr_authors_orcid" header="My institution author ORCID" body={linkedORCIDTemplate} style={{ maxWidth: '150px' }} />
       <Column field="fr_authors_name" header="My institution author name" body={frAuthorsTemplate} style={{ maxWidth: '150px' }} />
