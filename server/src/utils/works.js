@@ -76,6 +76,36 @@ const getLinkedDoi = (frPublicationsLinked, options) => {
   return res;
 };
 
+const formatResultFosm = (result, options) => {
+  const ans = {
+    affiliations: result._source.affiliations?.map((affiliation) => getFosmAffiliation(affiliation)).filter((affiliation) => !!affiliation?.rawAffiliation),
+    allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
+    authors: (result._source?.authors ?? []).map((author) => author.full_name),
+    datasource: ['fosm'],
+    id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
+    publisher: result._source?.publisher_dissemination ?? result._source?.publisher ?? result._source?.publisher_raw ?? '',
+    title: result._source.title,
+    type: result._source?.genre_raw ?? result._source.genre,
+    year: result?._source?.year?.toString() ?? '',
+    format: result?._source?.format?.toString() ?? '',
+    fr_reasons: result?._source?.fr_reasons_concat?.toString() ?? '',
+    fr_publications_linked: getLinkedDoi(result?._source?.fr_publications_linked, options),
+    fr_authors_name: [...new Set(result?._source?.fr_authors_name?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => el.author.name))],
+    fr_authors_orcid: [...new Set(result?._source?.fr_authors_orcid?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => getAuthorOrcid(el)))],
+  };
+  ans.nbOrcid = ans.fr_authors_orcid.length;
+  ans.nbAuthorsName = ans.fr_authors_name.length;
+  ans.nbPublicationsLinked = ans.fr_publications_linked.length;
+  let levelCertainty = 'medium';
+  if (ans.nbPublicationsLinked > 0 || ans.nbOrcid > 1 || ans.nbAuthorsName > 1) {
+    levelCertainty = 'high';
+  } else if (ans.nbAuthorsName === 1) {
+    levelCertainty = 'low';
+  }
+  ans.levelCertainty = levelCertainty;
+  return ans;
+};
+
 const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
@@ -105,23 +135,8 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
     .then((response) => {
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
-      results = results.concat(hits.map((result) => ({
-        // Filter ids on unique values
-        affiliations: result._source.affiliations?.map((affiliation) => getFosmAffiliation(affiliation)).filter((affiliation) => !!affiliation?.rawAffiliation),
-        allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
-        authors: (result._source?.authors ?? []).map((author) => author.full_name),
-        datasource: ['fosm'],
-        id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
-        publisher: result._source?.publisher_dissemination ?? result._source?.publisher ?? result._source?.publisher_raw ?? '',
-        title: result._source.title,
-        type: result._source?.genre_raw ?? result._source.genre,
-        year: result?._source?.year?.toString() ?? '',
-        format: result?._source?.format?.toString() ?? '',
-        fr_reasons: result?._source?.fr_reasons_concat?.toString() ?? '',
-        fr_publications_linked: getLinkedDoi(result?._source?.fr_publications_linked, options),
-        fr_authors_name: result?._source?.fr_authors_name?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => el.author.name).toString() ?? '',
-        fr_authors_orcid: result?._source?.fr_authors_orcid?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => getAuthorOrcid(el)).toString() ?? '',
-      })));
+      results = results.concat(hits.map((result) => (formatResultFosm(result, options)
+      )));
       if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || results.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;

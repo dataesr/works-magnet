@@ -35,6 +35,9 @@ const getIdLink = (type, id) => {
   case 'pmid':
     prefix = 'https://pubmed.ncbi.nlm.nih.gov/';
     break;
+  case 'orcid':
+    prefix = 'https://orcid.org/';
+    break;
   default:
   }
   return (prefix !== null) ? `${prefix}${id}` : false;

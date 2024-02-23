@@ -53,6 +53,31 @@ const worksExampleTemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
+const linkedORCIDTemplate = (rowData) => {
+  let html = '<ul>';
+  const frOrcid = rowData.fr_authors_orcid || [];
+  frOrcid.forEach((id) => {
+    html += `<li key="${id.orcid}">`;
+    const idLink = getIdLink('orcid', id.orcid);
+    html += idLink ? `<a target="_blank" href="${idLink}">${id.name}</a>` : `<span>${id.name}</span>`;
+    html += '</li>';
+  });
+  html += '</ul>';
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
+const frAuthorsTemplate = (rowData) => {
+  let html = '<ul>';
+  const frAuthors = rowData.fr_authors_name || [];
+  frAuthors.forEach((id) => {
+    html += `<li key="${id}">`;
+    html += `<span>${id}</span>`;
+    html += '</li>';
+  });
+  html += '</ul>';
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
 const rorTemplate = (rowData) => {
   let html = '<ul>';
   rowData.rors.forEach((id) => {
@@ -101,7 +126,7 @@ const getAffiliationsHtmlField = (rowData, regexp) => {
   let html = `<ul data-tooltip-id="tooltip-affiliation-${rowData.id}">`;
   html += affiliations.slice(0, 3).map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
   if (affiliations.length > 3) {
-    html += `<li>et al. (${affiliations.length - 3})</li>`;
+    html += `<li>and others (${affiliations.length - 3})</li>`;
   }
   html += '</ul>';
   return html;
@@ -123,11 +148,13 @@ export {
   allIdsTemplate,
   authorsTemplate,
   datasourceTemplate,
+  frAuthorsTemplate,
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
   linkedDOITemplate,
+  linkedORCIDTemplate,
   nameTemplate,
   rorTemplate,
   statusTemplate,
-  worksExampleTemplate
+  worksExampleTemplate,
 };

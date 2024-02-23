@@ -15,9 +15,9 @@ const intersectArrays = (array1, array2) => {
 
 const getAuthorOrcid = (elt) => {
   const name = elt?.author?.name?.replace(',', ' ') || '';
-  const orcid = elt?.author?.nameIdentifiers?.filter((ident) => ident.nameIdentifierScheme === 'ORCID')[0].nameIdentifier;
-  const res = name.concat(' ').concat(orcid);
-  return res;
+  const orcidRaw = elt?.author?.nameIdentifiers?.filter((ident) => ident.nameIdentifierScheme === 'ORCID')[0].nameIdentifier;
+  const orcid = orcidRaw.replace('https://orcid.org/', '').replace('http://orcid.org', '').replace('orcid.org/', '');
+  return { name, orcid };
 };
 
 const countUniqueValues = ({ data = [], field }) => {
