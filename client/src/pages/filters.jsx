@@ -31,21 +31,25 @@ export default function Filters({ sendQuery }) {
       if (searchParams.size === 0) {
         setSearchParams({
           affiliations: [],
+          deletedAffiliations: [],
           datasets: false,
-          endYear: '2021',
-          startYear: '2021',
+          endYear: '2023',
+          startYear: '2023',
         });
         setTags([]);
       } else {
         setCurrentSearchParams({
           affiliations: searchParams.getAll('affiliations'),
+          deletedAffiliations: searchParams.getAll('deletedAffiliations'),
           datasets: searchParams.get('datasets') === 'true',
-          endYear: searchParams.get('endYear'),
-          startYear: searchParams.get('startYear'),
+          endYear: searchParams.get('endYear', '2023'),
+          startYear: searchParams.get('startYear', '2023'),
         });
         const affiliations = searchParams.getAll('affiliations');
+        const deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
         const queries = affiliations.map((affiliation) => getRorData(affiliation));
-        const rorNames = await Promise.all(queries);
+        let rorNames = await Promise.all(queries);
+        rorNames = rorNames.filter((aff) => !deletedAffiliations.includes(aff));
         const allTags = [];
         const knownTags = {};
         affiliations.forEach((affiliation) => {
@@ -58,14 +62,18 @@ export default function Filters({ sendQuery }) {
         });
         rorNames.flat().forEach((rorElt) => {
           if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
-            allTags.push({ label: rorElt.rorId, source: 'ror', type: 'rorId' });
-            knownTags[rorElt.rorId.toLowerCase()] = 1;
+            if (!deletedAffiliations.includes(rorElt.rorId)) {
+              allTags.push({ label: rorElt.rorId, source: 'ror', type: 'rorId' });
+              knownTags[rorElt.rorId.toLowerCase()] = 1;
+            }
           }
           rorElt.names.forEach((rorName) => {
             if (knownTags[rorName.toLowerCase()] === undefined) {
-              const isDangerous = rorName.length < 4;
-              allTags.push({ label: rorName, source: 'ror', type: 'affiliationString', rorId: rorElt.rorId, isDangerous });
-              knownTags[rorName.toLowerCase()] = 1;
+              if (!deletedAffiliations.includes(rorName)) {
+                const isDangerous = rorName.length < 4;
+                allTags.push({ label: rorName, source: 'ror', type: 'affiliationString', rorId: rorElt.rorId, isDangerous });
+                knownTags[rorName.toLowerCase()] = 1;
+              }
             }
           });
         });
@@ -75,8 +83,13 @@ export default function Filters({ sendQuery }) {
     getData();
   }, [searchParams, setSearchParams]);
 
-  const onTagsChange = async (affiliations) => {
-    setSearchParams({ ...currentSearchParams, affiliations: affiliations.filter((affiliation) => affiliation.source === 'user').map((affiliation) => affiliation.label) });
+  const onTagsChange = async (affiliations, deletedAffiliations) => {
+    const previousDeleted = currentSearchParams.deletedAffiliations || [];
+    setSearchParams({
+      ...currentSearchParams,
+      affiliations: affiliations.filter((affiliation) => affiliation.source === 'user').map((affiliation) => affiliation.label),
+      deletedAffiliations: deletedAffiliations.filter((affiliation) => affiliation.source !== 'user').map((affiliation) => affiliation.label).concat(previousDeleted),
+    });
   };
 
   const checkAndSendQuery = () => {
@@ -141,7 +154,7 @@ export default function Filters({ sendQuery }) {
       <Col n="12">
         <TagInput
           hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-          label="Affiliation name"
+          label="Affiliation name, RoR identifier"
           message={message}
           messageType={messageType}
           onTagsChange={onTagsChange}

@@ -80,7 +80,7 @@ Actions.propTypes = {
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   allDatasets: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    affiliations: PropTypes.arrayOf(PropTypes.object),
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,

@@ -11,9 +11,11 @@ export default function TagInput({
   onTagsChange,
   placeholder,
   tags,
+  deletedTags,
 }) {
   const [input, setInput] = useState('');
   const [values, setValues] = useState(tags);
+  const [excludedValues, setExcludedValues] = useState(deletedTags);
 
   const handleKeyDown = (e) => {
     if ([9, 13].includes(e.keyCode) && input) {
@@ -25,7 +27,7 @@ export default function TagInput({
       const newValues = [...values, { label: input.trim(), source: 'user' }];
       setValues(newValues);
       setInput('');
-      onTagsChange(newValues);
+      onTagsChange(newValues, excludedValues);
     }
   };
 
@@ -38,13 +40,18 @@ export default function TagInput({
   }, [input, onInputHandler]);
 
   const handleDeleteClick = (tag) => {
+    const deletedValues = excludedValues;
+    console.log('handleDeleteClick - deletedValues', deletedValues);
+    deletedValues.push(tag);
     const newValues = [...values.filter((el) => el !== tag)];
-    // TODO this is buggy now, deleted tags should be memorized in the URL (searchParams)
     setValues(newValues);
-    onTagsChange(newValues);
+    setExcludedValues(deletedValues);
+    console.log('deletedValues', deletedValues);
+    onTagsChange(newValues, deletedValues);
   };
 
   useEffect(() => setValues(tags), [tags]);
+  useEffect(() => setExcludedValues(deletedTags), [deletedTags]);
 
   return (
     <div>
@@ -95,6 +102,7 @@ TagInput.propTypes = {
   onTagsChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   tags: PropTypes.arrayOf(PropTypes.object),
+  deletedTags: PropTypes.arrayOf(PropTypes.object),
 };
 
 TagInput.defaultProps = {
@@ -104,4 +112,5 @@ TagInput.defaultProps = {
   onInputHandler: () => { },
   placeholder: '',
   tags: [],
+  deletedTags: [],
 };

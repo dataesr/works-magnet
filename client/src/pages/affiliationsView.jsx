@@ -2,7 +2,7 @@ import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import PropTypes from 'prop-types';
 
-import { nameTemplate, rorTemplate, statusTemplate } from '../utils/templates';
+import { nameTemplate, rorTemplate, statusTemplate, worksExampleTemplate } from '../utils/templates';
 
 export default function AffiliationsView({
   allAffiliations,
@@ -33,10 +33,11 @@ export default function AffiliationsView({
       value={allAffiliations}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} />
-      <Column field="nameHtml" header="Affiliation" body={nameTemplate} sortable />
-      <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} sortable />
-      <Column field="worksNumber" header="Number of works" sortable />
+      <Column field="status" header="Status" body={statusTemplate} style={{ maxWidth: '150px' }} />
+      <Column field="nameHtml" header="Affiliation" body={nameTemplate} style={{ maxWidth: '250px' }} />
+      <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '150px' }} />
+      <Column field="worksExamples" header="Examples of works" body={worksExampleTemplate} style={{ maxWidth: '200px' }} />
+      <Column field="worksNumber" header="Number of works" style={{ maxWidth: '100px' }} sortable />
     </DataTable>
   );
 }

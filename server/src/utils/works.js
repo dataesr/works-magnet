@@ -283,6 +283,9 @@ const groupByAffiliations = ({ options, works }) => {
       if (displayAffiliation.includes('</b>')) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
           deduplicatedAffiliations[normalizedAffiliation].works.push(id);
+          if (deduplicatedAffiliations[normalizedAffiliation].worksExample.length < 10) {
+            deduplicatedAffiliations[normalizedAffiliation].worksExample.push(work.allIds);
+          }
         } else {
           // eslint-disable-next-line no-param-reassign
           deduplicatedAffiliations[normalizedAffiliation] = {
@@ -293,10 +296,8 @@ const groupByAffiliations = ({ options, works }) => {
             key: affiliation.key,
             status: 'tobedecided',
             works: [id],
+            worksExample: [work.allIds],
           };
-          if (affiliation.key.includes('essec business school cergy [ source: OpenAlex ]')) {
-            console.log('ttttt', affiliation.key);
-          }
         }
       }
     }
@@ -306,10 +307,12 @@ const groupByAffiliations = ({ options, works }) => {
   allAffiliationsTmp = Object.values(allAffiliationsTmp)
     .map((affiliation, index) => {
       const uniqueWorks = [...new Set(affiliation.works)];
+      const uniqueWorksExample = [...new Set(affiliation.worksExample.flat())];
       return ({
         ...affiliation,
         id: index.toString(),
         works: uniqueWorks,
+        worksExample: uniqueWorksExample,
         worksNumber: uniqueWorks.length,
       });
     });

@@ -78,15 +78,15 @@ export default function Home() {
   useEffect(() => {
     if (data) {
       // TODO do it on the API
-      const allDatasetsTmp = data.datasets.results
-        .map((dataset) => ({
+      const allDatasetsTmp = data.datasets?.results
+        ?.map((dataset) => ({
           ...dataset,
           affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(dataset),
           status: status.tobedecided.id,
         }));
-      const allPublicationsTmp = data.publications.results
-        .map((publication) => ({
+      const allPublicationsTmp = data.publications?.results
+        ?.map((publication) => ({
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(publication),
@@ -164,7 +164,7 @@ export default function Home() {
             <PageSpinner />
           </>
         )}
-        {!isFetching && (allAffiliations.length > 0 || allDatasets.length > 0 || allPublications.length > 0) && (
+        {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
           <Tabs defaultActiveTab={0}>
             <Tab label="Grouped affiliations of works">
               <AffiliationsTab
@@ -176,13 +176,13 @@ export default function Home() {
             </Tab>
             <Tab label="List all publications">
               <PublicationsTab
-                publishers={data.publications.publishers}
+                publishers={data.publications?.publishers || []}
                 publications={allPublications}
                 selectedPublications={selectedPublications}
                 setSelectedPublications={setSelectedPublications}
                 tagPublications={tagPublications}
-                types={data.publications.types}
-                years={data.publications.years}
+                types={data.publications?.types || []}
+                years={data.publications?.years || []}
               />
             </Tab>
             <Tab label="List all datasets">
