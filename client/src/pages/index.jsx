@@ -17,7 +17,7 @@ import Beta from '../components/beta';
 import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import PublicationsTab from './publicationsTab';
-import { getAffiliationsHtmlField, getAffiliationsTooltipField } from '../utils/templates';
+import { getAffiliationsHtmlField, getAffiliationsTooltipField, getAllInfos } from '../utils/templates';
 import { getData } from '../utils/works';
 import { status } from '../config';
 
@@ -83,6 +83,7 @@ export default function Home() {
           ...dataset,
           affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(dataset),
+          allInfos: getAllInfos(dataset),
           status: status.tobedecided.id,
         }));
       const allPublicationsTmp = data.publications?.results
@@ -90,6 +91,7 @@ export default function Home() {
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(publication),
+          allInfos: getAllInfos(publication),
           status: status.tobedecided.id,
         }));
       setAllAffiliations(data.affiliations);

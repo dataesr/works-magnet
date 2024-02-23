@@ -35,7 +35,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredDatasetsTmp = datasets.filter((dataset) => normalizeName(dataset.affiliationsTooltip).includes(normalizeName(filteredAffiliationName))
+      const filteredDatasetsTmp = datasets.filter((dataset) => normalizeName(dataset.allInfos).includes(normalizeName(filteredAffiliationName))
         && filteredDatasources.filter((filteredDatasource) => dataset.datasource.includes(filteredDatasource)).length
         && filteredPublishers.includes(dataset.publisher)
         && filteredStatus.includes(dataset.status)
@@ -106,7 +106,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
       <Row gutters>
         <Col n="9" offset="2">
           <TextInput
-            label="Search in affiliations name"
+            label="Search in any field"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
             value={filteredAffiliationName}
           />

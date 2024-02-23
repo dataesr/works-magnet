@@ -35,7 +35,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredPublicationsTmp = publications.filter((publication) => normalizeName(publication.affiliationsTooltip).includes(normalizeName(filteredAffiliationName))
+      const filteredPublicationsTmp = publications.filter((publication) => normalizeName(publication.allInfos).includes(normalizeName(filteredAffiliationName))
         && filteredDatasources.filter((filteredDatasource) => publication.datasource.includes(filteredDatasource)).length
         && filteredPublishers.includes(publication.publisher)
         && filteredStatus.includes(publication.status)
@@ -106,7 +106,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
       <Row gutters>
         <Col n="9" offset="2">
           <TextInput
-            label="Search in affiliations name"
+            label="Search in any field"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
             value={filteredAffiliationName}
           />

@@ -139,6 +139,11 @@ const getAffiliationsTooltipField = (rowData) => {
   return html;
 };
 
+const getAllInfos = (rowData) => {
+  const x = JSON.stringify(rowData);
+  return x;
+};
+
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
 const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
@@ -151,6 +156,7 @@ export {
   frAuthorsTemplate,
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
+  getAllInfos,
   linkedDOITemplate,
   linkedORCIDTemplate,
   nameTemplate,

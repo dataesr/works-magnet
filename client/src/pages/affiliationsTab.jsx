@@ -30,7 +30,6 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
     const timerTmp = setTimeout(() => {
       const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName))
         && filteredStatus.includes(affiliation.status));
-      console.log('tttfilteredAffiliationsTmp', filteredAffiliationsTmp);
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
