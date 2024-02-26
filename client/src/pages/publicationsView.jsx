@@ -24,7 +24,7 @@ export default function PublicationsView({
       metaKeySelection={false}
       onSelectionChange={(e) => setSelectedWorks(e.value)}
       paginator
-      paginatorPosition="bottom"
+      paginatorPosition="top bottom"
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink RowsPerPageDropdown"
       rows={50}
       rowsPerPageOptions={[50, 200, 1000, 5000]}
