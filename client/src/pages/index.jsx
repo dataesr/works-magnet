@@ -94,9 +94,9 @@ export default function Home() {
           allInfos: getAllInfos(publication),
           status: status.tobedecided.id,
         }));
-      setAllAffiliations(data.affiliations);
-      setAllDatasets(allDatasetsTmp);
-      setAllPublications(allPublicationsTmp);
+      setAllAffiliations(data.affiliations || []);
+      setAllDatasets(allDatasetsTmp || []);
+      setAllPublications(allPublicationsTmp || []);
     }
   }, [data, regexp]);
 
