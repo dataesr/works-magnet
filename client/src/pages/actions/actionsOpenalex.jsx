@@ -4,25 +4,25 @@ import { useSearchParams } from 'react-router-dom';
 
 import ButtonDropdown from '../../components/button-dropdown';
 
-export default function ActionsPublications({
-  allPublications,
+export default function ActionsOpenalex({
+  allOpenalex,
   options,
-  setAllPublications,
+  setAllOpenalex,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   return (
     <Row className="fr-mb-1w">
       <Col className="text-right">
-        <ButtonDropdown data={allPublications} label="publications" searchParams={searchParams} />
+        <ButtonDropdown data={allOpenalex} label="OpenAlex errors" searchParams={searchParams} />
       </Col>
     </Row>
   );
 }
 
-ActionsPublications.propTypes = {
-  allPublications: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+ActionsOpenalex.propTypes = {
+  allOpenalex: PropTypes.arrayOf(PropTypes.shape({
+    affiliations: PropTypes.arrayOf(PropTypes.object),
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
     datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
     id: PropTypes.string.isRequired,
@@ -30,5 +30,5 @@ ActionsPublications.propTypes = {
     type: PropTypes.string.isRequired,
   })).isRequired,
   options: PropTypes.object.isRequired,
-  setAllPublications: PropTypes.func.isRequired,
+  setAllOpenalex: PropTypes.func.isRequired,
 };

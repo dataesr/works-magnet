@@ -22,6 +22,7 @@ export default function AffiliationsView({
       rows={200}
       rowsPerPageOptions={[50, 200, 1000, 5000]}
       scrollable
+      scrollHeight="600px"
       selection={selectedAffiliations}
       selectionPageOnly
       size="small"

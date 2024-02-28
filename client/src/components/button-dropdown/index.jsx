@@ -40,6 +40,15 @@ export default function ButtonDropdown({ data, label, searchParams }) {
             Custom export for French OSM
           </Button>
         )}
+        {label === 'OpenAlex errors' && (
+          <Button
+            onClick={() => export2FosmCsv({ data })}
+            size="sm"
+            disabled
+          >
+            Send feedback to OpenAlex
+          </Button>
+        )}
       </div>
     </div>
   );

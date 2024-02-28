@@ -13,15 +13,11 @@ import Gauge from '../components/gauge';
 import { status } from '../config';
 import { normalizeName, renderButtons } from '../utils/works';
 
-export default function OpenalexTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
+export default function OpenalexTab({ affiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [timer, setTimer] = useState();
-
-  useEffect(() => {
-    setFilteredAffiliations(affiliations);
-  }, [affiliations]);
 
   useEffect(() => {
     if (timer) {
@@ -37,13 +33,6 @@ export default function OpenalexTab({ affiliations, selectedAffiliations, setSel
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [affiliations, filteredAffiliationName, filteredStatus]);
 
-  const onStatusChange = (st) => {
-    if (filteredStatus.includes(st)) {
-      setFilteredStatus(filteredStatus.filter((filteredSt) => filteredSt !== st));
-    } else {
-      setFilteredStatus(filteredStatus.concat([st]));
-    }
-  };
   return (
     <>
       <Row gutters>
@@ -56,29 +45,9 @@ export default function OpenalexTab({ affiliations, selectedAffiliations, setSel
         </Col>
       </Row>
       <Row gutters>
-        { /*
-        <Col n="1">
-          <CheckboxGroup
-            hint="Filter affilitions on the decisions already made"
-            legend="Filter on decision status"
-          >
-            {Object.values(status).map((st) => (
-              <Checkbox
-                checked={filteredStatus.includes(st.id)}
-                key={st.id}
-                label={st.label}
-                onChange={() => onStatusChange(st.id)}
-                size="sm"
-              />
-            ))}
-          </CheckboxGroup>
-        </Col>
-      */ }
         <Col n="12">
           <OpenalexView
             allAffiliations={filteredAffiliations}
-            selectedAffiliations={selectedAffiliations}
-            setSelectedAffiliations={setSelectedAffiliations}
           />
         </Col>
       </Row>
@@ -94,13 +63,4 @@ OpenalexTab.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
-  selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    nameHtml: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    works: PropTypes.arrayOf(PropTypes.string).isRequired,
-    worksNumber: PropTypes.number.isRequired,
-  })).isRequired,
-  setSelectedAffiliations: PropTypes.func.isRequired,
-  tagAffiliations: PropTypes.func.isRequired,
 };

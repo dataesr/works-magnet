@@ -214,14 +214,17 @@ const getOpenAlexAffiliation = (author) => {
   let key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
   const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
   const rors = [];
+  const rorsToCorrect = [];
   author?.institutions?.forEach((inst) => {
     if (inst.ror) {
-      const rorElt = { rorId: (inst.ror).replace('https://ror.org/', ''), rorName: inst.display_name, rorCountry: inst.country_code };
+      const rorId = (inst.ror).replace('https://ror.org/', '');
+      const rorElt = { rorId, rorName: inst.display_name, rorCountry: inst.country_code };
       key = key.concat('##').concat(rorElt.rorId);
       rors.push(rorElt);
+      rorsToCorrect.push(rorId);
     }
   });
-  return { rawAffiliation, rors, source, key, label };
+  return { rawAffiliation, rors, source, key, label, rorsToCorrect };
 };
 
 const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = []) => {
@@ -306,6 +309,8 @@ const groupByAffiliations = ({ options, works }) => {
           deduplicatedAffiliations[normalizedAffiliation] = {
             name: affiliation.rawAffiliation,
             rors: affiliation.rors || [],
+            rorsToCorrect: (affiliation.rorsToCorrect || []).join(';'),
+            hasCorrection: false,
             // nameHtml: displayAffiliation.reduce((acc, cur) => acc.replace(cur, `<b>${cur}</b>`), displayAffiliation),
             nameHtml: displayAffiliation,
             key: affiliation.key,

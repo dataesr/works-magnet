@@ -11,6 +11,7 @@ import useWebSocket from 'react-use-websocket';
 
 import ActionsAffiliations from './actions/actionsAffiliations';
 import ActionsDatasets from './actions/actionsDatasets';
+import ActionsOpenalex from './actions/actionsOpenalex';
 import ActionsPublications from './actions/actionsPublications';
 import AffiliationsTab from './affiliationsTab';
 import { PageSpinner } from '../components/spinner';
@@ -162,11 +163,12 @@ export default function Home() {
         {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
           <Tabs defaultActiveTab={0}>
             <Tab label="Affiliation RoR matching in OpenAlex">
+              <ActionsOpenalex
+                allOpenalex={allAffiliations.filter((aff) => aff.hasCorrection)}
+                options={options}
+              />
               <OpenalexTab
                 affiliations={allAffiliations.filter((aff) => aff.source === 'OpenAlex')}
-                selectedAffiliations={selectedAffiliations}
-                setSelectedAffiliations={setSelectedAffiliations}
-                tagAffiliations={tagAffiliations}
               />
             </Tab>
             <Tab label="List of raw affiliations">

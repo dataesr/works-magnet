@@ -29,6 +29,7 @@ export default function PublicationsView({
       rows={50}
       rowsPerPageOptions={[50, 200, 1000, 5000]}
       scrollable
+      scrollHeight="600px"
       selection={selectedWorks}
       selectionPageOnly
       size="small"
