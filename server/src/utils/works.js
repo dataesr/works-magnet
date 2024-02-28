@@ -309,6 +309,7 @@ const groupByAffiliations = ({ options, works }) => {
             // nameHtml: displayAffiliation.reduce((acc, cur) => acc.replace(cur, `<b>${cur}</b>`), displayAffiliation),
             nameHtml: displayAffiliation,
             key: affiliation.key,
+            source: affiliation.source,
             status: 'tobedecided',
             works: [id],
             worksExample: [work.allIds],

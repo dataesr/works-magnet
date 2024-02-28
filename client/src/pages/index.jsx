@@ -16,6 +16,7 @@ import Stepper from '../components/stepper';
 import Beta from '../components/beta';
 import DatasetsTab from './datasetsTab';
 import Filters from './filters';
+import OpenalexTab from './openalexTab';
 import PublicationsTab from './publicationsTab';
 import { getAffiliationsHtmlField, getAffiliationsTooltipField, getAllInfos } from '../utils/templates';
 import { getData } from '../utils/works';
@@ -137,7 +138,6 @@ export default function Home() {
     setAllAffiliations(allAffiliationsTmp);
     setSelectedAffiliations([]);
   };
-
   return (
     <>
       <Beta />
@@ -167,8 +167,16 @@ export default function Home() {
           </>
         )}
         {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
-          <Tabs defaultActiveTab={0}>
-            <Tab label="Grouped affiliations of works">
+          <Tabs defaultActiveTab={1}>
+            <Tab label="Affiliation RoR matching in OpenAlex">
+              <OpenalexTab
+                affiliations={allAffiliations.filter((aff) => aff.source === 'OpenAlex')}
+                selectedAffiliations={selectedAffiliations}
+                setSelectedAffiliations={setSelectedAffiliations}
+                tagAffiliations={tagAffiliations}
+              />
+            </Tab>
+            <Tab label="List of raw affiliations">
               <AffiliationsTab
                 affiliations={allAffiliations}
                 selectedAffiliations={selectedAffiliations}
@@ -176,7 +184,7 @@ export default function Home() {
                 tagAffiliations={tagAffiliations}
               />
             </Tab>
-            <Tab label="List all publications">
+            <Tab label="List of publications">
               <PublicationsTab
                 publishers={data.publications?.publishers || []}
                 publications={allPublications}
@@ -187,7 +195,7 @@ export default function Home() {
                 years={data.publications?.years || []}
               />
             </Tab>
-            <Tab label="List all datasets">
+            <Tab label="List of datasets">
               <DatasetsTab
                 datasets={allDatasets}
                 publishers={data.datasets.publishers}

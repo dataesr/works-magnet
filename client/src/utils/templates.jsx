@@ -83,7 +83,7 @@ const rorTemplate = (rowData) => {
   rowData.rors.forEach((id) => {
     html += `<li key="${id.rorId}">ror: `;
     const idLink = 'https://ror.org/'.concat(id.rorId);
-    html += idLink ? `<a target="_blank" href="${idLink}">${id.rorId} (${id.rorName})</a>` : `<span>${id.rorId}</span>`;
+    html += idLink ? `<a target="_blank" href="${idLink}">${id.rorId} (${id.rorName} - ${id.rorCountry})</a>` : `<span>${id.rorId}</span>`;
     html += '</li>';
   });
   html += '</ul>';
