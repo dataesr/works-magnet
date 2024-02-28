@@ -22,6 +22,7 @@ export default function ButtonDropdown({ data, label, searchParams }) {
         <Button
           onClick={() => export2Csv({ data, label, searchParams })}
           size="sm"
+          disabled
         >
           Export in CSV (minimal data)
         </Button>
