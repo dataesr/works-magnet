@@ -9,7 +9,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
-import Actions from './actions';
+import ActionsAffiliations from './actions/actionsAffiliations';
+import ActionsDatasets from './actions/actionsDatasets';
+import ActionsPublications from './actions/actionsPublications';
 import AffiliationsTab from './affiliationsTab';
 import { PageSpinner } from '../components/spinner';
 import Stepper from '../components/stepper';
@@ -151,15 +153,6 @@ export default function Home() {
         </Row>
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
-        <Actions
-          allAffiliations={allAffiliations}
-          allDatasets={allDatasets}
-          allPublications={allPublications}
-          options={options}
-          setAllAffiliations={setAllAffiliations}
-          setAllPublications={setAllPublications}
-          tagAffiliations={tagAffiliations}
-        />
         {isFetching && (
           <>
             <Stepper current={current} />
@@ -167,7 +160,7 @@ export default function Home() {
           </>
         )}
         {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
-          <Tabs defaultActiveTab={1}>
+          <Tabs defaultActiveTab={0}>
             <Tab label="Affiliation RoR matching in OpenAlex">
               <OpenalexTab
                 affiliations={allAffiliations.filter((aff) => aff.source === 'OpenAlex')}
@@ -177,6 +170,12 @@ export default function Home() {
               />
             </Tab>
             <Tab label="List of raw affiliations">
+              <ActionsAffiliations
+                allAffiliations={allAffiliations}
+                options={options}
+                setAllAffiliations={setAllAffiliations}
+                tagAffiliations={tagAffiliations}
+              />
               <AffiliationsTab
                 affiliations={allAffiliations}
                 selectedAffiliations={selectedAffiliations}
@@ -185,6 +184,11 @@ export default function Home() {
               />
             </Tab>
             <Tab label="List of publications">
+              <ActionsPublications
+                allPublications={allPublications}
+                options={options}
+                setAllPublications={setAllPublications}
+              />
               <PublicationsTab
                 publishers={data.publications?.publishers || []}
                 publications={allPublications}
@@ -196,6 +200,10 @@ export default function Home() {
               />
             </Tab>
             <Tab label="List of datasets">
+              <ActionsDatasets
+                allDatasets={allDatasets}
+                options={options}
+              />
               <DatasetsTab
                 datasets={allDatasets}
                 publishers={data.datasets.publishers}
