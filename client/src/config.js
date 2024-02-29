@@ -27,4 +27,15 @@ const status = {
   },
 };
 
-export { datasources, status };
+const correction = {
+  corrected: {
+    badgeType: 'error',
+    label: 'CORRECTION',
+  },
+  notcorrected: {
+    badgeType: 'info',
+    label: 'OK',
+  },
+};
+
+export { correction, datasources, status };

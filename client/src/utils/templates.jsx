@@ -4,7 +4,7 @@ import { Badge } from '@dataesr/react-dsfr';
 import { Tooltip } from 'react-tooltip';
 
 import { getIdLink } from './works';
-import { status } from '../config';
+import { correction, status } from '../config';
 
 const affiliationsTemplate = (rowData) => (
   <>
@@ -149,6 +149,8 @@ const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowDa
 
 const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
 
+const hasCorrectionTemplate = (rowData) => <Badge text={rowData.hasCorrection ? correction.corrected.label : correction.notcorrected.label} type={rowData.hasCorrection ? correction.corrected.badgeType : correction.notcorrected.badgeType} />;
+
 export {
   affiliationsTemplate,
   allIdsTemplate,
@@ -158,6 +160,7 @@ export {
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
   getAllInfos,
+  hasCorrectionTemplate,
   linkedDOITemplate,
   linkedORCIDTemplate,
   nameTemplate,

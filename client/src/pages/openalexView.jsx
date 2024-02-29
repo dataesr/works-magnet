@@ -4,7 +4,7 @@ import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import PropTypes from 'prop-types';
 
-import { nameTemplate, rorTemplate, worksExampleTemplate } from '../utils/templates';
+import { hasCorrectionTemplate, nameTemplate, rorTemplate, worksExampleTemplate } from '../utils/templates';
 
 export default function OpenalexView({
   allAffiliations,
@@ -51,9 +51,9 @@ export default function OpenalexView({
       editMode="cell"
     >
       <Column field="nameHtml" header="Raw affiliation" body={nameTemplate} style={{ maxWidth: '250px' }} />
-      <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '150px' }} />
-      <Column field="rorsToCorrect" header="RoRs to correct" style={{ maxWidth: '150px' }} editor={(options) => cellEditor(options)} onCellEditComplete={onCellEditComplete} />
-      <Column field="hasCorrection" header="Corrected ?" style={{ maxWidth: '60px' }} />
+      <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '200px' }} />
+      <Column field="rorsToCorrect" header="RoRs to correct" style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} onCellEditComplete={onCellEditComplete} />
+      <Column field="hasCorrection" header="Corrected ?" body={hasCorrectionTemplate} style={{ maxWidth: '100px' }} sortable />
       <Column field="worksExamples" header="Examples of works" body={worksExampleTemplate} style={{ maxWidth: '200px' }} />
       <Column field="worksNumber" header="Number of works" style={{ maxWidth: '100px' }} sortable />
     </DataTable>
