@@ -70,7 +70,7 @@ export default function TagInput({
     <div>
       <div>
         <Row alignItems="bottom">
-          <Col>
+          <Col className="fr-pb-2w">
             <TextInput
               hint={hint}
               label={label}
@@ -86,7 +86,7 @@ export default function TagInput({
         </Row>
         {structuredTags.map((currentTags) => (
           <Row style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
-            <Col className="fr-p-2w">
+            <Col className="">
               <TagGroup>
                 {currentTags.map((tag) => (
                   <Tag
