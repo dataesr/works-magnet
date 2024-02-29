@@ -1,6 +1,4 @@
 import {
-  Checkbox,
-  CheckboxGroup,
   Col,
   Row,
   TextInput,
@@ -9,11 +7,10 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
 import OpenalexView from './openalexView';
-import Gauge from '../components/gauge';
 import { status } from '../config';
-import { normalizeName, renderButtons } from '../utils/works';
+import { normalizeName } from '../utils/works';
 
-export default function OpenalexTab({ affiliations }) {
+export default function OpenalexTab({ affiliations, setAllOpenalexCorrections }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
@@ -24,8 +21,7 @@ export default function OpenalexTab({ affiliations }) {
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName))
-        && filteredStatus.includes(affiliation.status));
+      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName)));
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
@@ -48,6 +44,7 @@ export default function OpenalexTab({ affiliations }) {
         <Col n="12">
           <OpenalexView
             allAffiliations={filteredAffiliations}
+            setAllOpenalexCorrections={setAllOpenalexCorrections}
           />
         </Col>
       </Row>
@@ -63,4 +60,5 @@ OpenalexTab.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
+  setAllOpenalexCorrections: PropTypes.func.isRequired,
 };

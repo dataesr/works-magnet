@@ -6,8 +6,6 @@ import ButtonDropdown from '../../components/button-dropdown';
 
 export default function ActionsDatasets({
   allDatasets,
-  options,
-  setAllDatasets,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -29,6 +27,4 @@ ActionsDatasets.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  options: PropTypes.object.isRequired,
-  setAllDatasets: PropTypes.func.isRequired,
 };

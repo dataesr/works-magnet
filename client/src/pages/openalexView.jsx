@@ -1,27 +1,30 @@
-import {
-  TextInput,
-} from '@dataesr/react-dsfr';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
+import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
 import PropTypes from 'prop-types';
 
 import { nameTemplate, rorTemplate, worksExampleTemplate } from '../utils/templates';
 
 export default function OpenalexView({
   allAffiliations,
+  setAllOpenalexCorrections,
 }) {
   const cellEditor = (options) => {
     const a = 1;
-    return <TextInput type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
+    return <InputTextarea type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
   };
   const onCellEditComplete = async (e) => {
     const { rowData, column, newValue, field, originalEvent: event } = e;
     if (newValue !== rowData[field]) {
       rowData[field] = newValue;
       rowData.hasCorrection = true;
-      // const newOpenalex = allOpenalex;
-      // newOpenalex[rowData.key] = { rawAffiliationString: rowData.name, currentRors: rowData.rors, proposedRors: newValue };
-      // setAllOpenalex(newOpenalex);
+      const newCorrections = [];
+      allAffiliations.filter((aff) => aff.hasCorrection).forEach((aff) => {
+        const correction = { rawAffiliationString: aff.name, rorsInOpenAlex: aff.rors, correctedRors: aff.rorsToCorrect, worksExample: aff.worksExample };
+        newCorrections.push(correction);
+      });
+      setAllOpenalexCorrections(newCorrections);
     }
   };
 
@@ -66,5 +69,5 @@ OpenalexView.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
-  setAllOpenalex: PropTypes.func.isRequired,
+  setAllOpenalexCorrections: PropTypes.func.isRequired,
 };

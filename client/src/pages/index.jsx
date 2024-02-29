@@ -34,6 +34,7 @@ export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
   const [allDatasets, setAllDatasets] = useState([]);
   const [allPublications, setAllPublications] = useState([]);
+  const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [options, setOptions] = useState({});
   const [current, setCurrent] = useState(1);
   const [regexp, setRegexp] = useState();
@@ -58,6 +59,7 @@ export default function Home() {
     setAllAffiliations([]);
     setAllDatasets([]);
     setAllPublications([]);
+    setAllOpenalexCorrections([]);
     await setOptions(_options);
     refetch();
   };
@@ -164,11 +166,12 @@ export default function Home() {
           <Tabs defaultActiveTab={0}>
             <Tab label="Affiliation RoR matching in OpenAlex">
               <ActionsOpenalex
-                allOpenalex={allAffiliations.filter((aff) => aff.hasCorrection)}
+                allOpenalexCorrections={allOpenalexCorrections}
                 options={options}
               />
               <OpenalexTab
                 affiliations={allAffiliations.filter((aff) => aff.source === 'OpenAlex')}
+                setAllOpenalexCorrections={setAllOpenalexCorrections}
               />
             </Tab>
             <Tab label="List of raw affiliations">
@@ -204,7 +207,6 @@ export default function Home() {
             <Tab label="List of datasets">
               <ActionsDatasets
                 allDatasets={allDatasets}
-                options={options}
               />
               <DatasetsTab
                 datasets={allDatasets}
