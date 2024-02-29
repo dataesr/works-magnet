@@ -62,7 +62,7 @@ export default function OpenalexView({
     >
       <Column field="nameHtml" header="Raw affiliation" body={nameTemplate} style={{ maxWidth: '250px' }} />
       <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '200px' }} />
-      <Column field="rorsToCorrect" header="RoRs to correct" body={correctionTemplate}style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} onCellEditComplete={onCellEditComplete} />
+      <Column field="rorsToCorrect" header="RoRs to correct (click to edit)" body={correctionTemplate} style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} onCellEditComplete={onCellEditComplete} />
       <Column field="hasCorrection" header="Corrected ?" body={hasCorrectionTemplate} style={{ maxWidth: '100px' }} sortable />
       <Column field="worksExamples" header="Examples of works" body={worksExampleTemplate} style={{ maxWidth: '200px' }} />
       <Column field="worksNumber" header="Number of works" style={{ maxWidth: '100px' }} sortable />

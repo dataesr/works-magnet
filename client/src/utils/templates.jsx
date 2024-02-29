@@ -154,7 +154,12 @@ const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowDa
 
 const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
 
-const hasCorrectionTemplate = (rowData) => <Badge text={rowData.hasCorrection ? correction.corrected.label : correction.notcorrected.label} type={rowData.hasCorrection ? correction.corrected.badgeType : correction.notcorrected.badgeType} />;
+const hasCorrectionTemplate = (rowData) => {
+  if (rowData.hasCorrection) {
+    return <Badge text={correction.corrected.label} type={correction.corrected.badgeType} />;
+  }
+  return '';
+};
 
 export {
   affiliationsTemplate,

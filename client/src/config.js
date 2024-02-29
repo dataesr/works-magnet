@@ -34,7 +34,7 @@ const correction = {
   },
   notcorrected: {
     badgeType: 'info',
-    label: 'OK',
+    label: 'Already OK',
   },
 };
 
