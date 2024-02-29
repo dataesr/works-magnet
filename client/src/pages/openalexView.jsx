@@ -4,7 +4,8 @@ import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import PropTypes from 'prop-types';
 
-import { hasCorrectionTemplate, nameTemplate, rorTemplate, worksExampleTemplate } from '../utils/templates';
+import { isRor } from '../utils/ror';
+import { correctionTemplate, hasCorrectionTemplate, nameTemplate, rorTemplate, worksExampleTemplate } from '../utils/templates';
 
 export default function OpenalexView({
   allAffiliations,
@@ -16,15 +17,24 @@ export default function OpenalexView({
   };
   const onCellEditComplete = async (e) => {
     const { rowData, column, newValue, field, originalEvent: event } = e;
+    let isValid = true;
     if (newValue !== rowData[field]) {
-      rowData[field] = newValue;
-      rowData.hasCorrection = true;
-      const newCorrections = [];
-      allAffiliations.filter((aff) => aff.hasCorrection).forEach((aff) => {
-        const correction = { rawAffiliationString: aff.name, rorsInOpenAlex: aff.rors, correctedRors: aff.rorsToCorrect, worksExample: aff.worksExample };
-        newCorrections.push(correction);
+      newValue.split(';').forEach((x) => {
+        if (!isRor(x)) {
+          isValid = false;
+          alert('RoR not valid');
+        }
       });
-      setAllOpenalexCorrections(newCorrections);
+      if (isValid) {
+        rowData[field] = newValue;
+        rowData.hasCorrection = true;
+        const newCorrections = [];
+        allAffiliations.filter((aff) => aff.hasCorrection).forEach((aff) => {
+          const correction = { rawAffiliationString: aff.name, rorsInOpenAlex: aff.rors, correctedRors: aff.rorsToCorrect, worksExample: aff.worksExample };
+          newCorrections.push(correction);
+        });
+        setAllOpenalexCorrections(newCorrections);
+      }
     }
   };
 
@@ -52,7 +62,7 @@ export default function OpenalexView({
     >
       <Column field="nameHtml" header="Raw affiliation" body={nameTemplate} style={{ maxWidth: '250px' }} />
       <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '200px' }} />
-      <Column field="rorsToCorrect" header="RoRs to correct" style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} onCellEditComplete={onCellEditComplete} />
+      <Column field="rorsToCorrect" header="RoRs to correct" body={correctionTemplate}style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} onCellEditComplete={onCellEditComplete} />
       <Column field="hasCorrection" header="Corrected ?" body={hasCorrectionTemplate} style={{ maxWidth: '100px' }} sortable />
       <Column field="worksExamples" header="Examples of works" body={worksExampleTemplate} style={{ maxWidth: '200px' }} />
       <Column field="worksNumber" header="Number of works" style={{ maxWidth: '100px' }} sortable />

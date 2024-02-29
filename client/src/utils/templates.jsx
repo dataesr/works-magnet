@@ -116,6 +116,11 @@ const datasourceTemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
+const correctionTemplate = (rowData) => {
+  const html = `<ul>${rowData.rorsToCorrect.split(';').map((ror) => `<li key="ror-${ror}">${ror}</li>`).join('')}</ul>`;
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
 const getAffiliationsHtmlField = (rowData, regexp) => {
   let affiliations = (rowData?.affiliations ?? [])
     .map((a) => a.rawAffiliation)
@@ -155,6 +160,7 @@ export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  correctionTemplate,
   datasourceTemplate,
   frAuthorsTemplate,
   getAffiliationsHtmlField,
