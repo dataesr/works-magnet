@@ -146,7 +146,7 @@ export default function Home() {
   return (
     <>
       <Beta />
-      <Container className="fr-my-5w" as="section" fluid>
+      <Container as="section" fluid>
         <Row className="fr-px-5w">
           <Col>
             <Filters
@@ -157,10 +157,7 @@ export default function Home() {
       </Container>
       <Container className="fr-mx-5w" as="section" fluid>
         {isFetching && (
-          <>
-            <Stepper current={current} />
-            <PageSpinner />
-          </>
+          <PageSpinner />
         )}
         {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
           <Tabs defaultActiveTab={0}>

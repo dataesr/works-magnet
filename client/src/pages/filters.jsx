@@ -115,7 +115,6 @@ export default function Filters({ sendQuery }) {
     <Row gutters alignItems="top">
       <Col n="2">
         <Select
-          hint="&nbsp;"
           label="Start year"
           options={years}
           selected={currentSearchParams.startYear}
@@ -124,16 +123,14 @@ export default function Filters({ sendQuery }) {
       </Col>
       <Col n="2">
         <Select
-          hint="&nbsp;"
           label="End year"
           options={years}
           selected={currentSearchParams.endYear}
           onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
         />
       </Col>
-      <Col n="4">
+      <Col n="3">
         <CheckboxGroup
-          hint="&nbsp;"
           legend="&nbsp;"
         >
           <Checkbox
@@ -143,7 +140,7 @@ export default function Filters({ sendQuery }) {
           />
         </CheckboxGroup>
       </Col>
-      <Col n="2">
+      <Col n="5">
         <Button
           icon="ri-search-line"
           onClick={checkAndSendQuery}
