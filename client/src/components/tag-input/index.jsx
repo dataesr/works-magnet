@@ -52,7 +52,20 @@ export default function TagInput({
 
   useEffect(() => setValues(tags), [tags]);
   useEffect(() => setExcludedValues(deletedTags), [deletedTags]);
-
+  let newLine = [];
+  const structuredTags = [];
+  tags.forEach((tag) => {
+    if (tag.type === 'rorId') {
+      if (newLine.length) {
+        structuredTags.push(newLine);
+      }
+      newLine = [];
+    }
+    newLine.push(tag);
+  });
+  if (newLine.length) {
+    structuredTags.push(newLine);
+  }
   return (
     <div>
       <div>
@@ -71,23 +84,26 @@ export default function TagInput({
             />
           </Col>
         </Row>
-        <Row style={{ 'max-height': '225px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
-          <Col className="fr-pt-2w">
-            <TagGroup>
-              {values.map((tag) => (
-                <Tag
-                  className="fr-mr-1w"
-                  colorFamily={(tag?.source ?? 'user') === 'user' ? 'brown-cafe-creme' : 'brown-caramel'}
-                  key={tag.label}
-                  onClick={() => handleDeleteClick(tag)}
-                >
-                  {tag.label}
-                  <Icon iconPosition="right" name="ri-close-line" />
-                </Tag>
-              ))}
-            </TagGroup>
-          </Col>
-        </Row>
+        {structuredTags.map((currentTags) => (
+          <Row style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
+            <Col className="fr-pt-2w fr-pb-5w">
+              <TagGroup>
+                {currentTags.map((tag) => (
+                  <Tag
+                    className="fr-mr-1w"
+                    small
+                    colorFamily={(tag?.source ?? 'user') === 'user' ? 'brown-cafe-creme' : 'brown-caramel'}
+                    key={tag.label}
+                    onClick={() => handleDeleteClick(tag)}
+                  >
+                    {tag.label}
+                    <Icon iconPosition="right" name="ri-close-line" />
+                  </Tag>
+                ))}
+              </TagGroup>
+            </Col>
+          </Row>
+        ))}
       </div>
     </div>
   );
