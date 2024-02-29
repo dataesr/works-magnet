@@ -117,7 +117,18 @@ const datasourceTemplate = (rowData) => {
 };
 
 const correctionTemplate = (rowData) => {
-  const html = `<ul>${rowData.rorsToCorrect.split(';').map((ror) => `<li key="ror-${ror}">${ror}</li>`).join('')}</ul>`;
+  let html = '';
+  if (rowData.hasCorrection) {
+    html = html.concat('<strong>');
+  }
+  html = html.concat('<ul>');
+  rowData.rorsToCorrect.split(';').forEach((ror) => {
+    html = html.concat(`<li key="ror-${ror}">${ror}</li>`);
+  });
+  html = html.concat('</ul>');
+  if (rowData.hasCorrection) {
+    html = html.concat('</strong>');
+  }
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 

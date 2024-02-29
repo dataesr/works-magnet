@@ -16,7 +16,7 @@ const hashCode = (str) => {
 
 const getFileName = ({ extension, label, searchParams }) => {
   let fileName = 'works_finder';
-  fileName += label ? `_${label}` : '';
+  fileName += label ? `_${label.replace(' ', '')}` : '';
   fileName += `_${hashCode(searchParams.get('affiliations'))}`;
   fileName += `_${searchParams.get('startYear')}`;
   fileName += `_${searchParams.get('endYear')}`;

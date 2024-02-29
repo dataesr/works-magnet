@@ -86,7 +86,7 @@ export default function TagInput({
         </Row>
         {structuredTags.map((currentTags) => (
           <Row style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
-            <Col className="fr-pt-2w fr-pb-5w">
+            <Col className="fr-p-2w">
               <TagGroup>
                 {currentTags.map((tag) => (
                   <Tag

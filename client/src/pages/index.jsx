@@ -155,13 +155,13 @@ export default function Home() {
           </Col>
         </Row>
       </Container>
-      <Container className="fr-mx-5w" as="section" fluid>
+      <Container className="fr-mx-5w fr-pt-2w" as="section" fluid>
         {isFetching && (
           <PageSpinner />
         )}
         {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
           <Tabs defaultActiveTab={0}>
-            <Tab label="Affiliation RoR matching in OpenAlex">
+            <Tab label="RoR matching in OpenAlex">
               <ActionsOpenalex
                 allOpenalexCorrections={allOpenalexCorrections}
                 options={options}
