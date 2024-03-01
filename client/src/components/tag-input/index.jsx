@@ -17,7 +17,8 @@ function SeeMoreTags({ data, maxTags = SEE_MORE_AFTER }) {
           ? 'Reduce the list'
           : `Display ${data.length - maxTags} more rows`
       }
-    </Button>) : null);
+    </Button>
+  ) : null);
   return (
     <>
       {data.slice(0, SEE_MORE_AFTER)}
@@ -66,12 +67,10 @@ export default function TagInput({
 
   const handleDeleteClick = (tag) => {
     const deletedValues = excludedValues;
-    console.log('handleDeleteClick - deletedValues', deletedValues);
     deletedValues.push(tag);
     const newValues = [...values.filter((el) => el !== tag)];
     setValues(newValues);
     setExcludedValues(deletedValues);
-    console.log('deletedValues', deletedValues);
     onTagsChange(newValues, deletedValues);
   };
 
