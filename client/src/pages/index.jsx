@@ -167,7 +167,7 @@ export default function Home() {
           <Tabs defaultActiveTab={0}>
             <Tab label="✏️ Improve RoRs in OpenAlex">
               <Row className="fr-pb-3w">
-                <Col n="9">
+                <Col n="8">
                   <Callout colorFamily="beige-gris-galet">
                     <CalloutTitle size="md">
                       Improve RoR matching in OpenAlex - Provide your feedback!
@@ -177,7 +177,7 @@ export default function Home() {
                       <br />
                       🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
                       <br />
-                      ✏️  Click the third column to edit and input the right RoRs for this raw affiliation string.
+                      ✏️  Click the third column to edit and input the right RoRs for this raw affiliation string. Use a ';' to input multiple RoRs.
                       <br />
                       🗣 Once finished, you can use the Export button on the right to send this feedback to OpenAlex.
                     </CalloutText>
@@ -196,12 +196,32 @@ export default function Home() {
               />
             </Tab>
             <Tab label="✅ Select the raw affiliations for your institution">
-              <ActionsAffiliations
-                allAffiliations={allAffiliations}
-                options={options}
-                setAllAffiliations={setAllAffiliations}
-                tagAffiliations={tagAffiliations}
-              />
+              <Row className="fr-pb-3w">
+                <Col n="8">
+                  <Callout colorFamily="beige-gris-galet">
+                    <CalloutTitle size="md">
+                      Select the raw affiliations corresponding to your institution
+                    </CalloutTitle>
+                    <CalloutText size="sm">
+                      🔎 The array below summarizes the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query.
+                      <br />
+                      🤔 You can validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not. If an affiliation is validated, it will also validate all the publications (3rd tab) and datasets (4th tab)  with that affiliation string.
+                      <br />
+                      🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing. If any errors, please use the first tab to send feedback.
+                      <br />
+                      💾 You can save (export to a file) those decisions, and restore them later on.
+                    </CalloutText>
+                  </Callout>
+                </Col>
+                <Col>
+                  <ActionsAffiliations
+                    allAffiliations={allAffiliations}
+                    options={options}
+                    setAllAffiliations={setAllAffiliations}
+                    tagAffiliations={tagAffiliations}
+                  />
+                </Col>
+              </Row>
               <AffiliationsTab
                 affiliations={allAffiliations}
                 selectedAffiliations={selectedAffiliations}
