@@ -4,6 +4,7 @@ import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import PropTypes from 'prop-types';
 
+import useToast from '../hooks/useToast';
 import { isRor } from '../utils/ror';
 import { correctionTemplate, hasCorrectionTemplate, nameTemplate, rorTemplate, worksExampleTemplate } from '../utils/templates';
 
@@ -15,6 +16,8 @@ export default function OpenalexView({
     const a = 1;
     return <InputTextarea type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
   };
+  const { toast } = useToast();
+
   const onCellEditComplete = async (e) => {
     const { rowData, column, newValue, field, originalEvent: event } = e;
     let isValid = true;
@@ -22,7 +25,12 @@ export default function OpenalexView({
       newValue.split(';').forEach((x) => {
         if (!isRor(x)) {
           isValid = false;
-          alert('RoR not valid');
+          toast({
+            description: 'RoR not valid',
+            id: 'rorError',
+            title: 'erRoR',
+            toastType: 'error',
+          });
         }
       });
       if (isValid) {
