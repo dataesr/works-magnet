@@ -7,7 +7,7 @@ import ButtonDropdown from '../../components/button-dropdown';
 export default function ActionsOpenalex({
   allOpenalexCorrections,
 }) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   return (
     <Row className="fr-mb-1w">
       <Col className="text-right">

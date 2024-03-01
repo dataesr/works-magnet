@@ -232,8 +232,6 @@ export default function Home() {
             <Tab label="📑 List of publications">
               <ActionsPublications
                 allPublications={allPublications}
-                options={options}
-                setAllPublications={setAllPublications}
               />
               <PublicationsTab
                 publishers={data.publications?.publishers || []}

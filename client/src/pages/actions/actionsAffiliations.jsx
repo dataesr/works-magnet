@@ -5,8 +5,8 @@ import { useSearchParams } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip';
 
 import Button from '../../components/button';
-import { export2json, importJson } from '../../utils/files';
 import { status } from '../../config';
+import { export2json, importJson } from '../../utils/files';
 
 export default function ActionsAffiliations({
   allAffiliations,

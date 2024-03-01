@@ -1,10 +1,4 @@
-import {
-  Checkbox,
-  CheckboxGroup,
-  Col,
-  Row,
-  TextInput,
-} from '@dataesr/react-dsfr';
+import { Col, Row, TextInput } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 

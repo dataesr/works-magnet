@@ -9,15 +9,14 @@ import {
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getRorData, isRor } from '../utils/ror';
 
 import TagInput from '../components/tag-input';
+import { getRorData, isRor } from '../utils/ror';
 
 const START_YEAR = 2010;
 const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()].map((year) => (year + START_YEAR).toString()).map((year) => ({ label: year, value: year }));
 
 const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
-
 export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});

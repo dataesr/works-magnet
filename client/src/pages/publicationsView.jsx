@@ -7,7 +7,6 @@ import {
   allIdsTemplate,
   authorsTemplate,
   datasourceTemplate,
-  linkedDOITemplate,
   statusTemplate,
 } from '../utils/templates';
 

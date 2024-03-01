@@ -4,12 +4,8 @@ import { useSearchParams } from 'react-router-dom';
 
 import ButtonDropdown from '../../components/button-dropdown';
 
-export default function ActionsPublications({
-  allPublications,
-  options,
-  setAllPublications,
-}) {
-  const [searchParams, setSearchParams] = useSearchParams();
+export default function ActionsPublications({ allPublications }) {
+  const [searchParams] = useSearchParams();
 
   return (
     <Row className="fr-mb-1w">
@@ -29,6 +25,4 @@ ActionsPublications.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
-  options: PropTypes.object.isRequired,
-  setAllPublications: PropTypes.func.isRequired,
 };

@@ -1,6 +1,5 @@
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
-import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import PropTypes from 'prop-types';
 
@@ -12,14 +11,11 @@ export default function OpenalexView({
   allAffiliations,
   setAllOpenalexCorrections,
 }) {
-  const cellEditor = (options) => {
-    const a = 1;
-    return <InputTextarea type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
-  };
+  const cellEditor = (options) => <InputTextarea type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
   const { toast } = useToast();
 
   const onCellEditComplete = async (e) => {
-    const { rowData, column, newValue, field, originalEvent: event } = e;
+    const { field, rowData, newValue } = e;
     let isValid = true;
     if (newValue !== rowData[field]) {
       newValue.split(';').forEach((x) => {
