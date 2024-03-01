@@ -1,6 +1,31 @@
-import { Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react-dsfr';
+import { Button, Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+
+const SEE_MORE_AFTER = 5;
+
+function SeeMoreTags({ data, maxTags = SEE_MORE_AFTER }) {
+  const [seeMore, setSeeMore] = useState(false);
+  const tail = seeMore ? data.slice(SEE_MORE_AFTER) : null;
+  const button = (data.length > maxTags ? (
+    <Button
+      size="sm"
+      onClick={() => setSeeMore((prev) => !prev)}
+    >
+      {
+        seeMore
+          ? 'Reduce the list'
+          : `Display ${data.length - maxTags} more rows`
+      }
+    </Button>) : null);
+  return (
+    <>
+      {data.slice(0, SEE_MORE_AFTER)}
+      {tail}
+      {button}
+    </>
+  );
+}
 
 export default function TagInput({
   hint,
@@ -66,6 +91,29 @@ export default function TagInput({
   if (newLine.length) {
     structuredTags.push(newLine);
   }
+  const rowTags = [];
+  structuredTags.forEach((currentTags) => {
+    rowTags.push(
+      <Row style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
+        <Col className="">
+          <TagGroup>
+            {currentTags.map((tag) => (
+              <Tag
+                className="fr-mr-1w"
+                small
+                colorFamily={(tag?.source ?? 'user') === 'user' ? 'brown-cafe-creme' : 'brown-caramel'}
+                key={tag.label}
+                onClick={() => handleDeleteClick(tag)}
+              >
+                {tag.label}
+                <Icon iconPosition="right" name="ri-close-line" />
+              </Tag>
+            ))}
+          </TagGroup>
+        </Col>
+      </Row>,
+    );
+  });
   return (
     <div>
       <div>
@@ -84,26 +132,7 @@ export default function TagInput({
             />
           </Col>
         </Row>
-        {structuredTags.map((currentTags) => (
-          <Row style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
-            <Col className="">
-              <TagGroup>
-                {currentTags.map((tag) => (
-                  <Tag
-                    className="fr-mr-1w"
-                    small
-                    colorFamily={(tag?.source ?? 'user') === 'user' ? 'brown-cafe-creme' : 'brown-caramel'}
-                    key={tag.label}
-                    onClick={() => handleDeleteClick(tag)}
-                  >
-                    {tag.label}
-                    <Icon iconPosition="right" name="ri-close-line" />
-                  </Tag>
-                ))}
-              </TagGroup>
-            </Col>
-          </Row>
-        ))}
+        <SeeMoreTags data={rowTags} />
       </div>
     </div>
   );
