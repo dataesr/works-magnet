@@ -26,8 +26,8 @@ export default function PublicationsView({
       paginator
       paginatorPosition="top bottom"
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink RowsPerPageDropdown"
-      rows={50}
-      rowsPerPageOptions={[50, 200, 1000, 5000]}
+      rows={100}
+      rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
       scrollHeight="600px"
       selection={selectedWorks}

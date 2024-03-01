@@ -47,8 +47,8 @@ export default function OpenalexView({
       paginator
       paginatorPosition="top bottom"
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink RowsPerPageDropdown"
-      rows={200}
-      rowsPerPageOptions={[50, 200, 1000, 5000]}
+      rows={100}
+      rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
       scrollHeight="600px"
       size="small"
@@ -60,10 +60,10 @@ export default function OpenalexView({
       value={allAffiliations}
       editMode="cell"
     >
-      <Column field="nameHtml" header="Raw affiliation" body={nameTemplate} style={{ maxWidth: '250px' }} />
+      <Column field="nameHtml" header="OpenAlex Raw affiliation" body={nameTemplate} style={{ maxWidth: '250px' }} />
       <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '200px' }} />
-      <Column field="rorsToCorrect" header="RoRs to correct (click to edit)" body={correctionTemplate} style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} onCellEditComplete={onCellEditComplete} />
-      <Column field="hasCorrection" header="Corrected ?" body={hasCorrectionTemplate} style={{ maxWidth: '100px' }} sortable />
+      <Column field="rorsToCorrect" header="Click to improve / edit RoRs" body={correctionTemplate} style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} onCellEditComplete={onCellEditComplete} />
+      <Column field="hasCorrection" header="Modified by user?" body={hasCorrectionTemplate} style={{ maxWidth: '100px' }} sortable />
       <Column field="worksExamples" header="Examples of works" body={worksExampleTemplate} style={{ maxWidth: '200px' }} />
       <Column field="worksNumber" header="Number of works" style={{ maxWidth: '100px' }} sortable />
     </DataTable>

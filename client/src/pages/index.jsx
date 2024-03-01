@@ -1,6 +1,10 @@
 import {
+  Callout,
+  CalloutText,
+  CalloutTitle,
   Col,
   Container,
+  Notice,
   Row,
   Tab,
   Tabs,
@@ -161,17 +165,37 @@ export default function Home() {
         )}
         {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
           <Tabs defaultActiveTab={0}>
-            <Tab label="RoR matching in OpenAlex">
-              <ActionsOpenalex
-                allOpenalexCorrections={allOpenalexCorrections}
-                options={options}
-              />
+            <Tab label="✏️ Improve RoRs in OpenAlex">
+              <Row className="fr-pb-3w">
+                <Col n="9">
+                  <Callout colorFamily="beige-gris-galet">
+                    <CalloutTitle size="md">
+                      Improve RoR matching in OpenAlex - Provide your feedback!
+                    </CalloutTitle>
+                    <CalloutText size="sm">
+                      🔎 The array below summarizes the most frequent raw affiliation strings retrieved in OpenAlex for your query.
+                      <br />
+                      🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
+                      <br />
+                      ✏️  Click the third column to edit and input the right RoRs for this raw affiliation string.
+                      <br />
+                      🗣 Once finished, you can use the Export button on the right to send this feedback to OpenAlex.
+                    </CalloutText>
+                  </Callout>
+                </Col>
+                <Col>
+                  <ActionsOpenalex
+                    allOpenalexCorrections={allOpenalexCorrections}
+                    options={options}
+                  />
+                </Col>
+              </Row>
               <OpenalexTab
                 affiliations={allAffiliations.filter((aff) => aff.source === 'OpenAlex')}
                 setAllOpenalexCorrections={setAllOpenalexCorrections}
               />
             </Tab>
-            <Tab label="List of raw affiliations">
+            <Tab label="✅ Select the raw affiliations for your institution">
               <ActionsAffiliations
                 allAffiliations={allAffiliations}
                 options={options}
@@ -185,7 +209,7 @@ export default function Home() {
                 tagAffiliations={tagAffiliations}
               />
             </Tab>
-            <Tab label="List of publications">
+            <Tab label="📑 List of publications">
               <ActionsPublications
                 allPublications={allPublications}
                 options={options}
@@ -201,7 +225,7 @@ export default function Home() {
                 years={data.publications?.years || []}
               />
             </Tab>
-            <Tab label="List of datasets">
+            <Tab label="🗃 List of datasets">
               <ActionsDatasets
                 allDatasets={allDatasets}
               />
