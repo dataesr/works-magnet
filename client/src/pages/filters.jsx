@@ -52,6 +52,8 @@ export default function Filters({ sendQuery }) {
         rorNames = rorNames.filter((aff) => !deletedAffiliations.includes(aff));
         const allTags = [];
         const knownTags = {};
+        setMessageType('');
+        setMessage('');
         affiliations.forEach((affiliation) => {
           if (isRor(affiliation)) {
             allTags.push({ label: affiliation.replace('https://ror.org/', '').replace('ror.org/', ''), source: 'user', type: 'rorId' });
