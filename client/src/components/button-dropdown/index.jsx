@@ -32,9 +32,9 @@ export default function ButtonDropdown({ data, label, searchParams }) {
         >
           Export in JSONL (complete data)
         </Button>
-        {label === 'publications' && (
+        {['publications', 'datasets'].includes(label) && (
           <Button
-            onClick={() => export2FosmCsv({ data })}
+            onClick={() => export2FosmCsv({ data, label, searchParams })}
             size="sm"
           >
             Custom export for French OSM

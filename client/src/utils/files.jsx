@@ -17,38 +17,47 @@ const hashCode = (str) => {
 const getFileName = ({ extension, label, searchParams }) => {
   let fileName = 'works_finder';
   fileName += label ? `_${label.replace(' ', '')}` : '';
-  fileName += `_${hashCode(searchParams.get('affiliations'))}`;
+  fileName += `_${Date.now()}`;
   fileName += `_${searchParams.get('startYear')}`;
   fileName += `_${searchParams.get('endYear')}`;
-  fileName += `_${Date.now()}`;
+  fileName += `_${hashCode(searchParams.get('affiliations'))}`;
   fileName += `.${extension}`;
   return fileName;
 };
 
-const export2FosmCsv = ({ data: allPublications }) => {
-  const csvHeader = ['doi', 'hal_id', 'nnt_id'].join(';');
-  const validatedPublications = allPublications.filter((publication) => publication.status === status.validated.id);
-  const getValue = (row, idType) => {
-    if (!row) return '';
-    if (row.doi && idType === 'doi') return row.doi;
-    return row.allIds.find((id) => id.id_type === idType)?.id_value || '';
-  };
-
-  const csvContent = validatedPublications.map((row) => {
-    const doi = getValue(row, 'doi');
-    const halId = getValue(row, 'hal_id');
-    const nntId = getValue(row, 'nnt_id');
-    if (doi) return `${doi};;`;
-    if (halId) return `;${halId};`;
-    if (nntId) return `;;${nntId}`;
-    return ';;';
-  }).join('\r\n');
+const export2FosmCsv = ({ data, label, searchParams }) => {
+  let idsToExport = ['doi', 'hal_id', 'nnt_id', 'openalex'];
+  let csvHeader = idsToExport.join(';');
+  if (label === 'datasets') {
+    idsToExport = ['datacite', 'crossref'];
+    csvHeader = 'dataset';
+  }
+  const validatedPublications = data.filter((publication) => publication.status === status.validated.id);
+  const rows = [];
+  validatedPublications.forEach((publi) => {
+    const row = [];
+    idsToExport.forEach((currentId) => {
+      const elt = publi.allIds.filter((e) => e.id_type === currentId);
+      if (elt.length) {
+        row.push(elt[0].id_value);
+      } else {
+        row.push('');
+      }
+    });
+    if (label === 'datasets') {
+      rows.push(row.join(''));
+    } else {
+      rows.push(row.join(';'));
+    }
+  });
+  const csvContent = rows.join('\r\n');
 
   const csvFile = `${csvHeader}\r\n${csvContent}`;
 
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csvFile], { type: 'text/csv;charset=utf-8' }));
-  link.setAttribute('download', 'works-finder-to-fosm.csv');
+  const currentLabel = label.concat('BSO');
+  link.setAttribute('download', getFileName({ extension: 'csv', label: currentLabel, searchParams }));
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
