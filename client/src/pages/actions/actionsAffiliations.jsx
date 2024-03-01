@@ -12,12 +12,12 @@ export default function ActionsAffiliations({
   allAffiliations,
   options,
   setAllAffiliations,
+  setAllPublications,
   tagAffiliations,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
   const decidedAffiliations = allAffiliations?.filter((affiliation) => affiliation.status !== status.tobedecided.id) || [];
-
   return (
     <>
       <Row className="fr-mb-1w">
@@ -26,7 +26,7 @@ export default function ActionsAffiliations({
             data-tooltip-id="save-affiliations-button"
             disabled={!decidedAffiliations.length}
             icon="ri-save-line"
-            onClick={() => export2json({ decidedAffiliations, label: 'affiliations', searchParams })}
+            onClick={() => export2json({ data: decidedAffiliations, label: 'affiliations', searchParams })}
             size="sm"
           >
             Save decided affiliations
@@ -55,7 +55,7 @@ export default function ActionsAffiliations({
               accept=".json"
               hint="Select JSON file to restore from previous state"
               label="JSON file"
-              onChange={(e) => { importJson(e, options, setAllAffiliations, setSearchParams, tagAffiliations); setDisplayFileUpload(false); }}
+              onChange={(e) => { importJson(e, options, setAllAffiliations, setAllPublications, setSearchParams, tagAffiliations); setDisplayFileUpload(false); }}
             />
           </Col>
         </Row>
@@ -75,5 +75,6 @@ ActionsAffiliations.propTypes = {
   })).isRequired,
   options: PropTypes.object.isRequired,
   setAllAffiliations: PropTypes.func.isRequired,
+  setAllPublications: PropTypes.func.isRequired,
   tagAffiliations: PropTypes.func.isRequired,
 };

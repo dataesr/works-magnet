@@ -105,21 +105,14 @@ const importJson = (e, optionsInit, setAllAffiliations, setAllPublications, setS
   const fileReader = new FileReader();
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {
-    const { allAffiliations = [], allPublications = [], decidedAffiliations = [], options = optionsInit } = JSON.parse(f.target.result);
-    options.restoreFromFile = true;
-    if (allAffiliations.length) {
-      setAllAffiliations(allAffiliations);
-    }
-    if (allPublications.length) {
-      setAllPublications(allPublications);
-    }
+    const allAffiliations = JSON.parse(f.target.result);
+    const decidedAffiliations = allAffiliations?.filter((affiliation) => affiliation.status !== status.tobedecided.id) || [];
     if (decidedAffiliations) {
       const validatedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === status.validated.id);
       tagAffiliations(validatedAffiliations, status.validated.id);
       const excludedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === status.excluded.id);
       tagAffiliations(excludedAffiliations, status.excluded.id);
     }
-    setSearchParams(options);
   };
 };
 
