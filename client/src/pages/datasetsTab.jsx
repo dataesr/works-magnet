@@ -92,7 +92,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
     <>
       <Row>
         <Col n="9">
-          {renderButtons(selectedDatasets, tagDatasets, 'datasets')}
+          {renderButtons(selectedDatasets, tagDatasets, 'dataset')}
         </Col>
         <Col n="3">
           <Gauge

@@ -92,7 +92,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
     <>
       <Row>
         <Col n="9">
-          {renderButtons(selectedPublications, tagPublications, 'publications')}
+          {renderButtons(selectedPublications, tagPublications, 'publication')}
         </Col>
         <Col n="3">
           <Gauge

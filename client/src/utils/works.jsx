@@ -61,7 +61,7 @@ const renderButtons = (selected, fn, entityLabel) => (
         onClick={() => fn(selected, st.id)}
         size="lg"
       >
-        {`${st.buttonLabel} ${selected.length} ${entityLabel}`}
+        {`${st.buttonLabel} ${selected.length} ${entityLabel}${selected.length === 1 ? '' : 's'}`}
       </Button>
     ))}
   </>

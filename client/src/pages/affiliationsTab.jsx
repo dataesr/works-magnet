@@ -38,11 +38,12 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       setFilteredStatus(filteredStatus.concat([st]));
     }
   };
+
   return (
     <>
       <Row>
         <Col n="9">
-          {renderButtons(selectedAffiliations, tagAffiliations, 'affiliations')}
+          {renderButtons(selectedAffiliations, tagAffiliations, 'affiliation')}
         </Col>
         <Col n="3">
           <Gauge
