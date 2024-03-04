@@ -33,34 +33,19 @@ router.route('/works')
         const responses = await Promise.all(queries);
         console.timeEnd(`1. Requests ${options.affiliationStrings}`);
         webSocketServer.broadcast(1);
-        console.time(`2. Concat ${options.affiliationStrings}`);
-        let works = [];
-        if (options.rors?.length > 0) {
-          works = [
-            ...responses[0],
-            ...responses[1],
-            ...responses[2],
-          ];
-        } else {
-          works = [
-            ...responses[0],
-            ...responses[1],
-          ];
-        }
-        console.timeEnd(`2. Concat ${options.affiliationStrings}`);
-        webSocketServer.broadcast(2);
-        console.time(`3. Dedup ${options.affiliationStrings}`);
+        const works = responses.flat();
+        console.time(`2. Dedup ${options.affiliationStrings}`);
         // Deduplicate publications by ids
         const deduplicatedWorks = deduplicateWorks(works);
-        console.timeEnd(`3. Dedup ${options.affiliationStrings}`);
-        webSocketServer.broadcast(3);
+        console.timeEnd(`2. Dedup ${options.affiliationStrings}`);
+        webSocketServer.broadcast(2);
         // Compute distinct affiliations of works
-        console.time(`4. GroupBy ${options.affiliationStrings}`);
+        console.time(`3. GroupBy ${options.affiliationStrings}`);
         const uniqueAffiliations = groupByAffiliations({ options, works: deduplicatedWorks });
-        console.timeEnd(`4. GroupBy ${options.affiliationStrings}`);
-        webSocketServer.broadcast(4);
+        console.timeEnd(`3. GroupBy ${options.affiliationStrings}`);
+        webSocketServer.broadcast(3);
         // Sort between publications and datasets
-        console.time(`5. Sort works ${options.affiliationStrings}`);
+        console.time(`4. Sort works ${options.affiliationStrings}`);
         const publications = [];
         let datasets = [];
         const deduplicatedWorksLength = deduplicatedWorks.length;
@@ -76,20 +61,20 @@ router.route('/works')
             }
           }
         }
-        console.timeEnd(`5. Sort works ${options.affiliationStrings}`);
-        webSocketServer.broadcast(5);
+        console.timeEnd(`4. Sort works ${options.affiliationStrings}`);
+        webSocketServer.broadcast(4);
         // Compute distinct types & years for facet
-        console.time(`6. Facet ${options.affiliationStrings}`);
+        console.time(`5. Facet ${options.affiliationStrings}`);
         const publicationsYears = countUniqueValues({ data: publications, field: 'year' });
         const datasetsYears = countUniqueValues({ data: datasets, field: 'year' });
         const publicationsTypes = countUniqueValues({ data: publications, field: 'type' });
         const datasetsTypes = countUniqueValues({ data: datasets, field: 'type' });
         const publicationsPublishers = countUniqueValues({ data: publications, field: 'publisher' });
         const datasetsPublishers = countUniqueValues({ data: datasets, field: 'publisher' });
-        console.timeEnd(`6. Facet ${options.affiliationStrings}`);
-        webSocketServer.broadcast(6);
+        console.timeEnd(`5. Facet ${options.affiliationStrings}`);
+        webSocketServer.broadcast(5);
         // Build and serialize response
-        console.time(`7. Serialization ${options.affiliationStrings}`);
+        console.time(`6. Serialization ${options.affiliationStrings}`);
         res.status(200).json({
           affiliations: uniqueAffiliations,
           datasets: {
@@ -105,8 +90,8 @@ router.route('/works')
             years: publicationsYears,
           },
         });
-        console.timeEnd(`7. Serialization ${options.affiliationStrings}`);
-        webSocketServer.broadcast(7);
+        console.timeEnd(`6. Serialization ${options.affiliationStrings}`);
+        webSocketServer.broadcast(6);
       }
     } catch (err) {
       console.error(err);
