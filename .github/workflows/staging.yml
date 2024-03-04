@@ -7,9 +7,9 @@ on:
 
 env:
   # Must match k8s deployment name
-  DEPLOYMENT: works-finder
-  DEPLOYMENT_NAMESPACE: works-finder
-  DEPLOYMENT_URL: https://works-finder.staging.dataesr.ovh
+  DEPLOYMENT: works-magnet
+  DEPLOYMENT_NAMESPACE: works-magnet
+  DEPLOYMENT_URL: https://works-magnet.staging.dataesr.ovh
   MM_NOTIFICATION_CHANNEL: bots
 
 jobs:
