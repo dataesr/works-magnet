@@ -14,10 +14,11 @@ export default function OpenalexView({
   const cellEditor = (options) => <InputTextarea type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
   const { toast } = useToast();
 
-  const onCellEditComplete = async (e) => {
-    const { field, rowData, newValue } = e;
+  const onRowEditComplete = async (e) => {
+    const { field, data, newData } = e;
     let isValid = true;
-    if (newValue !== rowData[field]) {
+    const newValue = newData.rorsToCorrect;
+    if (newValue !== data.rorsToCorrect) {
       newValue.split(';').forEach((x) => {
         if (!isRor(x)) {
           isValid = false;
@@ -30,8 +31,8 @@ export default function OpenalexView({
         }
       });
       if (isValid) {
-        rowData[field] = newValue;
-        rowData.hasCorrection = true;
+        data.rorsToCorrect = newValue;
+        data.hasCorrection = true;
         const newCorrections = [];
         allAffiliations.filter((aff) => aff.hasCorrection).forEach((aff) => {
           const correction = { rawAffiliationString: aff.name, rorsInOpenAlex: aff.rors, correctedRors: aff.rorsToCorrect, worksExample: aff.worksExample };
@@ -62,11 +63,13 @@ export default function OpenalexView({
       style={{ fontSize: '11px', lineHeight: '10px' }}
       tableStyle={{ minWidth: '50rem' }}
       value={allAffiliations}
-      editMode="cell"
+      editMode="row"
+      onRowEditComplete={onRowEditComplete}
     >
       <Column field="nameHtml" header="OpenAlex Raw affiliation" body={nameTemplate} style={{ maxWidth: '250px' }} />
       <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '200px' }} />
-      <Column field="rorsToCorrect" header="Click to improve / edit RoRs" body={correctionTemplate} style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} onCellEditComplete={onCellEditComplete} />
+      <Column field="rorsToCorrect" header="Click to improve / edit RoRs" body={correctionTemplate} style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} />
+      <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }} />
       <Column field="hasCorrection" header="Modified by user?" body={hasCorrectionTemplate} style={{ maxWidth: '100px' }} sortable />
       <Column field="worksExamples" header="Examples of works" body={worksExampleTemplate} style={{ maxWidth: '200px' }} />
       <Column field="worksNumber" header="Number of works" style={{ maxWidth: '100px' }} sortable />
