@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { range, countUniqueValues } from '../utils/utils';
+import { chunkArray, countUniqueValues, range } from '../utils/utils';
 import { deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
 import webSocketServer from '../webSocketServer';
 
@@ -21,18 +21,14 @@ router.route('/works')
         }
         options.datasets = options.datasets === 'true';
         options.years = range(options.startYear, options.endYear);
-        // TODO make multiple call rather than using only the first 10!
-        const optionsWithAffiliationStringsOnly = {
-          datasets: options.datasets, years: options.years, affiliationStrings: options.affiliationStrings.slice(0, 10), rors: [],
-        };
         const queries = [];
         queries.push(getFosmWorks({ options }));
-        queries.push(getOpenAlexPublications({ options: optionsWithAffiliationStringsOnly }));
-        if (options.rors?.length > 0) {
-          const optionsWithRorOnly = {
-            datasets: options.datasets, years: options.years, affiliationStrings: [], rors: options.rors,
-          };
-          queries.push(getOpenAlexPublications({ options: optionsWithRorOnly }));
+        const affiliationStringsChunks = chunkArray({ array: options.affiliationStrings });
+        affiliationStringsChunks.forEach((affiliationStrings) => {
+          queries.push(getOpenAlexPublications({ options: { ...options, affiliationStrings, rors: [] } }));
+        });
+        if (options?.rors?.length > 0) {
+          queries.push(getOpenAlexPublications({ options: { ...options, affiliationStrings: [] } }));
         }
         const responses = await Promise.all(queries);
         console.timeEnd(`1. Requests ${options.affiliationStrings}`);

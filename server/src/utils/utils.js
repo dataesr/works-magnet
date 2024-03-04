@@ -1,3 +1,10 @@
+const chunkArray = ({ array, perChunk = 10 }) => array.reduce((all, one, i) => {
+  const ch = Math.floor(i / perChunk);
+  // eslint-disable-next-line no-param-reassign
+  all[ch] = [].concat((all[ch] || []), one);
+  return all;
+}, []);
+
 const cleanId = (id) => (
   id
     ? id
@@ -8,9 +15,14 @@ const cleanId = (id) => (
     : null
 );
 
-const intersectArrays = (array1, array2) => {
-  const res = array1.filter((value) => array2.includes(value));
-  return res.length > 0;
+const countUniqueValues = ({ data = [], field }) => {
+  const map = data
+    .map((item) => item?.[field] ?? '')
+    .reduce((acc, curr) => {
+      acc[curr] = acc?.[curr] ? acc[curr] + 1 : 1;
+      return acc;
+    }, {});
+  return Object.fromEntries(Object.entries(map).sort(([, a], [, b]) => b - a));
 };
 
 const getAuthorOrcid = (elt) => {
@@ -20,14 +32,15 @@ const getAuthorOrcid = (elt) => {
   return { name, orcid };
 };
 
-const countUniqueValues = ({ data = [], field }) => {
-  const map = data
-    .map((item) => item?.[field] ?? '')
-    .reduce((acc, curr) => {
-      acc[curr] = acc?.[curr] ? acc[curr] + 1 : 1;
-      return acc;
-    }, {});
-  return Object.fromEntries(Object.entries(map).sort(([, a], [, b]) => b - a));
+const intersectArrays = (array1, array2) => {
+  const res = array1.filter((value) => array2.includes(value));
+  return res.length > 0;
+};
+
+const range = (startYear, endYear = new Date().getFullYear()) => {
+  const start = Number(startYear);
+  const end = Number(endYear);
+  return (start === end) ? [start] : [start, ...range(start + 1, end)];
 };
 
 // See https://stackoverflow.com/a/18391901
@@ -133,16 +146,12 @@ for (let i = 0; i < defaultDiacriticsRemovalMapLength; i += 1) {
 // "what?" version ... http://jsperf.com/diacritics/12
 // eslint-disable-next-line no-control-regex
 const removeDiacritics = (str) => str.replace(/[^\u0000-\u007E]/g, (a) => diacriticsMap[a] || a).replace(/[,%().*:;]/g, '').replace(/-/g, ' ').toLowerCase()
-  .trim().replaceAll('  ', ' ').replaceAll('  ', ' ');
-
-const range = (startYear, endYear = new Date().getFullYear()) => {
-  const start = Number(startYear);
-  const end = Number(endYear);
-  if (start === end) return [start];
-  return [start, ...range(start + 1, end)];
-};
+  .trim()
+  .replaceAll('  ', ' ')
+  .replaceAll('  ', ' ');
 
 export {
+  chunkArray,
   cleanId,
   countUniqueValues,
   getAuthorOrcid,
