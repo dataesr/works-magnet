@@ -1,4 +1,4 @@
-# Works finder
+# Works magnet
 
 Retrieve the scholarly works of your institution - Based on French OSM and OpenAlex
 

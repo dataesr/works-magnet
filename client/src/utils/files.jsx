@@ -15,7 +15,7 @@ const hashCode = (str) => {
 };
 
 const getFileName = ({ extension, label, searchParams }) => {
-  let fileName = 'works_finder';
+  let fileName = 'works_magnet';
   fileName += label ? `_${label.replace(' ', '')}` : '';
   fileName += `_${Date.now()}`;
   fileName += `_${searchParams.get('startYear')}`;
