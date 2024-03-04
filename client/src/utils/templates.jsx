@@ -36,10 +36,10 @@ const statusRowFilterTemplate = (options) => (
   />
 );
 
-const allIdsTemplate = (rowData) => {
+const getIdsTemplate = (ids) => {
   let html = '<ul>';
-  rowData.allIds.forEach((id) => {
-    html += `<li key="${id.id_value}">${id.id_type}:<br>`;
+  ids.forEach((id) => {
+    html += `<li key="${id.id_value}">${id.id_type}: `;
     const idLink = getIdLink(id.id_type, id.id_value);
     html += idLink ? `<a target="_blank" href="${idLink}">${id.id_value}</a>` : `<span>${id.id_value}</span>`;
     html += '</li>';
@@ -48,32 +48,11 @@ const allIdsTemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-// TODO: is there a way not to duplicate code : linkedDOITemplate and allIdsTemplate are the same but do not use the same field
-const linkedDOITemplate = (rowData) => {
-  let html = '<ul>';
-  const publicationsLinked = rowData.fr_publications_linked || [];
-  publicationsLinked.forEach((id) => {
-    html += `<li key="${id.id_value}">${id.id_type}:<br>`;
-    const idLink = getIdLink(id.id_type, id.id_value);
-    html += idLink ? `<a target="_blank" href="${idLink}">${id.id_value}</a>` : `<span>${id.id_value}</span>`;
-    html += '</li>';
-  });
-  html += '</ul>';
-  return <span dangerouslySetInnerHTML={{ __html: html }} />;
-};
+const allIdsTemplate = (rowData) => getIdsTemplate(rowData?.allIds ?? []);
 
-// TODO: is there a way not to duplicate code : linkedDOITemplate and allIdsTemplate are the same but do not use the same field
-const worksExampleTemplate = (rowData) => {
-  let html = '<ul>';
-  rowData.worksExample.filter((e) => ['doi', 'hal_id', 'crossref', 'datacite'].includes(e.id_type)).slice(0, 5).forEach((id) => {
-    html += `<li key="${id.id_value}">${id.id_type}:`;
-    const idLink = getIdLink(id.id_type, id.id_value);
-    html += idLink ? `<a target="_blank" href="${idLink}">${id.id_value}</a>` : `<span>${id.id_value}</span>`;
-    html += '</li>';
-  });
-  html += '</ul>';
-  return <span dangerouslySetInnerHTML={{ __html: html }} />;
-};
+const linkedDOITemplate = (rowData) => getIdsTemplate(rowData?.fr_publications_linked ?? []);
+
+const worksExampleTemplate = (rowData) => getIdsTemplate(rowData?.worksExample?.filter((e) => ['doi', 'hal_id', 'crossref', 'datacite']?.includes(e.id_type))?.slice(0, 5) ?? []);
 
 const linkedORCIDTemplate = (rowData) => {
   let html = '<ul>';
