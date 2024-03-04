@@ -25,11 +25,7 @@ const statusesItemTemplate = (option) => (
 const statusRowFilterTemplate = (options) => (
   <MultiSelect
     value={options.value}
-    options={[
-      { name: 'To be decided', value: 'tobedecided' },
-      { name: 'Validated', value: 'validated' },
-      { name: 'Excluded', value: 'excluded' },
-    ]}
+    options={Object.values(status).map((item) => ({ name: item.label, value: item.id }))}
     itemTemplate={statusesItemTemplate}
     onChange={(e) => options.filterApplyCallback(e.value)}
     optionLabel="name"

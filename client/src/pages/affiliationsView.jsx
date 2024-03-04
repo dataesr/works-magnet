@@ -2,6 +2,7 @@ import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { FilterMatchMode } from 'primereact/api';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 import { nameTemplate, rorTemplate, statusRowFilterTemplate, statusTemplate, worksExampleTemplate } from '../utils/templates';
 
@@ -10,7 +11,8 @@ export default function AffiliationsView({
   selectedAffiliations,
   setSelectedAffiliations,
 }) {
-  const filters = { status: { value: null, matchMode: FilterMatchMode.IN } };
+  const [filters] = useState({ status: { value: null, matchMode: FilterMatchMode.IN } });
+
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
