@@ -34,6 +34,8 @@ export default function DatasetsView({
       scrollHeight="600px"
       selection={selectedWorks}
       selectionPageOnly
+      sortField="levelCertainty"
+      sortOrder={-1}
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}

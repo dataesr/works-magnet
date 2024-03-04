@@ -15,10 +15,10 @@ function Toast({
   remove,
 }) {
   const removeSelf = useCallback(() => {
-    document.getElementById(id).style.setProperty('animation', 'toast-unmount 300ms');
+    document.getElementById(id).style.setProperty('animation', 'toast-unmount 1000ms');
     setTimeout(() => {
       remove(id);
-    }, 300);
+    }, 1000);
   }, [id, remove]);
   const { pause, resume } = usePausableTimer(removeSelf, autoDismissAfter);
 
@@ -83,7 +83,7 @@ Toast.propTypes = {
 Toast.defaultProps = {
   title: null,
   description: null,
-  autoDismissAfter: 3000,
+  autoDismissAfter: 10000,
   remove: () => { },
   toastType: 'success',
 };

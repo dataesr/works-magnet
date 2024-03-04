@@ -22,9 +22,9 @@ export default function OpenalexView({
         if (!isRor(x)) {
           isValid = false;
           toast({
-            description: 'RoR not valid',
+            description: `${x} is not a valid RoR`,
             id: 'rorError',
-            title: 'erRoR',
+            title: 'Invalid RoR identifier',
             toastType: 'error',
           });
         }
