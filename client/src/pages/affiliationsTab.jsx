@@ -10,7 +10,6 @@ import { normalizeName, renderButtons } from '../utils/works';
 export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
-  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [timer, setTimer] = useState();
 
   useEffect(() => {
@@ -22,22 +21,13 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName))
-        && filteredStatus.includes(affiliation.status));
+      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName)));
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
     // The timer should not be tracked
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [affiliations, filteredAffiliationName, filteredStatus]);
-
-  const onStatusChange = (st) => {
-    if (filteredStatus.includes(st)) {
-      setFilteredStatus(filteredStatus.filter((filteredSt) => filteredSt !== st));
-    } else {
-      setFilteredStatus(filteredStatus.concat([st]));
-    }
-  };
+  }, [affiliations, filteredAffiliationName]);
 
   return (
     <>
@@ -64,24 +54,6 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
         </Col>
       </Row>
       <Row gutters>
-        { /*
-        <Col n="1">
-          <CheckboxGroup
-            hint="Filter affilitions on the decisions already made"
-            legend="Filter on decision status"
-          >
-            {Object.values(status).map((st) => (
-              <Checkbox
-                checked={filteredStatus.includes(st.id)}
-                key={st.id}
-                label={st.label}
-                onChange={() => onStatusChange(st.id)}
-                size="sm"
-              />
-            ))}
-          </CheckboxGroup>
-        </Col>
-      */ }
         <Col n="12">
           <AffiliationsView
             allAffiliations={filteredAffiliations}
