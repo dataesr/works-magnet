@@ -1,19 +1,22 @@
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
+import { FilterMatchMode } from 'primereact/api';
 import PropTypes from 'prop-types';
 
-import { nameTemplate, rorTemplate, statusTemplate, worksExampleTemplate } from '../utils/templates';
+import { nameTemplate, rorTemplate, statusRowFilterTemplate, statusTemplate, worksExampleTemplate } from '../utils/templates';
 
 export default function AffiliationsView({
   allAffiliations,
   selectedAffiliations,
   setSelectedAffiliations,
 }) {
+  const filters = { status: { value: null, matchMode: FilterMatchMode.IN } };
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       dataKey="key"
       filterDisplay="row"
+      filters={filters}
       metaKeySelection
       onSelectionChange={(e) => setSelectedAffiliations(e.value)}
       paginator
@@ -34,7 +37,7 @@ export default function AffiliationsView({
       value={allAffiliations}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} style={{ maxWidth: '150px' }} />
+      <Column field="status" header="Status" body={statusTemplate} style={{ maxWidth: '150px' }} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} filter filterElement={statusRowFilterTemplate} />
       <Column field="nameHtml" header="Affiliation" body={nameTemplate} style={{ maxWidth: '250px' }} />
       <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '150px' }} />
       <Column field="worksExamples" header="Examples of works" body={worksExampleTemplate} style={{ maxWidth: '200px' }} />

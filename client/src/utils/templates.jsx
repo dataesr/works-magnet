@@ -2,6 +2,7 @@
 /* eslint-disable react/no-array-index-key */
 import { Badge } from '@dataesr/react-dsfr';
 import { Tooltip } from 'react-tooltip';
+import { MultiSelect } from 'primereact/multiselect';
 
 import { getIdLink } from './works';
 import { correction, status } from '../config';
@@ -13,6 +14,30 @@ const affiliationsTemplate = (rowData) => (
       <span dangerouslySetInnerHTML={{ __html: rowData.affiliationsTooltip }} />
     </Tooltip>
   </>
+);
+
+const statusesItemTemplate = (option) => (
+  <div className="flex align-items-center gap-2">
+    <span>{option.name}</span>
+  </div>
+);
+
+const statusRowFilterTemplate = (options) => (
+  <MultiSelect
+    value={options.value}
+    options={[
+      { name: 'To be decided', value: 'tobedecided' },
+      { name: 'Validated', value: 'validated' },
+      { name: 'Excluded', value: 'excluded' },
+    ]}
+    itemTemplate={statusesItemTemplate}
+    onChange={(e) => options.filterApplyCallback(e.value)}
+    optionLabel="name"
+    placeholder="Any"
+    className="p-column-filter"
+    maxSelectedLabels={1}
+    style={{ minWidth: '14rem' }}
+  />
 );
 
 const allIdsTemplate = (rowData) => {
@@ -27,7 +52,7 @@ const allIdsTemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-//TODO: is there a way not to duplicate code : linkedDOITemplate and allIdsTemplate are the same but do not use the same field
+// TODO: is there a way not to duplicate code : linkedDOITemplate and allIdsTemplate are the same but do not use the same field
 const linkedDOITemplate = (rowData) => {
   let html = '<ul>';
   const publicationsLinked = rowData.fr_publications_linked || [];
@@ -41,7 +66,7 @@ const linkedDOITemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-//TODO: is there a way not to duplicate code : linkedDOITemplate and allIdsTemplate are the same but do not use the same field
+// TODO: is there a way not to duplicate code : linkedDOITemplate and allIdsTemplate are the same but do not use the same field
 const worksExampleTemplate = (rowData) => {
   let html = '<ul>';
   rowData.worksExample.filter((e) => ['doi', 'hal_id', 'crossref', 'datacite'].includes(e.id_type)).slice(0, 5).forEach((id) => {
@@ -187,6 +212,7 @@ export {
   linkedORCIDTemplate,
   nameTemplate,
   rorTemplate,
+  statusRowFilterTemplate,
   statusTemplate,
   worksExampleTemplate,
 };
