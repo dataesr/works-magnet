@@ -110,7 +110,7 @@ const export2jsonl = ({ data, label, searchParams }) => {
   document.body.removeChild(link);
 };
 
-const importJson = (e, optionsInit, setAllAffiliations, setAllPublications, setSearchParams, tagAffiliations) => {
+const importJson = (e, tagAffiliations) => {
   const fileReader = new FileReader();
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {

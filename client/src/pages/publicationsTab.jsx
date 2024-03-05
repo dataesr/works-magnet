@@ -48,46 +48,6 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publications, filteredAffiliationName, filteredDatasources, filteredPublishers, filteredStatus, filteredTypes, filteredYears]);
 
-  const onDatasourcesChange = (datasource) => {
-    if (filteredDatasources.includes(datasource.key)) {
-      setFilteredDatasources(filteredDatasources.filter((filteredDatasource) => filteredDatasource !== datasource.key));
-    } else {
-      setFilteredDatasources(filteredDatasources.concat([datasource.key]));
-    }
-  };
-
-  const onPublishersChange = (publisher) => {
-    if (filteredPublishers.includes(publisher)) {
-      setFilteredPublishers(filteredPublishers.filter((filteredPublisher) => filteredPublisher !== publisher));
-    } else {
-      setFilteredPublishers(filteredPublishers.concat([publisher]));
-    }
-  };
-
-  const onStatusChange = (st) => {
-    if (filteredStatus.includes(st)) {
-      setFilteredStatus(filteredStatus.filter((filteredSt) => filteredSt !== st));
-    } else {
-      setFilteredStatus(filteredStatus.concat([st]));
-    }
-  };
-
-  const onTypesChange = (type) => {
-    if (filteredTypes.includes(type)) {
-      setFilteredTypes(filteredTypes.filter((filteredType) => filteredType !== type));
-    } else {
-      setFilteredTypes(filteredTypes.concat([type]));
-    }
-  };
-
-  const onYearsChange = (year) => {
-    if (filteredYears.includes(year)) {
-      setFilteredYears(filteredYears.filter((filteredYear) => filteredYear !== year));
-    } else {
-      setFilteredYears(filteredYears.concat([year]));
-    }
-  };
-
   return (
     <>
       <Row>
@@ -104,7 +64,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
         </Col>
       </Row>
       <Row gutters>
-        <Col n="9" offset="2">
+        <Col n="12">
           <TextInput
             label="Search in any field"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
@@ -113,79 +73,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
         </Col>
       </Row>
       <Row gutters>
-        <Col n="2">
-          <CheckboxGroup
-            hint="Filter publications according to the choices made on affiliations"
-            legend="Filter on decision status"
-          >
-            {Object.values(status).map((st) => (
-              <Checkbox
-                checked={filteredStatus.includes(st.id)}
-                key={st.id}
-                label={st.label}
-                onChange={() => onStatusChange(st.id)}
-                size="sm"
-              />
-            ))}
-          </CheckboxGroup>
-          <CheckboxGroup
-            hint="Filter publications on selected datasources"
-            legend="Source"
-          >
-            {datasources.map((datasource) => (
-              <Checkbox
-                checked={filteredDatasources.includes(datasource.key)}
-                key={datasource.key}
-                label={datasource.label}
-                onChange={() => onDatasourcesChange(datasource)}
-                size="sm"
-              />
-            ))}
-          </CheckboxGroup>
-          <CheckboxGroup
-            hint="Filter publications on selected years"
-            legend="Years"
-          >
-            {Object.keys(years).sort().reverse().map((year) => (
-              <Checkbox
-                checked={filteredYears.includes(year)}
-                key={year}
-                label={`${year} (${years[year]})`}
-                onChange={() => onYearsChange(year)}
-                size="sm"
-              />
-            ))}
-          </CheckboxGroup>
-          <CheckboxGroup
-            hint="Filter publications on selected types"
-            legend="Types"
-          >
-            {Object.keys(types).map((type) => (
-              <Checkbox
-                checked={filteredTypes.includes(type)}
-                key={type}
-                label={`${type} (${types[type]})`}
-                onChange={() => onTypesChange(type)}
-                size="sm"
-              />
-            ))}
-          </CheckboxGroup>
-          <CheckboxGroup
-            hint="Filter publications on selected publishers"
-            legend="Publishers"
-          >
-            {Object.keys(publishers).map((publisher) => (
-              <Checkbox
-                checked={filteredPublishers.includes(publisher)}
-                key={publisher}
-                label={`${publisher} (${publishers[publisher]})`}
-                onChange={() => onPublishersChange(publisher)}
-                size="sm"
-              />
-            ))}
-          </CheckboxGroup>
-        </Col>
-        <Col n="10">
+        <Col n="12">
           <PublicationsView
             selectedWorks={selectedPublications}
             setSelectedWorks={setSelectedPublications}

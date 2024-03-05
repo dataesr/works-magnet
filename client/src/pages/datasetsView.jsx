@@ -1,6 +1,8 @@
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
+import { FilterMatchMode } from 'primereact/api';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 import {
   affiliationsTemplate,
@@ -10,6 +12,7 @@ import {
   frAuthorsTemplate,
   linkedDOITemplate,
   linkedORCIDTemplate,
+  statusRowFilterTemplate,
   statusTemplate,
 } from '../utils/templates';
 
@@ -18,11 +21,13 @@ export default function DatasetsView({
   setSelectedWorks,
   works,
 }) {
+  const [filters] = useState({ status: { value: null, matchMode: FilterMatchMode.IN } });
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       dataKey="id"
       filterDisplay="row"
+      filters={filters}
       metaKeySelection={false}
       onSelectionChange={(e) => setSelectedWorks(e.value)}
       paginator
@@ -31,7 +36,7 @@ export default function DatasetsView({
       rows={100}
       rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
-      scrollHeight="600px"
+      scrollHeight="700px"
       selection={selectedWorks}
       selectionPageOnly
       sortField="levelCertainty"
@@ -42,7 +47,7 @@ export default function DatasetsView({
       value={works}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} style={{ maxWidth: '100px' }} />
+      <Column field="status" header="Status" body={statusTemplate} style={{ minWidth: '150px' }} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} filter filterElement={statusRowFilterTemplate} />
       <Column field="allIds" header="Ids" body={allIdsTemplate} style={{ maxWidth: '180px' }} />
       <Column field="type" header="Type" style={{ maxWidth: '90px' }} />
       <Column field="year" header="Year" style={{ maxWidth: '70px' }} />

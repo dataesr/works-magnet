@@ -20,7 +20,7 @@ export default function OpenalexView({
     const newValue = newData.rorsToCorrect.trim();
     if (newValue !== data.rorsToCorrect) {
       newValue.split(';').forEach((x) => {
-        if (!isRor(x)) {
+        if (!isRor(x) && x.length > 0) {
           isValid = false;
           toast({
             description: `${x} is not a valid RoR`,

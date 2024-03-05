@@ -93,7 +93,7 @@ export default function TagInput({
   const rowTags = [];
   structuredTags.forEach((currentTags) => {
     rowTags.push(
-      <Row style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
+      <Row key={`row-tags-${rowTags.length}`} style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
         <Col className="">
           <TagGroup>
             {currentTags.map((tag) => (

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip';
+import useToast from '../../hooks/useToast';
 
 import Button from '../../components/button';
 import { status } from '../../config';
@@ -11,13 +12,31 @@ import { export2json, importJson } from '../../utils/files';
 export default function ActionsAffiliations({
   allAffiliations,
   options,
-  setAllAffiliations,
-  setAllPublications,
   tagAffiliations,
 }) {
+  const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
   const decidedAffiliations = allAffiliations?.filter((affiliation) => affiliation.status !== status.tobedecided.id) || [];
+  const onExport = () => {
+    export2json({ data: decidedAffiliations, label: 'affiliations', searchParams });
+    toast({
+      description: `${decidedAffiliations.length} affiliations have been saved`,
+      id: 'saveAffiliations',
+      title: 'Affiliations saved',
+      toastType: 'info',
+    });
+  };
+  const onImport = (e) => {
+    importJson(e, tagAffiliations);
+    setDisplayFileUpload(false);
+    toast({
+      description: `${decidedAffiliations.length} affiliations are now flagged`,
+      id: 'importAffiliations',
+      title: 'Affiliations imported',
+      toastType: 'success',
+    });
+  };
   return (
     <>
       <Row className="fr-mb-1w">
@@ -26,7 +45,7 @@ export default function ActionsAffiliations({
             data-tooltip-id="save-affiliations-button"
             disabled={!decidedAffiliations.length}
             icon="ri-save-line"
-            onClick={() => export2json({ data: decidedAffiliations, label: 'affiliations', searchParams })}
+            onClick={() => onExport()}
             size="sm"
           >
             Save decided affiliations
@@ -55,7 +74,7 @@ export default function ActionsAffiliations({
               accept=".json"
               hint="Select JSON file to restore from previous state"
               label="JSON file"
-              onChange={(e) => { importJson(e, options, setAllAffiliations, setAllPublications, setSearchParams, tagAffiliations); setDisplayFileUpload(false); }}
+              onChange={(e) => { onImport(e); }}
             />
           </Col>
         </Row>
@@ -74,7 +93,5 @@ ActionsAffiliations.propTypes = {
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   options: PropTypes.object.isRequired,
-  setAllAffiliations: PropTypes.func.isRequired,
-  setAllPublications: PropTypes.func.isRequired,
   tagAffiliations: PropTypes.func.isRequired,
 };
