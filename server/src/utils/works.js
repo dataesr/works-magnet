@@ -235,7 +235,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     url += `,raw_affiliation_string.search:(${options.affiliationStrings.map((aff) => `"${aff}"`).join(' OR ')})`;
   }
   if (options.rors.length) {
-    url += `,authorships.institutions.ror:(${options.rors.join('|')})`;
+    url += `,authorships.institutions.ror:${options.rors.join('|')}`;
   }
   if (options.datasets) {
     url += ',type:dataset';
@@ -289,7 +289,7 @@ const groupByAffiliations = ({ options, works }) => {
   const inputAffiliationsNormalized = options.affiliationStrings.map((affiliation) => removeDiacritics(affiliation));
   const rgxStr = inputAffiliationsNormalized.map((x) => '\\b'.concat(x).concat('\\b')).join('|');
   const rgx = new RegExp(rgxStr, 'gi');
-
+  const queryRors = options.rors || [];
   // Compute distinct affiliations of works
   let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
     const { affiliations = [], id } = work;
@@ -298,7 +298,14 @@ const groupByAffiliations = ({ options, works }) => {
       const affiliation = affiliations[i];
       const normalizedAffiliation = affiliation.key;
       const displayAffiliation = affiliation.label.replace(rgx, '<b>$&</b>');
-      if (displayAffiliation.includes('</b>')) {
+      let keepAffiliation = (displayAffiliation.includes('</b>'));
+      const rorsInAffiliation = affiliation.rors?.map((a) => a.rorId) || [];
+      rorsInAffiliation.forEach((r) => {
+        if (queryRors.includes(r)) {
+          keepAffiliation = true;
+        }
+      });
+      if (keepAffiliation) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
           deduplicatedAffiliations[normalizedAffiliation].works.push(id);
           if (deduplicatedAffiliations[normalizedAffiliation].worksExample.length < 10) {
