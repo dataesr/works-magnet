@@ -17,7 +17,7 @@ export default function OpenalexView({
   const onRowEditComplete = async (e) => {
     const { field, data, newData } = e;
     let isValid = true;
-    const newValue = newData.rorsToCorrect;
+    const newValue = newData.rorsToCorrect.trim();
     if (newValue !== data.rorsToCorrect) {
       newValue.split(';').forEach((x) => {
         if (!isRor(x)) {
@@ -70,7 +70,7 @@ export default function OpenalexView({
       <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '200px' }} />
       <Column field="rorsToCorrect" header="Click to improve / edit RoRs" body={correctionTemplate} style={{ maxWidth: '200px' }} editor={(options) => cellEditor(options)} />
       <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }} />
-      <Column field="hasCorrection" header="Modified by user?" body={hasCorrectionTemplate} style={{ maxWidth: '100px' }} sortable />
+      <Column field="hasCorrection" header="Modified by user?" body={hasCorrectionTemplate} style={{ maxWidth: '120px' }} sortable />
       <Column field="worksExamples" header="Examples of works" body={worksExampleTemplate} style={{ maxWidth: '200px' }} />
       <Column field="worksNumber" header="Number of works" style={{ maxWidth: '100px' }} sortable />
     </DataTable>
