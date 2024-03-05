@@ -20,7 +20,12 @@ const deduplicateWorks = (works) => {
   const deduplicatedWorks = works.reduce((deduplicatedWorksTmp, work) => {
     const { id } = work;
     // eslint-disable-next-line no-param-reassign
-    deduplicatedWorksTmp[id] = deduplicatedWorksTmp[id] ? mergePublications(deduplicatedWorksTmp[id], work) : work;
+    if (deduplicatedWorksTmp[id]) {
+      deduplicatedWorksTmp.id = mergePublications(deduplicatedWorksTmp[id], work);
+    } else {
+      deduplicatedWorksTmp[id] = work;
+    }
+    // deduplicatedWorksTmp[id] = deduplicatedWorksTmp[id] ? mergePublications(deduplicatedWorksTmp[id], work) : work;
     return deduplicatedWorksTmp;
   }, {});
   return Object.values(deduplicatedWorks);
