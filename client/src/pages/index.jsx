@@ -1,4 +1,6 @@
 import {
+  Accordion,
+  AccordionItem,
   Callout,
   CalloutText,
   CalloutTitle,
@@ -147,6 +149,42 @@ export default function Home() {
     setAllAffiliations(allAffiliationsTmp);
     setSelectedAffiliations([]);
   };
+  const fullAffiliationChoiceTab = (
+    <Tab label="✅ Select the raw affiliations for your institution">
+      <Row className="fr-pb-3w">
+        <Col n="8">
+          <Callout colorFamily="beige-gris-galet">
+            <CalloutTitle size="md">
+              Select the raw affiliations corresponding to your institution
+            </CalloutTitle>
+            <CalloutText size="sm">
+              🔎 The array below summarizes the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query.
+              <br />
+              🤔 You can validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not. If an affiliation is validated, it will also validate all the publications (3rd tab) and datasets (4th tab)  with that affiliation string.
+              <br />
+              🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing. If any errors, please use the first tab to send feedback.
+              <br />
+              💾 You can save (export to a file) those decisions, and restore them later on.
+            </CalloutText>
+          </Callout>
+        </Col>
+        <Col>
+          <ActionsAffiliations
+            allAffiliations={allAffiliations}
+            options={options}
+            setAllAffiliations={setAllAffiliations}
+            tagAffiliations={tagAffiliations}
+          />
+        </Col>
+      </Row>
+      <AffiliationsTab
+        affiliations={allAffiliations}
+        selectedAffiliations={selectedAffiliations}
+        setSelectedAffiliations={setSelectedAffiliations}
+        tagAffiliations={tagAffiliations}
+      />
+    </Tab>
+  );
   return (
     <>
       <Beta />
@@ -164,100 +202,80 @@ export default function Home() {
           <PageSpinner />
         )}
         {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
-          <Tabs defaultActiveTab={0}>
-            <Tab label="✏️ Improve RoRs in OpenAlex">
-              <Row className="fr-pb-3w">
-                <Col n="8">
-                  <Callout colorFamily="beige-gris-galet">
-                    <CalloutTitle size="md">
-                      Improve RoR matching in OpenAlex - Provide your feedback!
-                    </CalloutTitle>
-                    <CalloutText size="sm">
-                      🔎 The array below summarizes the most frequent raw affiliation strings retrieved in OpenAlex for your query.
-                      <br />
-                      🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
-                      <br />
-                      ✏️  Click the third column to edit and input the right RoRs for this raw affiliation string. Use a ';' to input multiple RoRs.
-                      <br />
-                      🗣 Once finished, you can use the Export button on the right to send this feedback to OpenAlex.
-                    </CalloutText>
-                  </Callout>
-                </Col>
-                <Col>
-                  <ActionsOpenalex
-                    allOpenalexCorrections={allOpenalexCorrections}
-                    options={options}
+          <Accordion>
+            <AccordionItem title="✏️ Improve OpenAlex for your institution">
+              <Tabs defaultActiveTab={0}>
+                <Tab label="🆔 Improve RoRs in OpenAlex">
+                  <Row className="fr-pb-3w">
+                    <Col n="8">
+                      <Callout colorFamily="beige-gris-galet">
+                        <CalloutTitle size="md">
+                          Improve RoR matching in OpenAlex - Provide your feedback!
+                        </CalloutTitle>
+                        <CalloutText size="sm">
+                          🔎 The array below summarizes the most frequent raw affiliation strings retrieved in OpenAlex for your query.
+                          <br />
+                          🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
+                          <br />
+                          ✏️  Click the third column to edit and input the right RoRs for this raw affiliation string. Use a ';' to input multiple RoRs.
+                          <br />
+                          🗣 Once finished, you can use the Export button on the right to send this feedback to OpenAlex.
+                        </CalloutText>
+                      </Callout>
+                    </Col>
+                    <Col>
+                      <ActionsOpenalex
+                        allOpenalexCorrections={allOpenalexCorrections}
+                        options={options}
+                      />
+                    </Col>
+                  </Row>
+                  <OpenalexTab
+                    affiliations={allAffiliations.filter((aff) => aff.source === 'OpenAlex')}
+                    setAllOpenalexCorrections={setAllOpenalexCorrections}
                   />
-                </Col>
-              </Row>
-              <OpenalexTab
-                affiliations={allAffiliations.filter((aff) => aff.source === 'OpenAlex')}
-                setAllOpenalexCorrections={setAllOpenalexCorrections}
-              />
-            </Tab>
-            <Tab label="✅ Select the raw affiliations for your institution">
-              <Row className="fr-pb-3w">
-                <Col n="8">
-                  <Callout colorFamily="beige-gris-galet">
-                    <CalloutTitle size="md">
-                      Select the raw affiliations corresponding to your institution
-                    </CalloutTitle>
-                    <CalloutText size="sm">
-                      🔎 The array below summarizes the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query.
-                      <br />
-                      🤔 You can validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not. If an affiliation is validated, it will also validate all the publications (3rd tab) and datasets (4th tab)  with that affiliation string.
-                      <br />
-                      🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing. If any errors, please use the first tab to send feedback.
-                      <br />
-                      💾 You can save (export to a file) those decisions, and restore them later on.
-                    </CalloutText>
-                  </Callout>
-                </Col>
-                <Col>
-                  <ActionsAffiliations
-                    allAffiliations={allAffiliations}
-                    options={options}
-                    setAllAffiliations={setAllAffiliations}
-                    tagAffiliations={tagAffiliations}
+                </Tab>
+              </Tabs>
+            </AccordionItem>
+            <AccordionItem title="📑 Find the publications affiliated to your institution">
+              <Tabs>
+                { fullAffiliationChoiceTab }
+                <Tab label="📑 List of publications">
+                  <ActionsPublications
+                    allPublications={allPublications}
                   />
-                </Col>
-              </Row>
-              <AffiliationsTab
-                affiliations={allAffiliations}
-                selectedAffiliations={selectedAffiliations}
-                setSelectedAffiliations={setSelectedAffiliations}
-                tagAffiliations={tagAffiliations}
-              />
-            </Tab>
-            <Tab label="📑 List of publications">
-              <ActionsPublications
-                allPublications={allPublications}
-              />
-              <PublicationsTab
-                publishers={data.publications?.publishers || []}
-                publications={allPublications}
-                selectedPublications={selectedPublications}
-                setSelectedPublications={setSelectedPublications}
-                tagPublications={tagPublications}
-                types={data.publications?.types || []}
-                years={data.publications?.years || []}
-              />
-            </Tab>
-            <Tab label="🗃 List of datasets">
-              <ActionsDatasets
-                allDatasets={allDatasets}
-              />
-              <DatasetsTab
-                datasets={allDatasets}
-                publishers={data.datasets.publishers}
-                selectedDatasets={selectedDatasets}
-                setSelectedDatasets={setSelectedDatasets}
-                tagDatasets={tagDatasets}
-                types={data.datasets.types}
-                years={data.datasets.years}
-              />
-            </Tab>
-          </Tabs>
+                  <PublicationsTab
+                    publishers={data.publications?.publishers || []}
+                    publications={allPublications}
+                    selectedPublications={selectedPublications}
+                    setSelectedPublications={setSelectedPublications}
+                    tagPublications={tagPublications}
+                    types={data.publications?.types || []}
+                    years={data.publications?.years || []}
+                  />
+                </Tab>
+              </Tabs>
+            </AccordionItem>
+            <AccordionItem title="🗃 Find the datasets affiliated to your institution">
+              <Tabs>
+                { fullAffiliationChoiceTab }
+                <Tab label="🗃 List of datasets">
+                  <ActionsDatasets
+                    allDatasets={allDatasets}
+                  />
+                  <DatasetsTab
+                    datasets={allDatasets}
+                    publishers={data.datasets.publishers}
+                    selectedDatasets={selectedDatasets}
+                    setSelectedDatasets={setSelectedDatasets}
+                    tagDatasets={tagDatasets}
+                    types={data.datasets.types}
+                    years={data.datasets.years}
+                  />
+                </Tab>
+              </Tabs>
+            </AccordionItem>
+          </Accordion>
         )}
       </Container>
     </>
