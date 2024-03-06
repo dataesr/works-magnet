@@ -4,6 +4,7 @@ import useToast from '../../hooks/useToast';
 
 import Button from '../button';
 import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/files';
+import { sendGitHubIssue } from '../../utils/github';
 
 import './index.scss';
 
@@ -13,6 +14,14 @@ export default function ButtonDropdown({ data, label, searchParams }) {
     toast({
       description: `${data.length} ${label} have been saved`,
       id: 'saveWork',
+      title: `${label} saved`,
+      toastType: 'success',
+    });
+  };
+  const toastOpenAlex = () => {
+    toast({
+      description: `${data.length} corrections to OpenAlex have been saved - see https://github.com/dataesr/openalex-affiliations/issues`,
+      id: 'saveOpenAlex',
       title: `${label} saved`,
       toastType: 'success',
     });
@@ -52,9 +61,8 @@ export default function ButtonDropdown({ data, label, searchParams }) {
         )}
         {label === 'OpenAlex errors' && (
           <Button
-            onClick={() => { export2FosmCsv({ data, label, searchParams }); toastExport(); }}
+            onClick={() => { sendGitHubIssue({ data }); toastOpenAlex(); }}
             size="sm"
-            disabled
           >
             Send feedback to OpenAlex
           </Button>
