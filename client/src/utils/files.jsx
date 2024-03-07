@@ -1,3 +1,5 @@
+import Papa from 'papaparse';
+
 import { status } from '../config';
 
 const hashCode = (str) => {
@@ -75,12 +77,14 @@ const export2Csv = ({ data, label, searchParams }) => {
     delete work.authors;
     delete work.datasource;
     delete work.id;
+    if ((work?.fr_authors_orcid ?? []).length > 0) {
+      work.fr_authors_orcid = JSON.stringify(work?.fr_authors_orcid ?? []);
+    }
+    if ((work?.fr_publications_linked ?? []).length > 0) {
+      work.fr_publications_linked = JSON.stringify(work?.fr_publications_linked ?? []);
+    }
   });
-  const headers = Object.keys(data?.[0] ?? {});
-  const csvFile = [
-    headers,
-    ...data.map((item) => Object.values(item).map((cell) => JSON.stringify(cell))),
-  ].map((e) => e.join(',')).join('\n');
+  const csvFile = Papa.unparse(data, { skipEmptyLines: 'greedy' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csvFile], { type: 'text/csv;charset=utf-8' }));
   const fileName = getFileName({ extension: 'csv', label, searchParams });
