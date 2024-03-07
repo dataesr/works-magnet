@@ -273,6 +273,9 @@ export default function Home() {
                     years={data.datasets.years}
                   />
                 </Tab>
+                <Tab label="📊 Insights">
+                  TODO
+                </Tab>
               </Tabs>
             </AccordionItem>
           </Accordion>
