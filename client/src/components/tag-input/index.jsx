@@ -4,30 +4,6 @@ import { useEffect, useState } from 'react';
 
 const SEE_MORE_AFTER = 5;
 
-function SeeMoreTags({ data, maxTags = SEE_MORE_AFTER }) {
-  const [seeMore, setSeeMore] = useState(false);
-  const tail = seeMore ? data.slice(SEE_MORE_AFTER) : null;
-  const button = (data.length > maxTags ? (
-    <Button
-      size="sm"
-      onClick={() => setSeeMore((prev) => !prev)}
-    >
-      {
-        seeMore
-          ? 'Reduce the list'
-          : `Display ${data.length - maxTags} more rows`
-      }
-    </Button>
-  ) : null);
-  return (
-    <>
-      {data.slice(0, SEE_MORE_AFTER)}
-      {tail}
-      {button}
-    </>
-  );
-}
-
 export default function TagInput({
   hint,
   label,
@@ -39,9 +15,10 @@ export default function TagInput({
   tags,
   deletedTags,
 }) {
-  const [input, setInput] = useState('');
-  const [values, setValues] = useState(tags);
   const [excludedValues, setExcludedValues] = useState(deletedTags);
+  const [input, setInput] = useState('');
+  const [seeMore, setSeeMore] = useState(false);
+  const [values, setValues] = useState(tags);
 
   const handleKeyDown = (e) => {
     if ([9, 13].includes(e.keyCode) && input) {
@@ -75,7 +52,9 @@ export default function TagInput({
   };
 
   useEffect(() => setValues(tags), [tags]);
+
   useEffect(() => setExcludedValues(deletedTags), [deletedTags]);
+
   let newLine = [];
   const structuredTags = [];
   tags.forEach((tag) => {
@@ -90,29 +69,7 @@ export default function TagInput({
   if (newLine.length) {
     structuredTags.push(newLine);
   }
-  const rowTags = [];
-  structuredTags.forEach((currentTags) => {
-    rowTags.push(
-      <Row key={`row-tags-${rowTags.length}`} style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
-        <Col className="">
-          <TagGroup>
-            {currentTags.map((tag) => (
-              <Tag
-                className="fr-mr-1w"
-                small
-                colorFamily={(tag?.source ?? 'user') === 'user' ? 'brown-cafe-creme' : 'brown-caramel'}
-                key={tag.label}
-                onClick={() => handleDeleteClick(tag)}
-              >
-                {tag.label}
-                <Icon iconPosition="right" name="ri-close-line" />
-              </Tag>
-            ))}
-          </TagGroup>
-        </Col>
-      </Row>,
-    );
-  });
+
   return (
     <div>
       <div>
@@ -131,7 +88,48 @@ export default function TagInput({
             />
           </Col>
         </Row>
-        <SeeMoreTags data={rowTags} />
+        {
+          structuredTags.slice(0, seeMore ? structuredTags.length : SEE_MORE_AFTER).map((currentTags, index) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <Row key={`row-tags-${index}`} style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
+              <Col className="">
+                <TagGroup>
+                  {currentTags.map((tag) => (
+                    <Tag
+                      className="fr-mr-1w"
+                      small
+                      colorFamily={(tag?.source ?? 'user') === 'user' ? 'brown-cafe-creme' : 'brown-caramel'}
+                      key={tag.label}
+                      onClick={() => handleDeleteClick(tag)}
+                    >
+                      {tag.label}
+                      <Icon iconPosition="right" name="ri-close-line" />
+                    </Tag>
+                  ))}
+                </TagGroup>
+              </Col>
+            </Row>
+          ))
+        }
+        {(structuredTags.length > SEE_MORE_AFTER) && (
+          <Button
+            className="fr-mr-1w"
+            onClick={() => setSeeMore((prev) => !prev)}
+            size="sm"
+          >
+            {
+              seeMore
+                ? 'Reduce the list'
+                : `Display ${structuredTags.length - SEE_MORE_AFTER} more rows`
+            }
+          </Button>
+        )}
+        <Button
+          onClick={() => onTagsChange([], excludedValues)}
+          size="sm"
+        >
+          Clear all
+        </Button>
       </div>
     </div>
   );
