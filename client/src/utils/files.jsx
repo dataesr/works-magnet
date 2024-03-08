@@ -34,32 +34,24 @@ const export2FosmCsv = ({ data, label, searchParams }) => {
     idsToExport = ['datacite', 'crossref'];
     csvHeader = 'dataset';
   }
-  const validatedPublications = data.filter((publication) => publication.status === status.validated.id);
-  const rows = [];
-  validatedPublications.forEach((publi) => {
-    const row = [];
-    idsToExport.forEach((currentId) => {
-      const elt = publi.allIds.filter((e) => e.id_type === currentId);
-      if (elt.length) {
-        row.push(elt[0].id_value);
-      } else {
-        row.push('');
-      }
+  const rows = data
+    .filter((publication) => publication.status === status.validated.id)
+    .map((publication) => {
+      const row = [];
+      idsToExport.forEach((currentId) => {
+        const elt = publication.allIds.filter((id) => id.id_type === currentId);
+        if (elt.length) {
+          row.push(elt[0].id_value);
+        } else {
+          row.push('');
+        }
+      });
+      return row.join(label === 'datasets' ? '' : ';');
     });
-    if (label === 'datasets') {
-      rows.push(row.join(''));
-    } else {
-      rows.push(row.join(';'));
-    }
-  });
-  const csvContent = rows.join('\r\n');
-
-  const csvFile = `${csvHeader}\r\n${csvContent}`;
-
+  const csvFile = Papa.unparse(rows, { columns: csvHeader, skipEmptyLines: 'greedy' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csvFile], { type: 'text/csv;charset=utf-8' }));
-  const currentLabel = label.concat('BSO');
-  link.setAttribute('download', getFileName({ extension: 'csv', label: currentLabel, searchParams }));
+  link.setAttribute('download', getFileName({ extension: 'csv', label: label.concat('BSO'), searchParams }));
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
