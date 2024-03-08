@@ -23,13 +23,14 @@ import AffiliationsTab from './affiliationsTab';
 import { PageSpinner } from '../components/spinner';
 import Stepper from '../components/stepper';
 import Beta from '../components/beta';
+import { status } from '../config';
+import DatasetsInsightsTab from './datasetsInsightsTab';
 import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import OpenalexTab from './openalexTab';
 import PublicationsTab from './publicationsTab';
 import { getAffiliationsHtmlField, getAffiliationsTooltipField, getAllInfos } from '../utils/templates';
 import { getData } from '../utils/works';
-import { status } from '../config';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -274,7 +275,7 @@ export default function Home() {
                   />
                 </Tab>
                 <Tab label="📊 Insights">
-                  TODO
+                  <DatasetsInsightsTab allDatasets={allDatasets} />
                 </Tab>
               </Tabs>
             </AccordionItem>

@@ -107,6 +107,7 @@ export default function Filters({ sendQuery }) {
     setMessageType('');
     setMessage('');
     const queryParams = { datasets: currentSearchParams.datasets, startYear: currentSearchParams.startYear, endYear: currentSearchParams.endYear };
+    // TO REVIEW
     queryParams.affiliationStrings = tags.filter((tag) => tag.type === 'affiliationString').map((tag) => normalizeStr(tag.label)).slice(0, 100);
     queryParams.rors = tags.filter((tag) => tag.type === 'rorId').map((tag) => tag.label).slice(0, 100);
     sendQuery(queryParams);

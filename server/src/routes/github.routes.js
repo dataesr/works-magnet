@@ -3,29 +3,30 @@ import { Octokit } from 'octokit';
 
 const router = new express.Router();
 
-const token = process.env.GITHUB_PAT;
+const auth = process.env.GITHUB_PAT;
 
-const createIssue = (elt) => {
-  const octokit = new Octokit({ auth: token });
-  const title = `Correction for raw affiliation ${elt.rawAffiliationString}`;
-  let body = `Correction needed for raw affiliation ${elt.rawAffiliationString}\n`;
-  body = body.concat(`raw_affiliation_name: ${elt.rawAffiliationString}\n`);
-  body = body.concat(`new_rors: ${elt.correctedRors}\n`);
-  const previousRoRs = elt.rorsInOpenAlex.map((e) => e.rorId).join(';');
+const createIssue = (issue) => {
+  const octokit = new Octokit({ auth });
+  const title = `Correction for raw affiliation ${issue.rawAffiliationString}`;
+  let body = `Correction needed for raw affiliation ${issue.rawAffiliationString}\n`;
+  body = body.concat(`raw_affiliation_name: ${issue.rawAffiliationString}\n`);
+  body = body.concat(`new_rors: ${issue.correctedRors}\n`);
+  const previousRoRs = issue.rorsInOpenAlex.map((e) => e.rorId).join(';');
   body = body.concat(`previous_rors: ${previousRoRs}\n`);
-  const workIds = elt.worksExample.filter((e) => e.id_type === 'openalex').map((e) => e.id_value).join(';');
+  const workIds = issue.worksExample.filter((e) => e.id_type === 'openalex').map((e) => e.id_value).join(';');
   body = body.concat(`works_examples: ${workIds}`);
   octokit.rest.issues.create({
+    body,
     owner: 'dataesr',
     repo: 'openalex-affiliations',
     title,
-    body,
   });
 };
 
 router.route('/github-issue')
   .post(async (req, res) => {
     const data = req.body?.data || [];
+    // TO REVIEW
     await data.reduce(async (a, elt) => {
       // Wait for the previous item to finish processing
       await a;

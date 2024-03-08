@@ -50,6 +50,12 @@ const normalizeName = (name) => name
   .replace(/\s+/g, ' ')
   .trim();
 
+const range = (startYear, endYear = new Date().getFullYear()) => {
+  const start = Number(startYear);
+  const end = Number(endYear);
+  return (start === end) ? [start] : [start, ...range(start + 1, end)];
+};
+
 const renderButtons = (selected, fn, entityLabel) => (
   <>
     {Object.values(status).map((st) => (
@@ -71,5 +77,6 @@ export {
   getData,
   getIdLink,
   normalizeName,
+  range,
   renderButtons,
 };
