@@ -6,6 +6,8 @@ const {
   VITE_API,
 } = import.meta.env;
 
+const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
 const getData = async (options) => {
   const urlParams = new URLSearchParams(options).toString();
   return fetch(`${VITE_API}/works?${urlParams}`)
@@ -74,6 +76,7 @@ const renderButtons = (selected, fn, entityLabel) => (
 );
 
 export {
+  capitalize,
   getData,
   getIdLink,
   normalizeName,

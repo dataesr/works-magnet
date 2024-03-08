@@ -5,24 +5,27 @@ import useToast from '../../hooks/useToast';
 import Button from '../button';
 import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/files';
 import { sendGitHubIssue } from '../../utils/github';
+import { capitalize } from '../../utils/works';
 
 import './index.scss';
 
 export default function ButtonDropdown({ data, label, searchParams }) {
   const { toast } = useToast();
+
   const toastExport = () => {
     toast({
       description: `${data.length} ${label} have been saved`,
       id: 'saveWork',
-      title: `${label} saved`,
+      title: `${capitalize(label)} saved`,
       toastType: 'success',
     });
   };
+
   const toastOpenAlex = () => {
     toast({
       description: `${data.length} corrections to OpenAlex have been saved - see https://github.com/dataesr/openalex-affiliations/issues`,
       id: 'saveOpenAlex',
-      title: `${label} saved`,
+      title: `${capitalize(label)} saved`,
       toastType: 'success',
     });
   };
