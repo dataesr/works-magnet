@@ -1,5 +1,9 @@
 # Works magnet
 
+[![Discord Follow](https://dcbadge.vercel.app/api/server/RaXZtDua?style=flat)](https://discord.gg/RaXZtDua)
+[![Staging deployment](https://github.com/dataesr/works-magnet/actions/workflows/staging.yml/badge.svg)](https://github.com/dataesr/works-magnet/actions/workflows/staging.yml)
+
+
 Retrieve the scholarly works of your institution - Based on French OSM and OpenAlex
 
 ## Build for production
