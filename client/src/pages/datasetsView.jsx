@@ -40,7 +40,7 @@ export default function DatasetsView({
       selection={selectedWorks}
       selectionPageOnly
       sortField="levelCertainty"
-      sortOrder={-1}
+      sortOrder={1}
       size="small"
       stripedRows
       style={{ fontSize: '11px', lineHeight: '10px' }}

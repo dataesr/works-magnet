@@ -102,9 +102,9 @@ const formatResultFosm = (result, options) => {
   ans.nbAuthorsName = ans.fr_authors_name.length;
   ans.nbPublicationsLinked = ans.fr_publications_linked.length;
   let levelCertainty = '2.medium';
-  if (ans.nbPublicationsLinked > 0 || ans.nbOrcid > 1 || ans.nbAuthorsName > 1) {
+  if (ans.nbPublicationsLinked > 0 || ans.nbOrcid >= 2 || ans.nbAuthorsName >= 3) {
     levelCertainty = '1.high';
-  } else if (ans.nbAuthorsName === 1) {
+  } else if (ans.nbAuthorsName <= 1 && ans.nbOrcid <= 1) {
     levelCertainty = '3.low';
   }
   ans.levelCertainty = levelCertainty;
