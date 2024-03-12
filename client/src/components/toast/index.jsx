@@ -7,12 +7,12 @@ import usePausableTimer from '../../hooks/usePausableTimer';
 import './index.scss';
 
 function Toast({
-  id,
-  title,
-  description,
-  toastType,
   autoDismissAfter,
+  description,
+  id,
   remove,
+  title,
+  toastType,
 }) {
   const removeSelf = useCallback(() => {
     document.getElementById(id).style.setProperty('animation', 'toast-unmount 1000ms');
@@ -72,19 +72,19 @@ function Toast({
 }
 
 Toast.propTypes = {
-  id: PropTypes.number.isRequired,
-  title: PropTypes.string,
-  description: PropTypes.string,
   autoDismissAfter: PropTypes.number,
+  description: PropTypes.string,
+  id: PropTypes.number.isRequired,
   remove: PropTypes.func,
+  title: PropTypes.string,
   toastType: PropTypes.oneOf(['info', 'success', 'error', 'warning']),
 };
 
 Toast.defaultProps = {
-  title: null,
-  description: null,
   autoDismissAfter: 10000,
+  description: null,
   remove: () => { },
+  title: null,
   toastType: 'success',
 };
 
