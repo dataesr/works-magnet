@@ -270,7 +270,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
         datasource: ['openalex'],
         doi: cleanId(result?.doi),
         id: cleanId(result?.ids?.doi ?? result?.primary_location?.landing_page_url?.split('/')?.filter((item) => item)?.pop() ?? result?.ids?.openalex),
-        publisher: result?.primary_location?.source?.host_organization_name ?? '',
+        publisher: (result?.primary_location?.source?.host_organization_name ?? result?.primary_location?.source?.display_name) ?? '',
         title: result?.display_name,
         type: getTypeFromOpenAlex(result.type),
         year: result?.publication_year?.toString() ?? '',

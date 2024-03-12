@@ -21,23 +21,45 @@ export default function DatasetsInsightsTab({ allDatasets }) {
     const i = categories.indexOf(Number(publicationYear));
     publishers[publisher][i] += 1;
   });
-  const series = Object.keys(publishers).map((name) => ({
+  const colors = ['#ea5545', '#f46a9b', '#ef9b20', '#edbf33', '#ede15b', '#bdcf32', '#87bc45', '#27aeef', '#b33dc6'];
+  let series = Object.keys(publishers).map((name) => ({
     name,
     data: publishers[name],
+    total: publishers[name].reduce((accumulator, currentValue) => accumulator + currentValue, 0),
   }));
-
+  series = series.sort((a, b) => b.total - a.total);
+  series.forEach((s, ix) => {
+    s.color = colors[ix];
+  });
+  const NB_TOP = 7;
+  const topSeries = series.slice(0, NB_TOP);
+  const tailData = new Array(categories.length).fill(0);
+  series.slice(NB_TOP).forEach((e) => {
+    e.data.forEach((d, ix) => {
+      tailData[ix] += d;
+    });
+  });
+  topSeries.push({
+    name: 'others',
+    data: tailData,
+    color: colors[NB_TOP],
+  });
   const options = {
     chart: {
       type: 'area',
+      height: '600 px',
     },
     plotOptions: {
       area: {
         stacking: 'normal',
       },
     },
-    series,
+    series: topSeries.reverse(),
+    legend: {
+      reversed: true,
+    },
     title: {
-      text: 'Part of datasets publishers by publication year',
+      text: 'Yearly distribution of the number of datasets by repositories',
     },
     xAxis: {
       categories,
