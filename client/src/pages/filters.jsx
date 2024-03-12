@@ -24,6 +24,7 @@ export default function Filters({ sendQuery }) {
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
   const [tags, setTags] = useState([]);
+  const [getRoRChildren, setGetRoRChildren] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -46,7 +47,7 @@ export default function Filters({ sendQuery }) {
         });
         const affiliations = searchParams.getAll('affiliations');
         const deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
-        const queries = affiliations.map((affiliation) => getRorData(affiliation));
+        const queries = affiliations.map((affiliation) => getRorData(affiliation, getRoRChildren));
         let rorNames = await Promise.all(queries);
         rorNames = rorNames.filter((aff) => !deletedAffiliations.includes(aff));
         const allTags = [];
@@ -82,7 +83,7 @@ export default function Filters({ sendQuery }) {
       }
     };
     getData();
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, getRoRChildren]);
 
   const onTagsChange = async (affiliations, deletedAffiliations) => {
     const previousDeleted = currentSearchParams.deletedAffiliations || [];
@@ -158,6 +159,8 @@ export default function Filters({ sendQuery }) {
           messageType={messageType}
           onTagsChange={onTagsChange}
           tags={tags}
+          getRoRChildren={getRoRChildren}
+          setGetRoRChildren={setGetRoRChildren}
           onInputHandler={setOnInputAffiliationsHandler}
         />
       </Col>

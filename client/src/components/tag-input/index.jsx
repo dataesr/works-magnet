@@ -13,6 +13,8 @@ export default function TagInput({
   onTagsChange,
   placeholder,
   tags,
+  getRoRChildren,
+  setGetRoRChildren,
   deletedTags,
 }) {
   const [excludedValues, setExcludedValues] = useState(deletedTags);
@@ -106,6 +108,21 @@ export default function TagInput({
                       <Icon iconPosition="right" name="ri-close-line" />
                     </Tag>
                   ))}
+                  {(index === 0) ? (
+                    <Button
+                      className="fr-mr-1w"
+                      onClick={() => setGetRoRChildren((prev) => !prev)}
+                      size="sm"
+                      hasBorder={false}
+                      icon={getRoRChildren ? 'ri-arrow-go-back-line' : 'ri-node-tree'}
+                    >
+                      {
+                        getRoRChildren
+                          ? 'Remove RoR children'
+                          : 'Get children from RoR'
+                      }
+                    </Button>
+                  ) : null }
                 </TagGroup>
               </Col>
             </Row>
