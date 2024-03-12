@@ -8,6 +8,7 @@ import {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
+  certaintyRowFilterTemplate,
   datasourceTemplate,
   frAuthorsTemplate,
   linkedDOITemplate,
@@ -21,7 +22,10 @@ export default function DatasetsView({
   setSelectedWorks,
   works,
 }) {
-  const [filters] = useState({ status: { value: null, matchMode: FilterMatchMode.IN } });
+  const [filters] = useState({
+    status: { value: null, matchMode: FilterMatchMode.IN },
+    levelCertainty: { value: null, matchMode: FilterMatchMode.IN },
+  });
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -53,7 +57,7 @@ export default function DatasetsView({
       <Column field="year" header="Year" style={{ maxWidth: '70px' }} />
       <Column field="publisher" header="Publisher" style={{ maxWidth: '70px' }} />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} style={{ maxWidth: '220px' }} />
-      <Column field="levelCertainty" header="Certainty" style={{ maxWidth: '90px' }} sortable />
+      <Column field="levelCertainty" header="Certainty" style={{ maxWidth: '90px' }} sortable showFilterMenu={false} filterMenuStyle={{ width: '7rem' }} filter filterElement={certaintyRowFilterTemplate}/>
       <Column field="fr_publications_linked" header="Linked Article" body={linkedDOITemplate} style={{ maxWidth: '180px' }} />
       <Column field="fr_authors_orcid" header="My institution author ORCID" body={linkedORCIDTemplate} style={{ maxWidth: '150px' }} />
       <Column field="fr_authors_name" header="My institution author name" body={frAuthorsTemplate} style={{ maxWidth: '150px' }} />

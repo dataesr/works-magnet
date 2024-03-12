@@ -36,6 +36,20 @@ const statusRowFilterTemplate = (options) => (
   />
 );
 
+const certaintyRowFilterTemplate = (options) => (
+  <MultiSelect
+    value={options.value}
+    options={[{ name: '1.high', value: '1.high' }, { name: '2.medium', value: '2.medium' }, { name: '3.low', value: '3.low' }]}
+    itemTemplate={statusesItemTemplate}
+    onChange={(e) => options.filterApplyCallback(e.value)}
+    optionLabel="name"
+    placeholder="Any"
+    className="p-column-filter"
+    maxSelectedLabels={1}
+    style={{ minWidth: '7rem' }}
+  />
+);
+
 const getIdsTemplate = (ids) => {
   let html = '<ul>';
   ids.forEach((id) => {
@@ -177,6 +191,7 @@ export {
   allIdsTemplate,
   authorsTemplate,
   correctionTemplate,
+  certaintyRowFilterTemplate,
   datasourceTemplate,
   frAuthorsTemplate,
   getAffiliationsHtmlField,
