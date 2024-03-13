@@ -75,6 +75,18 @@ const renderButtons = (selected, fn, entityLabel) => (
   </>
 );
 
+const renderButtonDataset = (selected, fn, label, icon) => (
+  <Button
+    className="fr-mb-1w fr-mr-1w btn-keep"
+    disabled={!selected.length}
+    icon={icon}
+    onClick={() => fn(selected, 'validated')}
+    size="lg"
+  >
+    {`Validate ${selected.length} dataset${selected.length === 1 ? '' : 's'} ${label}`}
+  </Button>
+);
+
 export {
   capitalize,
   getData,
@@ -82,4 +94,5 @@ export {
   normalizeName,
   range,
   renderButtons,
+  renderButtonDataset,
 };

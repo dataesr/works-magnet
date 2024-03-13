@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import DatasetsView from './datasetsView';
 import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
-import { normalizeName, renderButtons } from '../utils/works';
+import { normalizeName, renderButtons, renderButtonDataset } from '../utils/works';
 
 export default function DatasetsTab({ datasets, publishers, selectedDatasets, setSelectedDatasets, tagDatasets, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
@@ -48,11 +48,16 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datasets, filteredAffiliationName, filteredDatasources, filteredPublishers, filteredStatus, filteredTypes, filteredYears]);
 
+  const datasetLinkedArticle = datasets.filter((d) => d.nbPublicationsLinked > 0);
+  const datasetPerson = datasets.filter((d) => d.nbAuthorsName >= 3 || d.nbOrcid >= 3);
+
   return (
     <>
-      <Row>
+      <Row gutters>
         <Col n="9">
           {renderButtons(selectedDatasets, tagDatasets, 'dataset')}
+          {renderButtonDataset(datasetLinkedArticle, tagDatasets, 'linked to an article from my institution', 'ri-link')}
+          {renderButtonDataset(datasetPerson, tagDatasets, 'with at least 3 authors detected from my institution', 'ri-team-line')}
         </Col>
         <Col n="3">
           <Gauge

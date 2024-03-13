@@ -50,7 +50,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
 
   return (
     <>
-      <Row>
+      <Row gutters>
         <Col n="9">
           {renderButtons(selectedPublications, tagPublications, 'publication')}
         </Col>

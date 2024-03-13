@@ -141,8 +141,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
     .then((response) => {
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
-      results = results.concat(hits.map((result) => (formatResultFosm(result, options)
-      )));
+      results = results.concat(hits.map((result) => (formatResultFosm(result, options)))).filter((r) => r.levelCertainty !== '3.low');
       if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || results.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;

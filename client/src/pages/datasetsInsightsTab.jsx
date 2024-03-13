@@ -31,7 +31,7 @@ export default function DatasetsInsightsTab({ allDatasets }) {
   series.forEach((s, ix) => {
     s.color = colors[ix];
   });
-  const NB_TOP = 7;
+  const NB_TOP = 8;
   const topSeries = series.slice(0, NB_TOP);
   const tailData = new Array(categories.length).fill(0);
   series.slice(NB_TOP).forEach((e) => {
