@@ -7,7 +7,6 @@ import { useState } from 'react';
 import {
   affiliationsTemplate,
   allIdsTemplate,
-  certaintyRowFilterTemplate,
   frAuthorsTemplate,
   linkedDOITemplate,
   linkedORCIDTemplate,
@@ -51,13 +50,12 @@ export default function DatasetsView({
       value={works}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} style={{ maxWidth: '140px' }} showFilterMenu={false} filterMenuStyle={{ width: '9rem' }} filter filterElement={statusRowFilterTemplate} />
+      <Column field="status" header="Status" body={statusTemplate} style={{ minWidth: '180px', maxWidth: '180px' }} showFilterMenu={false} filter filterElement={statusRowFilterTemplate} />
       <Column field="allIds" header="Ids" body={allIdsTemplate} style={{ maxWidth: '180px' }} />
       <Column field="type" header="Type" style={{ maxWidth: '90px' }} showFilterMenu={false} />
       <Column field="year" header="Year" style={{ maxWidth: '70px' }} />
       <Column field="publisher" header="Publisher" style={{ maxWidth: '70px' }} showFilterMenu={false} />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} style={{ maxWidth: '220px' }} />
-      <Column field="levelCertainty" header="Certainty" style={{ maxWidth: '140px' }} sortable showFilterMenu={false} filter filterElement={certaintyRowFilterTemplate} />
       <Column field="fr_publications_linked" header="Linked Article" body={linkedDOITemplate} style={{ maxWidth: '180px' }} />
       <Column field="fr_authors_orcid" header="My institution author ORCID" body={linkedORCIDTemplate} style={{ maxWidth: '150px' }} />
       <Column field="fr_authors_name" header="My institution author name" body={frAuthorsTemplate} style={{ maxWidth: '150px' }} />

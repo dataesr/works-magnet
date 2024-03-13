@@ -32,7 +32,7 @@ const statusRowFilterTemplate = (options) => (
     placeholder="Any"
     className="p-column-filter"
     maxSelectedLabels={1}
-    style={{ maxWidth: '7rem', minWidth: '7rem' }}
+    style={{ maxWidth: '9rem', minWidth: '9rem' }}
   />
 );
 
