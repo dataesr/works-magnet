@@ -1,3 +1,4 @@
+import { Col, Row } from '@dataesr/react-dsfr';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import PropTypes from 'prop-types';
@@ -6,28 +7,34 @@ import { useSearchParams } from 'react-router-dom';
 
 import { range } from '../utils/works';
 
-export default function DatasetsInsightsTab({ allDatasets }) {
+export default function DatasetsYearlyDistribution({ allDatasets, field, subfield = null }) {
   const [searchParams] = useSearchParams();
 
   const categories = range(searchParams.get('startYear', 2023), searchParams.get('endYear', 2023));
-
-  const publishers = {};
-  allDatasets.forEach((dataset) => {
-    const publisher = dataset?.publisher;
+  const allFields = {};
+  allDatasets.filter((d) => d.status === 'validated').forEach((dataset) => {
+  // allDatasets.forEach((dataset) => {
     const publicationYear = dataset?.year;
-    if (!Object.keys(publishers).includes(publisher)) {
-      publishers[publisher] = new Array(categories.length).fill(0);
+    let currentValues = dataset[field];
+    if (!Array.isArray(currentValues)) {
+      currentValues = [currentValues];
     }
-    const i = categories.indexOf(Number(publicationYear));
-    publishers[publisher][i] += 1;
+    currentValues.forEach((e) => {
+      const currentField = e ? (subfield ? e[subfield] : e) : `no ${field}`;
+      if (!Object.keys(allFields).includes(currentField)) {
+        allFields[currentField] = new Array(categories.length).fill(0);
+      }
+      const i = categories.indexOf(Number(publicationYear));
+      allFields[currentField][i] += 1;
+    });
   });
   const colors = ['#ea5545', '#f46a9b', '#ef9b20', '#edbf33', '#ede15b', '#bdcf32', '#87bc45', '#27aeef', '#b33dc6'];
   const NB_TOP = 8;
-  const series = Object.keys(publishers)
+  const series = Object.keys(allFields)
     .map((name) => ({
       name,
-      data: publishers[name],
-      total: publishers[name].reduce((accumulator, currentValue) => accumulator + currentValue, 0),
+      data: allFields[name],
+      total: allFields[name].reduce((accumulator, currentValue) => accumulator + currentValue, 0),
     }))
     .sort((a, b) => b.total - a.total)
     .map((item, index) => ({
@@ -47,13 +54,17 @@ export default function DatasetsInsightsTab({ allDatasets }) {
     color: colors[NB_TOP],
   });
   const options = {
+    credits: { text: 'Baromètre de la Science Ouverte - CC-BY MESR', enabled: true },
     chart: {
-      type: 'area',
+      type: 'column',
       height: '600 px',
     },
     plotOptions: {
-      area: {
+      column: {
         stacking: 'normal',
+        dataLabels: {
+          enabled: true,
+        },
       },
     },
     series: topSeries.reverse(),
@@ -61,7 +72,7 @@ export default function DatasetsInsightsTab({ allDatasets }) {
       reversed: true,
     },
     title: {
-      text: `Yearly distribution of the number of datasets by repositories (top ${NB_TOP})`,
+      text: `Yearly distribution of the number of datasets by ${field}`,
     },
     xAxis: {
       categories,
@@ -71,22 +82,27 @@ export default function DatasetsInsightsTab({ allDatasets }) {
     },
     yAxis: {
       title: {
-        text: 'Number of datasets',
+        text: (subfield ? `Number of datasets x ${subfield}` : 'Number of datasets'),
+      },
+      stackLabels: {
+        enabled: true,
       },
     },
   };
 
   return (
-    <div>
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={options}
-      />
-    </div>
+    <Row gutters>
+      <Col n="12">
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={options}
+        />
+      </Col>
+    </Row>
   );
 }
 
-DatasetsInsightsTab.propTypes = {
+DatasetsYearlyDistribution.propTypes = {
   allDatasets: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object),
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -95,4 +111,6 @@ DatasetsInsightsTab.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
+  field: PropTypes.string.isRequired,
+  subfield: PropTypes.string,
 };

@@ -22,7 +22,7 @@ import AffiliationsTab from './affiliationsTab';
 import { PageSpinner } from '../components/spinner';
 import Beta from '../components/beta';
 import { status } from '../config';
-import DatasetsInsightsTab from './datasetsInsightsTab';
+import DatasetsYearlyDistribution from './datasetsYearlyDistribution';
 import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import OpenalexTab from './openalexTab';
@@ -272,7 +272,11 @@ export default function Home() {
                   />
                 </Tab>
                 <Tab label="📊 Insights">
-                  <DatasetsInsightsTab allDatasets={allDatasets} />
+                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="publisher" />
+                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="type" />
+                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="format" />
+                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="client_id" />
+                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="affiliations" subfield="rawAffiliation" />
                 </Tab>
               </Tabs>
             </AccordionItem>

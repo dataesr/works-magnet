@@ -46,8 +46,8 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datasets, filteredAffiliationName, filteredDatasources, filteredPublishers, filteredStatus, filteredTypes, filteredYears]);
 
-  const datasetLinkedArticle = datasets.filter((d) => d.nbPublicationsLinked > 0);
-  const datasetPerson = datasets.filter((d) => d.nbAuthorsName >= 3 || d.nbOrcid >= 3);
+  const datasetLinkedArticle = datasets.filter((d) => d.status === 'tobedecided' && d.nbPublicationsLinked > 0);
+  const datasetPerson = datasets.filter((d) => (d.status === 'tobedecided') && (d.nbAuthorsName >= 3 || d.nbOrcid >= 3));
 
   return (
     <>
