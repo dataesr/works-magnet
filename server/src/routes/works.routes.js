@@ -10,8 +10,8 @@ router.route('/works')
   .get(async (req, res) => {
     try {
       const options = req?.query ?? {};
-      if (!options?.affiliationStrings) {
-        res.status(400).json({ message: 'You must provide at least one affiliation.' });
+      if (!options?.affiliationStrings && !options?.rors) {
+        res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
       } else {
         webSocketServer.broadcast(0);
         console.time(`1. Requests ${options.affiliationStrings}`);

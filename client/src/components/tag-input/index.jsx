@@ -56,13 +56,14 @@ export default function TagInput({
   useEffect(() => setValues(tags), [tags]);
 
   useEffect(() => setExcludedValues(deletedTags), [deletedTags]);
-
+  let hasRoR = false;
   let newLine = [];
   const structuredTags = [];
   tags.forEach((tag) => {
     if (tag.type === 'rorId') {
       if (newLine.length) {
         structuredTags.push(newLine);
+        hasRoR = true;
       }
       newLine = [];
     }
@@ -108,7 +109,7 @@ export default function TagInput({
                       <Icon iconPosition="right" name="ri-close-line" />
                     </Tag>
                   ))}
-                  {(index === 0) ? (
+                  {(index === 0 && hasRoR) ? (
                     <Button
                       className="fr-mr-1w"
                       onClick={() => setGetRoRChildren((prev) => !prev)}
