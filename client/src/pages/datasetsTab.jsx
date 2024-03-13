@@ -1,6 +1,4 @@
 import {
-  Checkbox,
-  CheckboxGroup,
   Col,
   Row,
   TextInput,
@@ -8,16 +6,16 @@ import {
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-import DatasetsView from './datasetsView';
 import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
+import DatasetsView from './datasetsView';
 import { normalizeName, renderButtons, renderButtonDataset } from '../utils/works';
 
 export default function DatasetsTab({ datasets, publishers, selectedDatasets, setSelectedDatasets, tagDatasets, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasets, setFilteredDatasets] = useState([]);
-  const [filteredDatasources, setFilteredDatasources] = useState(datasources.map((datasource) => datasource.key));
-  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
+  const [filteredDatasources] = useState(datasources.map((datasource) => datasource.key));
+  const [filteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [filteredPublishers, setFilteredPublishers] = useState([]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);

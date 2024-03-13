@@ -7,16 +7,12 @@ import { useState } from 'react';
 import {
   affiliationsTemplate,
   allIdsTemplate,
-  authorsTemplate,
   certaintyRowFilterTemplate,
-  datasourceTemplate,
   frAuthorsTemplate,
   linkedDOITemplate,
   linkedORCIDTemplate,
-  publisherRowFilterTemplate,
   statusRowFilterTemplate,
   statusTemplate,
-  typeRowFilterTemplate,
 } from '../utils/templates';
 
 export default function DatasetsView({

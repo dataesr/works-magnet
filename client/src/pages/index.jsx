@@ -6,7 +6,6 @@ import {
   CalloutTitle,
   Col,
   Container,
-  Notice,
   Row,
   Tab,
   Tabs,
@@ -21,7 +20,6 @@ import ActionsOpenalex from './actions/actionsOpenalex';
 import ActionsPublications from './actions/actionsPublications';
 import AffiliationsTab from './affiliationsTab';
 import { PageSpinner } from '../components/spinner';
-import Stepper from '../components/stepper';
 import Beta from '../components/beta';
 import { status } from '../config';
 import DatasetsInsightsTab from './datasetsInsightsTab';

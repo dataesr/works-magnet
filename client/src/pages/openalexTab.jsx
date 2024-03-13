@@ -13,7 +13,7 @@ import { normalizeName } from '../utils/works';
 export default function OpenalexTab({ affiliations, setAllOpenalexCorrections }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
-  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
+  const [filteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [timer, setTimer] = useState();
 
   useEffect(() => {

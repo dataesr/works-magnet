@@ -1,6 +1,4 @@
 import {
-  Checkbox,
-  CheckboxGroup,
   Col,
   Row,
   TextInput,
@@ -15,10 +13,10 @@ import { normalizeName, renderButtons } from '../utils/works';
 
 export default function PublicationsTab({ publications, publishers, selectedPublications, setSelectedPublications, tagPublications, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
-  const [filteredDatasources, setFilteredDatasources] = useState(datasources.map((datasource) => datasource.key));
+  const [filteredDatasources] = useState(datasources.map((datasource) => datasource.key));
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredPublishers, setFilteredPublishers] = useState([]);
-  const [filteredStatus, setFilteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
+  const [filteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [timer, setTimer] = useState();
