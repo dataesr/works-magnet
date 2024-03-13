@@ -45,6 +45,7 @@ const getFosmQuery = (options, pit, searchAfter) => {
   query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
   // Exclude files for Datacite
   query.query.bool.must_not.push({ terms: { genre: ['file', 'version', 'file_'] } });
+  query.query.bool.must_not.push({ terms: { genre_raw: ['image'] } });
   query.query.bool.minimum_should_match = 1;
   query._source = [
     'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher', 'format',
