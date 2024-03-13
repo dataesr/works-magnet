@@ -172,7 +172,6 @@ export default function Home() {
         <Col>
           <ActionsAffiliations
             allAffiliations={allAffiliations}
-            options={options}
             setAllAffiliations={setAllAffiliations}
             tagAffiliations={tagAffiliations}
           />

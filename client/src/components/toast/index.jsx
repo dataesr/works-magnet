@@ -63,9 +63,13 @@ function Toast({
         <Row>
           {title && <Text bold spacing="mb-1w">{title}</Text>}
         </Row>
-        <Row>
-          {description && (<Text spacing="mb-2w" size="sm">{description}</Text>)}
-        </Row>
+        {description && (
+          <Row>
+            <Text spacing="mb-2w" size="sm">
+              <div dangerouslySetInnerHTML={{ __html: description }} />
+            </Text>
+          </Row>
+        )}
       </Container>
     </div>
   );
