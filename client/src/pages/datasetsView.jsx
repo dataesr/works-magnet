@@ -13,8 +13,10 @@ import {
   frAuthorsTemplate,
   linkedDOITemplate,
   linkedORCIDTemplate,
+  publisherRowFilterTemplate,
   statusRowFilterTemplate,
   statusTemplate,
+  typeRowFilterTemplate,
 } from '../utils/templates';
 
 export default function DatasetsView({
@@ -25,6 +27,8 @@ export default function DatasetsView({
   const [filters] = useState({
     status: { value: null, matchMode: FilterMatchMode.IN },
     levelCertainty: { value: null, matchMode: FilterMatchMode.IN },
+    publisher: { value: null, matchMode: FilterMatchMode.IN },
+    type: { value: null, matchMode: FilterMatchMode.IN },
   });
   return (
     <DataTable
@@ -51,13 +55,13 @@ export default function DatasetsView({
       value={works}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} style={{ minWidth: '150px' }} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} filter filterElement={statusRowFilterTemplate} />
+      <Column field="status" header="Status" body={statusTemplate} style={{ maxWidth: '140px' }} showFilterMenu={false} filterMenuStyle={{ width: '9rem' }} filter filterElement={statusRowFilterTemplate} />
       <Column field="allIds" header="Ids" body={allIdsTemplate} style={{ maxWidth: '180px' }} />
-      <Column field="type" header="Type" style={{ maxWidth: '90px' }} />
+      <Column field="type" header="Type" style={{ maxWidth: '90px' }} showFilterMenu={false} />
       <Column field="year" header="Year" style={{ maxWidth: '70px' }} />
-      <Column field="publisher" header="Publisher" style={{ maxWidth: '70px' }} />
+      <Column field="publisher" header="Publisher" style={{ maxWidth: '70px' }} showFilterMenu={false} />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} style={{ maxWidth: '220px' }} />
-      <Column field="levelCertainty" header="Certainty" style={{ maxWidth: '90px' }} sortable showFilterMenu={false} filterMenuStyle={{ width: '7rem' }} filter filterElement={certaintyRowFilterTemplate}/>
+      <Column field="levelCertainty" header="Certainty" style={{ maxWidth: '140px' }} sortable showFilterMenu={false} filter filterElement={certaintyRowFilterTemplate} />
       <Column field="fr_publications_linked" header="Linked Article" body={linkedDOITemplate} style={{ maxWidth: '180px' }} />
       <Column field="fr_authors_orcid" header="My institution author ORCID" body={linkedORCIDTemplate} style={{ maxWidth: '150px' }} />
       <Column field="fr_authors_name" header="My institution author name" body={frAuthorsTemplate} style={{ maxWidth: '150px' }} />

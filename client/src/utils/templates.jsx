@@ -32,24 +32,35 @@ const statusRowFilterTemplate = (options) => (
     placeholder="Any"
     className="p-column-filter"
     maxSelectedLabels={1}
-    style={{ minWidth: '14rem' }}
+    style={{ maxWidth: '7rem', minWidth: '7rem' }}
   />
 );
 
-const certaintyRowFilterTemplate = (options) => (
+const genericRowFilterTemplate = (options, valuesToPass) => (
   <MultiSelect
     value={options.value}
-    options={[{ name: '1.high', value: '1.high' }, { name: '2.medium', value: '2.medium' }, { name: '3.low', value: '3.low' }]}
+    options={valuesToPass}
     itemTemplate={statusesItemTemplate}
     onChange={(e) => options.filterApplyCallback(e.value)}
     optionLabel="name"
     placeholder="Any"
     className="p-column-filter"
     maxSelectedLabels={1}
-    style={{ minWidth: '7rem' }}
+    style={{ maxWidth: '7rem', minWidth: '7rem' }}
   />
 );
 
+const certaintyRowFilterTemplate = (options) => (
+  genericRowFilterTemplate(options, [{ name: '1.high', value: '1.high' }, { name: '2.medium', value: '2.medium' }, { name: '3.low', value: '3.low' }])
+);
+
+const publisherRowFilterTemplate = (options) => (
+  genericRowFilterTemplate(options, [{ name: '1.high', value: '1.high' }, { name: '2.medium', value: '2.medium' }, { name: '3.low', value: '3.low' }])
+);
+
+const typeRowFilterTemplate = (options) => (
+  genericRowFilterTemplate(options, [{ name: '1.high', value: '1.high' }, { name: '2.medium', value: '2.medium' }, { name: '3.low', value: '3.low' }])
+);
 const getIdsTemplate = (ids) => {
   let html = '<ul>';
   ids.forEach((id) => {
@@ -190,8 +201,8 @@ export {
   affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
-  correctionTemplate,
   certaintyRowFilterTemplate,
+  correctionTemplate,
   datasourceTemplate,
   frAuthorsTemplate,
   getAffiliationsHtmlField,
@@ -201,8 +212,10 @@ export {
   linkedDOITemplate,
   linkedORCIDTemplate,
   nameTemplate,
+  publisherRowFilterTemplate,
   rorTemplate,
   statusRowFilterTemplate,
   statusTemplate,
+  typeRowFilterTemplate,
   worksExampleTemplate,
 };
