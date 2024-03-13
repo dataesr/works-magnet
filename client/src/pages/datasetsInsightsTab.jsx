@@ -1,6 +1,6 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import PropTypes, { object } from 'prop-types';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -22,25 +22,27 @@ export default function DatasetsInsightsTab({ allDatasets }) {
     publishers[publisher][i] += 1;
   });
   const colors = ['#ea5545', '#f46a9b', '#ef9b20', '#edbf33', '#ede15b', '#bdcf32', '#87bc45', '#27aeef', '#b33dc6'];
-  let series = Object.keys(publishers).map((name) => ({
-    name,
-    data: publishers[name],
-    total: publishers[name].reduce((accumulator, currentValue) => accumulator + currentValue, 0),
-  }));
-  series = series.sort((a, b) => b.total - a.total);
-  series.forEach((s, ix) => {
-    s.color = colors[ix];
-  });
   const NB_TOP = 8;
+  const series = Object.keys(publishers)
+    .map((name) => ({
+      name,
+      data: publishers[name],
+      total: publishers[name].reduce((accumulator, currentValue) => accumulator + currentValue, 0),
+    }))
+    .sort((a, b) => b.total - a.total)
+    .map((item, index) => ({
+      ...item,
+      color: colors[index],
+    }));
   const topSeries = series.slice(0, NB_TOP);
   const tailData = new Array(categories.length).fill(0);
-  series.slice(NB_TOP).forEach((e) => {
-    e.data.forEach((d, ix) => {
-      tailData[ix] += d;
+  series.slice(NB_TOP).forEach((serie) => {
+    serie.data.forEach((d, index) => {
+      tailData[index] += d;
     });
   });
   topSeries.push({
-    name: 'others',
+    name: 'Others',
     data: tailData,
     color: colors[NB_TOP],
   });
@@ -59,7 +61,7 @@ export default function DatasetsInsightsTab({ allDatasets }) {
       reversed: true,
     },
     title: {
-      text: 'Yearly distribution of the number of datasets by repositories',
+      text: `Yearly distribution of the number of datasets by repositories (top ${NB_TOP})`,
     },
     xAxis: {
       categories,
