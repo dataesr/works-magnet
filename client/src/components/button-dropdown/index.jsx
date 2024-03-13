@@ -23,7 +23,7 @@ export default function ButtonDropdown({ data, label, searchParams }) {
 
   const toastOpenAlex = () => {
     toast({
-      description: `${data.length} corrections to OpenAlex have been saved - see https://github.com/dataesr/openalex-affiliations/issues`,
+      description: `${data.length} corrections to OpenAlex have been saved - see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
       id: 'saveOpenAlex',
       title: `${capitalize(label)} saved`,
       toastType: 'success',

@@ -11,11 +11,10 @@ import { export2json, importJson } from '../../utils/files';
 
 export default function ActionsAffiliations({
   allAffiliations,
-  options,
   tagAffiliations,
 }) {
   const { toast } = useToast();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [displayFileUpload, setDisplayFileUpload] = useState(false);
   const decidedAffiliations = allAffiliations?.filter((affiliation) => affiliation.status !== status.tobedecided.id) || [];
   const onExport = () => {

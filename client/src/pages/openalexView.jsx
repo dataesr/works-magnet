@@ -14,8 +14,8 @@ export default function OpenalexView({
   const cellEditor = (options) => <InputTextarea type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
   const { toast } = useToast();
 
-  const onRowEditComplete = async (e) => {
-    const { field, data, newData } = e;
+  const onRowEditComplete = async (edit) => {
+    const { data, newData } = edit;
     let isValid = true;
     const newValue = newData.rorsToCorrect.trim();
     if (newValue !== data.rorsToCorrect) {

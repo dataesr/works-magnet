@@ -26,13 +26,8 @@ const createIssue = (issue) => {
 router.route('/github-issue')
   .post(async (req, res) => {
     const data = req.body?.data || [];
-    // TO REVIEW
-    await data.reduce(async (a, elt) => {
-      // Wait for the previous item to finish processing
-      await a;
-      // Process this item
-      await createIssue(elt);
-    }, Promise.resolve());
+    const promises = data.map((item) => createIssue(item));
+    await Promise.all(promises);
     res.status(200).json({ message: 'GitHub Issue created' });
   });
 
