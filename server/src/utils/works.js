@@ -48,7 +48,7 @@ const getFosmQuery = (options, pit, searchAfter) => {
   query.query.bool.must_not.push({ terms: { genre_raw: ['image'] } });
   query.query.bool.minimum_should_match = 1;
   query._source = [
-    'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher', 'format',
+    'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher', 'format', 'client_id',
     'publisher_dissemination', 'publisher_raw', 'title', 'year', 'fr_reasons_concat', 'fr_publications_linked', 'fr_authors_name', 'fr_authors_orcid',
   ];
   query.sort = ['_shard_doc'];
@@ -91,6 +91,7 @@ const formatResultFosm = (result, options) => {
     id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
     publisher: result._source?.publisher_dissemination ?? result._source?.publisher ?? result._source?.publisher_raw ?? '',
     title: result._source.title,
+    client_id: result._source.client_id,
     type: result._source?.genre_raw ?? result._source.genre,
     year: result?._source?.year?.toString() ?? '',
     format: result?._source?.format?.toString() ?? '',
