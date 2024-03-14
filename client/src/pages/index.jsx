@@ -17,6 +17,7 @@ import useWebSocket from 'react-use-websocket';
 import ActionsAffiliations from './actions/actionsAffiliations';
 import ActionsDatasets from './actions/actionsDatasets';
 import ActionsOpenalex from './actions/actionsOpenalex';
+import ActionsOpenalexFeedback from './actions/actionsOpenalexFeedback';
 import ActionsPublications from './actions/actionsPublications';
 import AffiliationsTab from './affiliationsTab';
 import { PageSpinner } from '../components/spinner';
@@ -205,7 +206,7 @@ export default function Home() {
               <Tabs defaultActiveTab={0}>
                 <Tab label="🆔 Improve RoRs in OpenAlex">
                   <Row className="fr-pb-3w">
-                    <Col n="8">
+                    <Col n="7">
                       <Callout colorFamily="beige-gris-galet">
                         <CalloutTitle size="md">
                           Improve RoR matching in OpenAlex - Provide your feedback!
@@ -221,8 +222,14 @@ export default function Home() {
                         </CalloutText>
                       </Callout>
                     </Col>
-                    <Col>
+                    <Col n="2">
                       <ActionsOpenalex
+                        allOpenalexCorrections={allOpenalexCorrections}
+                        options={options}
+                      />
+                    </Col>
+                    <Col n="2" offset="1">
+                      <ActionsOpenalexFeedback
                         allOpenalexCorrections={allOpenalexCorrections}
                         options={options}
                       />

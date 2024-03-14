@@ -4,7 +4,6 @@ import useToast from '../../hooks/useToast';
 
 import Button from '../button';
 import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/files';
-import { sendGitHubIssue } from '../../utils/github';
 import { capitalize } from '../../utils/works';
 
 import './index.scss';
@@ -21,14 +20,6 @@ export default function ButtonDropdown({ data, label, searchParams }) {
     });
   };
 
-  const toastOpenAlex = () => {
-    toast({
-      description: `${data.length} corrections to OpenAlex have been saved - see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
-      id: 'saveOpenAlex',
-      title: `${capitalize(label)} saved`,
-      toastType: 'success',
-    });
-  };
   return (
     <div className={`dropdown ${data.length > 0 ? 'enabled' : 'disabled'}`}>
       <Button
@@ -59,14 +50,6 @@ export default function ButtonDropdown({ data, label, searchParams }) {
             size="sm"
           >
             Custom export for French OSM
-          </Button>
-        )}
-        {label === 'OpenAlex errors' && (
-          <Button
-            onClick={() => { sendGitHubIssue({ data }); toastOpenAlex(); }}
-            size="sm"
-          >
-            Send feedback to OpenAlex
           </Button>
         )}
       </div>
