@@ -91,6 +91,5 @@ ActionsAffiliations.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
-  options: PropTypes.object.isRequired,
   tagAffiliations: PropTypes.func.isRequired,
 };
