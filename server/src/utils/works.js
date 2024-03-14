@@ -1,4 +1,4 @@
-import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics } from './utils';
+import { cleanId, getAuthorOrcid, intersectArrays, removeDuplicates, removeDiacritics } from './utils';
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
@@ -110,7 +110,7 @@ const formatResultFosm = (result, options) => {
     client_id: result._source.client_id,
     type: result._source?.genre_raw ?? result._source.genre,
     year: result?._source?.year?.toString() ?? '',
-    format: result?._source?.format?.toString() ?? '',
+    format: removeDuplicates(result?._source?.format || []).toString() ?? '',
     fr_reasons: result?._source?.fr_reasons_concat?.toString() ?? '',
     fr_publications_linked: getLinkedDoi(result?._source?.fr_publications_linked, options),
     fr_authors_name: [...new Set(result?._source?.fr_authors_name?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => el.author.name))],
