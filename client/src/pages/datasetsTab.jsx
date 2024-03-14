@@ -46,16 +46,16 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datasets, filteredAffiliationName, filteredDatasources, filteredPublishers, filteredStatus, filteredTypes, filteredYears]);
 
-  const datasetLinkedArticle = datasets.filter((d) => d.status === 'tobedecided' && d.nbPublicationsLinked > 0);
-  const datasetPerson = datasets.filter((d) => (d.status === 'tobedecided') && (d.nbAuthorsName >= 3 || d.nbOrcid >= 3));
+  const datasetLinkedArticle = datasets.filter((d) => d.status === 'tobedecided' && (d.affiliations === undefined) && d.nbPublicationsLinked > 0);
+  const datasetPerson = datasets.filter((d) => (d.status === 'tobedecided') && (d.affiliations === undefined) && (d.nbAuthorsName >= 3 || d.nbOrcid >= 3));
 
   return (
     <>
       <Row gutters>
         <Col n="9">
           {renderButtons(selectedDatasets, tagDatasets, 'dataset')}
-          {renderButtonDataset(datasetLinkedArticle, tagDatasets, 'linked to an article from my institution', 'ri-link')}
-          {renderButtonDataset(datasetPerson, tagDatasets, 'with at least 3 authors detected from my institution', 'ri-team-line')}
+          {renderButtonDataset(datasetLinkedArticle, tagDatasets, 'without affiliations but linked to an article from my institution', 'ri-link')}
+          {renderButtonDataset(datasetPerson, tagDatasets, 'without affiliations but at least 3 authors detected from my institution', 'ri-team-line')}
         </Col>
         <Col n="3">
           <Gauge
