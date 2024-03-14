@@ -7,19 +7,19 @@ import { useSearchParams } from 'react-router-dom';
 
 import { range } from '../utils/works';
 
-export default function DatasetsYearlyDistribution({ allDatasets, field, subfield = null }) {
+export default function DatasetsYearlyDistribution({ allDatasets, field, subfield = undefined }) {
   const [searchParams] = useSearchParams();
 
   const categories = range(searchParams.get('startYear', 2023), searchParams.get('endYear', 2023));
   const allFields = {};
   allDatasets.filter((d) => d.status === 'validated').forEach((dataset) => {
-  // allDatasets.forEach((dataset) => {
     const publicationYear = dataset?.year;
     let currentValues = dataset[field];
     if (!Array.isArray(currentValues)) {
       currentValues = [currentValues];
     }
     currentValues.forEach((e) => {
+      // eslint-disable-next-line no-nested-ternary
       const currentField = e ? (subfield ? e[subfield] : e) : `no ${field}`;
       if (!Object.keys(allFields).includes(currentField)) {
         allFields[currentField] = new Array(categories.length).fill(0);
@@ -113,4 +113,8 @@ DatasetsYearlyDistribution.propTypes = {
   })).isRequired,
   field: PropTypes.string.isRequired,
   subfield: PropTypes.string,
+};
+
+DatasetsYearlyDistribution.defaultProps = {
+  subfield: undefined,
 };
