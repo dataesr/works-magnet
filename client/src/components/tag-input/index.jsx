@@ -61,9 +61,9 @@ export default function TagInput({
   const structuredTags = [];
   tags.forEach((tag) => {
     if (tag.type === 'rorId') {
+      hasRoR = true;
       if (newLine.length) {
         structuredTags.push(newLine);
-        hasRoR = true;
       }
       newLine = [];
     }
@@ -72,7 +72,6 @@ export default function TagInput({
   if (newLine.length) {
     structuredTags.push(newLine);
   }
-
   return (
     <div>
       <div>
