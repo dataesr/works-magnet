@@ -54,7 +54,7 @@ export default function DatasetsYearlyDistribution({ allDatasets, field, subfiel
     color: colors[NB_TOP],
   });
   const options = {
-    credits: { text: 'Baromètre de la Science Ouverte - CC-BY MESR', enabled: true },
+    credits: { text: 'French Open Science Monitor - CC-BY MESR', enabled: true },
     chart: {
       type: 'column',
       height: '600 px',

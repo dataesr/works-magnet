@@ -40,12 +40,14 @@ const getFosmQuery = (options, pit, searchAfter) => {
   if (options.rors?.length > 0) {
     options.rors.forEach((ror) => {
       query.query.bool.should.push({ match: { rors: ror } });
+      query.query.bool.should.push({ match: { 'affiliations.affiliationIdentifier': ror } });
+      query.query.bool.should.push({ match: { 'authors.affiliations.affiliationIdentifier': ror } });
     });
   }
   query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
   // Exclude files for Datacite
   query.query.bool.must_not.push({ terms: { genre: ['file', 'version', 'file_'] } });
-  query.query.bool.must_not.push({ terms: { genre_raw: ['image'] } });
+  // query.query.bool.must_not.push({ terms: { genre_raw: ['image'] } });
   query.query.bool.minimum_should_match = 1;
   query._source = [
     'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher', 'format', 'client_id',
@@ -60,26 +62,40 @@ const getFosmQuery = (options, pit, searchAfter) => {
     query.track_total_hits = false;
   }
   if (options.datasets) {
-    query.query.bool.must.push({ term: { genre: 'dataset' } });
+    query.query.bool.must.push({ terms: { genre_raw: ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
+      'software', 'computationalnotebook', 'film', 'interactiveresource', 'image'] } });
   }
   return query;
 };
 
 const getFosmAffiliation = (aff) => {
   const source = 'FOSM';
-  const rawAffiliation = aff.name || '';
+  let ror = null;
+  if (aff.affiliationIdentifierScheme?.toLowerCase() === 'ror') {
+    ror = aff.affiliationIdentifier.replace('https://ror.org/', '').replace('ror.org/', '');
+  }
+  let rawAffiliation = aff.name || '';
+  if (ror) {
+    rawAffiliation = rawAffiliation.concat(' RoR: ').concat(ror);
+  }
   const key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
   const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
-  return { rawAffiliation, source, key, label };
+  const ans = { rawAffiliation, source, key, label, ror };
+  return ans;
 };
 
 const getLinkedDoi = (frPublicationsLinked, options) => {
-  const relevantPubli = frPublicationsLinked?.filter((el) => intersectArrays(el?.rors || [], options.rors)) || [];
+  const relevantPubli = frPublicationsLinked?.filter((el) => intersectArrays(el?.rors || [], options.rors).length > 0) || [];
   const res = [];
   relevantPubli.forEach((p) => {
     res.push({ id_value: p.doi, id_type: 'doi' });
   });
   return res;
+};
+
+const getMatchingRoRs = (affiliations, options) => {
+  const currentRoRs = affiliations.map((aff) => aff.ror);
+  return intersectArrays(currentRoRs, options.rors);
 };
 
 const formatResultFosm = (result, options) => {
@@ -103,8 +119,10 @@ const formatResultFosm = (result, options) => {
   ans.nbOrcid = ans.fr_authors_orcid.length;
   ans.nbAuthorsName = ans.fr_authors_name.length;
   ans.nbPublicationsLinked = ans.fr_publications_linked.length;
+  ans.matchingRoRs = getMatchingRoRs(ans?.affiliations || [], options);
+  ans.nbMatchingRoRs = ans.matchingRoRs.length;
   let levelCertainty = '2.medium';
-  if (ans.nbPublicationsLinked > 0 || ans.nbOrcid >= 2 || ans.nbAuthorsName >= 3) {
+  if (ans.nbMatchingRoRs > 0 || ans.nbPublicationsLinked > 0 || ans.nbOrcid >= 2 || ans.nbAuthorsName >= 3) {
     levelCertainty = '1.high';
   } else if (ans.nbAuthorsName <= 1 && ans.nbOrcid <= 1) {
     levelCertainty = '3.low';

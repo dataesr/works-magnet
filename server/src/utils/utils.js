@@ -34,7 +34,7 @@ const getAuthorOrcid = (elt) => {
 
 const intersectArrays = (array1, array2) => {
   const res = array1.filter((value) => array2.includes(value));
-  return res.length > 0;
+  return res;
 };
 
 const range = (startYear, endYear = new Date().getFullYear()) => {
