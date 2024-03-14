@@ -78,6 +78,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
       <Row gutters>
         <Col n="12">
           <DatasetsView
+            publishers={publishers}
             selectedWorks={selectedDatasets}
             setSelectedWorks={setSelectedDatasets}
             works={filteredDatasets}
