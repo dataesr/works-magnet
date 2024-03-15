@@ -1,4 +1,4 @@
-import { cleanId, getAuthorOrcid, intersectArrays, removeDuplicates, removeDiacritics } from './utils';
+import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics, removeDuplicates } from './utils';
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
@@ -47,7 +47,6 @@ const getFosmQuery = (options, pit, searchAfter) => {
   query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
   // Exclude files for Datacite
   query.query.bool.must_not.push({ terms: { genre: ['file', 'version', 'file_'] } });
-  // query.query.bool.must_not.push({ terms: { genre_raw: ['image'] } });
   query.query.bool.minimum_should_match = 1;
   query._source = [
     'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher', 'format', 'client_id',
@@ -62,8 +61,12 @@ const getFosmQuery = (options, pit, searchAfter) => {
     query.track_total_hits = false;
   }
   if (options.datasets) {
-    query.query.bool.must.push({ terms: { genre_raw: ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
-      'software', 'computationalnotebook', 'film', 'interactiveresource', 'image'] } });
+    query.query.bool.must.push({
+      terms: {
+        genre_raw: ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
+          'software', 'computationalnotebook', 'film', 'interactiveresource', 'image'],
+      },
+    });
   }
   return query;
 };
@@ -309,10 +312,17 @@ const getOpenAlexPublications = async ({ options }) => {
 };
 
 const groupByAffiliations = ({ options, works }) => {
-  // const normalizedAffiliations = options.affiliationStrings.map((affiliation) => removeDiacritics(affiliation));
-  const inputAffiliationsNormalized = options.affiliationStrings.map((affiliation) => removeDiacritics(affiliation));
-  const rgxStr = inputAffiliationsNormalized.map((x) => '\\b'.concat(x).concat('\\b')).join('|');
-  const rgx = new RegExp(rgxStr, 'gi');
+  const pattern = options.affiliationStrings
+    // Replace all accentuated characters, multiple spaces and toLowercase()
+    .map((affiliation) => removeDiacritics(affiliation)
+      // Set universite, university and univ as synonyms
+      .replaceAll(/universite|university|univ/gi, 'universite|university|univ')
+      .split(' ')
+      // Each word should be map at least one time, whatever the order
+      .map((item) => `(?=.*?\\b(${item})\\b)`)
+      .join(''))
+    .join('|');
+  const regexp = new RegExp(pattern, 'gi');
   const queryRors = options.rors || [];
   // Compute distinct affiliations of works
   let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
@@ -321,8 +331,13 @@ const groupByAffiliations = ({ options, works }) => {
     for (let i = 0; i < length; i += 1) {
       const affiliation = affiliations[i];
       const normalizedAffiliation = affiliation.key;
-      const displayAffiliation = affiliation.label.replace(rgx, '<b>$&</b>');
-      let keepAffiliation = (displayAffiliation.includes('</b>'));
+      let displayAffiliation = affiliation.label;
+      const matches = regexp.exec(displayAffiliation);
+      // Set each matched word in bold
+      matches?.slice(1)?.forEach((match) => {
+        displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
+      });
+      let keepAffiliation = displayAffiliation.includes('</b>');
       const rorsInAffiliation = affiliation.rors?.map((a) => a.rorId) || [];
       rorsInAffiliation.forEach((r) => {
         if (queryRors.includes(r)) {
@@ -342,7 +357,6 @@ const groupByAffiliations = ({ options, works }) => {
             rors: affiliation.rors || [],
             rorsToCorrect: (affiliation.rorsToCorrect || []).join(';'),
             hasCorrection: false,
-            // nameHtml: displayAffiliation.reduce((acc, cur) => acc.replace(cur, `<b>${cur}</b>`), displayAffiliation),
             nameHtml: displayAffiliation,
             key: affiliation.key,
             source: affiliation.source,
