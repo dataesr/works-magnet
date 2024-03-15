@@ -279,11 +279,17 @@ export default function Home() {
                   />
                 </Tab>
                 <Tab label="📊 Insights">
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="publisher" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="type" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="format" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="client_id" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="affiliations" subfield="rawAffiliation" />
+                  { allDatasets.filter((d) => d.status === 'validated').length === 0 ? 'No data to display (no dataset validated yet!)'
+                    :
+                    (
+                      <>
+                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="publisher" />
+                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="type" />
+                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="format" />
+                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="client_id" />
+                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="affiliations" subfield="rawAffiliation" />
+                      </>
+                    )}
                 </Tab>
               </Tabs>
             </AccordionItem>
