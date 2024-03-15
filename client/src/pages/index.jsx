@@ -48,7 +48,7 @@ export default function Home() {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
 
-  const { data, isFetching, refetch } = useQuery({
+  const { data, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(options),
     enabled: false,
@@ -199,7 +199,7 @@ export default function Home() {
         </Row>
       </Container>
       <Container className="fr-mx-5w fr-pt-2w" as="section" fluid>
-        {(isFetching || ((allAffiliations?.length ?? 0) === 0)) && (
+        {(isFetching || (isFetched && (allAffiliations?.length ?? 0) === 0)) && (
           <PageSpinner />
         )}
         {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
