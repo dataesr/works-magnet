@@ -71,20 +71,18 @@ const getFosmQuery = (options, pit, searchAfter) => {
   return query;
 };
 
-const getFosmAffiliation = (aff) => {
+const getFosmAffiliation = (affiliation) => {
   const source = 'FOSM';
   let ror = null;
-  if (aff.affiliationIdentifierScheme?.toLowerCase() === 'ror') {
-    ror = aff.affiliationIdentifier.replace('https://ror.org/', '').replace('ror.org/', '');
+  if (affiliation.affiliationIdentifierScheme?.toLowerCase() === 'ror') {
+    ror = affiliation.affiliationIdentifier.replace('https://ror.org/', '').replace('ror.org/', '');
   }
-  let rawAffiliation = aff.name || '';
+  let rawAffiliation = affiliation?.name ?? '';
   if (ror) {
-    rawAffiliation = rawAffiliation.concat(' RoR: ').concat(ror);
+    rawAffiliation += ` RoR: ${ror}`;
   }
-  const key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
-  const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
-  const ans = { rawAffiliation, source, key, label, ror };
-  return ans;
+  const key = removeDiacritics(rawAffiliation).concat(` [ source: ${source} ]`);
+  return { key, label: key, rawAffiliation, ror, source };
 };
 
 const getLinkedDoi = (frPublicationsLinked, options) => {
@@ -102,8 +100,10 @@ const getMatchingRoRs = (affiliations, options) => {
 };
 
 const formatResultFosm = (result, options) => {
-  const ans = {
-    affiliations: result._source.affiliations?.map((affiliation) => getFosmAffiliation(affiliation)).filter((affiliation) => !!affiliation?.rawAffiliation),
+  const answer = {
+    affiliations: result._source.affiliations
+      ?.map((affiliation) => getFosmAffiliation(affiliation))
+      .filter((affiliation) => !!affiliation?.rawAffiliation),
     allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
     authors: (result._source?.authors ?? []).map((author) => author.full_name),
     datasource: ['fosm'],
@@ -116,22 +116,26 @@ const formatResultFosm = (result, options) => {
     format: removeDuplicates(result?._source?.format || []).toString() ?? '',
     fr_reasons: result?._source?.fr_reasons_concat?.toString() ?? '',
     fr_publications_linked: getLinkedDoi(result?._source?.fr_publications_linked, options),
-    fr_authors_name: [...new Set(result?._source?.fr_authors_name?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => el.author.name))],
-    fr_authors_orcid: [...new Set(result?._source?.fr_authors_orcid?.filter((el) => intersectArrays(el?.rors || [], options.rors)).map((el) => getAuthorOrcid(el)))],
+    fr_authors_name: [...new Set(result?._source?.fr_authors_name
+      ?.filter((el) => intersectArrays(el?.rors || [], options.rors))
+      .map((el) => el.author.name))],
+    fr_authors_orcid: [...new Set(result?._source?.fr_authors_orcid
+      ?.filter((el) => intersectArrays(el?.rors || [], options.rors))
+      .map((el) => getAuthorOrcid(el)))],
   };
-  ans.nbOrcid = ans.fr_authors_orcid.length;
-  ans.nbAuthorsName = ans.fr_authors_name.length;
-  ans.nbPublicationsLinked = ans.fr_publications_linked.length;
-  ans.matchingRoRs = getMatchingRoRs(ans?.affiliations || [], options);
-  ans.nbMatchingRoRs = ans.matchingRoRs.length;
+  answer.nbOrcid = answer.fr_authors_orcid.length;
+  answer.nbAuthorsName = answer.fr_authors_name.length;
+  answer.nbPublicationsLinked = answer.fr_publications_linked.length;
+  answer.matchingRoRs = getMatchingRoRs(answer?.affiliations || [], options);
+  answer.nbMatchingRoRs = answer.matchingRoRs.length;
   let levelCertainty = '2.medium';
-  if (ans.nbMatchingRoRs > 0 || ans.nbPublicationsLinked > 0 || ans.nbOrcid >= 2 || ans.nbAuthorsName >= 3) {
+  if (answer.nbMatchingRoRs > 0 || answer.nbPublicationsLinked > 0 || answer.nbOrcid >= 2 || answer.nbAuthorsName >= 3) {
     levelCertainty = '1.high';
-  } else if (ans.nbAuthorsName <= 1 && ans.nbOrcid <= 1) {
+  } else if (answer.nbAuthorsName <= 1 && answer.nbOrcid <= 1) {
     levelCertainty = '3.low';
   }
-  ans.levelCertainty = levelCertainty;
-  return ans;
+  answer.levelCertainty = levelCertainty;
+  return answer;
 };
 
 const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) => {
@@ -163,7 +167,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
     .then((response) => {
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
-      results = results.concat(hits.map((result) => (formatResultFosm(result, options)))).filter((r) => r.levelCertainty !== '3.low');
+      results = results.concat(hits.map((result) => formatResultFosm(result, options))).filter((r) => r.levelCertainty !== '3.low');
       if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || results.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
