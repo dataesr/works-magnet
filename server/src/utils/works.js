@@ -106,13 +106,8 @@ const formatResultFosm = (result, options) => {
       .filter((affiliation) => !!affiliation?.rawAffiliation),
     allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
     authors: (result._source?.authors ?? []).map((author) => author.full_name),
-    datasource: ['fosm'],
-    id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
-    publisher: result._source?.publisher_dissemination ?? result._source?.publisher ?? result._source?.publisher_raw ?? '',
-    title: result._source.title,
     client_id: result._source.client_id,
-    type: result._source?.genre_raw ?? result._source.genre,
-    year: result?._source?.year?.toString() ?? '',
+    datasource: ['fosm'],
     format: removeDuplicates(result?._source?.format || []).toString() ?? '',
     fr_reasons: result?._source?.fr_reasons_concat?.toString() ?? '',
     fr_publications_linked: getLinkedDoi(result?._source?.fr_publications_linked, options),
@@ -122,6 +117,12 @@ const formatResultFosm = (result, options) => {
     fr_authors_orcid: [...new Set(result?._source?.fr_authors_orcid
       ?.filter((el) => intersectArrays(el?.rors || [], options.rors))
       .map((el) => getAuthorOrcid(el)))],
+    id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
+    publisher: result._source?.publisher_dissemination ?? result._source?.publisher ?? result._source?.publisher_raw ?? '',
+    status: 'tobedecided',
+    title: result._source.title,
+    type: result._source?.genre_raw ?? result._source.genre,
+    year: result?._source?.year?.toString() ?? '',
   };
   answer.nbOrcid = answer.fr_authors_orcid.length;
   answer.nbAuthorsName = answer.fr_authors_name.length;
@@ -290,13 +291,18 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     .then((response) => {
       const hits = response?.results ?? [];
       const results = previousResponse.concat(hits.map((result) => ({
-        affiliations: result?.authorships?.map((author) => getOpenAlexAffiliation(author)).flat().filter((affiliation) => !!affiliation.rawAffiliation),
+        affiliations: result?.authorships
+          ?.map((author) => getOpenAlexAffiliation(author))
+          .flat()
+          .filter((affiliation) => !!affiliation.rawAffiliation),
         allIds: Object.keys(result.ids).map((key) => ({ id_type: key, id_value: cleanId(result.ids[key]) })),
         authors: result?.authorships?.map((author) => author.author.display_name),
         datasource: ['openalex'],
         doi: cleanId(result?.doi),
-        id: cleanId(result?.ids?.doi ?? result?.primary_location?.landing_page_url?.split('/')?.filter((item) => item)?.pop() ?? result?.ids?.openalex),
+        id: cleanId(result?.ids?.doi
+          ?? result?.primary_location?.landing_page_url?.split('/')?.filter((item) => item)?.pop() ?? result?.ids?.openalex),
         publisher: (result?.primary_location?.source?.host_organization_name ?? result?.primary_location?.source?.display_name) ?? '',
+        status: 'tobedecided',
         title: result?.display_name,
         type: getTypeFromOpenAlex(result.type),
         year: result?.publication_year?.toString() ?? '',

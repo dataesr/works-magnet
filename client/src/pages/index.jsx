@@ -96,7 +96,6 @@ export default function Home() {
           affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(dataset),
           allInfos: JSON.stringify(dataset),
-          status: status.tobedecided.id,
         }));
       const allPublicationsTmp = data.publications?.results
         ?.map((publication) => ({
@@ -104,7 +103,6 @@ export default function Home() {
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(publication),
           allInfos: JSON.stringify(publication),
-          status: status.tobedecided.id,
         }));
       setAllAffiliations(data.affiliations || []);
       setAllDatasets(allDatasetsTmp || []);
