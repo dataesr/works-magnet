@@ -136,6 +136,7 @@ const formatResultFosm = (result, options) => {
     levelCertainty = '3.low';
   }
   answer.levelCertainty = levelCertainty;
+  answer.allInfos = JSON.stringify(answer);
   return answer;
 };
 
@@ -290,23 +291,27 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     })
     .then((response) => {
       const hits = response?.results ?? [];
-      const results = previousResponse.concat(hits.map((result) => ({
-        affiliations: result?.authorships
-          ?.map((author) => getOpenAlexAffiliation(author))
-          .flat()
-          .filter((affiliation) => !!affiliation.rawAffiliation),
-        allIds: Object.keys(result.ids).map((key) => ({ id_type: key, id_value: cleanId(result.ids[key]) })),
-        authors: result?.authorships?.map((author) => author.author.display_name),
-        datasource: ['openalex'],
-        doi: cleanId(result?.doi),
-        id: cleanId(result?.ids?.doi
-          ?? result?.primary_location?.landing_page_url?.split('/')?.filter((item) => item)?.pop() ?? result?.ids?.openalex),
-        publisher: (result?.primary_location?.source?.host_organization_name ?? result?.primary_location?.source?.display_name) ?? '',
-        status: 'tobedecided',
-        title: result?.display_name,
-        type: getTypeFromOpenAlex(result.type),
-        year: result?.publication_year?.toString() ?? '',
-      })));
+      const results = previousResponse.concat(hits.map((result) => {
+        const answer = {
+          affiliations: result?.authorships
+            ?.map((author) => getOpenAlexAffiliation(author))
+            .flat()
+            .filter((affiliation) => !!affiliation.rawAffiliation),
+          allIds: Object.keys(result.ids).map((key) => ({ id_type: key, id_value: cleanId(result.ids[key]) })),
+          authors: result?.authorships?.map((author) => author.author.display_name),
+          datasource: ['openalex'],
+          doi: cleanId(result?.doi),
+          id: cleanId(result?.ids?.doi
+            ?? result?.primary_location?.landing_page_url?.split('/')?.filter((item) => item)?.pop() ?? result?.ids?.openalex),
+          publisher: (result?.primary_location?.source?.host_organization_name ?? result?.primary_location?.source?.display_name) ?? '',
+          status: 'tobedecided',
+          title: result?.display_name,
+          type: getTypeFromOpenAlex(result.type),
+          year: result?.publication_year?.toString() ?? '',
+        };
+        answer.allInfos = JSON.stringify(answer);
+        return answer;
+      }));
       const nextCursor = response?.meta?.next_cursor;
       if (nextCursor && hits.length > 0 && (Number(process.env.OPENALEX_MAX_SIZE) === 0 || results.length < Number(process.env.OPENALEX_MAX_SIZE))) {
         return getOpenAlexPublicationsByYear(options, nextCursor, results);
