@@ -7,7 +7,6 @@ const sendGitHubIssue = async (data) => {
   return fetch(`${VITE_API}/github-issue`, {
     method: 'POST',
     body: params,
-    params,
     headers: { 'Content-Type': 'application/json' },
   }).then((response) => {
     if (response.ok) return response.json();

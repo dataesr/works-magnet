@@ -1,17 +1,11 @@
 import { Button, Col, Modal, ModalClose, ModalContent, ModalFooter, ModalTitle, Row, TextInput } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
-import { useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
-import useToast from '../../hooks/useToast';
 
+import useToast from '../../hooks/useToast';
 import { sendGitHubIssue } from '../../utils/github';
 
-const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, 'gm');
-
-export default function ActionsOpenalexFeedback({
-  allOpenalexCorrections
-}) {
-  const [searchParams] = useSearchParams();
+export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const { toast } = useToast();
@@ -20,18 +14,15 @@ export default function ActionsOpenalexFeedback({
     setModalOpen((prev) => !prev);
   };
 
-  const toastOpenAlex = () => {
+  const feedback = () => {
+    sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail });
     toast({
-      description: `${allOpenalexCorrections.length} corrections to OpenAlex have been saved - see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
+      description: `${allOpenalexCorrections.length} corrections to OpenAlex have been saved - 
+        see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
       id: 'saveOpenAlex',
       title: 'OpenAlex corrections sent',
       toastType: 'success',
     });
-  };
-
-  const feedback = () => {
-    sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail });
-    toastOpenAlex();
   };
 
   return (
@@ -40,7 +31,7 @@ export default function ActionsOpenalexFeedback({
         <>
           <Modal isOpen={modalOpen}>
             <ModalClose
-              onClick={() => { openModal(); }}
+              onClick={openModal}
             >
               Close
             </ModalClose>
@@ -50,7 +41,7 @@ export default function ActionsOpenalexFeedback({
             <ModalContent>
               {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliations strings.`}
               <TextInput
-                label="Please indicate your email "
+                label="Please indicate your email"
                 type="email"
                 required
                 withAutoValidation
@@ -60,20 +51,21 @@ export default function ActionsOpenalexFeedback({
             <ModalFooter>
               <div>
                 <Button
-                  title="Send feedback to OpenAlex"
-                  onClick={() => { feedback(); }}
                   disabled={!allOpenalexCorrections.length > 0 || !userEmail}
+                  onClick={feedback}
+                  title="Send feedbacks to OpenAlex"
                 >
-                  Send feedback to OpenAlex
+                  Send feedbacks to OpenAlex
                 </Button>
               </div>
             </ModalFooter>
           </Modal>
           <Button
-            onClick={() => openModal()}
             disabled={!allOpenalexCorrections.length > 0}
+            size="sm"
+            onClick={openModal}
           >
-            Send feedback to OpenAlex
+            Send feedbacks to OpenAlex
           </Button>
         </>
       </Col>
