@@ -12,7 +12,7 @@ export default function DatasetsYearlyDistribution({ allDatasets, field, subfiel
 
   const categories = range(searchParams.get('startYear', 2023), searchParams.get('endYear', 2023));
   const allFields = {};
-  allDatasets.filter((d) => d.status === 'validated').forEach((dataset) => {
+  allDatasets.filter((dataset) => dataset.status === 'validated').forEach((dataset) => {
     const publicationYear = dataset?.year;
     let currentValues = dataset[field];
     if (!Array.isArray(currentValues)) {
@@ -54,11 +54,12 @@ export default function DatasetsYearlyDistribution({ allDatasets, field, subfiel
     color: colors[NB_TOP],
   });
   const options = {
-    credits: { text: 'French Open Science Monitor - CC-BY MESR', enabled: true },
     chart: {
       type: 'column',
       height: '600 px',
     },
+    credits: { text: 'French Open Science Monitor - CC-BY MESR', enabled: true },
+    legend: { reversed: true },
     plotOptions: {
       column: {
         stacking: 'normal',
@@ -68,9 +69,6 @@ export default function DatasetsYearlyDistribution({ allDatasets, field, subfiel
       },
     },
     series: topSeries.reverse(),
-    legend: {
-      reversed: true,
-    },
     title: {
       text: `Yearly distribution of the number of datasets by ${field}`,
     },

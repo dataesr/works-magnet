@@ -36,20 +36,6 @@ const statusRowFilterTemplate = (options) => (
   />
 );
 
-const genericRowFilterTemplate = (options, valuesToPass) => (
-  <MultiSelect
-    value={options.value}
-    options={valuesToPass}
-    itemTemplate={statusesItemTemplate}
-    onChange={(e) => options.filterApplyCallback(e.value)}
-    optionLabel="name"
-    placeholder="Any"
-    className="p-column-filter"
-    maxSelectedLabels={1}
-    style={{ maxWidth: '7rem', minWidth: '7rem' }}
-  />
-);
-
 const getIdsTemplate = (ids) => {
   let html = '<ul>';
   ids.forEach((id) => {
@@ -170,11 +156,6 @@ const getAffiliationsTooltipField = (rowData) => {
   return html;
 };
 
-const getAllInfos = (rowData) => {
-  const x = JSON.stringify(rowData);
-  return x;
-};
-
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
 const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
@@ -195,7 +176,6 @@ export {
   frAuthorsTemplate,
   getAffiliationsHtmlField,
   getAffiliationsTooltipField,
-  getAllInfos,
   hasCorrectionTemplate,
   linkedDOITemplate,
   linkedORCIDTemplate,

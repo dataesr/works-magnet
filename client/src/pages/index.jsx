@@ -28,7 +28,7 @@ import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import OpenalexTab from './openalexTab';
 import PublicationsTab from './publicationsTab';
-import { getAffiliationsHtmlField, getAffiliationsTooltipField, getAllInfos } from '../utils/templates';
+import { getAffiliationsHtmlField, getAffiliationsTooltipField } from '../utils/templates';
 import { getData } from '../utils/works';
 
 import 'primereact/resources/primereact.min.css';
@@ -48,7 +48,7 @@ export default function Home() {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
 
-  const { data, isFetching, refetch } = useQuery({
+  const { data, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['data'],
     queryFn: () => getData(options),
     enabled: false,
@@ -95,7 +95,7 @@ export default function Home() {
           ...dataset,
           affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(dataset),
-          allInfos: getAllInfos(dataset),
+          allInfos: JSON.stringify(dataset),
           status: status.tobedecided.id,
         }));
       const allPublicationsTmp = data.publications?.results
@@ -103,7 +103,7 @@ export default function Home() {
           ...publication,
           affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(publication),
-          allInfos: getAllInfos(publication),
+          allInfos: JSON.stringify(publication),
           status: status.tobedecided.id,
         }));
       setAllAffiliations(data.affiliations || []);
@@ -149,7 +149,8 @@ export default function Home() {
     setAllAffiliations(allAffiliationsTmp);
     setSelectedAffiliations([]);
   };
-  const fullAffiliationChoiceTab = (
+
+  const affiliationsChoiceTab = (
     <Tab label="✅ Select the raw affiliations for your institution">
       <Row className="fr-pb-3w">
         <Col n="8">
@@ -184,6 +185,7 @@ export default function Home() {
       />
     </Tab>
   );
+
   return (
     <>
       <Beta />
@@ -197,7 +199,7 @@ export default function Home() {
         </Row>
       </Container>
       <Container className="fr-mx-5w fr-pt-2w" as="section" fluid>
-        {isFetching && (
+        {(isFetching || (isFetched && (allAffiliations?.length ?? 0) === 0)) && (
           <PageSpinner />
         )}
         {!isFetching && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0) && (
@@ -243,27 +245,38 @@ export default function Home() {
               </Tabs>
             </AccordionItem>
             <AccordionItem title="📑 Find the publications affiliated to your institution">
-              <Tabs>
-                { fullAffiliationChoiceTab }
-                <Tab label="📑 List of publications">
-                  <ActionsPublications
-                    allPublications={allPublications}
-                  />
-                  <PublicationsTab
-                    publishers={data.publications?.publishers || []}
-                    publications={allPublications}
-                    selectedPublications={selectedPublications}
-                    setSelectedPublications={setSelectedPublications}
-                    tagPublications={tagPublications}
-                    types={data.publications?.types || []}
-                    years={data.publications?.years || []}
-                  />
-                </Tab>
-              </Tabs>
+              {(options.datasets) ? (
+                <Callout colorFamily="beige-gris-galet">
+                  <CalloutTitle size="md">
+                    You did not search for publications
+                  </CalloutTitle>
+                  <CalloutText size="sm">
+                    To search for publications, please disable the "Search for datasets only" option
+                  </CalloutText>
+                </Callout>
+              ) : (
+                <Tabs>
+                  {affiliationsChoiceTab}
+                  <Tab label="📑 List of publications">
+                    <ActionsPublications
+                      allPublications={allPublications}
+                    />
+                    <PublicationsTab
+                      publishers={data.publications?.publishers || []}
+                      publications={allPublications}
+                      selectedPublications={selectedPublications}
+                      setSelectedPublications={setSelectedPublications}
+                      tagPublications={tagPublications}
+                      types={data.publications?.types || []}
+                      years={data.publications?.years || []}
+                    />
+                  </Tab>
+                </Tabs>
+              )}
             </AccordionItem>
             <AccordionItem title="🗃 Find the datasets affiliated to your institution">
               <Tabs>
-                { fullAffiliationChoiceTab }
+                {affiliationsChoiceTab}
                 <Tab label="🗃 List of datasets">
                   <ActionsDatasets
                     allDatasets={allDatasets}
@@ -279,17 +292,24 @@ export default function Home() {
                   />
                 </Tab>
                 <Tab label="📊 Insights">
-                  { allDatasets.filter((d) => d.status === 'validated').length === 0 ? 'No data to display (no dataset validated yet!)'
-                    :
-                    (
-                      <>
-                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="publisher" />
-                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="type" />
-                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="format" />
-                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="client_id" />
-                        <DatasetsYearlyDistribution allDatasets={allDatasets} field="affiliations" subfield="rawAffiliation" />
-                      </>
-                    )}
+                  {(allDatasets.filter((dataset) => dataset.status === 'validated').length > 0) ? (
+                    <>
+                      <DatasetsYearlyDistribution allDatasets={allDatasets} field="publisher" />
+                      <DatasetsYearlyDistribution allDatasets={allDatasets} field="type" />
+                      <DatasetsYearlyDistribution allDatasets={allDatasets} field="format" />
+                      <DatasetsYearlyDistribution allDatasets={allDatasets} field="client_id" />
+                      <DatasetsYearlyDistribution allDatasets={allDatasets} field="affiliations" subfield="rawAffiliation" />
+                    </>
+                  ) : (
+                    <Callout colorFamily="beige-gris-galet">
+                      <CalloutTitle size="md">
+                        You did not validate any datasets
+                      </CalloutTitle>
+                      <CalloutText size="sm">
+                        Please validate affiliations or datasets to see insights about it.
+                      </CalloutText>
+                    </Callout>
+                  )}
                 </Tab>
               </Tabs>
             </AccordionItem>
