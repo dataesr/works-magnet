@@ -1,6 +1,6 @@
 import { Button, Col, Modal, ModalClose, ModalContent, ModalFooter, ModalTitle, Row, TextInput } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import useToast from '../../hooks/useToast';
 import { sendGitHubIssue } from '../../utils/github';
@@ -8,6 +8,7 @@ import { sendGitHubIssue } from '../../utils/github';
 export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
+  const [validEmail, setValidEmail] = useState(null);
   const { toast } = useToast();
 
   const openModal = () => {
@@ -24,6 +25,19 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
       toastType: 'success',
     });
   };
+
+  useEffect(() => {
+    const emailRegex = new RegExp(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+    const testEmail = (email) => {
+      if (emailRegex.test(email)) {
+        setValidEmail(email);
+      } else {
+        setValidEmail(null);
+      }
+    };
+    const timeOutId = setTimeout(() => testEmail(userEmail), 500);
+    return () => clearTimeout(timeOutId);
+  }, [userEmail]);
 
   return (
     <Row className="fr-mb-1w">
@@ -51,11 +65,11 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
             <ModalFooter>
               <div>
                 <Button
-                  disabled={!allOpenalexCorrections.length > 0 || !userEmail}
+                  disabled={!allOpenalexCorrections.length > 0 || !validEmail}
                   onClick={feedback}
-                  title="Send feedbacks to OpenAlex"
+                  title="Send feedback to OpenAlex"
                 >
-                  Send feedbacks to OpenAlex
+                  Send feedback to OpenAlex
                 </Button>
               </div>
             </ModalFooter>
@@ -65,7 +79,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
             size="sm"
             onClick={openModal}
           >
-            Send feedbacks to OpenAlex
+            Send feedback to OpenAlex
           </Button>
         </>
       </Col>
