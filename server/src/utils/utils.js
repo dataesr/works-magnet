@@ -154,7 +154,7 @@ for (let i = 0; i < defaultDiacriticsRemovalMapLength; i += 1) {
 // "what?" version ... http://jsperf.com/diacritics/12
 // eslint-disable-next-line no-control-regex
 const removeDiacritics = (str) => str.replace(/[^\u0000-\u007E]/g, (a) => diacriticsMap[a] || a)
-  .replace(/[,%().*:;]/g, '')
+  .replace(/[,%().*:;]/g, ' ')
   .replace(/-/g, ' ')
   .toLowerCase()
   .trim()

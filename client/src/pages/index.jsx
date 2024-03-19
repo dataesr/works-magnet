@@ -27,13 +27,11 @@ import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import OpenalexTab from './openalexTab';
 import PublicationsTab from './publicationsTab';
-import { getAffiliationsHtmlField, getAffiliationsTooltipField } from '../utils/templates';
+import { getAffiliationsTooltipField } from '../utils/templates';
 import { getData } from '../utils/works';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
-
-const { VITE_WS_HOST, VITE_WS_PORT } = import.meta.env;
 
 export default function Home() {
   const [allAffiliations, setAllAffiliations] = useState([]);
@@ -41,7 +39,6 @@ export default function Home() {
   const [allPublications, setAllPublications] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [options, setOptions] = useState({});
-  const [regexp, setRegexp] = useState();
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
@@ -64,42 +61,23 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const regexpTmp = new RegExp(`(${(options?.affiliationStrings ?? [])
-      .map((affiliationQuery) => affiliationQuery
-        .replaceAll(/(a|à|á|â|ã|ä|å)/g, '(a|à|á|â|ã|ä|å)')
-        .replaceAll(/(e|è|é|ê|ë)/g, '(e|è|é|ê|ë)')
-        .replaceAll(/(i|ì|í|î|ï)/g, '(i|ì|í|î|ï)')
-        .replaceAll(/(o|ò|ó|ô|õ|ö|ø)/g, '(o|ò|ó|ô|õ|ö|ø)')
-        .replaceAll(/(u|ù|ú|û|ü)/g, '(u|ù|ú|û|ü)')
-        .replaceAll(/(y|ý|ÿ)/g, '(y|ý|ÿ)')
-        .replaceAll(/(n|ñ)/g, '(n|ñ)')
-        .replaceAll(/(c|ç)/g, '(c|ç)')
-        .replaceAll(/æ/g, '(æ|ae)')
-        .replaceAll(/œ/g, '(œ|oe)'))
-      .join('|')})`, 'gi');
-    setRegexp(regexpTmp);
-  }, [options?.affiliationStrings]);
-
-  useEffect(() => {
     if (data) {
       // TODO do it on the API
       const allDatasetsTmp = data.datasets?.results
         ?.map((dataset) => ({
           ...dataset,
-          affiliationsHtml: getAffiliationsHtmlField(dataset, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(dataset),
         }));
       const allPublicationsTmp = data.publications?.results
         ?.map((publication) => ({
           ...publication,
-          affiliationsHtml: getAffiliationsHtmlField(publication, regexp),
           affiliationsTooltip: getAffiliationsTooltipField(publication),
         }));
       setAllAffiliations(data.affiliations || []);
       setAllDatasets(allDatasetsTmp || []);
       setAllPublications(allPublicationsTmp || []);
     }
-  }, [data, regexp]);
+  }, [data]);
 
   const tagPublications = (publications, action) => {
     const allPublicationsTmp = [...allPublications];

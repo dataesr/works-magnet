@@ -132,26 +132,9 @@ const correctionTemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-const getAffiliationsHtmlField = (rowData, regexp) => {
-  let affiliations = (rowData?.affiliations ?? [])
-    .map((a) => a.rawAffiliation)
-    .sort((a, b) => (b.match(regexp)?.length ?? 0) - (a.match(regexp)?.length ?? 0))
-    .map((affiliation) => affiliation.replace(regexp, '<b>$&</b>'))
-    .filter((affiliation) => affiliation?.length ?? 0)
-    .flat();
-  affiliations = [...new Set(affiliations)];
-  let html = `<ul data-tooltip-id="tooltip-affiliation-${rowData.id}">`;
-  html += affiliations.slice(0, 3).map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
-  if (affiliations.length > 3) {
-    html += `<li>and others (${affiliations.length - 3})</li>`;
-  }
-  html += '</ul>';
-  return html;
-};
-
 const getAffiliationsTooltipField = (rowData) => {
   let html = '<ul>';
-  html += rowData.affiliations?.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation.rawAffiliation}</li>`).join('');
+  html += (rowData?.affiliation ?? []).map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation.rawAffiliation}</li>`).join('');
   html += '</ul>';
   return html;
 };
@@ -174,7 +157,6 @@ export {
   correctionTemplate,
   datasourceTemplate,
   frAuthorsTemplate,
-  getAffiliationsHtmlField,
   getAffiliationsTooltipField,
   hasCorrectionTemplate,
   linkedDOITemplate,

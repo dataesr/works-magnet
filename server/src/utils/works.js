@@ -101,6 +101,43 @@ const getMatchingRoRs = (affiliations, options) => {
   return intersectArrays(currentRoRs, options.rors);
 };
 
+const getAffiliationsHtmlField = ({ affiliations, id, regexp }) => {
+  let affiliationsAll = affiliations
+    .map((a) => removeDiacritics(a.rawAffiliation))
+    .sort((a, b) => (regexp.exec(b)?.length ?? 0) - (regexp.exec(a)?.length ?? 0))
+    .map((affiliation) => {
+      let displayAffiliation = affiliation;
+      regexp.exec(affiliation)?.slice(1)?.forEach((match) => {
+        displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
+      });
+      return displayAffiliation;
+    })
+    .filter((affiliation) => affiliation?.length ?? 0);
+  affiliationsAll = [...new Set(affiliationsAll)];
+  let html = `<ul data-tooltip-id="tooltip-affiliation-${id}">`;
+  html += affiliationsAll.slice(0, 3).map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
+  if (affiliationsAll.length > 3) {
+    html += `<li>and others (${affiliationsAll.length - 3})</li>`;
+  }
+  html += '</ul>';
+  return html;
+};
+
+const getRegexpFromOptions = ({ options }) => {
+  const pattern = options.affiliationStrings
+    // Replace all accentuated characters, multiple spaces and toLowercase()
+    .map((affiliation) => removeDiacritics(affiliation)
+      // Set universite, university and univ as synonyms
+      .replaceAll(/universite|university|univ/gi, 'universite|university|univ')
+      .replaceAll(/de|of/gi, 'de|of')
+      .split(' ')
+      // Each word should be map at least one time, whatever the order
+      .map((word) => `(?=.*?\\b(${word})\\b)`)
+      .join(''))
+    .join('|');
+  return new RegExp(pattern, 'gi');
+};
+
 const formatResultFosm = (result, options) => {
   const answer = {
     affiliations: result._source.affiliations
@@ -138,6 +175,8 @@ const formatResultFosm = (result, options) => {
     levelCertainty = '3.low';
   }
   answer.levelCertainty = levelCertainty;
+  const regexp = getRegexpFromOptions({ options });
+  answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
   answer.allInfos = JSON.stringify(answer);
   return answer;
 };
@@ -250,16 +289,16 @@ const getOpenAlexAffiliation = (author) => {
   const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
   const rors = [];
   const rorsToCorrect = [];
-  author?.institutions?.forEach((inst) => {
-    if (inst.ror) {
-      const rorId = (inst.ror).replace('https://ror.org/', '');
-      const rorElt = { rorId, rorName: inst.display_name, rorCountry: inst.country_code };
-      key = key.concat('##').concat(rorElt.rorId);
+  author?.institutions?.forEach((institution) => {
+    if (institution.ror) {
+      const rorId = (institution.ror).replace('https://ror.org/', '');
+      const rorElt = { rorCountry: institution.country_code, rorId, rorName: institution.display_name };
+      key = `${key}##${rorId}`;
       rors.push(rorElt);
       rorsToCorrect.push(rorId);
     }
   });
-  return { rawAffiliation, rors, source, key, label, rorsToCorrect };
+  return { key, label, rawAffiliation, rors, rorsToCorrect, source };
 };
 
 const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = []) => {
@@ -311,6 +350,8 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
           type: getTypeFromOpenAlex(result.type),
           year: result?.publication_year?.toString() ?? '',
         };
+        const regexp = getRegexpFromOptions({ options });
+        answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
         answer.allInfos = JSON.stringify(answer);
         return answer;
       }));
