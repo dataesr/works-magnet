@@ -1,5 +1,8 @@
 import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics, removeDuplicates } from './utils';
 
+const datasetsType = ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
+            'software', 'computationalnotebook', 'film', 'interactiveresource', 'image'];
+
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
   const priorityPublication = [publication1, publication2].some((publi) => publi.datasource === 'fosm')
@@ -63,8 +66,7 @@ const getFosmQuery = (options, pit, searchAfter) => {
   if (options.datasets) {
     query.query.bool.must.push({
       terms: {
-        genre_raw: ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
-          'software', 'computationalnotebook', 'film', 'interactiveresource', 'image'],
+        genre_raw: datasetsType,
       },
     });
   }
@@ -401,6 +403,7 @@ const groupByAffiliations = ({ options, works }) => {
 };
 
 export {
+  datasetsType,
   deduplicateWorks,
   getFosmWorks,
   getOpenAlexPublications,

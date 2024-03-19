@@ -272,7 +272,7 @@ export default function Home() {
                   />
                   <DatasetsTab
                     datasets={allDatasets}
-                    publishers={data.datasets.publishers}
+                    publishers={data.datasets?.publishers}
                     selectedDatasets={selectedDatasets}
                     setSelectedDatasets={setSelectedDatasets}
                     tagDatasets={tagDatasets}

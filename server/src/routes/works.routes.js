@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { chunkArray, countUniqueValues, range } from '../utils/utils';
-import { deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
+import { datasetsType, deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
 
 const router = new express.Router();
 
@@ -49,10 +49,10 @@ router.route('/works')
         } else {
           for (let i = 0; i < deduplicatedWorksLength; i += 1) {
             const deduplicatedWork = deduplicatedWorks[i];
-            if (deduplicatedWork.type !== 'dataset') {
-              publications.push(deduplicatedWork);
-            } else {
+            if (datasetsType.includes(deduplicatedWork.type)) {
               datasets.push(deduplicatedWork);
+            } else {
+              publications.push(deduplicatedWork);
             }
           }
         }
