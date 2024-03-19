@@ -12,7 +12,6 @@ import {
 } from '@dataesr/react-dsfr';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
 
 import ActionsAffiliations from './actions/actionsAffiliations';
 import ActionsDatasets from './actions/actionsDatasets';
@@ -42,7 +41,6 @@ export default function Home() {
   const [allPublications, setAllPublications] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [options, setOptions] = useState({});
-  const [current, setCurrent] = useState(1);
   const [regexp, setRegexp] = useState();
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
@@ -54,11 +52,6 @@ export default function Home() {
     enabled: false,
     staleTime: Infinity,
     cacheTime: Infinity,
-  });
-
-  useWebSocket(`${VITE_WS_HOST}:${VITE_WS_PORT}`, {
-    onMessage: (message) => setCurrent(Number(message.data)),
-    share: true,
   });
 
   const sendQuery = async (_options) => {
