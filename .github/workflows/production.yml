@@ -1,15 +1,15 @@
-name: Staging deployment
+name: Production deployment
 
 on:
   push:
-    branches:
-      - staging
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 env:
   # Must match k8s deployment name
   DEPLOYMENT: works-magnet
   DEPLOYMENT_NAMESPACE: works-magnet
-  DEPLOYMENT_URL: https://works-magnet.staging.dataesr.ovh
+  DEPLOYMENT_URL: https://works-magnet.dataesr.ovh
   MM_NOTIFICATION_CHANNEL: bots
 
 jobs:
@@ -20,6 +20,10 @@ jobs:
       - name: 🏁 Checkout
         uses: actions/checkout@v4
 
+      - name: 🏷️ Get tag
+        id: tag
+        run: echo "tag=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
       - name: 🔑 Login ghcr.io
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
@@ -27,30 +31,60 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-      - run: npm ci --silent && npm run build --mode=staging
+      - run: npm ci --silent && npm run build
 
       - name: 🐋 Build Docker image
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository }}
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          docker build -t $IMAGE_ID:staging .
+          docker build -t $IMAGE_ID:${{ steps.tag.outputs.tag }} -t $IMAGE_ID:latest .
 
       - name: 📦 Push Docker image
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository }}
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          docker push $IMAGE_ID:staging
+          docker push --all-tags $IMAGE_ID
 
-  deploy:
-    name: Update staging deployment
+  release:
+    name: Create new Github release
     runs-on: ubuntu-latest
     needs: publish-ghcr
+    steps:
+      - name: 🏁 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🏷️ Get tag
+        id: tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create changelog text
+        id: changelog
+        uses: loopwerk/tag-changelog@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config_file: .github/config/changelog.js
+
+      - name: 📦 Create release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
+          body: "${{ steps.changelog.outputs.changes }}"
+
+  deploy:
+    name: Update production deployment
+    runs-on: ubuntu-latest
+    needs: release
     steps:
       - name: Deploy to Cluster
         id: kubectl-deploy
         uses: dataesr/kubectl-deploy@v1.1
         env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DOAD_STAGING }}
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DOAD_PROD }}
         with:
           namespace: ${{ env.DEPLOYMENT_NAMESPACE }}
           restart: ${{ env.DEPLOYMENT }}

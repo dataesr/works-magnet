@@ -2,7 +2,7 @@
 
 [![Discord Follow](https://dcbadge.vercel.app/api/server/RaXZtDua?style=flat)](https://discord.gg/RaXZtDua)
 ![license](https://img.shields.io/github/license/dataesr/works-magnet)
-[![Staging deployment](https://github.com/dataesr/works-magnet/actions/workflows/staging.yml/badge.svg)](https://github.com/dataesr/works-magnet/actions/workflows/staging.yml)
+[![Production deployment](https://github.com/dataesr/works-magnet/actions/workflows/production.yml/badge.svg)](https://github.com/dataesr/works-magnet/actions/workflows/production.yml)
 
 
 Retrieve the scholarly works of your institution - Based on French OSM and OpenAlex
