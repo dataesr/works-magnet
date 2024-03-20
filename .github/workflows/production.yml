@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-      - run: npm ci --silent && npm run build
+      - run: npm ci --silent && npm run build --mode=production
 
       - name: 🐋 Build Docker image
         run: |
