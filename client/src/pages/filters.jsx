@@ -13,6 +13,8 @@ import { useSearchParams } from 'react-router-dom';
 import TagInput from '../components/tag-input';
 import { getRorData, isRor } from '../utils/ror';
 
+const { VITE_APP_TAG_LIMIT } = import.meta.env;
+
 const START_YEAR = 2010;
 const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()].map((year) => (year + START_YEAR).toString()).map((year) => ({ label: year, value: year }));
 
@@ -56,16 +58,17 @@ export default function Filters({ sendQuery }) {
         setMessage('');
         affiliations.forEach((affiliation) => {
           if (isRor(affiliation)) {
-            allTags.push({ label: affiliation.replace('https://ror.org/', '').replace('ror.org/', ''), source: 'user', type: 'rorId' });
+            const label = affiliation.replace('https://ror.org/', '').replace('ror.org/', '');
+            allTags.push({ disable: label.length < VITE_APP_TAG_LIMIT, label, source: 'user', type: 'rorId' });
           } else {
-            allTags.push({ label: affiliation, source: 'user', type: 'affiliationString' });
+            allTags.push({ disable: affiliation.length < VITE_APP_TAG_LIMIT, label: affiliation, source: 'user', type: 'affiliationString' });
           }
           knownTags[affiliation.toLowerCase()] = 1;
         });
         rorNames.flat().forEach((rorElt) => {
           if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
             if (!deletedAffiliations.includes(rorElt.rorId)) {
-              allTags.push({ label: rorElt.rorId, source: 'ror', type: 'rorId' });
+              allTags.push({ disable: rorElt.rorId.length < VITE_APP_TAG_LIMIT, label: rorElt.rorId, source: 'ror', type: 'rorId' });
               knownTags[rorElt.rorId.toLowerCase()] = 1;
             }
           }
@@ -73,7 +76,7 @@ export default function Filters({ sendQuery }) {
             if (knownTags[rorName.toLowerCase()] === undefined) {
               if (!deletedAffiliations.includes(rorName)) {
                 const isDangerous = rorName.length < 4;
-                allTags.push({ label: rorName, source: 'ror', type: 'affiliationString', rorId: rorElt.rorId, isDangerous });
+                allTags.push({ disable: rorName.length < VITE_APP_TAG_LIMIT, label: rorName, source: 'ror', type: 'affiliationString', rorId: rorElt.rorId, isDangerous });
                 knownTags[rorName.toLowerCase()] = 1;
               }
             }
@@ -107,10 +110,15 @@ export default function Filters({ sendQuery }) {
     }
     setMessageType('');
     setMessage('');
-    const queryParams = { datasets: currentSearchParams.datasets, startYear: currentSearchParams.startYear, endYear: currentSearchParams.endYear };
+    const queryParams = { ...currentSearchParams };
     // TO REVIEW
-    queryParams.affiliationStrings = tags.filter((tag) => tag.type === 'affiliationString').map((tag) => normalizeStr(tag.label)).slice(0, 100);
-    queryParams.rors = tags.filter((tag) => tag.type === 'rorId').map((tag) => tag.label).slice(0, 100);
+    queryParams.affiliationStrings = tags.filter((tag) => !tag.disable && tag.type === 'affiliationString').map((tag) => normalizeStr(tag.label)).slice(0, 100);
+    queryParams.rors = tags.filter((tag) => !tag.disable && tag.type === 'rorId').map((tag) => tag.label).slice(0, 100);
+    if (queryParams.affiliationStrings.length === 0 && queryParams.rors.length === 0) {
+      setMessageType('error');
+      setMessage(`You must provide at least one affiliation longer than ${VITE_APP_TAG_LIMIT} letters.`);
+      return;
+    }
     sendQuery(queryParams);
   };
 
@@ -119,17 +127,17 @@ export default function Filters({ sendQuery }) {
       <Col n="2">
         <Select
           label="Start year"
+          onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
           options={years}
           selected={currentSearchParams.startYear}
-          onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
         />
       </Col>
       <Col n="2">
         <Select
           label="End year"
+          onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
           options={years}
           selected={currentSearchParams.endYear}
-          onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
         />
       </Col>
       <Col n="3">
@@ -137,8 +145,8 @@ export default function Filters({ sendQuery }) {
           legend="&nbsp;"
         >
           <Checkbox
-            label="Search for datasets only"
             checked={currentSearchParams?.datasets ?? false}
+            label="Search for datasets only"
             onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
           />
         </CheckboxGroup>
@@ -153,15 +161,15 @@ export default function Filters({ sendQuery }) {
       </Col>
       <Col n="12">
         <TagInput
+          getRoRChildren={getRoRChildren}
           hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
           label="Affiliation name, RoR identifier"
           message={message}
           messageType={messageType}
-          onTagsChange={onTagsChange}
-          tags={tags}
-          getRoRChildren={getRoRChildren}
-          setGetRoRChildren={setGetRoRChildren}
           onInputHandler={setOnInputAffiliationsHandler}
+          onTagsChange={onTagsChange}
+          setGetRoRChildren={setGetRoRChildren}
+          tags={tags}
         />
       </Col>
     </Row>

@@ -2,9 +2,13 @@ import { Button, Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
+const { VITE_APP_TAG_LIMIT } = import.meta.env;
+
 const SEE_MORE_AFTER = 5;
 
 export default function TagInput({
+  deletedTags,
+  getRoRChildren,
   hint,
   label,
   message,
@@ -12,15 +16,28 @@ export default function TagInput({
   onInputHandler,
   onTagsChange,
   placeholder,
-  tags,
-  getRoRChildren,
   setGetRoRChildren,
-  deletedTags,
+  tags,
 }) {
   const [excludedValues, setExcludedValues] = useState(deletedTags);
   const [input, setInput] = useState('');
   const [seeMore, setSeeMore] = useState(false);
   const [values, setValues] = useState(tags);
+
+  const getTagColor = (tag) => {
+    if (tag.disable) return 'beige-gris-galet';
+    if (tag.source === 'ror') return 'brown-caramel';
+    return 'brown-cafe-creme';
+  };
+
+  const handleDeleteClick = (tag) => {
+    const deletedValues = excludedValues;
+    deletedValues.push(tag);
+    const newValues = [...values.filter((el) => el !== tag)];
+    setValues(newValues);
+    setExcludedValues(deletedValues);
+    onTagsChange(newValues, deletedValues);
+  };
 
   const handleKeyDown = (e) => {
     if ([9, 13].includes(e.keyCode) && input) {
@@ -29,7 +46,8 @@ export default function TagInput({
         setInput('');
         return;
       }
-      const newValues = [...values, { label: input.trim(), source: 'user' }];
+      const inputLabel = input.trim();
+      const newValues = [...values, { disable: inputLabel.length < VITE_APP_TAG_LIMIT, label: inputLabel, source: 'user' }];
       setValues(newValues);
       setInput('');
       onTagsChange(newValues, excludedValues);
@@ -44,18 +62,10 @@ export default function TagInput({
     }
   }, [input, onInputHandler]);
 
-  const handleDeleteClick = (tag) => {
-    const deletedValues = excludedValues;
-    deletedValues.push(tag);
-    const newValues = [...values.filter((el) => el !== tag)];
-    setValues(newValues);
-    setExcludedValues(deletedValues);
-    onTagsChange(newValues, deletedValues);
-  };
-
   useEffect(() => setValues(tags), [tags]);
 
   useEffect(() => setExcludedValues(deletedTags), [deletedTags]);
+
   let hasRoR = false;
   let newLine = [];
   const structuredTags = [];
@@ -72,6 +82,7 @@ export default function TagInput({
   if (newLine.length) {
     structuredTags.push(newLine);
   }
+
   return (
     <div>
       <div>
@@ -99,10 +110,11 @@ export default function TagInput({
                   {currentTags.map((tag) => (
                     <Tag
                       className="fr-mr-1w"
-                      small
-                      colorFamily={(tag?.source ?? 'user') === 'user' ? 'brown-cafe-creme' : 'brown-caramel'}
+                      colorFamily={getTagColor(tag)}
                       key={tag.label}
                       onClick={() => handleDeleteClick(tag)}
+                      size="sm"
+                      title={`Tag ${tag.label}${tag.disable ? ' (not searched)' : ''}`}
                     >
                       {tag.label}
                       <Icon iconPosition="right" name="ri-close-line" />
@@ -111,10 +123,10 @@ export default function TagInput({
                   {(index === 0 && hasRoR) ? (
                     <Button
                       className="fr-mr-1w"
-                      onClick={() => setGetRoRChildren((prev) => !prev)}
-                      size="sm"
                       hasBorder={false}
                       icon={getRoRChildren ? 'ri-arrow-go-back-line' : 'ri-node-tree'}
+                      onClick={() => setGetRoRChildren((prev) => !prev)}
+                      size="sm"
                     >
                       {
                         getRoRChildren
@@ -153,6 +165,8 @@ export default function TagInput({
 }
 
 TagInput.propTypes = {
+  deletedTags: PropTypes.arrayOf(PropTypes.object),
+  getRoRChildren: PropTypes.bool,
   hint: PropTypes.string,
   label: PropTypes.string.isRequired,
   message: PropTypes.string,
@@ -160,16 +174,18 @@ TagInput.propTypes = {
   onInputHandler: PropTypes.func,
   onTagsChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
+  setGetRoRChildren: PropTypes.func,
   tags: PropTypes.arrayOf(PropTypes.object),
-  deletedTags: PropTypes.arrayOf(PropTypes.object),
 };
 
 TagInput.defaultProps = {
-  hint: 'Valider votre ajout avec la touche "Entrée"',
+  deletedTags: [],
+  getRoRChildren: false,
+  hint: 'Press "ENTER" to search for several terms',
   message: '',
   messageType: '',
   onInputHandler: () => { },
   placeholder: '',
+  setGetRoRChildren: () => {},
   tags: [],
-  deletedTags: [],
 };
