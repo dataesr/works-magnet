@@ -4,8 +4,7 @@
 ![license](https://img.shields.io/github/license/dataesr/works-magnet)
 [![Production deployment](https://github.com/dataesr/works-magnet/actions/workflows/production.yml/badge.svg)](https://github.com/dataesr/works-magnet/actions/workflows/production.yml)
 
-
-Retrieve the scholarly works of your institution - Based on French OSM and OpenAlex
+Retrieve the scholarly works of your institution.
 
 ## Build for production
 
@@ -28,3 +27,15 @@ npm run build
 ```
 
 Vite build creates a build in `/dist` folder. This folder has to be moved to the `/server` folder.
+
+## Deployment
+
+The version number follows [semver](https://semver.org/).
+
+To deploy in production, simply run this command from your staging branch :
+
+```sh
+npm run deploy --level=[patch|minor|major]
+```
+
+:warning: Obviously, only members of the [dataesr organization](https://github.com/dataesr/) have rights to push on the repo.

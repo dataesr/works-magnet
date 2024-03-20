@@ -14,6 +14,7 @@
     "build": "rm -rf server/dist && npm -w client run build -- --mode ${npm_config_mode} --emptyOutDir --outDir ../server/dist",
     "client": "npm -w client run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "deploy": "git switch main && git pull origin main --rebase --tags && git merge origin staging && npm version $npm_config_level && git push origin main --tags && git switch staging",
     "preview": "npm run build --mode=${npm_config_mode} && npm -w server start",
     "server": "npm -w server run dev",
     "start": "npm run dev"
