@@ -1,7 +1,8 @@
 # Works magnet
 
-[![Discord Follow](https://dcbadge.vercel.app/api/server/RaXZtDua?style=flat)](https://discord.gg/RaXZtDua)
+[![Discord Follow](https://dcbadge.vercel.app/api/server/TudsqDqTqb?style=flat)](https://discord.gg/TudsqDqTqb)
 ![license](https://img.shields.io/github/license/dataesr/works-magnet)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dataesr/works-magnet)
 [![Production deployment](https://github.com/dataesr/works-magnet/actions/workflows/production.yml/badge.svg)](https://github.com/dataesr/works-magnet/actions/workflows/production.yml)
 
 Retrieve the scholarly works of your institution.
