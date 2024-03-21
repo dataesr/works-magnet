@@ -6,13 +6,14 @@ import useToast from '../../hooks/useToast';
 import { sendGitHubIssue } from '../../utils/github';
 
 export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
+
   const { toast } = useToast();
 
   const openModal = () => {
-    setModalOpen((prev) => !prev);
+    setIsModalOpen((prev) => !prev);
   };
 
   const feedback = () => {
@@ -43,10 +44,8 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
     <Row className="fr-mb-1w">
       <Col className="text-right">
         <>
-          <Modal isOpen={modalOpen}>
-            <ModalClose
-              onClick={openModal}
-            >
+          <Modal isOpen={isModalOpen} hide={openModal}>
+            <ModalClose title="Close the modal">
               Close
             </ModalClose>
             <ModalTitle>

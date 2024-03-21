@@ -3,12 +3,10 @@
 }
 
 .header.sticky {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 10;
   animation: 500ms ease-in-out 0s normal none 1 running fadeInDown;
+  position: sticky;
+  top: 0;
+  width: 100%;
 
   .fr-header__brand-top {
     display: none;
