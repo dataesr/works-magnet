@@ -5,6 +5,7 @@ import {
   Logo,
   Service,
 } from '@dataesr/react-dsfr';
+import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import Beta from '../components/beta';
@@ -18,6 +19,23 @@ const {
 } = import.meta.env;
 
 export default function Header() {
+  const isSticky = () => {
+    const header = document.querySelector('.header');
+    const scrollTop = window.scrollY;
+    if (scrollTop >= 100) {
+      header.classList.add('sticky');
+    } else {
+      header.classList.remove('sticky');
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', isSticky);
+    return () => {
+      window.removeEventListener('scroll', isSticky);
+    };
+  });
+
   return (
     <HeaderWrapper className="header">
       <Beta />

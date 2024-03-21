@@ -1,7 +1,24 @@
-.text-right {
-  text-align: right;
-}
-
 .fr-tags-group>li {
   line-height: 0rem;
+}
+
+.header.sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  animation: 500ms ease-in-out 0s normal none 1 running fadeInDown;
+
+  .fr-header__brand-top {
+    display: none;
+  }
+
+  .fr-header__service {
+    padding: 0;
+  }
+}
+
+.text-right {
+  text-align: right;
 }
