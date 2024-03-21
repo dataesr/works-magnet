@@ -7,6 +7,8 @@ import {
 } from '@dataesr/react-dsfr';
 import { NavLink } from 'react-router-dom';
 
+import Beta from '../components/beta';
+
 const {
   VITE_APP_NAME,
   VITE_DESCRIPTION,
@@ -17,7 +19,8 @@ const {
 
 export default function Header() {
   return (
-    <HeaderWrapper>
+    <HeaderWrapper className="header">
+      <Beta />
       <HeaderBody>
         <Logo
           asLink={<NavLink to="./" />}
