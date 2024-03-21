@@ -1,4 +1,4 @@
-import { Button, Col, Modal, ModalClose, ModalContent, ModalFooter, ModalTitle, Row, TextInput } from '@dataesr/react-dsfr';
+import { Button, Col, Icon, Modal, ModalClose, ModalContent, ModalFooter, ModalTitle, Row, TextInput } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
@@ -47,6 +47,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
           <Modal isOpen={isModalOpen} hide={openModal}>
             <ModalClose title="Close the modal">
               Close
+              <Icon iconPosition="right" name="ri-close-line" />
             </ModalClose>
             <ModalTitle>
               Improve OpenAlex data
