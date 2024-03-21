@@ -7,9 +7,10 @@ import Header from './Header';
 
 export default function Layout() {
   const [isSwitchThemeOpen, setIsSwitchThemeOpen] = useState(false);
+
   return (
     <>
-      <Header switchTheme={{ isOpen: isSwitchThemeOpen, setIsOpen: setIsSwitchThemeOpen }} />
+      <Header />
       <SwitchTheme isOpen={isSwitchThemeOpen} setIsOpen={setIsSwitchThemeOpen} />
       <Container as="main" role="main" fluid>
         <Outlet />

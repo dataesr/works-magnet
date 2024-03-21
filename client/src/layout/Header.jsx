@@ -4,10 +4,7 @@ import {
   HeaderBody,
   Logo,
   Service,
-  Tool,
-  ToolItemGroup,
 } from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
 const {
@@ -18,9 +15,7 @@ const {
   VITE_MINISTER_NAME,
 } = import.meta.env;
 
-export default function Header({ switchTheme }) {
-  const { isOpen, setIsOpen } = switchTheme;
-
+export default function Header() {
   return (
     <HeaderWrapper>
       <HeaderBody>
@@ -47,27 +42,7 @@ export default function Header({ switchTheme }) {
           description={VITE_DESCRIPTION}
           asLink={<NavLink to="./" />}
         />
-        <Tool closeButtonLabel="fermer" className="extend">
-          <ToolItemGroup>
-            <button
-              aria-controls="fr-theme-modal"
-              className="fr-footer__bottom-link fr-fi-theme-fill fr-link--icon-left"
-              onClick={() => setIsOpen(true)}
-              type="button"
-              data-fr-opened={isOpen}
-            >
-              Paramètres d'affichage
-            </button>
-          </ToolItemGroup>
-        </Tool>
       </HeaderBody>
     </HeaderWrapper>
   );
 }
-
-Header.propTypes = {
-  switchTheme: PropTypes.shape({
-    isOpen: PropTypes.bool,
-    setIsOpen: PropTypes.func,
-  }).isRequired,
-};
