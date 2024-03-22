@@ -59,7 +59,7 @@ function Toast({
       >
         <Icon size="lg" name="ri-close-line" />
       </button>
-      <Container fluid className="toast-content">
+      <Container className="toast-content">
         <Row>
           {title && <Text bold spacing="mb-1w">{title}</Text>}
         </Row>

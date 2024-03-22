@@ -12,7 +12,7 @@ export default function Layout() {
     <>
       <Header />
       <SwitchTheme isOpen={isSwitchThemeOpen} setIsOpen={setIsSwitchThemeOpen} />
-      <Container as="main" role="main" fluid>
+      <Container as="main" role="main">
         <Outlet />
       </Container>
       <Footer switchTheme={{ isOpen: isSwitchThemeOpen, setIsOpen: setIsSwitchThemeOpen }} />

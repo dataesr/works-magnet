@@ -154,7 +154,7 @@ export default function Home() {
 
   return (
     <>
-      <Container as="section" fluid>
+      <Container as="section">
         <Row className="fr-p-5w">
           <Col>
             <Filters
@@ -163,7 +163,7 @@ export default function Home() {
           </Col>
         </Row>
       </Container>
-      <Container className="fr-mx-5w fr-pt-2w" as="section" fluid>
+      <Container className="fr-mx-5w fr-pt-2w" as="section">
         {(isFetching || (isFetched && (allAffiliations?.length ?? 0) === 0)) && (
           <PageSpinner />
         )}
