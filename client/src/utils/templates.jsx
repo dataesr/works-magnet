@@ -134,7 +134,7 @@ const correctionTemplate = (rowData) => {
 
 const getAffiliationsTooltipField = (rowData) => {
   let html = '<ul>';
-  html += (rowData?.affiliation ?? []).map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation.rawAffiliation}</li>`).join('');
+  html += (rowData?.affiliations ?? []).map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation.rawAffiliation}</li>`).join('');
   html += '</ul>';
   return html;
 };
