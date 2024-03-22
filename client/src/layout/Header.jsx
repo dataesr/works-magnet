@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import Beta from '../components/beta';
+import useScroll from '../hooks/useScroll';
 
 const {
   VITE_APP_NAME,
@@ -19,22 +20,18 @@ const {
 } = import.meta.env;
 
 export default function Header() {
-  const isSticky = () => {
-    const header = document.querySelector('.header');
-    const scrollTop = window.scrollY;
-    if (scrollTop >= 100) {
-      header.classList.add('sticky');
-    } else {
-      header.classList.remove('sticky');
-    }
-  };
+  const { scrollTop } = useScroll();
 
   useEffect(() => {
-    window.addEventListener('scroll', isSticky);
-    return () => {
-      window.removeEventListener('scroll', isSticky);
-    };
-  });
+    const banner = document.querySelector('.header');
+    const heightBanner = banner.getBoundingClientRect().height;
+
+    if (scrollTop > heightBanner) {
+      document.querySelector('html').classList.add('header-sticky');
+    } else {
+      document.querySelector('html').classList.remove('header-sticky');
+    }
+  }, [scrollTop]);
 
   return (
     <HeaderWrapper className="header">

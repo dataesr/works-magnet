@@ -2,21 +2,36 @@
   line-height: 0rem;
 }
 
-.header.sticky {
-  animation: 500ms ease-in-out 0s normal none 1 running fadeInDown;
-  position: sticky;
-  top: 0;
-  width: 100%;
 
-  .fr-header__brand-top {
-    display: none;
-  }
-
-  .fr-header__service {
-    padding: 0;
-  }
-}
 
 .text-right {
   text-align: right;
+}
+
+.header-sticky {
+  .header {
+    animation: 500ms ease-in-out 0s normal none 1 running fadeInDown;
+    position: sticky;
+    top: 0;
+    width: 100%;
+
+    .fr-header__brand-top {
+      display: none;
+    }
+
+    .fr-header__service {
+      padding: 0;
+    }
+
+    .ribbon {
+      left: -79px;
+      top: 4px;
+
+      .badge {
+        font-size: 15px;
+        height: 35px;
+        line-height: 35px;
+      }
+    }
+  }
 }
