@@ -1,16 +1,20 @@
 import {
+  Badge,
   Button,
   Checkbox,
   CheckboxGroup,
   Col,
+  Icon,
   Row,
   Select,
+  Tag,
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import TagInput from '../components/tag-input';
+import useScroll from '../hooks/useScroll';
 import { getRorData, isRor } from '../utils/ror';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
@@ -22,11 +26,26 @@ const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
 export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
+  const [isSticky, setIsSticky] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
   const [tags, setTags] = useState([]);
   const [getRoRChildren, setGetRoRChildren] = useState(false);
+  const { scrollTop } = useScroll();
+
+  useEffect(() => {
+    const filters = document.querySelector('.filters');
+    const heightFilters = filters.getBoundingClientRect().height;
+
+    if (scrollTop > heightFilters - 100) {
+      document.querySelector('html').classList.add('filters-sticky');
+      setIsSticky(true);
+    } else {
+      document.querySelector('html').classList.remove('filters-sticky');
+      setIsSticky(false);
+    }
+  }, [scrollTop]);
 
   useEffect(() => {
     const getData = async () => {
@@ -123,56 +142,88 @@ export default function Filters({ sendQuery }) {
   };
 
   return (
-    <Row gutters alignItems="top">
-      <Col n="2">
-        <Select
-          label="Start year"
-          onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
-          options={years}
-          selected={currentSearchParams.startYear}
-        />
-      </Col>
-      <Col n="2">
-        <Select
-          label="End year"
-          onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
-          options={years}
-          selected={currentSearchParams.endYear}
-        />
-      </Col>
-      <Col n="3">
-        <CheckboxGroup
-          legend="&nbsp;"
-        >
-          <Checkbox
-            checked={currentSearchParams?.datasets ?? false}
-            label="Search for datasets only"
-            onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
-          />
-        </CheckboxGroup>
-      </Col>
-      <Col n="5">
-        <Button
-          icon="ri-search-line"
-          onClick={checkAndSendQuery}
-        >
-          Search works
-        </Button>
-      </Col>
-      <Col n="12">
-        <TagInput
-          getRoRChildren={getRoRChildren}
-          hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-          label="Affiliation name, RoR identifier"
-          message={message}
-          messageType={messageType}
-          onInputHandler={setOnInputAffiliationsHandler}
-          onTagsChange={onTagsChange}
-          setGetRoRChildren={setGetRoRChildren}
-          tags={tags}
-        />
-      </Col>
-    </Row>
+    // eslint-disable-next-line react/jsx-no-useless-fragment
+    <>
+      {isSticky ? (
+        <Row alignItems="top">
+          <Col n="2">
+            Filters :
+          </Col>
+          <Col n="2">
+            <Badge
+              colorFamily="brown-cafe-creme"
+              text={currentSearchParams.startYear}
+            />
+            <span className="fr-mx-1w">-</span>
+            <Badge
+              colorFamily="brown-cafe-creme"
+              text={currentSearchParams.endYear}
+            />
+          </Col>
+          <Col n="2">
+            {tags.map((tag) => (
+              <Badge
+                colorFamily="brown-cafe-creme"
+                isSmall
+                key={tag.label}
+                text={tag.label}
+              />
+            ))}
+          </Col>
+        </Row>
+      ) : (
+        <Row gutters alignItems="top" className="fr-p-5w">
+          <Col n="2">
+            <Select
+              label="Start year"
+              onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
+              options={years}
+              selected={currentSearchParams.startYear}
+            />
+          </Col>
+          <Col n="2">
+            <Select
+              label="End year"
+              onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
+              options={years}
+              selected={currentSearchParams.endYear}
+            />
+          </Col>
+          <Col n="3">
+            <CheckboxGroup
+              legend="&nbsp;"
+            >
+              <Checkbox
+                checked={currentSearchParams?.datasets ?? false}
+                label="Search for datasets only"
+                onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
+              />
+            </CheckboxGroup>
+          </Col>
+          <Col n="5">
+            <Button
+              icon="ri-search-line"
+              onClick={checkAndSendQuery}
+            >
+              Search works
+            </Button>
+          </Col>
+          <Col n="12">
+            <TagInput
+              getRoRChildren={getRoRChildren}
+              hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
+              label="Affiliation name, RoR identifier"
+              message={message}
+              messageType={messageType}
+              onInputHandler={setOnInputAffiliationsHandler}
+              onTagsChange={onTagsChange}
+              setGetRoRChildren={setGetRoRChildren}
+              tags={tags}
+            />
+          </Col>
+        </Row>
+      )}
+    </>
   );
 }
 

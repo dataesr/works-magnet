@@ -26,7 +26,7 @@ export default function Header() {
     const banner = document.querySelector('.header');
     const heightBanner = banner.getBoundingClientRect().height;
 
-    if (scrollTop > heightBanner) {
+    if (scrollTop > heightBanner - 50) {
       document.querySelector('html').classList.add('header-sticky');
     } else {
       document.querySelector('html').classList.remove('header-sticky');

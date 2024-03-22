@@ -154,8 +154,8 @@ export default function Home() {
 
   return (
     <>
-      <Container as="section">
-        <Row className="fr-p-5w">
+      <Container as="section" className="filters">
+        <Row>
           <Col>
             <Filters
               sendQuery={sendQuery}
