@@ -2,7 +2,7 @@ body {
   height: auto;
 }
 
-.fr-tags-group > li {
+.fr-tags-group>li {
   line-height: 0rem;
 }
 
@@ -10,42 +10,32 @@ body {
   text-align: right;
 }
 
-// Sticky part
-.header-sticky {
-  .header {
-    animation: 1s ease-in-out 0s normal none 1 running fadeInDown;
-    position: sticky;
-    top: 0;
-    width: 100%;
-
-    .fr-header__brand-top {
-      display: none;
-    }
-
-    .fr-header__service {
-      padding: 0;
-    }
-
-    .ribbon {
-      left: -79px;
-      top: 4px;
-
-      .badge {
-        font-size: 15px;
-        height: 35px;
-        line-height: 35px;
-      }
-    }
-  }
+.header {
+  animation: 1s ease-in-out 0s normal none 1 running fadeInDown;
+  position: sticky;
+  top: 0;
+  width: 100%;
 }
 
-.filters-sticky {
-  .filters {
-    animation: 1s ease-in-out 0s normal none 1 running fadeInDown;
-    background-color: white;
-    padding: 1em 0;
-    position: sticky;
-    top: 68px;
-    z-index: 2;
+.filters {
+  animation: 1s ease-in-out 0s normal none 1 running fadeInDown;
+  background-color: white;
+  padding: 1em 0;
+  position: sticky;
+  top: 68px;
+  z-index: 2;
+}
+
+// Sticky part
+.header-sticky {
+  .ribbon {
+    left: -79px;
+    top: 4px;
+
+    .badge {
+      font-size: 15px;
+      height: 35px;
+      line-height: 35px;
+    }
   }
 }

@@ -4,10 +4,8 @@ import {
   Checkbox,
   CheckboxGroup,
   Col,
-  Icon,
   Row,
   Select,
-  Tag,
 } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -27,25 +25,22 @@ export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [isSticky, setIsSticky] = useState(false);
+  const [getRoRChildren, setGetRoRChildren] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
   const [tags, setTags] = useState([]);
-  const [getRoRChildren, setGetRoRChildren] = useState(false);
   const { scrollTop } = useScroll();
 
   useEffect(() => {
     const filters = document.querySelector('.filters');
-    const heightFilters = filters.getBoundingClientRect().height;
-
-    if (scrollTop > heightFilters - 100) {
-      document.querySelector('html').classList.add('filters-sticky');
+    if (!isSticky && filters.offsetTop - scrollTop > 100) {
       setIsSticky(true);
-    } else {
-      document.querySelector('html').classList.remove('filters-sticky');
+    }
+    if (isSticky && scrollTop < 50) {
       setIsSticky(false);
     }
-  }, [scrollTop]);
+  }, [isSticky, scrollTop]);
 
   useEffect(() => {
     const getData = async () => {

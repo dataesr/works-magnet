@@ -5,7 +5,7 @@ import {
   Logo,
   Service,
 } from '@dataesr/react-dsfr';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import Beta from '../components/beta';
@@ -20,47 +20,77 @@ const {
 } = import.meta.env;
 
 export default function Header() {
+  const [isSticky, setIsSticky] = useState(false);
   const { scrollTop } = useScroll();
 
   useEffect(() => {
-    const banner = document.querySelector('.header');
-    const heightBanner = banner.getBoundingClientRect().height;
-
-    if (scrollTop > heightBanner - 50) {
-      document.querySelector('html').classList.add('header-sticky');
-    } else {
-      document.querySelector('html').classList.remove('header-sticky');
+    if (!isSticky && scrollTop > 68) {
+      setIsSticky(true);
     }
-  }, [scrollTop]);
+    if (isSticky && scrollTop < 20) {
+      setIsSticky(false);
+    }
+  }, [isSticky, scrollTop]);
 
   return (
-    <HeaderWrapper className="header">
-      <Beta />
-      <HeaderBody>
-        <Logo
-          asLink={<NavLink to="./" />}
-          splitCharacter={9}
-        >
-          {VITE_MINISTER_NAME}
-        </Logo>
-        <Service
-          title={(
-            <>
-              {VITE_APP_NAME}
-              {VITE_HEADER_TAG && (
-                <Badge
-                  color={(!VITE_HEADER_TAG_COLOR) ? 'info' : undefined}
-                  colorFamily={VITE_HEADER_TAG_COLOR}
-                  isSmall
-                  text={VITE_HEADER_TAG}
-                />
-              )}
-            </>
-          )}
-          description={VITE_DESCRIPTION}
-          asLink={<NavLink to="./" />}
-        />
-      </HeaderBody>
-    </HeaderWrapper>
+    // eslint-disable-next-line react/jsx-no-useless-fragment
+    <>
+      <HeaderWrapper className="header header-sticky">
+        {isSticky ? (
+          <>
+            <Beta />
+            <HeaderBody>
+              <Service
+                asLink={<NavLink to="./" />}
+                className="fr-p-0"
+                description={VITE_DESCRIPTION}
+                title={(
+                  <>
+                    {VITE_APP_NAME}
+                    {VITE_HEADER_TAG && (
+                      <Badge
+                        color={(!VITE_HEADER_TAG_COLOR) ? 'info' : undefined}
+                        colorFamily={VITE_HEADER_TAG_COLOR}
+                        isSmall
+                        text={VITE_HEADER_TAG}
+                      />
+                    )}
+                  </>
+                )}
+              />
+            </HeaderBody>
+          </>
+        ) : (
+          <>
+            <Beta />
+            <HeaderBody>
+              <Logo
+                asLink={<NavLink to="./" />}
+                splitCharacter={9}
+              >
+                {VITE_MINISTER_NAME}
+              </Logo>
+              <Service
+                asLink={<NavLink to="./" />}
+                description={VITE_DESCRIPTION}
+                title={(
+                  <>
+                    {VITE_APP_NAME}
+                    {VITE_HEADER_TAG && (
+                      <Badge
+                        color={(!VITE_HEADER_TAG_COLOR) ? 'info' : undefined}
+                        colorFamily={VITE_HEADER_TAG_COLOR}
+                        isSmall
+                        text={VITE_HEADER_TAG}
+                      />
+                    )}
+                  </>
+                )}
+              />
+            </HeaderBody>
+          </>
+        )}
+      </HeaderWrapper>
+    </>
   );
 }

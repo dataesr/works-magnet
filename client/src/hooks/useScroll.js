@@ -5,8 +5,7 @@ const useScroll = () => {
 
   useEffect(() => {
     const onScroll = (e) => {
-      const scrollTopDocument = e.target.documentElement.scrollTop;
-      setScrollTop(scrollTopDocument);
+      setScrollTop(e.target.documentElement.scrollTop);
     };
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
