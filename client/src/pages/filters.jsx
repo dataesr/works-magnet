@@ -45,22 +45,24 @@ export default function Filters({ sendQuery }) {
       if (searchParams.size === 0) {
         setSearchParams({
           affiliations: [],
-          deletedAffiliations: [],
           datasets: false,
+          deletedAffiliations: [],
           endYear: '2023',
           startYear: '2023',
+          view: 'openalex',
         });
         setTags([]);
       } else {
-        setCurrentSearchParams({
-          affiliations: searchParams.getAll('affiliations'),
-          deletedAffiliations: searchParams.getAll('deletedAffiliations'),
-          datasets: searchParams.get('datasets') === 'true',
-          endYear: searchParams.get('endYear', '2023'),
-          startYear: searchParams.get('startYear', '2023'),
-        });
         const affiliations = searchParams.getAll('affiliations');
         const deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
+        setCurrentSearchParams({
+          affiliations,
+          datasets: searchParams.get('datasets') === 'true',
+          deletedAffiliations,
+          endYear: searchParams.get('endYear', '2023'),
+          startYear: searchParams.get('startYear', '2023'),
+          view: searchParams.get('view', 'openalex'),
+        });
         const queries = affiliations.map((affiliation) => getRorData(affiliation, getRoRChildren));
         let rorNames = await Promise.all(queries);
         rorNames = rorNames.filter((aff) => !deletedAffiliations.includes(aff));
