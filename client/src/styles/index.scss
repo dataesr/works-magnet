@@ -11,19 +11,20 @@ body {
 }
 
 .header {
-  animation: 1s ease-in-out 0s normal none 1 running fadeInDown;
-  position: sticky;
+  // position: sticky;
   top: 0;
   width: 100%;
 }
 
 .filters {
-  animation: 1s ease-in-out 0s normal none 1 running fadeInDown;
-  background-color: white;
-  padding: 1em 0;
+  background-color: #E5E5E5;
   position: sticky;
-  top: 68px;
+  top: 0;
   z-index: 2;
+
+  animation: fadeInAnimation ease 1s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
 }
 
 // Sticky part
@@ -37,5 +38,15 @@ body {
       height: 35px;
       line-height: 35px;
     }
+  }
+}
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
   }
 }

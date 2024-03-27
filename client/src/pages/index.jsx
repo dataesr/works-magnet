@@ -154,16 +154,10 @@ export default function Home() {
 
   return (
     <>
-      <Container as="section" className="filters">
-        <Row>
-          <Col>
-            <Filters
-              sendQuery={sendQuery}
-            />
-          </Col>
-        </Row>
+      <Container fluid as="section" className="filters">
+        <Filters sendQuery={sendQuery} />
       </Container>
-      <Container className="fr-mx-5w fr-pt-2w" as="section">
+      <Container fluid as="section">
         {(isFetching || (isFetched && (allAffiliations?.length ?? 0) === 0)) && (
           <PageSpinner />
         )}

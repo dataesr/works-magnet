@@ -33,11 +33,9 @@ export default function Filters({ sendQuery }) {
   const { scrollTop } = useScroll();
 
   useEffect(() => {
-    const filters = document.querySelector('.filters');
-    if (!isSticky && filters.offsetTop - scrollTop > 100) {
+    if (!isSticky && scrollTop > 50) {
       setIsSticky(true);
-    }
-    if (isSticky && scrollTop < 50) {
+    } else if (isSticky && scrollTop < 50) {
       setIsSticky(false);
     }
   }, [isSticky, scrollTop]);
@@ -140,7 +138,7 @@ export default function Filters({ sendQuery }) {
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {isSticky ? (
-        <Row alignItems="top">
+        <Row alignItems="top" className="fr-p-3w">
           <Col n="2">
             Filters :
           </Col>
@@ -167,7 +165,7 @@ export default function Filters({ sendQuery }) {
           </Col>
         </Row>
       ) : (
-        <Row gutters alignItems="top" className="fr-p-5w">
+        <Row gutters alignItems="top" className="fr-p-3w">
           <Col n="2">
             <Select
               label="Start year"
