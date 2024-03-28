@@ -1,8 +1,7 @@
 import {
-  Col,
-  Row,
+  Row, Col,
   TextInput,
-} from '@dataesr/react-dsfr';
+} from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
@@ -52,12 +51,12 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
   return (
     <>
       <Row gutters>
-        <Col n="9">
+        <Col xs="9">
           {renderButtons(selectedDatasets, tagDatasets, 'dataset')}
           {renderButtonDataset(datasetLinkedArticle, tagDatasets, 'without affiliations but linked to an article from my institution', 'ri-link')}
           {renderButtonDataset(datasetPerson, tagDatasets, 'without affiliations but at least 3 authors detected from my institution', 'ri-team-line')}
         </Col>
-        <Col n="3">
+        <Col xs="3">
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
@@ -67,7 +66,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
         </Col>
       </Row>
       <Row gutters>
-        <Col n="12">
+        <Col xs="12">
           <TextInput
             label="Search in any field"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
@@ -76,7 +75,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
         </Col>
       </Row>
       <Row gutters>
-        <Col n="12">
+        <Col xs="12">
           <DatasetsView
             publishers={publishers}
             selectedWorks={selectedDatasets}

@@ -1,4 +1,7 @@
-import { Col, Row, TextInput } from '@dataesr/react-dsfr';
+import {
+  Row, Col,
+  TextInput,
+} from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
@@ -32,10 +35,10 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
   return (
     <>
       <Row>
-        <Col n="9">
+        <Col xs="9">
           {renderButtons(selectedAffiliations, tagAffiliations, 'affiliation')}
         </Col>
-        <Col n="3">
+        <Col xs="3">
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
@@ -45,7 +48,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
         </Col>
       </Row>
       <Row gutters>
-        <Col n="12" offset="0">
+        <Col xs="12" offset="0">
           <TextInput
             label="Search in affiliations name"
             onChange={(e) => setFilteredAffiliationName(e.target.value)}
@@ -54,7 +57,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
         </Col>
       </Row>
       <Row gutters>
-        <Col n="12">
+        <Col xs="12">
           <AffiliationsView
             allAffiliations={filteredAffiliations}
             selectedAffiliations={selectedAffiliations}

@@ -1,4 +1,6 @@
-import { Col, Row } from '@dataesr/react-dsfr';
+import {
+  Row, Col,
+} from '@dataesr/dsfr-plus';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import PropTypes from 'prop-types';
@@ -90,7 +92,7 @@ export default function DatasetsYearlyDistribution({ allDatasets, field, subfiel
 
   return (
     <Row gutters>
-      <Col n="12">
+      <Col xs="12">
         <HighchartsReact
           highcharts={Highcharts}
           options={options}

@@ -16,18 +16,27 @@
     "object-curly-newline": "off",
     "react/jsx-props-no-spreading": "off",
     "react-hooks/exhaustive-deps": "warn",
-    "max-len": ["warn", 200],
+    "max-len": [
+      "warn",
+      200
+    ],
     "react/prop-types": "warn",
     "import/prefer-default-export": 0,
+    "import/no-unresolved": "off",
     "no-underscore-dangle": 0,
     "no-console": "warn",
     "indent": [
       "warn",
       2,
       {
-        "ignoredNodes": ["TemplateLiteral"]
+        "ignoredNodes": [
+          "TemplateLiteral"
+        ]
       }
     ]
   },
-  "extends": ["airbnb", "airbnb/hooks"]
+  "extends": [
+    "airbnb",
+    "airbnb/hooks"
+  ]
 }
