@@ -3,7 +3,7 @@ import './index.scss';
 
 export default function Beta() {
   return (
-    <div className="wrapper">
+    <div className="ribbon">
       <div className="badge">
         ALPHA
       </div>

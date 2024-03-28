@@ -1,7 +1,7 @@
 import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics, removeDuplicates } from './utils';
 
 const datasetsType = ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
-            'software', 'computationalnotebook', 'film', 'interactiveresource', 'image'];
+  'software', 'computationalnotebook', 'film', 'interactiveresource', 'image'];
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
@@ -76,7 +76,7 @@ const getFosmQuery = (options, pit, searchAfter) => {
 const getFosmAffiliation = (affiliation) => {
   const source = 'FOSM';
   let ror = null;
-  if (affiliation.affiliationIdentifierScheme?.toLowerCase() === 'ror') {
+  if (affiliation.affiliationIdentifierScheme?.toLowerCase() === 'ror' && affiliation?.affiliationIdentifier) {
     ror = affiliation.affiliationIdentifier.replace('https://ror.org/', '').replace('ror.org/', '');
   }
   let rawAffiliation = affiliation?.name ?? '';

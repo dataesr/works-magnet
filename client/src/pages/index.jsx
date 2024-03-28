@@ -20,7 +20,6 @@ import ActionsOpenalexFeedback from './actions/actionsOpenalexFeedback';
 import ActionsPublications from './actions/actionsPublications';
 import AffiliationsTab from './affiliationsTab';
 import { PageSpinner } from '../components/spinner';
-import Beta from '../components/beta';
 import { status } from '../config';
 import DatasetsYearlyDistribution from './datasetsYearlyDistribution';
 import DatasetsTab from './datasetsTab';
@@ -155,17 +154,10 @@ export default function Home() {
 
   return (
     <>
-      <Beta />
-      <Container as="section" fluid>
-        <Row className="fr-px-5w">
-          <Col>
-            <Filters
-              sendQuery={sendQuery}
-            />
-          </Col>
-        </Row>
+      <Container fluid as="section" className="filters">
+        <Filters sendQuery={sendQuery} />
       </Container>
-      <Container className="fr-mx-5w fr-pt-2w" as="section" fluid>
+      <Container fluid as="section">
         {(isFetching || (isFetched && (allAffiliations?.length ?? 0) === 0)) && (
           <PageSpinner />
         )}

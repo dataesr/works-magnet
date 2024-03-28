@@ -1,6 +1,52 @@
-.text-right {
-    text-align: right;
+body {
+  height: auto;
 }
+
 .fr-tags-group>li {
   line-height: 0rem;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.header {
+  // position: sticky;
+  top: 0;
+  width: 100%;
+}
+
+.filters {
+  background-color: #E5E5E5;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  animation: fadeInAnimation ease 1s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+// Sticky part
+.header-sticky {
+  .ribbon {
+    left: -79px;
+    top: 4px;
+
+    .badge {
+      font-size: 15px;
+      height: 35px;
+      line-height: 35px;
+    }
+  }
+}
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }

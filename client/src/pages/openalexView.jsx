@@ -55,7 +55,6 @@ export default function OpenalexView({
       rows={100}
       rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
-      scrollHeight="600px"
       size="small"
       sortField="worksNumber"
       sortOrder={-1}
