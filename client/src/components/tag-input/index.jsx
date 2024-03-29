@@ -1,10 +1,18 @@
-import { Button, Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  Row, Col,
+  // Icon,
+  Tag, TagGroup,
+  TextInput,
+} from '@dataesr/dsfr-plus';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
 const SEE_MORE_AFTER = 5;
+
+// TODO: Add icons
 
 export default function TagInput({
   deletedTags,
@@ -104,19 +112,21 @@ export default function TagInput({
         structuredTags.slice(0, seeMore ? structuredTags.length : SEE_MORE_AFTER).map((currentTags, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <Row key={`row-tags-${index}`} style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
-            <Col className="">
+            <Col>
               <TagGroup>
                 {currentTags.map((tag) => (
                   <Tag
                     className="fr-mr-1w"
-                    colorFamily={getTagColor(tag)}
+                    color={getTagColor(tag)}
                     key={tag.label}
                     onClick={() => handleDeleteClick(tag)}
                     size="sm"
                     title={`Tag ${tag.label}${tag.disable ? ' (not searched)' : ''}`}
                   >
                     {tag.label}
-                    <Icon iconPosition="right" name="ri-close-line" />
+                    {' '}
+                    x
+                    {/* <Icon iconPosition="right" name="ri-close-line" /> */}
                   </Tag>
                 ))}
                 {(index === 0 && hasRoR) ? (

@@ -1,8 +1,8 @@
 // https://www.w3schools.com/css/css_dropdowns.asp
 import PropTypes from 'prop-types';
+import { Button } from '@dataesr/dsfr-plus';
 import useToast from '../../hooks/useToast';
 
-import Button from '../button';
 import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/files';
 import { capitalize } from '../../utils/works';
 

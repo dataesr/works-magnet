@@ -1,10 +1,12 @@
-import { Text, Row, Icon, Container } from '@dataesr/react-dsfr';
+import { Text, Row, Container } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect } from 'react';
 
 import usePausableTimer from '../../hooks/usePausableTimer';
 
 import './index.scss';
+
+// TODO: Add icons
 
 function Toast({
   autoDismissAfter,
@@ -45,7 +47,7 @@ function Toast({
       onMouseLeave={resume}
     >
       <div className="toast-colored-box">
-        <Icon color="#ffffff" name={icon[toastType]} />
+        {/* <Icon color="#ffffff" name={icon[toastType]} /> */}
         {
           (autoDismissAfter !== 0)
             ? (<div id={`progress-${id}`} className="toast-progress-bar" />)
@@ -57,7 +59,8 @@ function Toast({
         onClick={() => remove(id)}
         className="toast-btn-close"
       >
-        <Icon size="lg" name="ri-close-line" />
+        {/* <Icon size="lg" name="ri-close-line" /> */}
+        x
       </button>
       <Container className="toast-content">
         <Row>
