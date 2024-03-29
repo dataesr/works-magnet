@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useSearchParams } from 'react-router-dom';
 import {
   Badge,
-  BadgeGroup,
   Button,
   Checkbox,
   Row, Col,
   SegmentedControl, SegmentedElement,
   Select, SelectOption,
-  TagGroup, Tag,
+  TagGroup, Tag, DismissibleTag,
   Title,
 } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
 import TagInput from '../components/tag-input';
 import useScroll from '../hooks/useScroll';
 import { getRorData, isRor } from '../utils/ror';
@@ -24,6 +24,7 @@ const {
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
 const START_YEAR = 2010;
+// Generate an array of objects with all years from START_YEAR
 const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()].map((year) => (year + START_YEAR).toString()).map((year) => ({ label: year, value: year }));
 
 const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
@@ -78,8 +79,8 @@ export default function Filters({ sendQuery }) {
         setMessageType('');
         setMessage('');
         affiliations.forEach((affiliation) => {
-          if (isRor(affiliation)) {
-            const label = affiliation.replace('https://ror.org/', '').replace('ror.org/', '');
+          const label = affiliation.replace('https://ror.org/', '').replace('ror.org/', '');
+          if (isRor(label)) {
             allTags.push({ disable: label.length < VITE_APP_TAG_LIMIT, label, source: 'user', type: 'rorId' });
           } else {
             allTags.push({ disable: affiliation.length < VITE_APP_TAG_LIMIT, label: affiliation, source: 'user', type: 'affiliationString' });
@@ -206,6 +207,7 @@ export default function Filters({ sendQuery }) {
           <Col xs="8">
             <Row gutters alignItems="bottom">
               <Col>
+                {/* TODO: Delete commented code */}
                 {/* <Select
                   label="Start year"
                   onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
@@ -230,6 +232,7 @@ export default function Filters({ sendQuery }) {
                 </Select>
               </Col>
               <Col>
+                {/* TODO: Delete commented code */}
                 {/* <Select
                   label="End year"
                   onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
@@ -238,8 +241,8 @@ export default function Filters({ sendQuery }) {
                 /> */}
                 <Select
                   aria-label="Select an end year for search"
-                  label="End year"
                   buttonLabel={currentSearchParams.endYear}
+                  label="End year"
                   onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
                 >
                   {years.map((year) => (

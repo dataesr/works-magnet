@@ -4,7 +4,7 @@ import {
   Button,
   Row, Col,
   // Icon,
-  Tag, TagGroup,
+  TagGroup, DismissibleTag,
   TextInput,
 } from '@dataesr/dsfr-plus';
 
@@ -111,11 +111,11 @@ export default function TagInput({
       {
         structuredTags.slice(0, seeMore ? structuredTags.length : SEE_MORE_AFTER).map((currentTags, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <Row key={`row-tags-${index}`} style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
+          <Row key={`row-tags-${index}`} style={{ maxHeight: '200px', overflowX: 'hidden', overflowY: 'scroll' }}>
             <Col>
               <TagGroup>
                 {currentTags.map((tag) => (
-                  <Tag
+                  <DismissibleTag
                     className="fr-mr-1w"
                     color={getTagColor(tag)}
                     key={tag.label}
@@ -124,16 +124,13 @@ export default function TagInput({
                     title={`Tag ${tag.label}${tag.disable ? ' (not searched)' : ''}`}
                   >
                     {tag.label}
-                    {' '}
-                    x
-                    {/* <Icon iconPosition="right" name="ri-close-line" /> */}
-                  </Tag>
+                  </DismissibleTag>
                 ))}
                 {(index === 0 && hasRoR) ? (
                   <Button
                     className="fr-mr-1w"
                     hasBorder={false}
-                    icon={getRoRChildren ? 'ri-arrow-go-back-line' : 'ri-node-tree'}
+                    icon={getRoRChildren ? 'arrow-go-back-line' : 'node-tree'}
                     onClick={() => setGetRoRChildren((prev) => !prev)}
                     size="sm"
                   >
