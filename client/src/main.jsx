@@ -11,14 +11,14 @@ import { ToastContextProvider } from './hooks/useToast';
 import './styles/index.scss';
 import 'react-tooltip/dist/react-tooltip.css';
 
-const { VITE_APP_MATOMO_BASE_URL, VITE_APP_MATOMO_SITE_ID } = import.meta.env;
+const { VITE_APP_MATOMO_BASE_URL, VITE_APP_MATOMO_SITE_ID = 0 } = import.meta.env;
 
 const queryClient = new QueryClient();
 
 const matomo = createInstance({
   urlBase: VITE_APP_MATOMO_BASE_URL,
   siteId: VITE_APP_MATOMO_SITE_ID,
-  disabled: VITE_APP_MATOMO_SITE_ID !== 0,
+  disabled: VITE_APP_MATOMO_SITE_ID === 0,
   configurations: {
     disableCookies: true,
   },
