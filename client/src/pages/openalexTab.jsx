@@ -1,11 +1,9 @@
-import {
-  Col,
-  Row,
-  TextInput,
-} from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-
+import PropTypes from 'prop-types';
+import {
+  Container, Row, Col,
+  TextInput,
+} from '@dataesr/dsfr-plus';
 import OpenalexView from './openalexView';
 import { status } from '../config';
 import { normalizeName } from '../utils/works';
@@ -30,8 +28,8 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
   }, [affiliations, filteredAffiliationName, filteredStatus]);
 
   return (
-    <>
-      <Row gutters>
+    <Container fluid>
+      <Row>
         <Col n="12" offset="0">
           <TextInput
             label="Search in affiliations name"
@@ -48,7 +46,7 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
           />
         </Col>
       </Row>
-    </>
+    </Container>
   );
 }
 

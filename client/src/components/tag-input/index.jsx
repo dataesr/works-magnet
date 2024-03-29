@@ -1,10 +1,18 @@
-import { Button, Col, Icon, Row, Tag, TagGroup, TextInput } from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  Row, Col,
+  // Icon,
+  Tag, TagGroup,
+  TextInput,
+} from '@dataesr/dsfr-plus';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
 const SEE_MORE_AFTER = 5;
+
+// TODO: Add icons
 
 export default function TagInput({
   deletedTags,
@@ -85,81 +93,81 @@ export default function TagInput({
 
   return (
     <div>
-      <div>
-        <Row alignItems="bottom">
-          <Col className="fr-pb-2w">
-            <TextInput
-              hint={hint}
-              label={label}
-              message={message}
-              messageType={messageType}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              type="text"
-              value={input}
-            />
-          </Col>
-        </Row>
-        {
-          structuredTags.slice(0, seeMore ? structuredTags.length : SEE_MORE_AFTER).map((currentTags, index) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <Row key={`row-tags-${index}`} style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
-              <Col className="">
-                <TagGroup>
-                  {currentTags.map((tag) => (
-                    <Tag
-                      className="fr-mr-1w"
-                      colorFamily={getTagColor(tag)}
-                      key={tag.label}
-                      onClick={() => handleDeleteClick(tag)}
-                      size="sm"
-                      title={`Tag ${tag.label}${tag.disable ? ' (not searched)' : ''}`}
-                    >
-                      {tag.label}
-                      <Icon iconPosition="right" name="ri-close-line" />
-                    </Tag>
-                  ))}
-                  {(index === 0 && hasRoR) ? (
-                    <Button
-                      className="fr-mr-1w"
-                      hasBorder={false}
-                      icon={getRoRChildren ? 'ri-arrow-go-back-line' : 'ri-node-tree'}
-                      onClick={() => setGetRoRChildren((prev) => !prev)}
-                      size="sm"
-                    >
-                      {
-                        getRoRChildren
-                          ? 'Remove RoR children'
-                          : 'Get children from RoR'
-                      }
-                    </Button>
-                  ) : null }
-                </TagGroup>
-              </Col>
-            </Row>
-          ))
-        }
-        {(structuredTags.length > SEE_MORE_AFTER) && (
-          <Button
-            className="fr-mr-1w"
-            onClick={() => setSeeMore((prev) => !prev)}
-            size="sm"
-          >
-            {
-              seeMore
-                ? 'Reduce the list'
-                : `Display ${structuredTags.length - SEE_MORE_AFTER} more rows`
-            }
-          </Button>
-        )}
+      <Row alignItems="bottom">
+        <Col className="fr-pb-2w">
+          <TextInput
+            hint={hint}
+            label={label}
+            message={message}
+            messageType={messageType}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            type="text"
+            value={input}
+          />
+        </Col>
+      </Row>
+      {
+        structuredTags.slice(0, seeMore ? structuredTags.length : SEE_MORE_AFTER).map((currentTags, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <Row key={`row-tags-${index}`} style={{ 'max-height': '200px', 'overflow-x': 'hidden', 'overflow-y': 'scroll' }}>
+            <Col>
+              <TagGroup>
+                {currentTags.map((tag) => (
+                  <Tag
+                    className="fr-mr-1w"
+                    color={getTagColor(tag)}
+                    key={tag.label}
+                    onClick={() => handleDeleteClick(tag)}
+                    size="sm"
+                    title={`Tag ${tag.label}${tag.disable ? ' (not searched)' : ''}`}
+                  >
+                    {tag.label}
+                    {' '}
+                    x
+                    {/* <Icon iconPosition="right" name="ri-close-line" /> */}
+                  </Tag>
+                ))}
+                {(index === 0 && hasRoR) ? (
+                  <Button
+                    className="fr-mr-1w"
+                    hasBorder={false}
+                    icon={getRoRChildren ? 'ri-arrow-go-back-line' : 'ri-node-tree'}
+                    onClick={() => setGetRoRChildren((prev) => !prev)}
+                    size="sm"
+                  >
+                    {
+                      getRoRChildren
+                        ? 'Remove RoR children'
+                        : 'Get children from RoR'
+                    }
+                  </Button>
+                ) : null}
+              </TagGroup>
+            </Col>
+          </Row>
+        ))
+      }
+      {(structuredTags.length > SEE_MORE_AFTER) && (
         <Button
-          onClick={() => onTagsChange([], excludedValues)}
+          className="fr-mr-1w"
+          onClick={() => setSeeMore((prev) => !prev)}
           size="sm"
         >
-          Clear all
+          {
+            seeMore
+              ? 'Reduce the list'
+              : `Display ${structuredTags.length - SEE_MORE_AFTER} more rows`
+          }
         </Button>
-      </div>
+      )}
+      <Button
+        onClick={() => onTagsChange([], excludedValues)}
+        size="sm"
+      >
+        Clear all affiliations
+      </Button>
     </div>
   );
 }
@@ -186,6 +194,6 @@ TagInput.defaultProps = {
   messageType: '',
   onInputHandler: () => { },
   placeholder: '',
-  setGetRoRChildren: () => {},
+  setGetRoRChildren: () => { },
   tags: [],
 };

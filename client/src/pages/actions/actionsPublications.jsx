@@ -1,18 +1,12 @@
-import { Col, Row } from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
-
+import PropTypes from 'prop-types';
 import ButtonDropdown from '../../components/button-dropdown';
 
 export default function ActionsPublications({ allPublications }) {
   const [searchParams] = useSearchParams();
 
   return (
-    <Row className="fr-mb-1w">
-      <Col className="text-right">
-        <ButtonDropdown data={allPublications} label="publications" searchParams={searchParams} />
-      </Col>
-    </Row>
+    <ButtonDropdown data={allPublications} label="publications" searchParams={searchParams} />
   );
 }
 

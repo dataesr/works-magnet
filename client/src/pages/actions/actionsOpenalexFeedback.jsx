@@ -1,7 +1,10 @@
-import { Button, Col, Icon, Modal, ModalClose, ModalContent, ModalFooter, ModalTitle, Row, TextInput } from '@dataesr/react-dsfr';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-
+import {
+  Button,
+  Modal, ModalContent, ModalFooter, ModalTitle,
+  TextInput,
+} from '@dataesr/dsfr-plus';
 import useToast from '../../hooks/useToast';
 import { sendGitHubIssue } from '../../utils/github';
 
@@ -9,7 +12,6 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
-
   const { toast } = useToast();
 
   const openModal = () => {
@@ -41,49 +43,39 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   }, [userEmail]);
 
   return (
-    <Row className="fr-mb-1w">
-      <Col className="text-right">
-        <>
-          <Modal isOpen={isModalOpen} hide={openModal}>
-            <ModalClose title="Close the modal">
-              Close
-              <Icon iconPosition="right" name="ri-close-line" />
-            </ModalClose>
-            <ModalTitle>
-              Improve OpenAlex data
-            </ModalTitle>
-            <ModalContent>
-              {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliations strings.`}
-              <TextInput
-                label="Please indicate your email"
-                type="email"
-                required
-                withAutoValidation
-                onChange={(e) => setUserEmail(e.target.value)}
-              />
-            </ModalContent>
-            <ModalFooter>
-              <div>
-                <Button
-                  disabled={!allOpenalexCorrections.length > 0 || !validEmail}
-                  onClick={feedback}
-                  title="Send feedback to OpenAlex"
-                >
-                  Send feedback to OpenAlex
-                </Button>
-              </div>
-            </ModalFooter>
-          </Modal>
+    <>
+      <Button
+        disabled={!allOpenalexCorrections.length > 0}
+        onClick={openModal}
+        size="sm"
+      >
+        Send feedback to OpenAlex
+      </Button>
+      <Modal isOpen={isModalOpen} hide={openModal}>
+        <ModalTitle>
+          Improve OpenAlex data
+        </ModalTitle>
+        <ModalContent>
+          {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliations strings.`}
+          <TextInput
+            label="Please indicate your email"
+            onChange={(e) => setUserEmail(e.target.value)}
+            required
+            type="email"
+            withAutoValidation
+          />
+        </ModalContent>
+        <ModalFooter>
           <Button
-            disabled={!allOpenalexCorrections.length > 0}
-            size="sm"
-            onClick={openModal}
+            disabled={!allOpenalexCorrections.length > 0 || !validEmail}
+            onClick={feedback}
+            title="Send feedback to OpenAlex"
           >
             Send feedback to OpenAlex
           </Button>
-        </>
-      </Col>
-    </Row>
+        </ModalFooter>
+      </Modal>
+    </>
   );
 }
 

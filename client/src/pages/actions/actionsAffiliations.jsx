@@ -1,13 +1,16 @@
-import { Col, File, Row } from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  Row, Col,
+} from '@dataesr/dsfr-plus';
 import { Tooltip } from 'react-tooltip';
 import useToast from '../../hooks/useToast';
 
-import Button from '../../components/button';
 import { status } from '../../config';
 import { export2json, importJson } from '../../utils/files';
+import File from '../../components/File';
 
 export default function ActionsAffiliations({
   allAffiliations,
@@ -36,6 +39,8 @@ export default function ActionsAffiliations({
       toastType: 'success',
     });
   };
+
+  // TODO: Add icons
   return (
     <>
       <Row className="fr-mb-1w">
@@ -43,7 +48,7 @@ export default function ActionsAffiliations({
           <Button
             data-tooltip-id="save-affiliations-button"
             disabled={!decidedAffiliations.length}
-            icon="ri-save-line"
+            // icon="ri-save-line"
             onClick={() => onExport()}
             size="sm"
           >
@@ -54,9 +59,10 @@ export default function ActionsAffiliations({
           </Tooltip>
           <Button
             data-tooltip-id="restore-affiliations-button"
-            icon="ri-file-upload-line"
+            // icon="file-upload-line"
             onClick={() => setDisplayFileUpload(true)}
             secondary
+            variant="secondary"
             size="sm"
           >
             Restore affiliations
