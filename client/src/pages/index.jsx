@@ -1,9 +1,7 @@
-/* eslint-disable max-len */
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Container } from '@dataesr/dsfr-plus';
+import { Container, Spinner } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
-import { PageSpinner } from '../components/spinner';
 import { status } from '../config';
 import Filters from './filters';
 import { getData } from '../utils/works';
@@ -95,7 +93,7 @@ export default function Home() {
       </Container>
       <Container fluid as="section">
         {(isFetching || (isFetched && (allAffiliations?.length ?? 0) === 0)) && (
-          <PageSpinner />
+          <Spinner size={48} />
         )}
         {!isFetching
           && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0)

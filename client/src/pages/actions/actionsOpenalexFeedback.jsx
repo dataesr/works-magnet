@@ -31,13 +31,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
 
   useEffect(() => {
     const emailRegex = new RegExp(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
-    const testEmail = (email) => {
-      if (emailRegex.test(email)) {
-        setValidEmail(email);
-      } else {
-        setValidEmail(null);
-      }
-    };
+    const testEmail = (email) => setValidEmail(emailRegex.test(email) ? email : null);
     const timeOutId = setTimeout(() => testEmail(userEmail), 500);
     return () => clearTimeout(timeOutId);
   }, [userEmail]);
