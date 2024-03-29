@@ -318,7 +318,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
   if (options.affiliationStrings.length) {
-    url += `,raw_affiliation_string.search:(${options.affiliationStrings.map((aff) => `"${aff}"`).join(' OR ')})`;
+    url += `,raw_affiliation_string.search:(${options.affiliationStrings.map((aff) => `"${encodeURIComponent(aff)}"`).join(' OR ')})`;
   }
   if (options.rors.length) {
     url += `,authorships.institutions.ror:${options.rors.join('|')}`;
