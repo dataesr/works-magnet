@@ -1,10 +1,9 @@
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Container, Row, Col,
   TextInput,
 } from '@dataesr/dsfr-plus';
-import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
-
 import OpenalexView from './openalexView';
 import { status } from '../config';
 import { normalizeName } from '../utils/works';

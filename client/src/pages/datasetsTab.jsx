@@ -1,9 +1,9 @@
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Row, Col,
   TextInput,
 } from '@dataesr/dsfr-plus';
-import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
 
 import Gauge from '../components/gauge';
 import { datasources, status } from '../config';

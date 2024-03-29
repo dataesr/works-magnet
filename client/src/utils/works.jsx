@@ -1,4 +1,4 @@
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@dataesr/dsfr-plus';
 
 import { status } from '../config';
 
@@ -20,27 +20,27 @@ const getData = async (options) => {
 const getIdLink = (type, id) => {
   let prefix = null;
   switch (type) {
-  case 'crossref':
-  case 'datacite':
-  case 'doi':
-    prefix = 'https://doi.org/';
-    break;
-  case 'hal_id':
-    prefix = 'https://hal.science/';
-    break;
-  case 'openalex':
-    prefix = 'https://openalex.org/';
-    break;
-  case 'pmcid':
-    prefix = 'https://www.ncbi.nlm.nih.gov/pmc/articles/';
-    break;
-  case 'pmid':
-    prefix = 'https://pubmed.ncbi.nlm.nih.gov/';
-    break;
-  case 'orcid':
-    prefix = 'https://orcid.org/';
-    break;
-  default:
+    case 'crossref':
+    case 'datacite':
+    case 'doi':
+      prefix = 'https://doi.org/';
+      break;
+    case 'hal_id':
+      prefix = 'https://hal.science/';
+      break;
+    case 'openalex':
+      prefix = 'https://openalex.org/';
+      break;
+    case 'pmcid':
+      prefix = 'https://www.ncbi.nlm.nih.gov/pmc/articles/';
+      break;
+    case 'pmid':
+      prefix = 'https://pubmed.ncbi.nlm.nih.gov/';
+      break;
+    case 'orcid':
+      prefix = 'https://orcid.org/';
+      break;
+    default:
   }
   return (prefix !== null) ? `${prefix}${id}` : false;
 };

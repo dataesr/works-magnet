@@ -1,13 +1,14 @@
-import { Col, File, Row } from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Row, Col } from '@dataesr/react-dsfr';
 import { Tooltip } from 'react-tooltip';
 import useToast from '../../hooks/useToast';
 
 import Button from '../../components/button';
 import { status } from '../../config';
 import { export2json, importJson } from '../../utils/files';
+import File from '../../components/File';
 
 export default function ActionsAffiliations({
   allAffiliations,

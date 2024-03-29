@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
-
+import PropTypes from 'prop-types';
 import ButtonDropdown from '../../components/button-dropdown';
 
 export default function ActionsOpenalex({

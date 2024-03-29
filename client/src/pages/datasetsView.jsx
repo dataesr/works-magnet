@@ -1,9 +1,9 @@
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { FilterMatchMode } from 'primereact/api';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { MultiSelect } from 'primereact/multiselect';
-import PropTypes from 'prop-types';
-import { useState } from 'react';
 
 import {
   affiliationsTemplate,

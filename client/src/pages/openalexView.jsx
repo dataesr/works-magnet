@@ -1,8 +1,8 @@
+import PropTypes from 'prop-types';
+
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { InputTextarea } from 'primereact/inputtextarea';
-import PropTypes from 'prop-types';
-
 import useToast from '../hooks/useToast';
 import { isRor } from '../utils/ror';
 import { correctionTemplate, hasCorrectionTemplate, nameTemplate, rorTemplate, worksExampleTemplate } from '../utils/templates';

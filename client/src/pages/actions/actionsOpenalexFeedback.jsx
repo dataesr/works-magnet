@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import {
   Button,
-  Row, Col,
   Modal, ModalContent, ModalFooter, ModalTitle,
   TextInput,
 } from '@dataesr/dsfr-plus';
@@ -44,41 +43,39 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   }, [userEmail]);
 
   return (
-    <Row className="fr-mb-1w">
-      <Col className="text-right">
-        <Modal isOpen={isModalOpen} hide={openModal}>
-          <ModalTitle>
-            Improve OpenAlex data
-          </ModalTitle>
-          <ModalContent>
-            {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliations strings.`}
-            <TextInput
-              label="Please indicate your email"
-              onChange={(e) => setUserEmail(e.target.value)}
-              required
-              type="email"
-              withAutoValidation
-            />
-          </ModalContent>
-          <ModalFooter>
-            <Button
-              disabled={!allOpenalexCorrections.length > 0 || !validEmail}
-              onClick={feedback}
-              title="Send feedback to OpenAlex"
-            >
-              Send feedback to OpenAlex
-            </Button>
-          </ModalFooter>
-        </Modal>
-        <Button
-          disabled={!allOpenalexCorrections.length > 0}
-          onClick={openModal}
-          size="sm"
-        >
-          Send feedback to OpenAlex
-        </Button>
-      </Col>
-    </Row>
+    <>
+      <Button
+        disabled={!allOpenalexCorrections.length > 0}
+        onClick={openModal}
+        size="sm"
+      >
+        Send feedback to OpenAlex
+      </Button>
+      <Modal isOpen={isModalOpen} hide={openModal}>
+        <ModalTitle>
+          Improve OpenAlex data
+        </ModalTitle>
+        <ModalContent>
+          {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliations strings.`}
+          <TextInput
+            label="Please indicate your email"
+            onChange={(e) => setUserEmail(e.target.value)}
+            required
+            type="email"
+            withAutoValidation
+          />
+        </ModalContent>
+        <ModalFooter>
+          <Button
+            disabled={!allOpenalexCorrections.length > 0 || !validEmail}
+            onClick={feedback}
+            title="Send feedback to OpenAlex"
+          >
+            Send feedback to OpenAlex
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </>
   );
 }
 

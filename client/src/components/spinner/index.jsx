@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useId } from 'react';
 
-import { Row } from '@dataesr/react-dsfr';
+import { Row } from '@dataesr/dsfr-plus';
 
 import './index.scss';
 

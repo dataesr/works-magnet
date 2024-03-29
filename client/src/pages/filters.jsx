@@ -1,19 +1,16 @@
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { useSearchParams } from 'react-router-dom';
 import {
-  Title,
   Badge,
   Button,
   Checkbox,
-  Col,
-  Row,
+  Row, Col,
+  SegmentedControl, SegmentedElement,
   Select, SelectOption,
   TagGroup, Tag,
-  SegmentedControl, SegmentedElement,
+  Title,
 } from '@dataesr/dsfr-plus';
-
-import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-
 import TagInput from '../components/tag-input';
 import useScroll from '../hooks/useScroll';
 import { getRorData, isRor } from '../utils/ror';
@@ -170,11 +167,12 @@ export default function Filters({ sendQuery }) {
               <Tag color="blue-ecume">
                 {`${currentSearchParams.startYear} - ${currentSearchParams.endYear}`}
               </Tag>
-              {tags.map((tag) => (
+              {tags.slice(0, 5).map((tag) => (
                 <Tag color="blue-ecume">
                   {tag.label}
                 </Tag>
               ))}
+              {(tags.length > 5) && <span>...</span>}
             </TagGroup>
           </Col>
           <Col xs="3">

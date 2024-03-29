@@ -1,9 +1,9 @@
+import React, { useEffect } from 'react';
+import { HashRouter, useLocation } from 'react-router-dom';
 import { createInstance, MatomoProvider, useMatomo } from '@m4tt72/matomo-tracker-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { HashRouter, useLocation } from 'react-router-dom';
 
 import Router from './router';
 import { ToastContextProvider } from './hooks/useToast';

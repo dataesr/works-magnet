@@ -1,6 +1,6 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
-import { Badge } from '@dataesr/react-dsfr';
+import { Badge } from '@dataesr/dsfr-plus';
 import { Tooltip } from 'react-tooltip';
 import { MultiSelect } from 'primereact/multiselect';
 
@@ -141,10 +141,10 @@ const getAffiliationsTooltipField = (rowData) => {
 
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
-const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
+const statusTemplate = (rowData) => <Badge variant={status[rowData?.status ?? rowData]?.badgeType}>{status[rowData?.status ?? rowData]?.label}</Badge>;
 
 const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection
-  ? <Badge text={correction.corrected.label} type={correction.corrected.badgeType} />
+  ? <Badge variant={correction.corrected.badgeType}>{correction.corrected.label}</Badge>
   : '');
 
 export {

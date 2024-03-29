@@ -1,11 +1,10 @@
+import PropTypes from 'prop-types';
+import { useSearchParams } from 'react-router-dom';
 import {
   Row, Col,
 } from '@dataesr/dsfr-plus';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { useSearchParams } from 'react-router-dom';
 
 import { range } from '../utils/works';
 
