@@ -8,14 +8,17 @@ const {
 
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const getData = async (options) => {
-  const urlParams = new URLSearchParams(options).toString();
-  return fetch(`${VITE_API}/works?${urlParams}`)
-    .then((response) => {
-      if (response.ok) return response.json();
-      return 'Oops... FOSM API request did not work';
-    });
-};
+const getData = async (options) => fetch(`${VITE_API}/works`, {
+  body: JSON.stringify(options),
+  headers: { 'Content-Type': 'application/json' },
+  method: 'POST',
+}).then((response) => {
+  if (response.ok) return response.json();
+  return 'Oops... FOSM API request did not work';
+}).catch((error) => {
+  console.error(error);
+  return 'Oops... FOSM API request did not work';
+});
 
 const getIdLink = (type, id) => {
   let prefix = null;

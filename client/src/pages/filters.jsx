@@ -125,9 +125,8 @@ export default function Filters({ sendQuery }) {
     setMessageType('');
     setMessage('');
     const queryParams = { ...currentSearchParams };
-    // TO REVIEW
-    queryParams.affiliationStrings = tags.filter((tag) => !tag.disable && tag.type === 'affiliationString').map((tag) => normalizeStr(tag.label)).slice(0, 100);
-    queryParams.rors = tags.filter((tag) => !tag.disable && tag.type === 'rorId').map((tag) => tag.label).slice(0, 100);
+    queryParams.affiliationStrings = tags.filter((tag) => !tag.disable && tag.type === 'affiliationString').map((tag) => normalizeStr(tag.label));
+    queryParams.rors = tags.filter((tag) => !tag.disable && tag.type === 'rorId').map((tag) => tag.label);
     if (queryParams.affiliationStrings.length === 0 && queryParams.rors.length === 0) {
       setMessageType('error');
       setMessage(`You must provide at least one affiliation longer than ${VITE_APP_TAG_LIMIT} letters.`);

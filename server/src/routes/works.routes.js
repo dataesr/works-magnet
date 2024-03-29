@@ -6,22 +6,19 @@ import { datasetsType, deduplicateWorks, getFosmWorks, getOpenAlexPublications, 
 const router = new express.Router();
 
 router.route('/works')
-  .get(async (req, res) => {
+  .post(async (req, res) => {
     try {
-      const options = req?.query ?? {};
+      const options = req?.body ?? {};
       if (!options?.affiliationStrings && !options?.rors) {
         res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
       } else {
         console.time(`1. Requests ${options.affiliationStrings}`);
-        options.affiliationStrings = options.affiliationStrings.split(',');
-        if (options?.rors?.length > 0) {
-          options.rors = options.rors.split(',');
-        }
         options.datasets = options.datasets === 'true';
         options.years = range(options.startYear, options.endYear);
         const queries = [];
         queries.push(getFosmWorks({ options }));
         const affiliationStringsChunks = chunkArray({ array: options.affiliationStrings });
+        // Interrogate OpenAlex by separating ror from others affiliations
         affiliationStringsChunks.forEach((affiliationStrings) => {
           queries.push(getOpenAlexPublications({ options: { ...options, affiliationStrings, rors: [] } }));
         });
