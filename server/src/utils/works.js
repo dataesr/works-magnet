@@ -123,6 +123,13 @@ const getAffiliationsHtmlField = ({ affiliations, id, regexp }) => {
   return html;
 };
 
+const getAffiliationsTooltipField = ({ affiliations, id }) => {
+  let html = '<ul>';
+  html += (affiliations || []).map((affiliation, index) => `<li key="tooltip-affiliation-${id}-${index}">${affiliation.rawAffiliation}</li>`).join('');
+  html += '</ul>';
+  return html;
+};
+
 const getRegexpFromOptions = ({ options }) => {
   const pattern = options.affiliationStrings
     // Replace all accentuated characters, multiple spaces and toLowercase()
@@ -138,7 +145,7 @@ const getRegexpFromOptions = ({ options }) => {
   return new RegExp(pattern, 'gi');
 };
 
-const formatResultFosm = (result, options) => {
+const formatFosmResult = (result, options) => {
   const answer = {
     affiliations: result._source.affiliations
       ?.map((affiliation) => getFosmAffiliation(affiliation))
@@ -177,6 +184,7 @@ const formatResultFosm = (result, options) => {
   answer.levelCertainty = levelCertainty;
   const regexp = getRegexpFromOptions({ options });
   answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
+  answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
   answer.allInfos = JSON.stringify(answer);
   return answer;
 };
@@ -210,7 +218,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
     .then((response) => {
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
-      results = results.concat(hits.map((result) => formatResultFosm(result, options))).filter((r) => r.levelCertainty !== '3.low');
+      results = results.concat(hits.map((result) => formatFosmResult(result, options))).filter((r) => r.levelCertainty !== '3.low');
       if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || results.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
@@ -352,6 +360,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
         };
         const regexp = getRegexpFromOptions({ options });
         answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
+        answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
         answer.allInfos = JSON.stringify(answer);
         return answer;
       }));

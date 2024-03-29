@@ -26,7 +26,6 @@ import DatasetsTab from './datasetsTab';
 import Filters from './filters';
 import OpenalexTab from './openalexTab';
 import PublicationsTab from './publicationsTab';
-import { getAffiliationsTooltipField } from '../utils/templates';
 import { getData } from '../utils/works';
 
 import 'primereact/resources/primereact.min.css';
@@ -61,20 +60,9 @@ export default function Home() {
 
   useEffect(() => {
     if (data) {
-      // TODO do it on the API
-      const allDatasetsTmp = data.datasets?.results
-        ?.map((dataset) => ({
-          ...dataset,
-          affiliationsTooltip: getAffiliationsTooltipField(dataset),
-        }));
-      const allPublicationsTmp = data.publications?.results
-        ?.map((publication) => ({
-          ...publication,
-          affiliationsTooltip: getAffiliationsTooltipField(publication),
-        }));
-      setAllAffiliations(data.affiliations || []);
-      setAllDatasets(allDatasetsTmp || []);
-      setAllPublications(allPublicationsTmp || []);
+      setAllAffiliations(data?.affiliations ?? []);
+      setAllDatasets(data?.datasets?.results ?? []);
+      setAllPublications(data?.publications?.results ?? []);
     }
   }, [data]);
 

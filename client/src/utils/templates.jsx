@@ -132,13 +132,6 @@ const correctionTemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-const getAffiliationsTooltipField = (rowData) => {
-  let html = '<ul>';
-  html += (rowData?.affiliations ?? []).map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation.rawAffiliation}</li>`).join('');
-  html += '</ul>';
-  return html;
-};
-
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
 const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
@@ -154,7 +147,6 @@ export {
   correctionTemplate,
   datasourceTemplate,
   frAuthorsTemplate,
-  getAffiliationsTooltipField,
   hasCorrectionTemplate,
   linkedDOITemplate,
   linkedORCIDTemplate,
