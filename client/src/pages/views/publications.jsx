@@ -1,8 +1,9 @@
 /* eslint-disable max-len */
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Row, Col,
-  Tabs, Tab,
+  SegmentedControl, SegmentedElement,
   Title,
 } from '@dataesr/dsfr-plus';
 import ActionsAffiliations from '../actions/actionsAffiliations';
@@ -22,6 +23,7 @@ export default function Publications({
   tagAffiliations,
   tagPublications,
 }) {
+  const [Tab, setTab] = useState('selectAffiliations');
   return (
     <div>
       {options.datasets ? (
@@ -41,7 +43,7 @@ export default function Publications({
         </>
       ) : (
         <>
-          <Row className="fr-pb-3w">
+          <Row>
             <Col xs="12">
               <div className="fr-callout">
                 <Title as="h3" look="h6">
@@ -58,6 +60,27 @@ export default function Publications({
                 </p>
               </div>
             </Col>
+            <Col />
+          </Row>
+          <Row>
+            <Col>
+              <SegmentedControl
+                className="fr-mb-1w"
+                name="tabSelector"
+                onChange={(e) => setTab(e.target.value)}
+              >
+                <SegmentedElement
+                  checked={Tab === 'selectAffiliations'}
+                  label="Select the raw affiliations for your institution"
+                  value="selectAffiliations"
+                />
+                <SegmentedElement
+                  checked={Tab === 'listOfPublications'}
+                  label="List of publications"
+                  value="listOfPublications"
+                />
+              </SegmentedControl>
+            </Col>
             <Col>
               <ActionsAffiliations
                 allAffiliations={allAffiliations}
@@ -66,34 +89,33 @@ export default function Publications({
               />
             </Col>
           </Row>
-          <Tabs>
-            <Tab
-              icon="checkbox-line"
-              label="Select the raw affiliations for your institution"
-            >
-              <AffiliationsTab
-                affiliations={allAffiliations}
-                selectedAffiliations={selectedAffiliations}
-                setSelectedAffiliations={setSelectedAffiliations}
-                tagAffiliations={tagAffiliations}
-              />
-            </Tab>
-            <Tab
-              icon="user-line"
-              label="List of publications"
-            >
-              <PublicationsTab
-                publishers={data.publications?.publishers || []}
-                publications={allPublications}
-                selectedPublications={selectedPublications}
-                setSelectedPublications={setSelectedPublications}
-                tagPublications={tagPublications}
-                types={data.publications?.types || []}
-                years={data.publications?.years || []}
-              />
-            </Tab>
-
-          </Tabs>
+          <Row>
+            <Col xs="12">
+              {
+                (Tab === 'selectAffiliations') && (
+                  <AffiliationsTab
+                    affiliations={allAffiliations}
+                    selectedAffiliations={selectedAffiliations}
+                    setSelectedAffiliations={setSelectedAffiliations}
+                    tagAffiliations={tagAffiliations}
+                  />
+                )
+              }
+              {
+                (Tab === 'listOfPublications') && (
+                  <PublicationsTab
+                    publishers={data.publications?.publishers || []}
+                    publications={allPublications}
+                    selectedPublications={selectedPublications}
+                    setSelectedPublications={setSelectedPublications}
+                    tagPublications={tagPublications}
+                    types={data.publications?.types || []}
+                    years={data.publications?.years || []}
+                  />
+                )
+              }
+            </Col>
+          </Row>
         </>
       )}
     </div>

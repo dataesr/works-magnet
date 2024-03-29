@@ -179,6 +179,7 @@ export default function Filters({ sendQuery }) {
           </Col>
           <Col xs="3">
             <SegmentedControl
+              id="segSelector"
               isVertical
               name="segSelector"
               onChange={(e) => setSearchParams({ view: e.target.value })}

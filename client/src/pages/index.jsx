@@ -1,35 +1,18 @@
 /* eslint-disable max-len */
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-
-import {
-  AccordionGroup, Accordion,
-  Container, Row, Col,
-  Tabs, Tab,
-} from '@dataesr/dsfr-plus';
-
+import { Container } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
-
-// import ActionsAffiliations from './actions/actionsAffiliations';
-import ActionsDatasets from './actions/actionsDatasets';
-// import ActionsOpenalex from './actions/actionsOpenalex';
-// import ActionsOpenalexFeedback from './actions/actionsOpenalexFeedback';
-import ActionsPublications from './actions/actionsPublications';
-// import AffiliationsTab from './affiliationsTab';
 import { PageSpinner } from '../components/spinner';
 import { status } from '../config';
-import DatasetsYearlyDistribution from './datasetsYearlyDistribution';
-import DatasetsTab from './datasetsTab';
 import Filters from './filters';
-// import OpenalexTab from './openalexTab';
-import PublicationsTab from './publicationsTab';
 import { getAffiliationsTooltipField } from '../utils/templates';
 import { getData } from '../utils/works';
-
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import Openalex from './views/openalex';
 import Publications from './views/publications';
+import Datasets from './views/datasets';
 
 export default function Home() {
   const [searchParams] = useSearchParams();
@@ -117,6 +100,7 @@ export default function Home() {
   };
 
   return (
+    // TODO:do a cleaner way to display the spinner and views
     <>
       <Container fluid as="section" className="filters">
         <Filters sendQuery={sendQuery} />
@@ -160,90 +144,15 @@ export default function Home() {
           && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0)
           && searchParams.get('view') === 'datasets'
           && (
-            <>
-              datasets
-            </>
+            <Datasets
+              allDatasets={allDatasets}
+              data={data}
+              options={options}
+              selectedDatasets={selectedDatasets}
+              setSelectedDatasets={setSelectedDatasets}
+              tagDatasets={tagDatasets}
+            />
           )}
-
-        {/* <Accordion title="📑 Find the publications affiliated to your institution">
-          {(options.datasets) ? (
-            <div className="fr-callout fr-icon-information-line">
-              <h3 className="fr-callout__title">
-                You did not search for publications
-              </h3>
-              <p className="fr-callout__text">
-                To search for publications, please disable the "Search for datasets only" option
-              </p>
-            </div>
-          ) : (
-            <Tabs>
-              {affiliationsChoiceTab}
-              <Tab label="📑 List of publications">
-                <ActionsPublications
-                  allPublications={allPublications}
-                />
-                <PublicationsTab
-                  publishers={data.publications?.publishers || []}
-                  publications={allPublications}
-                  selectedPublications={selectedPublications}
-                  setSelectedPublications={setSelectedPublications}
-                  tagPublications={tagPublications}
-                  types={data.publications?.types || []}
-                  years={data.publications?.years || []}
-                />
-              </Tab>
-            </Tabs>
-          )}
-        </Accordion>
-        <Accordion title="🗃 Find the datasets affiliated to your institution">
-          <Tabs>
-            {affiliationsChoiceTab}
-            <Tab label="🗃 List of datasets">
-              <ActionsDatasets
-                allDatasets={allDatasets}
-              />
-              <DatasetsTab
-                datasets={allDatasets}
-                publishers={data.datasets?.publishers}
-                selectedDatasets={selectedDatasets}
-                setSelectedDatasets={setSelectedDatasets}
-                tagDatasets={tagDatasets}
-                types={data.datasets.types}
-                years={data.datasets.years}
-              />
-            </Tab>
-            <Tab label="📊 Insights">
-              {(allDatasets.filter((dataset) => dataset.status === 'validated').length > 0) ? (
-                <>
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="publisher" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="type" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="format" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="client_id" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="affiliations" subfield="rawAffiliation" />
-                </>
-              ) : (
-                // <Callout colorFamily="beige-gris-galet">
-                //   <CalloutTitle size="md">
-                //     You did not validate any datasets
-                //   </CalloutTitle>
-                //   <CalloutText size="sm">
-                //     Please validate affiliations or datasets to see insights about it.
-                //   </CalloutText>
-                // </Callout>
-                <div className="fr-callout fr-icon-information-line">
-                  <h3 className="fr-callout__title">
-                    You did not validate any datasets
-                  </h3>
-                  <p className="fr-callout__text">
-                    Please validate affiliations or datasets to see insights about it.
-                  </p>
-                </div>
-              )}
-            </Tab>
-          </Tabs>
-        </Accordion>
-      </AccordionGroup>
-        )} */}
       </Container>
     </>
   );
