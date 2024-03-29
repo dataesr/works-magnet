@@ -235,6 +235,10 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
         );
       }
       return results;
+    })
+    .catch((error) => {
+      console.error(error);
+      return [];
     });
 };
 
@@ -369,6 +373,10 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
         return getOpenAlexPublicationsByYear(options, nextCursor, results);
       }
       return results;
+    })
+    .catch((error) => {
+      console.error(error);
+      return [];
     });
 };
 
