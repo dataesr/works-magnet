@@ -1,5 +1,6 @@
 import {
   Badge,
+  BadgeGroup,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -154,15 +155,18 @@ export default function Filters({ sendQuery }) {
               text={currentSearchParams.endYear}
             />
           </Col>
-          <Col n="2">
-            {tags.map((tag) => (
-              <Badge
-                colorFamily="brown-cafe-creme"
-                isSmall
-                key={tag.label}
-                text={tag.label}
-              />
-            ))}
+          <Col>
+            <BadgeGroup>
+              {tags.slice(0, 5).map((tag) => (
+                <Badge
+                  colorFamily="brown-cafe-creme"
+                  isSmall
+                  key={tag.label}
+                  text={tag.label}
+                />
+              ))}
+            </BadgeGroup>
+            {(tags.length > 5) && <span>...</span>}
           </Col>
         </Row>
       ) : (
