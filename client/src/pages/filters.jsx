@@ -32,13 +32,13 @@ export default function Filters({ sendQuery }) {
   const [tags, setTags] = useState([]);
   const { scrollTop } = useScroll();
 
-  useEffect(() => {
-    if (!isSticky && scrollTop > 50) {
-      setIsSticky(true);
-    } else if (isSticky && scrollTop < 50) {
-      setIsSticky(false);
-    }
-  }, [isSticky, scrollTop]);
+  // useEffect(() => {
+  //   if (!isSticky && scrollTop > 50) {
+  //     setIsSticky(true);
+  //   } else if (isSticky && scrollTop < 50) {
+  //     setIsSticky(false);
+  //   }
+  // }, [isSticky, scrollTop]);
 
   useEffect(() => {
     const getData = async () => {
