@@ -110,7 +110,7 @@ export default function TagInput({
       {
         structuredTags.slice(0, seeMore ? structuredTags.length : SEE_MORE_AFTER).map((currentTags, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <Row key={`tags-row-${index}`} style={{ maxHeight: '200px', overflowX: 'hidden', overflowY: 'scroll' }}>
+          <Row key={`tags-row-${index}`}>
             <Col>
               <Row>
                 <TagGroup>
