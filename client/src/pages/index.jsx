@@ -88,10 +88,8 @@ export default function Home() {
   return (
     // TODO:do a cleaner way to display the spinner and views
     <>
-      <Container fluid as="section" className="filters">
-        <Filters sendQuery={sendQuery} />
-      </Container>
-      <Container fluid as="section">
+      <Filters sendQuery={sendQuery} />
+      <Container as="section">
         {(isFetching || (isFetched && (allAffiliations?.length ?? 0) === 0)) && (
           <Spinner size={48} />
         )}

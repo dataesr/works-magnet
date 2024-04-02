@@ -2,7 +2,7 @@ import {
   Badge,
   Button,
   Checkbox,
-  Row, Col,
+  Container, Row, Col,
   SegmentedControl, SegmentedElement,
   Select, SelectOption,
   TagGroup, Tag,
@@ -15,6 +15,7 @@ import { useSearchParams } from 'react-router-dom';
 import TagInput from '../components/tag-input';
 import useScroll from '../hooks/useScroll';
 import { getRorData, isRor } from '../utils/ror';
+import Beta from '../components/beta';
 
 const {
   VITE_APP_NAME,
@@ -147,10 +148,11 @@ export default function Filters({ sendQuery }) {
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {isSticky ? (
-        <Row verticalAlign="top" className="fr-p-3w">
-          <Col xs="2">
-            <div>
-              <Title as="h1" look="h6">
+        <Container fluid as="section" className="filters fr-my-5w">
+          <Row alignItems="top" className="fr-p-2w">
+            <Beta />
+            <Col xs="2" offsetXs="1">
+              <Title as="h1" look="h6" className="fr-m-0">
                 {VITE_APP_NAME}
                 <br />
                 {VITE_HEADER_TAG && (
@@ -162,154 +164,128 @@ export default function Filters({ sendQuery }) {
                   </Badge>
                 )}
               </Title>
-            </div>
-          </Col>
-          <Col>
-            <TagGroup>
-              <Tag color="blue-ecume">
-                {`${currentSearchParams.startYear} - ${currentSearchParams.endYear}`}
-              </Tag>
-              {tags.slice(0, 5).map((tag) => (
-                <Tag color="blue-ecume">
-                  {tag.label}
-                </Tag>
-              ))}
-              {(tags.length > 5) && <span>...</span>}
-            </TagGroup>
-          </Col>
-          <Col xs="3">
-            <SegmentedControl
-              id="segSelector"
-              isVertical
-              name="segSelector"
-              onChange={(e) => setSearchParams({ ...currentSearchParams, view: e.target.value })}
-            >
-              <SegmentedElement
-                checked={currentSearchParams.view === 'openalex'}
-                label="Improve OpenAlex"
-                value="openalex"
-              />
-              <SegmentedElement
-                checked={currentSearchParams.view === 'publications'}
-                label="Find affliliated publications"
-                value="publications"
-              />
-              <SegmentedElement
-                checked={currentSearchParams.view === 'datasets'}
-                label="Find affiliated datasets"
-                value="datasets"
-              />
-            </SegmentedControl>
-          </Col>
-        </Row>
+            </Col>
+            <Col>
+              <Row>
+                <Col xs="1" className="text-right fr-pr-1w">
+                  <Title title="Selected filters" className="fr-icon-filter-line" as="h2" look="h4" />
+                </Col>
+                <Col>
+                  <TagGroup>
+                    <Tag color="blue-ecume">
+                      {`${currentSearchParams.startYear} - ${currentSearchParams.endYear}`}
+                    </Tag>
+                    {tags.slice(0, 5).map((tag) => (
+                      <Tag color="blue-ecume">
+                        {tag.label}
+                      </Tag>
+                    ))}
+                    {(tags.length > 5) && <span>...</span>}
+                  </TagGroup>
+                </Col>
+                <Col className="text-right">
+                  <SegmentedControl
+                    id="segSelector"
+                    // isVertical
+                    name="segSelector"
+                    onChange={(e) => setSearchParams({ view: e.target.value })}
+                  >
+                    <SegmentedElement
+                      checked={currentSearchParams.view === 'openalex'}
+                      label="Improve OpenAlex"
+                      value="openalex"
+                    />
+                    <SegmentedElement
+                      checked={currentSearchParams.view === 'publications'}
+                      label="Find affliliated publications"
+                      value="publications"
+                    />
+                    <SegmentedElement
+                      checked={currentSearchParams.view === 'datasets'}
+                      label="Find affliated datasets"
+                      value="datasets"
+                    />
+                  </SegmentedControl>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </Container>
       ) : (
-        <Row verticalAlign="top" className="fr-p-3w">
-          <Col xs="8">
-            <Row gutters verticalAlign="bottom">
-              <Col>
-                {/* TODO: Delete commented code */}
-                {/* <Select
-                  label="Start year"
-                  onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
-                  options={years}
-                  selected={currentSearchParams.startYear}
-                /> */}
-                <Select
-                  aria-label="Select a start year for search"
-                  label="Start year"
-                  buttonLabel={currentSearchParams.startYear}
-                  onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
-                >
-                  {years.map((year) => (
-                    <SelectOption
-                      color="blue-cumulus"
-                      key={year.value}
-                      selected={year.value === currentSearchParams.startYear}
-                    >
-                      {year.label}
-                    </SelectOption>
-                  ))}
-                </Select>
-              </Col>
-              <Col>
-                {/* TODO: Delete commented code */}
-                {/* <Select
-                  label="End year"
-                  onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
-                  options={years}
-                  selected={currentSearchParams.endYear}
-                /> */}
-                <Select
-                  aria-label="Select an end year for search"
-                  buttonLabel={currentSearchParams.endYear}
-                  label="End year"
-                  onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
-                >
-                  {years.map((year) => (
-                    <SelectOption
-                      color="blue-cumulus"
-                      key={year.value}
-                      selected={year.value === currentSearchParams.startYear}
-                    >
-                      {year.label}
-                    </SelectOption>
-                  ))}
-                </Select>
-              </Col>
-              <Col>
-                <Checkbox
-                  checked={currentSearchParams?.datasets ?? false}
-                  label="Search for datasets only"
-                  onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
-                />
-              </Col>
-            </Row>
-            <Row className="fr-mt-1w">
-              <Col xs="12">
-                <TagInput
-                  getRoRChildrexs={getRoRChildren}
-                  hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-                  label="Affiliation name, RoR identifier"
-                  message={message}
-                  messageType={messageType}
-                  onInputHandler={setOnInputAffiliationsHandler}
-                  onTagsChange={onTagsChange}
-                  setGetRoRChildren={setGetRoRChildren}
-                  tags={tags}
-                />
-              </Col>
-            </Row>
-          </Col>
-          <Col offsetXs="1" className="text-right fr-pl-3w">
-            <SegmentedControl
-              isVertical
-              name="segSelector"
-              onChange={(e) => setSearchParams({ ...currentSearchParams, view: e.target.value })}
-            >
-              <SegmentedElement
-                checked={currentSearchParams.view === 'openalex'}
-                label="Improve OpenAlex"
-                value="openalex"
+        <Container as="section" className="filters fr-my-5w">
+          <Row className="fr-p-2w" verticalAlign="bottom">
+            <Col xs="8">
+
+              <TagInput
+                getRoRChildrexs={getRoRChildren}
+                hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
+                label="Affiliation name, RoR identifier"
+                message={message}
+                messageType={messageType}
+                onInputHandler={setOnInputAffiliationsHandler}
+                onTagsChange={onTagsChange}
+                setGetRoRChildrexs={setGetRoRChildren}
+                tags={tags}
               />
-              <SegmentedElement
-                checked={currentSearchParams.view === 'publications'}
-                label="Find affliliated publications"
-                value="publications"
-              />
-              <SegmentedElement
-                checked={currentSearchParams.view === 'datasets'}
-                label="Find affiliated datasets"
-                value="datasets"
-              />
-            </SegmentedControl>
-            <Button
-              icoxs="ri-search-line"
-              onClick={checkAndSendQuery}
-            >
-              Search works
-            </Button>
-          </Col>
-        </Row>
+
+            </Col>
+            <Col offsetXs="1" className="text-right fr-pl-3w">
+              <Row gutters verticalAlign="bottom">
+                <Col>
+                  <Select
+                    aria-label="Select a start year for search"
+                    label="Start year"
+                    buttonLabel={currentSearchParams.startYear}
+                    onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
+                  >
+                    {years.map((year) => (
+                      <SelectOption
+                        color="blue-cumulus"
+                        key={year.value}
+                        selected={year.value === currentSearchParams.startYear}
+                      >
+                        {year.label}
+                      </SelectOption>
+                    ))}
+                  </Select>
+                </Col>
+                <Col>
+                  <Select
+                    aria-label="Select an end year for search"
+                    buttonLabel={currentSearchParams.endYear}
+                    label="End year"
+                    onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
+                  >
+                    {years.map((year) => (
+                      <SelectOption
+                        color="blue-cumulus"
+                        key={year.value}
+                        selected={year.value === currentSearchParams.startYear}
+                      >
+                        {year.label}
+                      </SelectOption>
+                    ))}
+                  </Select>
+                </Col>
+                <Col>
+                  <Checkbox
+                    checked={currentSearchParams?.datasets ?? false}
+                    label="Search for datasets only"
+                    onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
+                  />
+                </Col>
+              </Row>
+              <Button
+                className="fr-mt-2w"
+                disabled={searchParams.getAll('affiliations').length === 0}
+                icon="search-line"
+                onClick={checkAndSendQuery}
+              >
+                Search works
+              </Button>
+            </Col>
+          </Row>
+        </Container>
       )}
     </>
   );
