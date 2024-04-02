@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
+  Badge,
   Row, Col,
   TextInput,
 } from '@dataesr/dsfr-plus';
@@ -34,11 +35,17 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
 
   return (
     <>
+      <div className="actions-menu" title="actions">
+        <div className={`selected-item ${selectedAffiliations.length && 'selected'}`}>
+          <span className="number">
+            {selectedAffiliations.length}
+          </span>
+          {`selected affiliation${selectedAffiliations.length === 1 ? '' : 's'}`}
+        </div>
+        {renderButtons(selectedAffiliations, tagAffiliations, 'affiliation')}
+      </div>
       <Row>
-        <Col xs="9">
-          {renderButtons(selectedAffiliations, tagAffiliations, 'affiliation')}
-        </Col>
-        <Col xs="3">
+        <Col>
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
