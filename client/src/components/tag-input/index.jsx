@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {
   Button,
   Row, Col,
-  // Icon,
   TagGroup, DismissibleTag,
   TextInput,
 } from '@dataesr/dsfr-plus';
@@ -93,7 +92,7 @@ export default function TagInput({
 
   return (
     <div>
-      <Row alignItems="bottom">
+      <Row verticalAlign="bottom">
         <Col className="fr-pb-2w">
           <TextInput
             hint={hint}
@@ -111,28 +110,33 @@ export default function TagInput({
       {
         structuredTags.slice(0, seeMore ? structuredTags.length : SEE_MORE_AFTER).map((currentTags, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <Row key={`row-tags-${index}`} style={{ maxHeight: '200px', overflowX: 'hidden', overflowY: 'scroll' }}>
+          <Row key={`tags-row-${index}`} style={{ maxHeight: '200px', overflowX: 'hidden', overflowY: 'scroll' }}>
             <Col>
-              <TagGroup>
-                {currentTags.map((tag) => (
-                  <DismissibleTag
-                    className="fr-mr-1w"
-                    color={getTagColor(tag)}
-                    key={tag.label}
-                    onClick={() => handleDeleteClick(tag)}
-                    size="sm"
-                    title={`Tag ${tag.label}${tag.disable ? ' (not searched)' : ''}`}
-                  >
-                    {tag.label}
-                  </DismissibleTag>
-                ))}
-                {(index === 0 && hasRoR) ? (
+              <Row>
+                <TagGroup>
+                  {currentTags.map((tag) => (
+                    <DismissibleTag
+                      className="fr-mr-1w"
+                      color={getTagColor(tag)}
+                      key={tag.label}
+                      onClick={() => handleDeleteClick(tag)}
+                      size="sm"
+                      title={`Tag ${tag.label}${tag.disable ? ' (not searched)' : ''}`}
+                    >
+                      {tag.label}
+                    </DismissibleTag>
+
+                  ))}
+                </TagGroup>
+                {index === 0 && hasRoR && (
                   <Button
                     className="fr-mr-1w"
-                    hasBorder={false}
                     icon={getRoRChildren ? 'arrow-go-back-line' : 'node-tree'}
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={`tags-ror-${index}`}
                     onClick={() => setGetRoRChildren((prev) => !prev)}
                     size="sm"
+                    variant="text"
                   >
                     {
                       getRoRChildren
@@ -140,8 +144,8 @@ export default function TagInput({
                         : 'Get children from RoR'
                     }
                   </Button>
-                ) : null}
-              </TagGroup>
+                )}
+              </Row>
             </Col>
           </Row>
         ))

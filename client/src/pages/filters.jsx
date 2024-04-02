@@ -73,7 +73,7 @@ export default function Filters({ sendQuery }) {
         });
         const queries = affiliations.map((affiliation) => getRorData(affiliation, getRoRChildren));
         let rorNames = await Promise.all(queries);
-        rorNames = rorNames.filter((aff) => !deletedAffiliations.includes(aff));
+        rorNames = rorNames.filter((rorName) => !deletedAffiliations.includes(rorName));
         const allTags = [];
         const knownTags = {};
         setMessageType('');
@@ -85,7 +85,7 @@ export default function Filters({ sendQuery }) {
           } else {
             allTags.push({ disable: affiliation.length < VITE_APP_TAG_LIMIT, label: affiliation, source: 'user', type: 'affiliationString' });
           }
-          knownTags[affiliation.toLowerCase()] = 1;
+          knownTags[label.toLowerCase()] = 1;
         });
         rorNames.flat().forEach((rorElt) => {
           if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
@@ -147,7 +147,7 @@ export default function Filters({ sendQuery }) {
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {isSticky ? (
-        <Row alignItems="top" className="fr-p-3w">
+        <Row verticalAlign="top" className="fr-p-3w">
           <Col xs="2">
             <div>
               <Title as="h1" look="h6">
@@ -203,9 +203,9 @@ export default function Filters({ sendQuery }) {
           </Col>
         </Row>
       ) : (
-        <Row alignItems="top" className="fr-p-3w">
+        <Row verticalAlign="top" className="fr-p-3w">
           <Col xs="8">
-            <Row gutters alignItems="bottom">
+            <Row gutters verticalAlign="bottom">
               <Col>
                 {/* TODO: Delete commented code */}
                 {/* <Select
@@ -274,7 +274,7 @@ export default function Filters({ sendQuery }) {
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
                   onTagsChange={onTagsChange}
-                  setGetRoRChildrexs={setGetRoRChildren}
+                  setGetRoRChildren={setGetRoRChildren}
                   tags={tags}
                 />
               </Col>
