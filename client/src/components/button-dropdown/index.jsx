@@ -24,9 +24,8 @@ export default function ButtonDropdown({ data, label, searchParams }) {
     <div className={`dropdown ${data.length > 0 ? 'enabled' : 'disabled'}`}>
       <Button
         disabled={!data.length}
-        icon="ri-save-line"
-        size="sm"
       >
+        <i className="ri-save-line fr-mr-1w" />
         Export
         {' '}
         {label}

@@ -5,7 +5,7 @@ import {
   Row, Col,
   SegmentedControl, SegmentedElement,
   Select, SelectOption,
-  TagGroup, Tag, DismissibleTag,
+  TagGroup, Tag,
   Title,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';

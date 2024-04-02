@@ -131,7 +131,6 @@ export default function TagInput({
                 {index === 0 && hasRoR && (
                   <Button
                     className="fr-mr-1w"
-                    icon={getRoRChildren ? 'arrow-go-back-line' : 'node-tree'}
                     // eslint-disable-next-line react/no-array-index-key
                     key={`tags-ror-${index}`}
                     onClick={() => setGetRoRChildren((prev) => !prev)}
@@ -140,8 +139,20 @@ export default function TagInput({
                   >
                     {
                       getRoRChildren
-                        ? 'Remove RoR children'
-                        : 'Get children from RoR'
+                        ? (
+                          <>
+                            <i className="ri-arrow-go-back-line fr-mr-1w" />
+                            Remove RoR children
+                            {getRoRChildren}
+                          </>
+                        )
+                        : (
+                          <>
+                            <i className="ri-node-tree fr-mr-1w" />
+                            Get children from RoR
+                            {getRoRChildren ? 'oui' : 'non'}
+                          </>
+                        )
                     }
                   </Button>
                 )}

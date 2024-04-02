@@ -48,10 +48,9 @@ export default function ActionsAffiliations({
           <Button
             data-tooltip-id="save-affiliations-button"
             disabled={!decidedAffiliations.length}
-            // icon="ri-save-line"
             onClick={() => onExport()}
-            size="sm"
           >
+            <i className="ri-save-line fr-mr-1w" />
             Save decided affiliations
           </Button>
           <Tooltip id="save-affiliations-button" hidden={!decidedAffiliations.length}>
@@ -59,12 +58,11 @@ export default function ActionsAffiliations({
           </Tooltip>
           <Button
             data-tooltip-id="restore-affiliations-button"
-            // icon="file-upload-line"
             onClick={() => setDisplayFileUpload(true)}
             secondary
             variant="secondary"
-            size="sm"
           >
+            <i className="ri-file-upload-line fr-mr-1w" />
             Restore affiliations
           </Button>
           <Tooltip id="restore-affiliations-button">
