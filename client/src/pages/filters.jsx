@@ -188,7 +188,7 @@ export default function Filters({ sendQuery }) {
                     id="segSelector"
                     // isVertical
                     name="segSelector"
-                    onChange={(e) => setSearchParams({ view: e.target.value })}
+                    onChange={(e) => setSearchParams({ ...currentSearchParams, view: e.target.value })}
                   >
                     <SegmentedElement
                       checked={currentSearchParams.view === 'openalex'}
