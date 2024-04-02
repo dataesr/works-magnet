@@ -196,7 +196,7 @@ export default function Filters({ sendQuery }) {
               />
               <SegmentedElement
                 checked={currentSearchParams.view === 'datasets'}
-                label="Find affliated datasets"
+                label="Find affiliated datasets"
                 value="datasets"
               />
             </SegmentedControl>
@@ -298,7 +298,7 @@ export default function Filters({ sendQuery }) {
               />
               <SegmentedElement
                 checked={currentSearchParams.view === 'datasets'}
-                label="Find affliated datasets"
+                label="Find affiliated datasets"
                 value="datasets"
               />
             </SegmentedControl>
