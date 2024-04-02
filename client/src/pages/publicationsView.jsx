@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { FilterMatchMode } from 'primereact/api';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
-import { FilterMatchMode } from 'primereact/api';
+import { MultiSelect } from 'primereact/multiselect';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 import {
   affiliationsTemplate,
@@ -17,8 +18,26 @@ export default function PublicationsView({
   selectedWorks,
   setSelectedWorks,
   works,
+  years,
 }) {
-  const [filters] = useState({ status: { value: null, matchMode: FilterMatchMode.IN } });
+  const [filters] = useState({
+    status: { value: null, matchMode: FilterMatchMode.IN },
+    years: { value: null, matchMode: FilterMatchMode.EQUALS },
+  });
+
+  const yearRowFilterTemplate = (options) => (
+    <MultiSelect
+      value={options.value}
+      options={Object.keys(years).map((year) => ({ name: `${year} (${years[year]})`, value: year }))}
+      onChange={(e) => options.filterApplyCallback(e.value)}
+      optionLabel="name"
+      placeholder="Any"
+      className="p-column-filter"
+      maxSelectedLabels={1}
+      style={{ maxWidth: '9rem', minWidth: '9rem' }}
+    />
+  );
+
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -45,7 +64,7 @@ export default function PublicationsView({
       <Column field="allIds" header="Ids" body={allIdsTemplate} style={{ maxWidth: '180px' }} />
       <Column field="datasource" header="Source" body={datasourceTemplate} style={{ maxWidth: '80px' }} />
       <Column field="type" header="Type" style={{ maxWidth: '90px' }} />
-      <Column field="year" header="Year" style={{ maxWidth: '70px' }} />
+      <Column field="year" header="Year" style={{ maxWidth: '150px' }} showFilterMenu={false} filter filterElement={yearRowFilterTemplate} />
       <Column field="publisher" header="Publisher" style={{ maxWidth: '70px' }} />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} style={{ maxWidth: '220px' }} />
       <Column field="authors" header="Authors" body={authorsTemplate} style={{ minWidth: '150px' }} />
@@ -76,4 +95,5 @@ PublicationsView.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
+  years: PropTypes.object.isRequired,
 };

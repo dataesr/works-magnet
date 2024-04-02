@@ -16,13 +16,11 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
   const [filteredPublishers, setFilteredPublishers] = useState([]);
   const [filteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [filteredTypes, setFilteredTypes] = useState([]);
-  const [filteredYears, setFilteredYears] = useState([]);
   const [timer, setTimer] = useState();
 
   useEffect(() => {
     setFilteredPublications(publications);
     setFilteredPublishers(Object.keys(publishers));
-    setFilteredYears(Object.keys(years));
     setFilteredTypes(Object.keys(types));
   }, [publications, publishers, types, years]);
 
@@ -35,14 +33,13 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
         && filteredDatasources.filter((filteredDatasource) => publication.datasource.includes(filteredDatasource)).length
         && filteredPublishers.includes(publication.publisher)
         && filteredStatus.includes(publication.status)
-        && filteredTypes.includes(publication.type)
-        && filteredYears.includes(publication.year));
+        && filteredTypes.includes(publication.type));
       setFilteredPublications(filteredPublicationsTmp);
     }, 500);
     setTimer(timerTmp);
     // The timer should not be tracked
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publications, filteredAffiliationName, filteredDatasources, filteredPublishers, filteredStatus, filteredTypes, filteredYears]);
+  }, [publications, filteredAffiliationName, filteredDatasources, filteredPublishers, filteredStatus, filteredTypes]);
 
   return (
     <>
@@ -74,6 +71,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
             selectedWorks={selectedPublications}
             setSelectedWorks={setSelectedPublications}
             works={filteredPublications}
+            years={years}
           />
         </Col>
       </Row>
