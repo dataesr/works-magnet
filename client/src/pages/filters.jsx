@@ -12,10 +12,10 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import Ribbon from '../components/ribbon';
 import TagInput from '../components/tag-input';
 import useScroll from '../hooks/useScroll';
 import { getRorData, isRor } from '../utils/ror';
-import Beta from '../components/beta';
 
 const {
   VITE_APP_NAME,
@@ -159,7 +159,7 @@ export default function Filters({ sendQuery, view }) {
       {isSticky ? (
         <Container fluid as="section" className="filters fr-my-5w">
           <Row alignItems="top" className="fr-p-2w">
-            <Beta />
+            <Ribbon />
             <Col xs="2" offsetXs="1">
               <Title as="h1" look="h6" className="fr-m-0">
                 {VITE_APP_NAME}

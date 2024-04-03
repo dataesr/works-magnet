@@ -1,6 +1,6 @@
 import { Badge } from '@dataesr/dsfr-plus';
 
-import Beta from '../components/beta';
+import Ribbon from '../components/ribbon';
 
 const {
   VITE_APP_NAME,
@@ -14,7 +14,7 @@ const {
 export default function Header() {
   return (
     <header role="banner" className="fr-header">
-      <Beta />
+      <Ribbon />
       <div className="fr-header__body">
         <div className="fr-container">
           <div className="fr-header__body-row">
