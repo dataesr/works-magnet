@@ -29,20 +29,6 @@ body {
   z-index: 3;
 }
 
-// Sticky part
-.header-sticky {
-  .ribbon {
-    left: -79px;
-    top: 4px;
-
-    .badge {
-      font-size: 15px;
-      height: 25px;
-      line-height: 25px;
-    }
-  }
-}
-
 @keyframes fadeInAnimation {
   0% {
     opacity: 0;

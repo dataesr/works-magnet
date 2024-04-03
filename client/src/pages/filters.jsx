@@ -30,7 +30,7 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()].map((
 
 const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
 
-export default function Filters({ sendQuery }) {
+export default function Filters({ sendQuery, defaultView }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -59,28 +59,32 @@ export default function Filters({ sendQuery }) {
           deletedAffiliations: [],
           endYear: '2023',
           startYear: '2023',
-          view: 'openalex',
+          view: defaultView,
         });
         setTags([]);
       } else {
         setIsLoading(true);
         const affiliations = searchParams.getAll('affiliations');
         const deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
+
         setCurrentSearchParams({
           affiliations,
           datasets: searchParams.get('datasets') === 'true',
           deletedAffiliations,
           endYear: searchParams.get('endYear', '2023'),
           startYear: searchParams.get('startYear', '2023'),
-          view: searchParams.get('view', 'openalex'),
+          view: searchParams.get('view', defaultView),
         });
+
         const queries = affiliations.map((affiliation) => getRorData(affiliation, getRoRChildren));
         let rorNames = await Promise.all(queries);
         rorNames = rorNames.filter((rorName) => !deletedAffiliations.includes(rorName));
+
         const allTags = [];
         const knownTags = {};
         setMessageType('');
         setMessage('');
+
         affiliations.forEach((affiliation) => {
           const label = affiliation.replace('https://ror.org/', '').replace('ror.org/', '');
           if (isRor(label)) {
@@ -90,6 +94,7 @@ export default function Filters({ sendQuery }) {
           }
           knownTags[label.toLowerCase()] = 1;
         });
+
         rorNames.flat().forEach((rorElt) => {
           if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
             if (!deletedAffiliations.includes(rorElt.rorId)) {
@@ -97,6 +102,7 @@ export default function Filters({ sendQuery }) {
               knownTags[rorElt.rorId.toLowerCase()] = 1;
             }
           }
+
           rorElt.names.forEach((rorName) => {
             if (knownTags[rorName.toLowerCase()] === undefined) {
               if (!deletedAffiliations.includes(rorName)) {
@@ -112,7 +118,7 @@ export default function Filters({ sendQuery }) {
       }
     };
     getData();
-  }, [searchParams, setSearchParams, getRoRChildren]);
+  }, [searchParams, setSearchParams, getRoRChildren, defaultView]);
 
   const onTagsChange = async (affiliations, deletedAffiliations) => {
     const previousDeleted = currentSearchParams.deletedAffiliations || [];
@@ -294,4 +300,5 @@ export default function Filters({ sendQuery }) {
 
 Filters.propTypes = {
   sendQuery: PropTypes.func.isRequired,
+  defaultView: PropTypes.string.isRequired,
 };

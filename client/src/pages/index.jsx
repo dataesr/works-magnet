@@ -1,7 +1,10 @@
-import { Container, Spinner } from '@dataesr/dsfr-plus';
-import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import {
+  Container, Row, Col,
+  Spinner,
+} from '@dataesr/dsfr-plus';
+import { useQuery } from '@tanstack/react-query';
 
 import { status } from '../config';
 import Filters from './filters';
@@ -9,7 +12,9 @@ import { getData } from '../utils/works';
 import Datasets from './views/datasets';
 import Openalex from './views/openalex';
 import Publications from './views/publications';
-
+import OpenalexTile from '../components/tiles/openalex';
+import AffiliatedPublicationsTile from '../components/tiles/affiliated-publications';
+import DatasetsTile from '../components/tiles/datasets';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
@@ -23,6 +28,7 @@ export default function Home() {
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
+  const [view, setView] = useState();
 
   const { data, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['data'],
@@ -86,14 +92,25 @@ export default function Home() {
     setAllAffiliations(allAffiliationsTmp);
     setSelectedAffiliations([]);
   };
-
+  console.log((!isFetching && !searchParams.get('view') && isFetched));
   return (
     // TODO:do a cleaner way to display the spinner and views
     <>
-      <Filters sendQuery={sendQuery} />
+      <Filters sendQuery={sendQuery} defaultView={view} />
       <Container as="section">
-        {(isFetching || (isFetched && (allAffiliations?.length ?? 0) === 0)) && (
-          <Spinner size={48} />
+        {isFetching && <Spinner size={48} />}
+        {(!isFetching && !searchParams.get('view') && isFetched) && (
+          <Row gutters>
+            <Col>
+              <OpenalexTile setView={setView} />
+            </Col>
+            <Col>
+              <AffiliatedPublicationsTile setView={setView} />
+            </Col>
+            <Col>
+              <DatasetsTile setView={setView} />
+            </Col>
+          </Row>
         )}
         {!isFetching
           && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0)
