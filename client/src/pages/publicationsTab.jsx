@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import {
-  Row, Col,
-  TextInput,
-} from '@dataesr/dsfr-plus';
+import { Col, Row } from '@dataesr/dsfr-plus';
 import PublicationsView from './publicationsView';
 import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
@@ -58,20 +55,13 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
       </Row>
       <Row gutters>
         <Col n="12">
-          <TextInput
-            label="Search in any field"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
-        </Col>
-      </Row>
-      <Row gutters>
-        <Col n="12">
           <PublicationsView
             selectedWorks={selectedPublications}
             setSelectedWorks={setSelectedPublications}
             works={filteredPublications}
             years={years}
+            filteredAffiliationName={filteredAffiliationName}
+            setFilteredAffiliationName={setFilteredAffiliationName}
           />
         </Col>
       </Row>

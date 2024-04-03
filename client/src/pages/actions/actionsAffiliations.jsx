@@ -59,7 +59,6 @@ export default function ActionsAffiliations({
           <Button
             data-tooltip-id="restore-affiliations-button"
             onClick={() => setDisplayFileUpload(true)}
-            secondary
             variant="secondary"
           >
             <i className="ri-file-upload-line fr-mr-1w" />

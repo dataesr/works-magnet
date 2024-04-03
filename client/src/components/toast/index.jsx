@@ -6,8 +6,6 @@ import usePausableTimer from '../../hooks/usePausableTimer';
 
 import './index.scss';
 
-// TODO: Add icons
-
 function Toast({
   autoDismissAfter,
   description,
@@ -40,14 +38,14 @@ function Toast({
 
   return (
     <div
+      className={`toast toast-${toastType}`}
       id={id}
       role="alert"
-      className={`toast toast-${toastType}`}
       onMouseEnter={pause}
       onMouseLeave={resume}
     >
       <div className="toast-colored-box">
-        {/* <Icon color="#ffffff" name={icon[toastType]} /> */}
+        <i className={`${icon?.[toastType]} fr-mr-1w`} />
         {
           (autoDismissAfter !== 0)
             ? (<div id={`progress-${id}`} className="toast-progress-bar" />)
@@ -55,12 +53,11 @@ function Toast({
         }
       </div>
       <button
-        type="button"
-        onClick={() => remove(id)}
         className="toast-btn-close"
+        onClick={() => remove(id)}
+        type="button"
       >
-        {/* <Icon size="lg" name="ri-close-line" /> */}
-        x
+        <i className="ri-close-line fr-mr-1w" />
       </button>
       <Container className="toast-content">
         <Row>

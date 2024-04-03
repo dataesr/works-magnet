@@ -1,3 +1,4 @@
+import { TextInput } from '@dataesr/dsfr-plus';
 import { FilterMatchMode } from 'primereact/api';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -15,7 +16,9 @@ import {
 } from '../utils/templates';
 
 export default function PublicationsView({
+  filteredAffiliationName,
   selectedWorks,
+  setFilteredAffiliationName,
   setSelectedWorks,
   works,
   years,
@@ -38,8 +41,18 @@ export default function PublicationsView({
     />
   );
 
+  const paginatorLeft = () => (
+    <TextInput
+      disableAutoValidation
+      label="Search in any field"
+      onChange={(e) => setFilteredAffiliationName(e.target.value)}
+      value={filteredAffiliationName}
+    />
+  );
+
   return (
     <DataTable
+      className="justify-content-end"
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       dataKey="id"
       filterDisplay="row"
@@ -47,8 +60,9 @@ export default function PublicationsView({
       metaKeySelection={false}
       onSelectionChange={(e) => setSelectedWorks(e.value)}
       paginator
+      paginatorLeft={paginatorLeft}
       paginatorPosition="top bottom"
-      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink RowsPerPageDropdown"
+      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={100}
       rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
@@ -74,6 +88,7 @@ export default function PublicationsView({
 }
 
 PublicationsView.propTypes = {
+  filteredAffiliationName: PropTypes.string.isRequired,
   selectedWorks: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
     allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -84,6 +99,7 @@ PublicationsView.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
+  setFilteredAffiliationName: PropTypes.func.isRequired,
   setSelectedWorks: PropTypes.func.isRequired,
   works: PropTypes.arrayOf(PropTypes.shape({
     affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
