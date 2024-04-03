@@ -28,7 +28,7 @@ export default function Home() {
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
-  const [view, setView] = useState();
+  const [view, setView] = useState('');
 
   const { data, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['data'],
