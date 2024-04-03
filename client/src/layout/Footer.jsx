@@ -104,6 +104,9 @@ export default function Footer() {
             <li className="fr-footer__bottom-item">
               <a className="fr-footer__bottom-link" href="#">Gestion des cookies</a>
             </li>
+            <li className="fr-footer__bottom-item">
+              <a className="fr-footer__bottom-link">{`v${import.meta.env.VITE_VERSION}`}</a>
+            </li>
           </ul>
           <div className="fr-footer__bottom-copy">
             <p>
