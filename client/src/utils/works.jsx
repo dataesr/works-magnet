@@ -71,7 +71,7 @@ const renderButtons = (selected, fn) => Object.values(status).map((st) => (
     style={{ display: 'block', width: '100%', textAlign: 'left' }}
     color="blue-ecume"
   >
-    <i className={`${st.buttonIcon} fr-mr-2w`} />
+    <i className={`${st.buttonIcon} fr-mr-2w`} style={{ color: st.iconColor }} />
     {st.buttonLabel}
   </Button>
 ));

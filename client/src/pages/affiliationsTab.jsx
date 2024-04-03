@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Badge,
+  Button,
   Row, Col,
   TextInput,
 } from '@dataesr/dsfr-plus';
@@ -15,6 +15,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [timer, setTimer] = useState();
+  const [fixedMenu, setFixedMenu] = useState(true);
 
   useEffect(() => {
     setFilteredAffiliations(affiliations);
@@ -35,7 +36,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
 
   return (
     <>
-      <div className="actions-menu" title="actions">
+      <div className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`} title="actions">
         <div className={`selected-item ${selectedAffiliations.length && 'selected'}`}>
           <span className="number">
             {selectedAffiliations.length}
@@ -43,6 +44,15 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
           {`selected affiliation${selectedAffiliations.length === 1 ? '' : 's'}`}
         </div>
         {renderButtons(selectedAffiliations, tagAffiliations, 'affiliation')}
+        <div className="text-right">
+          <Button
+            onClick={() => setFixedMenu(!fixedMenu)}
+            size="sm"
+            variant="tertiary"
+          >
+            {fixedMenu ? <i className="ri-pushpin-fill" /> : <i className="ri-pushpin-line" />}
+          </Button>
+        </div>
       </div>
       <Row>
         <Col>

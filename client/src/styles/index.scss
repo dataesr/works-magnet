@@ -54,13 +54,16 @@ body {
 }
 
 .actions-menu {
+  background-color: #ccc;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
   left: 0;
   overflow: hidden;
   position: fixed;
   top: 200px;
   transition: all 0.3s;
   white-space: nowrap;
-  width: 40px !important;
+  width: 40px;
   z-index: 3;
 
   &:hover {
@@ -68,8 +71,6 @@ body {
   }
 
   .button {
-    border-bottom-right-radius: 5px;
-    // border-top-right-radius: 5px;
     display: block;
   }
 
@@ -87,6 +88,10 @@ body {
   }
 
   .selected {
-    background-color: #8dc572;
+    background-color: #ccc;
   }
+}
+
+.action-menu-fixed {
+  width: 200px;
 }
