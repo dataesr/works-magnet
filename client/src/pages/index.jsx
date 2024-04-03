@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { Container, Spinner } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
 import { status } from '../config';
 import Filters from './filters';
 import { getData } from '../utils/works';
-import 'primereact/resources/primereact.min.css';
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import Datasets from './views/datasets';
 import Openalex from './views/openalex';
 import Publications from './views/publications';
-import Datasets from './views/datasets';
+
+import 'primereact/resources/primereact.min.css';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 export default function Home() {
   const [searchParams] = useSearchParams();

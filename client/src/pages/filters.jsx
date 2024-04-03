@@ -33,6 +33,7 @@ const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
 export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [getRoRChildren, setGetRoRChildren] = useState(false);
   const [message, setMessage] = useState('');
@@ -62,6 +63,7 @@ export default function Filters({ sendQuery }) {
         });
         setTags([]);
       } else {
+        setIsLoading(true);
         const affiliations = searchParams.getAll('affiliations');
         const deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
         setCurrentSearchParams({
@@ -106,6 +108,7 @@ export default function Filters({ sendQuery }) {
           });
         });
         setTags(allTags);
+        setIsLoading(false);
       }
     };
     getData();
@@ -217,6 +220,7 @@ export default function Filters({ sendQuery }) {
               <TagInput
                 getRoRChildren={getRoRChildren}
                 hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
+                isLoading={isLoading}
                 label="Affiliation name, RoR identifier"
                 message={message}
                 messageType={messageType}
