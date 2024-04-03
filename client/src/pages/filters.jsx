@@ -30,7 +30,7 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()].map((
 
 const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
 
-export default function Filters({ sendQuery, defaultView }) {
+export default function Filters({ sendQuery, view }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +59,7 @@ export default function Filters({ sendQuery, defaultView }) {
           deletedAffiliations: [],
           endYear: '2023',
           startYear: '2023',
-          view: defaultView,
+          view,
         });
         setTags([]);
       } else {
@@ -73,7 +73,7 @@ export default function Filters({ sendQuery, defaultView }) {
           deletedAffiliations,
           endYear: searchParams.get('endYear', '2023'),
           startYear: searchParams.get('startYear', '2023'),
-          view: searchParams.get('view', defaultView),
+          view: searchParams.get('view', view),
         });
 
         const queries = affiliations.map((affiliation) => getRorData(affiliation, getRoRChildren));
@@ -118,7 +118,7 @@ export default function Filters({ sendQuery, defaultView }) {
       }
     };
     getData();
-  }, [searchParams, setSearchParams, getRoRChildren, defaultView]);
+  }, [getRoRChildren, searchParams, setSearchParams, view]);
 
   const onTagsChange = async (affiliations, deletedAffiliations) => {
     const previousDeleted = currentSearchParams.deletedAffiliations || [];
@@ -300,5 +300,5 @@ export default function Filters({ sendQuery, defaultView }) {
 
 Filters.propTypes = {
   sendQuery: PropTypes.func.isRequired,
-  defaultView: PropTypes.string.isRequired,
+  view: PropTypes.string.isRequired,
 };

@@ -92,11 +92,11 @@ export default function Home() {
     setAllAffiliations(allAffiliationsTmp);
     setSelectedAffiliations([]);
   };
-  console.log((!isFetching && !searchParams.get('view') && isFetched));
+
   return (
     // TODO:do a cleaner way to display the spinner and views
     <>
-      <Filters sendQuery={sendQuery} defaultView={view} />
+      <Filters sendQuery={sendQuery} view={view} />
       <Container as="section">
         {isFetching && <Spinner size={48} />}
         {(!isFetching && !searchParams.get('view') && isFetched) && (
