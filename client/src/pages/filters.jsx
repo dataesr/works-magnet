@@ -215,14 +215,14 @@ export default function Filters({ sendQuery }) {
           <Row className="fr-p-2w">
             <Col xs="8">
               <TagInput
-                getRoRChildrexs={getRoRChildren}
+                getRoRChildren={getRoRChildren}
                 hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                 label="Affiliation name, RoR identifier"
                 message={message}
                 messageType={messageType}
                 onInputHandler={setOnInputAffiliationsHandler}
                 onTagsChange={onTagsChange}
-                setGetRoRChildrexs={setGetRoRChildren}
+                setGetRoRChildren={setGetRoRChildren}
                 tags={tags}
               />
             </Col>

@@ -146,7 +146,7 @@ export default function TagInput({
                     className="fr-mr-1w"
                     // eslint-disable-next-line react/no-array-index-key
                     key={`tags-ror-${index}`}
-                    onClick={() => setGetRoRChildren((prev) => !prev)}
+                    onClick={() => setGetRoRChildren(!getRoRChildren)}
                     size="sm"
                     variant="text"
                   >
