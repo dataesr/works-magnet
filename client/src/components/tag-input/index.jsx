@@ -156,14 +156,12 @@ export default function TagInput({
                           <>
                             <i className="ri-arrow-go-back-line fr-mr-1w" />
                             Remove RoR children
-                            {getRoRChildren}
                           </>
                         )
                         : (
                           <>
                             <i className="ri-node-tree fr-mr-1w" />
                             Get children from RoR
-                            {getRoRChildren ? 'oui' : 'non'}
                           </>
                         )
                     }
