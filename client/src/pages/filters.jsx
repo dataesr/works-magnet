@@ -213,9 +213,8 @@ export default function Filters({ sendQuery }) {
         </Container>
       ) : (
         <Container as="section" className="filters fr-my-5w">
-          <Row className="fr-p-2w" verticalAlign="bottom">
+          <Row className="fr-p-2w">
             <Col xs="8">
-
               <TagInput
                 getRoRChildrexs={getRoRChildren}
                 hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
@@ -227,7 +226,6 @@ export default function Filters({ sendQuery }) {
                 setGetRoRChildrexs={setGetRoRChildren}
                 tags={tags}
               />
-
             </Col>
             <Col offsetXs="1" className="text-right fr-pl-3w">
               <Row gutters verticalAlign="bottom">

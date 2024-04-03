@@ -91,12 +91,25 @@ export default function TagInput({
   }
 
   return (
-    <div>
+    <>
       <Row verticalAlign="bottom">
         <Col className="fr-pb-2w">
           <TextInput
             hint={hint}
-            label={label}
+            label={(
+              <>
+                {label}
+                <Button
+                  className="fr-ml-1w"
+                  color="yellow-tournesol"
+                  icon="delete-line"
+                  onClick={() => onTagsChange([], excludedValues)}
+                  size="sm"
+                  title="Remove all affiliations"
+                  variant="text"
+                />
+              </>
+            )}
             message={message}
             messageType={messageType}
             onChange={(e) => setInput(e.target.value)}
@@ -174,13 +187,7 @@ export default function TagInput({
           }
         </Button>
       )}
-      <Button
-        onClick={() => onTagsChange([], excludedValues)}
-        size="sm"
-      >
-        Clear all affiliations
-      </Button>
-    </div>
+    </>
   );
 }
 
