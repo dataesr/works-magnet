@@ -148,11 +148,15 @@ export default function Home() {
           && searchParams.get('view') === 'datasets'
           && (
             <Datasets
+              allAffiliations={allAffiliations}
               allDatasets={allDatasets}
               data={data}
               options={options}
+              selectedAffiliations={selectedAffiliations}
               selectedDatasets={selectedDatasets}
+              setSelectedAffiliations={setSelectedAffiliations}
               setSelectedDatasets={setSelectedDatasets}
+              tagAffiliations={tagAffiliations}
               tagDatasets={tagDatasets}
             />
           )}

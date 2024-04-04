@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
+  Button,
   Row, Col,
   TextInput,
 } from '@dataesr/dsfr-plus';
@@ -19,6 +20,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [timer, setTimer] = useState();
+  const [fixedMenu, setFixedMenu] = useState(true);
 
   useEffect(() => {
     setFilteredDatasets(datasets);
@@ -50,9 +52,27 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
 
   return (
     <>
+      <div className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`} title="actions">
+        <div className={`selected-item ${selectedDatasets.length && 'selected'}`}>
+          <span className="number">
+            {selectedDatasets.length}
+          </span>
+          {`selected dataset${selectedDatasets.length === 1 ? '' : 's'}`}
+        </div>
+        {renderButtons(selectedDatasets, tagDatasets, 'dataset')}
+        <div className="text-right">
+          <Button
+            onClick={() => setFixedMenu(!fixedMenu)}
+            size="sm"
+            variant="tertiary"
+          >
+            {fixedMenu ? <i className="ri-pushpin-fill" /> : <i className="ri-pushpin-line" />}
+          </Button>
+        </div>
+      </div>
       <Row gutters>
         <Col xs="9">
-          {renderButtons(selectedDatasets, tagDatasets, 'dataset')}
+          {/* {renderButtons(selectedDatasets, tagDatasets, 'dataset')} */}
           {renderButtonDataset(datasetLinkedArticle, tagDatasets, 'without affiliations but linked to an article from my institution', 'ri-link')}
           {renderButtonDataset(datasetPerson, tagDatasets, 'without affiliations but at least 3 authors detected from my institution', 'ri-team-line')}
         </Col>

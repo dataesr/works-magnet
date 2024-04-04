@@ -9,12 +9,17 @@ import {
 import ActionsDatasets from '../actions/actionsDatasets';
 import DatasetsTab from '../datasetsTab';
 import DatasetsYearlyDistribution from '../datasetsYearlyDistribution';
+import AffiliationsTab from '../affiliationsTab';
 
 export default function Datasets({
+  allAffiliations,
   allDatasets,
   data,
+  selectedAffiliations,
   selectedDatasets,
+  setSelectedAffiliations,
   setSelectedDatasets,
+  tagAffiliations,
   tagDatasets,
 }) {
   const [Tab, setTab] = useState('listOfDatasets');
@@ -35,6 +40,11 @@ export default function Datasets({
             onChange={(e) => setTab(e.target.value)}
           >
             <SegmentedElement
+              checked={Tab === 'selectAffiliations'}
+              label="Select the raw affiliations for your institution"
+              value="selectAffiliations"
+            />
+            <SegmentedElement
               checked={Tab === 'listOfDatasets'}
               label="🗃 List of datasets"
               value="listOfDatasets"
@@ -49,6 +59,16 @@ export default function Datasets({
       </Row>
       <Row>
         <Col xs="12">
+          {
+            (Tab === 'selectAffiliations') && (
+              <AffiliationsTab
+                affiliations={allAffiliations}
+                selectedAffiliations={selectedAffiliations}
+                setSelectedAffiliations={setSelectedAffiliations}
+                tagAffiliations={tagAffiliations}
+              />
+            )
+          }
           {
             (Tab === 'listOfDatasets') && (
               <>
@@ -70,13 +90,23 @@ export default function Datasets({
           {
             (Tab === 'insights') && (
               (allDatasets.filter((dataset) => dataset.status === 'validated').length > 0) ? (
-                <>
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="publisher" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="type" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="format" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="client_id" />
-                  <DatasetsYearlyDistribution allDatasets={allDatasets} field="affiliations" subfield="rawAffiliation" />
-                </>
+                <Row>
+                  <Col xs="6">
+                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="publisher" />
+                  </Col>
+                  <Col xs="6">
+                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="type" />
+                  </Col>
+                  <Col xs="6">
+                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="format" />
+                  </Col>
+                  <Col xs="6">
+                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="client_id" />
+                  </Col>
+                  <Col xs="6">
+                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="affiliations" subfield="rawAffiliation" />
+                  </Col>
+                </Row>
               ) : (
                 <div className="fr-callout fr-icon-information-line">
                   <h3 className="fr-callout__title">
@@ -97,6 +127,16 @@ export default function Datasets({
 }
 
 Datasets.propTypes = {
+  allAffiliations: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    nameHtml: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    worksNumber: PropTypes.number.isRequired,
+  })).isRequired,
+  setSelectedAffiliations: PropTypes.func.isRequired,
+  selectedAffiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+  tagAffiliations: PropTypes.func.isRequired,
   allDatasets: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,

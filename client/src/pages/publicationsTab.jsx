@@ -1,6 +1,10 @@
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { Col, Row } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  Col, Row,
+} from '@dataesr/dsfr-plus';
+
 import PublicationsView from './publicationsView';
 import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
@@ -14,6 +18,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
   const [filteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [timer, setTimer] = useState();
+  const [fixedMenu, setFixedMenu] = useState(true);
 
   useEffect(() => {
     setFilteredPublications(publications);
@@ -40,11 +45,26 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
 
   return (
     <>
+      <div className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`} title="actions">
+        <div className={`selected-item ${selectedPublications.length && 'selected'}`}>
+          <span className="number">
+            {selectedPublications.length}
+          </span>
+          {`selected publication${selectedPublications.length === 1 ? '' : 's'}`}
+        </div>
+        {renderButtons(selectedPublications, tagPublications, 'publication')}
+        <div className="text-right">
+          <Button
+            onClick={() => setFixedMenu(!fixedMenu)}
+            size="sm"
+            variant="tertiary"
+          >
+            {fixedMenu ? <i className="ri-pushpin-fill" /> : <i className="ri-pushpin-line" />}
+          </Button>
+        </div>
+      </div>
       <Row gutters>
-        <Col n="9">
-          {renderButtons(selectedPublications, tagPublications, 'publication')}
-        </Col>
-        <Col n="3">
+        <Col xs="12">
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
@@ -52,9 +72,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
             }))}
           />
         </Col>
-      </Row>
-      <Row gutters>
-        <Col n="12">
+        <Col xs="12">
           <PublicationsView
             selectedWorks={selectedPublications}
             setSelectedWorks={setSelectedPublications}
