@@ -7,6 +7,7 @@ import Footer from './Footer';
 import Header from './Header';
 
 export default function Layout() {
+  // TODO: restore SwitchTheme
   // const [isSwitchThemeOpen, setIsSwitchThemeOpen] = useState(false);
 
   return (

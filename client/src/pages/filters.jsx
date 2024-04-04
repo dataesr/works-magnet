@@ -185,7 +185,7 @@ export default function Filters({ sendQuery }) {
                       {`${currentSearchParams.startYear} - ${currentSearchParams.endYear}`}
                     </Tag>
                     {tags.slice(0, 5).map((tag) => (
-                      <Tag color="blue-ecume">
+                      <Tag color="blue-ecume" key={`tag-${tag.label}`}>
                         {tag.label}
                       </Tag>
                     ))}

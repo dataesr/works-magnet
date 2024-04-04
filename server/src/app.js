@@ -12,7 +12,7 @@ const apiSpec = 'src/openapi/api.yml';
 const apiDocument = YAML.load(apiSpec);
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: 52428800 }));
 app.use(express.urlencoded({ extended: false }));
 app.disable('x-powered-by');
 if (process.env.NODE_ENV === 'development') {
