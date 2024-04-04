@@ -189,7 +189,7 @@ const formatFosmResult = (result, options) => {
   return answer;
 };
 
-const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) => {
+const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
       `${process.env.FOSM_URL}/${process.env.FOSM_INDEX}/_pit?keep_alive=${process.env.FOSM_PIT_KEEP_ALIVE}`,
@@ -213,7 +213,7 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
       if (response.ok) return response.json();
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
-      return 'Oops... FOSM API request did not work';
+      return [];
     })
     .then((response) => {
       const hits = response?.hits?.hits ?? [];
@@ -237,6 +237,11 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
       return results;
     })
     .catch((error) => {
+      if (remainingTries > 0) {
+        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000)))
+          .then(() => getFosmWorksByYear({ remainingTries: remainingTries - 1, results, options, pit, searchAfter }));
+      }
+      console.error(`Error while fetching ${url} :`);
       console.error(error);
       return [];
     });
@@ -313,7 +318,7 @@ const getOpenAlexAffiliation = (author) => {
   return { key, label, rawAffiliation, rors, rorsToCorrect, source };
 };
 
-const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = []) => {
+const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = [], remainingTries = 3) => {
   let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
@@ -336,11 +341,11 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     .then((response) => {
       if (response.ok) return response.json();
       if (response.status === 429) {
-        return new Promise((resolve) => setTimeout(resolve, 500)).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
+        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
       }
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
-      return 'Oops... OpenAlex API request did not work';
+      return [];
     })
     .then((response) => {
       const hits = response?.results ?? [];
@@ -375,6 +380,11 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
       return results;
     })
     .catch((error) => {
+      if (remainingTries > 0) {
+        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000)))
+          .then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse, remainingTries - 1));
+      }
+      console.error(`Error while fetching ${url} :`);
       console.error(error);
       return [];
     });

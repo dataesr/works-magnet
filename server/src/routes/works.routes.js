@@ -21,13 +21,14 @@ router.route('/works')
         const queries = [];
         queries.push(getFosmWorks({ options }));
         const affiliationStringsChunks = chunkArray({ array: options.affiliationStrings });
-        // Interrogate OpenAlex by separating ror from others affiliations
+        const rorsChunks = chunkArray({ array: options.rors });
+        // Separate RoRs from Affiliations strings to query OpenAlex
         affiliationStringsChunks.forEach((affiliationStrings) => {
           queries.push(getOpenAlexPublications({ options: { ...options, affiliationStrings, rors: [] } }));
         });
-        if (options?.rors?.length > 0) {
-          queries.push(getOpenAlexPublications({ options: { ...options, affiliationStrings: [] } }));
-        }
+        rorsChunks.forEach((rors) => {
+          queries.push(getOpenAlexPublications({ options: { ...options, rors, affiliationStrings: [] } }));
+        });
         const responses = await Promise.all(queries);
         console.timeEnd(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
         const works = responses.flat();
