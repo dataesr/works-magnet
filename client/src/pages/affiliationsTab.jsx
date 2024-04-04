@@ -4,6 +4,7 @@ import {
   Button,
   Row, Col,
   TextInput,
+  Title,
 } from '@dataesr/dsfr-plus';
 
 import AffiliationsView from './affiliationsView';
@@ -54,6 +55,25 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
           </Button>
         </div>
       </div>
+      <Row>
+        <Col xs="12">
+          <div className="fr-callout callout-color">
+            <Title as="h3" look="h6">
+              Select the raw affiliations corresponding to your institution
+            </Title>
+            <p className="fr-callout__text fr-text--sm">
+              🔎 The array below summarizes the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query.
+              <br />
+              🤔 You can validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not. If an affiliation is validated, it will also validate all the works with that affiliation string.
+              <br />
+              🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing. If any errors, please use the first tab to send feedback.
+              <br />
+              💾 You can save (export to a file) those decisions, and restore them later on.
+            </p>
+          </div>
+        </Col>
+        <Col />
+      </Row>
       <Row>
         <Col>
           <Gauge

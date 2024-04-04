@@ -20,7 +20,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [timer, setTimer] = useState();
-  const [fixedMenu, setFixedMenu] = useState(true);
+  const [fixedMenu, setFixedMenu] = useState(false);
 
   useEffect(() => {
     setFilteredDatasets(datasets);

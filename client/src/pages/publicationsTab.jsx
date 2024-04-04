@@ -18,7 +18,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
   const [filteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [timer, setTimer] = useState();
-  const [fixedMenu, setFixedMenu] = useState(true);
+  const [fixedMenu, setFixedMenu] = useState(false);
 
   useEffect(() => {
     setFilteredPublications(publications);

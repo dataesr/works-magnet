@@ -26,13 +26,11 @@ export default function Datasets({
   return (
     <>
       <Row>
-        <Col xs="12">
+        <Col>
           <Title as="h2" look="h6" className="fr-mt-1w">
             🗃 Find the datasets affiliated to your institution
           </Title>
         </Col>
-      </Row>
-      <Row>
         <Col>
           <SegmentedControl
             className="fr-mb-1w"
