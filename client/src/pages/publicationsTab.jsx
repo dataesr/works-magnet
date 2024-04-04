@@ -74,12 +74,12 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
         </Col>
         <Col xs="12">
           <PublicationsView
+            filteredAffiliationName={filteredAffiliationName}
             selectedWorks={selectedPublications}
+            setFilteredAffiliationName={setFilteredAffiliationName}
             setSelectedWorks={setSelectedPublications}
             works={filteredPublications}
             years={years}
-            filteredAffiliationName={filteredAffiliationName}
-            setFilteredAffiliationName={setFilteredAffiliationName}
           />
         </Col>
       </Row>

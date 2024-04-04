@@ -158,7 +158,7 @@ export default function Filters({ sendQuery, view }) {
     <>
       {isSticky ? (
         <Container fluid as="section" className="filters fr-my-5w">
-          <Row alignItems="top" className="fr-p-2w">
+          <Row verticalAlign="top" className="fr-p-2w">
             <Ribbon />
             <Col xs="2" offsetXs="1">
               <Title as="h1" look="h6" className="fr-m-0">
