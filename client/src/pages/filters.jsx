@@ -30,7 +30,7 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()].map((
 
 const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
 
-export default function Filters({ sendQuery, view }) {
+export default function Filters({ sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -59,12 +59,12 @@ export default function Filters({ sendQuery, view }) {
           deletedAffiliations: [],
           endYear: '2023',
           startYear: '2023',
-          view,
+          view: '',
         });
         setTags([]);
       } else {
         setIsLoading(true);
-        const affiliations = searchParams.getAll('affiliations');
+        const affiliations = searchParams.getAll('affiliations') || [];
         const deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
 
         setCurrentSearchParams({
@@ -73,7 +73,7 @@ export default function Filters({ sendQuery, view }) {
           deletedAffiliations,
           endYear: searchParams.get('endYear', '2023'),
           startYear: searchParams.get('startYear', '2023'),
-          view: searchParams.get('view', view),
+          view: searchParams.get('view', ''),
         });
 
         const queries = affiliations.map((affiliation) => getRorData(affiliation, getRoRChildren));
@@ -118,7 +118,7 @@ export default function Filters({ sendQuery, view }) {
       }
     };
     getData();
-  }, [getRoRChildren, searchParams, setSearchParams, view]);
+  }, [getRoRChildren, searchParams, setSearchParams]);
 
   const onTagsChange = async (affiliations, deletedAffiliations) => {
     const previousDeleted = currentSearchParams.deletedAffiliations || [];
@@ -300,5 +300,4 @@ export default function Filters({ sendQuery, view }) {
 
 Filters.propTypes = {
   sendQuery: PropTypes.func.isRequired,
-  view: PropTypes.string.isRequired,
 };

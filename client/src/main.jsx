@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { HashRouter, useLocation } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import { createInstance, MatomoProvider, useMatomo } from '@m4tt72/matomo-tracker-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -37,7 +37,7 @@ function PageTracker() {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <MatomoProvider value={matomo}>
-      <HashRouter>
+      <BrowserRouter>
         <PageTracker />
         <ToastContextProvider>
           <QueryClientProvider client={queryClient}>
@@ -45,7 +45,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Router />
           </QueryClientProvider>
         </ToastContextProvider>
-      </HashRouter>
+      </BrowserRouter>
     </MatomoProvider>
   </React.StrictMode>,
 );
