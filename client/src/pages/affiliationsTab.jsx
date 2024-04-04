@@ -16,7 +16,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [timer, setTimer] = useState();
-  const [fixedMenu, setFixedMenu] = useState(true);
+  const [fixedMenu, setFixedMenu] = useState(false);
 
   useEffect(() => { // TODO : look for a better way to do this
     setFilteredAffiliations(affiliations);
