@@ -241,9 +241,9 @@ export default function Filters({ sendQuery }) {
                 <Col>
                   <Select
                     aria-label="Select a start year for search"
-                    label="Start year"
                     buttonLabel={currentSearchParams.startYear}
-                    onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
+                    label="Start year"
+                    onSelectionChange={(startYear) => setSearchParams({ ...currentSearchParams, startYear })}
                   >
                     {years.map((year) => (
                       <SelectOption
@@ -261,7 +261,7 @@ export default function Filters({ sendQuery }) {
                     aria-label="Select an end year for search"
                     buttonLabel={currentSearchParams.endYear}
                     label="End year"
-                    onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
+                    onSelectionChange={(endYear) => setSearchParams({ ...currentSearchParams, endYear })}
                   >
                     {years.map((year) => (
                       <SelectOption
