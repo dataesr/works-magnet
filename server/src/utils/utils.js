@@ -1,4 +1,4 @@
-const chunkArray = ({ array, perChunk = 10 }) => array.reduce((all, one, i) => {
+const chunkArray = ({ array, perChunk = 30 }) => array.reduce((all, one, i) => {
   const ch = Math.floor(i / perChunk);
   // eslint-disable-next-line no-param-reassign
   all[ch] = [].concat((all[ch] || []), one);
