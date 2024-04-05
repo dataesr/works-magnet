@@ -67,7 +67,7 @@ export default function OpenalexView({
       paginator
       paginatorLeft={paginatorLeft}
       paginatorPosition="top bottom"
-      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink RowsPerPageDropdown"
+      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={100}
       rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
