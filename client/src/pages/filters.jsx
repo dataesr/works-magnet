@@ -184,7 +184,7 @@ export default function Filters({ isFetched, sendQuery }) {
                     <Tag color="blue-ecume" key="tag-sticky-years">
                       {`${currentSearchParams.startYear} - ${currentSearchParams.endYear}`}
                     </Tag>
-                    {tags.slice(0, 5).map((tag) => (
+                    {tags.slice(0, 2).map((tag) => (
                       <Tag color="blue-ecume" key={`tag-sticky-${tag.label}`}>
                         {tag.label}
                       </Tag>
