@@ -181,7 +181,7 @@ export default function Filters({ sendQuery }) {
                 </Col>
                 <Col>
                   <TagGroup>
-                    <Tag color="blue-ecume">
+                    <Tag color="blue-ecume" key="tag-sticky-years">
                       {`${currentSearchParams.startYear} - ${currentSearchParams.endYear}`}
                     </Tag>
                     {tags.slice(0, 5).map((tag) => (
@@ -189,8 +189,8 @@ export default function Filters({ sendQuery }) {
                         {tag.label}
                       </Tag>
                     ))}
-                    {(tags.length > 5) && <span>...</span>}
                   </TagGroup>
+                  {(tags.length > 5) && <span>...</span>}
                 </Col>
                 <Col className="text-right">
                   <SegmentedControl
