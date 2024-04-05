@@ -2,11 +2,21 @@ import PropTypes from 'prop-types';
 
 export default function PublicationsTile({ setView }) {
   return (
-    <div className="fr-tile fr-tile--horizontal" onClick={() => setView('publications')}>
+    <div
+      className="fr-tile fr-tile--horizontal"
+      onClick={() => setView('publications')}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          setView('publications');
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <p>Find affiliated publications</p>
+            <p>📑 Find the publications affiliated to your institution</p>
           </h3>
           <p className="fr-tile__detail">
             Lorem ipsum dolor sit amet consectetur adipisicing elit.

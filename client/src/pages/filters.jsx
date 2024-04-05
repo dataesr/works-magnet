@@ -200,7 +200,7 @@ export default function Filters({ sendQuery }) {
                   >
                     <SegmentedElement
                       checked={currentSearchParams.view === 'openalex'}
-                      label="Improve OpenAlex"
+                      label="Improve RoR matching in OpenAlex"
                       value="openalex"
                     />
                     <SegmentedElement
