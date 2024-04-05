@@ -20,6 +20,8 @@ export default function DatasetsView({
   selectedWorks,
   setSelectedWorks,
   works,
+  filteredAffiliationName,
+  setFilteredAffiliationName,
 }) {
   const [filters] = useState({
     publisher: { value: null, matchMode: FilterMatchMode.IN },
@@ -40,6 +42,19 @@ export default function DatasetsView({
     />
   );
 
+  const paginatorLeft = () => (
+    <div>
+      <i className="fr-icon-search-line fr-mr-1w" />
+      Search in any field
+      <input
+        className="fr-ml-1w"
+        onChange={(e) => setFilteredAffiliationName(e.target.value)}
+        value={filteredAffiliationName}
+        style={{ width: '500px', border: '1px solid #ced4da', borderRadius: '4px', padding: '0.375rem 0.75rem' }}
+      />
+    </div>
+  );
+
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -49,6 +64,7 @@ export default function DatasetsView({
       metaKeySelection={false}
       onSelectionChange={(e) => setSelectedWorks(e.value)}
       paginator
+      paginatorLeft={paginatorLeft}
       paginatorPosition="top bottom"
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink RowsPerPageDropdown"
       rows={100}
@@ -67,7 +83,16 @@ export default function DatasetsView({
       <Column field="allIds" header="Ids" body={allIdsTemplate} style={{ maxWidth: '180px' }} />
       <Column field="type" header="Type" style={{ maxWidth: '90px' }} showFilterMenu={false} />
       <Column field="year" header="Year" style={{ maxWidth: '70px' }} />
-      <Column field="publisher" header="Publisher" style={{ maxWidth: '70px' }} filterField="publisher" showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} filter filterElement={publishersFilterTemplate} />
+      <Column
+        field="publisher"
+        filter
+        filterElement={publishersFilterTemplate}
+        filterField="publisher"
+        filterMenuStyle={{ width: '14rem' }}
+        header="Publisher"
+        showFilterMenu={false}
+        style={{ maxWidth: '70px' }}
+      />
       <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} style={{ maxWidth: '220px' }} />
       <Column field="fr_publications_linked" header="Linked Article" body={linkedDOITemplate} style={{ maxWidth: '180px' }} />
       <Column field="fr_authors_orcid" header="My institution author ORCID" body={linkedORCIDTemplate} style={{ maxWidth: '150px' }} />
@@ -99,6 +124,8 @@ DatasetsView.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
+  filteredAffiliationName: PropTypes.string.isRequired,
+  setFilteredAffiliationName: PropTypes.func.isRequired,
 };
 
 DatasetsView.defaultProps = {

@@ -29,20 +29,13 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
 
   return (
     <Container fluid>
-      <Row>
-        <Col n="12" offset="0">
-          <TextInput
-            label="Search in affiliations name"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
-        </Col>
-      </Row>
       <Row gutters>
         <Col n="12">
           <OpenalexView
             allAffiliations={filteredAffiliations}
+            filteredAffiliationName={filteredAffiliationName}
             setAllOpenalexCorrections={setAllOpenalexCorrections}
+            setFilteredAffiliationName={setFilteredAffiliationName}
           />
         </Col>
       </Row>
