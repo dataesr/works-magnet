@@ -152,7 +152,11 @@ export default function Filters({ isFetched, sendQuery }) {
     }
     sendQuery(queryParams);
   };
-
+  const NB_TAGS_STICKY = 2;
+  const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
+  if (tags.length > NB_TAGS_STICKY) {
+    tagsDisplayed.push({ label: '...' });
+  }
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
@@ -181,16 +185,15 @@ export default function Filters({ isFetched, sendQuery }) {
                 </Col>
                 <Col>
                   <TagGroup>
-                    <Tag color="blue-ecume" key="tag-sticky-years">
+                    <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
                       {`${currentSearchParams.startYear} - ${currentSearchParams.endYear}`}
                     </Tag>
-                    {tags.slice(0, 2).map((tag) => (
-                      <Tag color="blue-ecume" key={`tag-sticky-${tag.label}`}>
+                    {tagsDisplayed.map((tag) => (
+                      <Tag color="blue-ecume" key={`tag-sticky-${tag.label}`} size="sm">
                         {tag.label}
                       </Tag>
                     ))}
                   </TagGroup>
-                  {(tags.length > 5) && <span>...</span>}
                 </Col>
                 <Col className="text-right">
                   <SegmentedControl
