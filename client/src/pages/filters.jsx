@@ -205,12 +205,12 @@ export default function Filters({ sendQuery }) {
                     />
                     <SegmentedElement
                       checked={currentSearchParams.view === 'publications'}
-                      label="Find affliliated publications"
+                      label="Find affiliated publications"
                       value="publications"
                     />
                     <SegmentedElement
                       checked={currentSearchParams.view === 'datasets'}
-                      label="Find affliated datasets"
+                      label="Find affiliated datasets"
                       value="datasets"
                     />
                   </SegmentedControl>
