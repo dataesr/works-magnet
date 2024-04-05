@@ -1,4 +1,3 @@
-import { TextInput } from '@dataesr/dsfr-plus';
 import { FilterMatchMode } from 'primereact/api';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -80,7 +79,16 @@ export default function PublicationsView({
       value={works}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} style={{ minWidth: '150px' }} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} filter filterElement={statusRowFilterTemplate} />
+      <Column
+        body={statusTemplate}
+        field="status"
+        filter
+        filterElement={statusRowFilterTemplate}
+        filterMenuStyle={{ width: '14rem' }}
+        header="Status"
+        showFilterMenu={false}
+        style={{ minWidth: '150px' }}
+      />
       <Column field="allIds" header="Ids" body={allIdsTemplate} style={{ maxWidth: '180px' }} />
       <Column field="datasource" header="Source" body={datasourceTemplate} style={{ maxWidth: '80px' }} />
       <Column field="type" header="Type" style={{ maxWidth: '90px' }} />

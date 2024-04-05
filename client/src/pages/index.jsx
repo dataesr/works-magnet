@@ -103,9 +103,10 @@ export default function Home() {
   return (
     // TODO:do a cleaner way to display the spinner and views
     <>
-      <Filters sendQuery={sendQuery} />
+      <Filters isFetched sendQuery={sendQuery} />
       <Container as="section">
         {isFetching && <Spinner size={48} />}
+
         {(!isFetching && !searchParams.get('view') && isFetched) && (
           <Row gutters>
             <Col>
@@ -119,6 +120,7 @@ export default function Home() {
             </Col>
           </Row>
         )}
+
         {!isFetching
           && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0)
           && searchParams.get('view') === 'openalex'
