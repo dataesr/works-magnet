@@ -54,7 +54,7 @@ export default function Publications({
               <SegmentedControl
                 className="fr-mb-1w"
                 name="tabSelector"
-                onChange={(e) => setTab(e.target.value)}
+                onChangeValue={(value) => setTab(value)}
               >
                 <SegmentedElement
                   checked={Tab === 'selectAffiliations'}
@@ -142,7 +142,6 @@ Publications.propTypes = {
   })).isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
-  setAllAffiliations: PropTypes.func.isRequired,
   tagAffiliations: PropTypes.func.isRequired,
   options: PropTypes.object.isRequired,
   allPublications: PropTypes.arrayOf(PropTypes.object).isRequired,

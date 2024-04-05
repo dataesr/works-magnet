@@ -3,6 +3,7 @@ import {
   Button,
   Checkbox,
   Container, Row, Col,
+  Modal, ModalContent,
   SegmentedControl, SegmentedElement,
   Select, SelectOption,
   TagGroup, Tag,
@@ -34,6 +35,7 @@ export default function Filters({ isFetched, sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [getRoRChildren, setGetRoRChildren] = useState(false);
   const [message, setMessage] = useState('');
@@ -151,6 +153,7 @@ export default function Filters({ isFetched, sendQuery }) {
       return;
     }
     sendQuery(queryParams);
+    setIsOpen(false);
   };
   const NB_TAGS_STICKY = 2;
   const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
@@ -199,7 +202,7 @@ export default function Filters({ isFetched, sendQuery }) {
                   <SegmentedControl
                     id="segSelector"
                     name="segSelector"
-                    onChange={(e) => setSearchParams({ ...currentSearchParams, view: e.target.value })}
+                    onChangeValue={(view) => setSearchParams({ ...currentSearchParams, view })}
                   >
                     <SegmentedElement
                       checked={currentSearchParams.view === 'openalex'}
@@ -236,6 +239,7 @@ export default function Filters({ isFetched, sendQuery }) {
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
                   onTagsChange={onTagsChange}
+                  seeMoreAction={(e) => { setIsOpen(true); e.preventDefault(); }}
                   setGetRoRChildren={setGetRoRChildren}
                   tags={tags}
                 />
@@ -305,7 +309,7 @@ export default function Filters({ isFetched, sendQuery }) {
                     <SegmentedControl
                       id="segSelector"
                       name="segSelector"
-                      onChange={(e) => setSearchParams({ ...currentSearchParams, view: e.target.value })}
+                      onChangeValue={(view) => setSearchParams({ ...currentSearchParams, view })}
                     >
                       <SegmentedElement
                         checked={currentSearchParams.view === 'openalex'}
@@ -330,6 +334,86 @@ export default function Filters({ isFetched, sendQuery }) {
           }
         </>
       )}
+      <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
+        <ModalContent>
+          <Container as="section" className="filters fr-my-5w">
+            <Row className="fr-p-2w">
+              <Col xs="12" className="fr-pb-3w">
+                <Row gutters verticalAlign="bottom">
+                  <Col>
+                    <Select
+                      aria-label="Select a start year for search"
+                      buttonLabel={currentSearchParams.startYear}
+                      label="Start year"
+                      onSelectionChange={(startYear) => setSearchParams({ ...currentSearchParams, startYear })}
+                    >
+                      {years.map((year) => (
+                        <SelectOption
+                          color="blue-cumulus"
+                          key={year.value}
+                          selected={year.value === currentSearchParams.startYear}
+                        >
+                          {year.label}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </Col>
+                  <Col>
+                    <Select
+                      aria-label="Select an end year for search"
+                      buttonLabel={currentSearchParams.endYear}
+                      label="End year"
+                      onSelectionChange={(endYear) => setSearchParams({ ...currentSearchParams, endYear })}
+                    >
+                      {years.map((year) => (
+                        <SelectOption
+                          color="blue-cumulus"
+                          key={year.value}
+                          selected={year.value === currentSearchParams.startYear}
+                        >
+                          {year.label}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </Col>
+                  <Col>
+                    <Checkbox
+                      checked={currentSearchParams?.datasets ?? false}
+                      label="Search for datasets only"
+                      onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
+                    />
+                  </Col>
+                </Row>
+              </Col>
+              <Col xs="12">
+                <TagInput
+                  getRoRChildren={getRoRChildren}
+                  hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
+                  isLoading={isLoading}
+                  label="Affiliation name, RoR identifier"
+                  message={message}
+                  messageType={messageType}
+                  onInputHandler={setOnInputAffiliationsHandler}
+                  onTagsChange={onTagsChange}
+                  seeMoreAfter={0}
+                  setGetRoRChildren={setGetRoRChildren}
+                  tags={tags}
+                />
+              </Col>
+              <Col xs="12">
+                <Button
+                  className="fr-mt-2w"
+                  disabled={searchParams.getAll('affiliations').length === 0}
+                  icon="search-line"
+                  onClick={checkAndSendQuery}
+                >
+                  Search works
+                </Button>
+              </Col>
+            </Row>
+          </Container>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

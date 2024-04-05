@@ -23,6 +23,8 @@ export default function TagInput({
   onInputHandler,
   onTagsChange,
   placeholder,
+  seeMoreAction,
+  seeMoreAfter,
   setGetRoRChildren,
   tags,
 }) {
@@ -30,6 +32,7 @@ export default function TagInput({
   const [input, setInput] = useState('');
   const [seeMore, setSeeMore] = useState(false);
   const [values, setValues] = useState(tags);
+  const _seeMoreAction = seeMoreAction || (() => setSeeMore((prev) => !prev));
 
   const getTagColor = (tag) => {
     if (tag.disable) return 'beige-gris-galet';
@@ -122,7 +125,7 @@ export default function TagInput({
       </Row>
       {isLoading ? <Spinner size={48} /> : (
         <>
-          {structuredTags.slice(0, seeMore ? structuredTags.length : SEE_MORE_AFTER).map((currentTags, index) => (
+          {structuredTags.slice(0, seeMore || seeMoreAfter === 0 ? structuredTags.length : seeMoreAfter).map((currentTags, index) => (
             // eslint-disable-next-line react/no-array-index-key
             <Row key={`tags-row-${index}`}>
               <Col>
@@ -172,16 +175,16 @@ export default function TagInput({
               </Col>
             </Row>
           ))}
-          {(structuredTags.length > SEE_MORE_AFTER) && (
+          {seeMoreAfter !== 0 && structuredTags.length > seeMoreAfter && (
             <Button
               className="fr-mr-1w"
-              onClick={() => setSeeMore((prev) => !prev)}
+              onClick={_seeMoreAction}
               size="sm"
             >
               {
                 seeMore
                   ? 'Reduce the list'
-                  : `Display ${structuredTags.length - SEE_MORE_AFTER} more rows`
+                  : `Display ${structuredTags.length - seeMoreAfter} more rows`
               }
             </Button>
           )}
@@ -202,6 +205,8 @@ TagInput.propTypes = {
   onInputHandler: PropTypes.func,
   onTagsChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
+  seeMoreAction: PropTypes.func,
+  seeMoreAfter: PropTypes.number,
   setGetRoRChildren: PropTypes.func,
   tags: PropTypes.arrayOf(PropTypes.object),
 };
@@ -215,6 +220,8 @@ TagInput.defaultProps = {
   messageType: '',
   onInputHandler: () => { },
   placeholder: '',
+  seeMoreAfter: SEE_MORE_AFTER,
+  seeMoreAction: undefined,
   setGetRoRChildren: () => { },
   tags: [],
 };

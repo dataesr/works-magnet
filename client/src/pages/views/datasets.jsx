@@ -36,7 +36,7 @@ export default function Datasets({
           <SegmentedControl
             className="fr-mb-1w"
             name="tabSelector"
-            onChange={(e) => setTab(e.target.value)}
+            onChangeValue={(value) => setTab(value)}
           >
             <SegmentedElement
               checked={Tab === 'selectAffiliations'}
@@ -165,7 +165,6 @@ Datasets.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
-  setAllAffiliations: PropTypes.func.isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
   tagAffiliations: PropTypes.func.isRequired,
