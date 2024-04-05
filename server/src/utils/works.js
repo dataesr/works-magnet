@@ -36,16 +36,14 @@ const deduplicateWorks = (works) => {
 
 const getFosmQuery = (options, pit, searchAfter) => {
   const query = { size: process.env.FOSM_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
-  const affiliationsFields = ['affiliations.name'];
   options.affiliationStrings.forEach((affiliation) => {
-    query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
+    query.query.bool.should.push({ match: { 'affiliations.name': { query: `"${affiliation}"`, operator: 'and' } } });
   });
   if (options.rors?.length > 0) {
-    options.rors.forEach((ror) => {
-      query.query.bool.should.push({ match: { rors: ror } });
-      query.query.bool.should.push({ match: { 'affiliations.affiliationIdentifier': ror } });
-      query.query.bool.should.push({ match: { 'authors.affiliations.affiliationIdentifier': ror } });
-    });
+    const fullRors = options.rors.map((r) => 'https://ror.org/'.concat(r));
+    query.query.bool.should.push({ terms: { 'rors.keyword': options.rors } });
+    query.query.bool.should.push({ terms: { 'affiliations.affiliationIdentifier.keyword': fullRors } });
+    query.query.bool.should.push({ terms: { 'authors.affiliations.affiliationIdentifier.keyword': fullRors } });
   }
   query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
   // Exclude files for Datacite
