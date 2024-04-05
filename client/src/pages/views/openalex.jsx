@@ -15,9 +15,9 @@ export default function Openalex({
 }) {
   return (
     <>
-      <Row className="fr-pb-1w">
+      <Row className="fr-pb-1w fr-grid-row--top">
         <Col xs="12">
-          <div className="fr-callout">
+          <div className="fr-callout fr-callout--pink-tuile">
             <Title as="h2" look="h6">
               Improve RoR matching in OpenAlex - Provide your feedback!
             </Title>
@@ -32,13 +32,12 @@ export default function Openalex({
             </p>
           </div>
         </Col>
-        <Col xs="3" offsetXs="6">
+        <Col xs="12">
           <ActionsOpenalex
             allOpenalexCorrections={allOpenalexCorrections}
             options={options}
           />
-        </Col>
-        <Col xs="3">
+          &nbsp;
           <ActionsOpenalexFeedback
             allOpenalexCorrections={allOpenalexCorrections}
             options={options}

@@ -10,6 +10,7 @@ import ActionsDatasets from '../actions/actionsDatasets';
 import DatasetsTab from '../datasetsTab';
 import DatasetsYearlyDistribution from '../datasetsYearlyDistribution';
 import AffiliationsTab from '../affiliationsTab';
+import ActionsAffiliations from '../actions/actionsAffiliations';
 
 export default function Datasets({
   allAffiliations,
@@ -17,6 +18,7 @@ export default function Datasets({
   data,
   selectedAffiliations,
   selectedDatasets,
+  setAllAffiliations,
   setSelectedAffiliations,
   setSelectedDatasets,
   tagAffiliations,
@@ -55,6 +57,39 @@ export default function Datasets({
           </SegmentedControl>
         </Col>
       </Row>
+      {
+        (Tab === 'selectAffiliations') && (
+          <>
+            <Row>
+              <Col xs="12">
+                <div className="fr-callout  fr-callout--pink-tuile">
+                  <Title as="h3" look="h6">
+                    Select the raw affiliations corresponding to your institution
+                  </Title>
+                  <p className="fr-callout__text fr-text--sm">
+                    🔎 The array below summarizes the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query.
+                    <br />
+                    🤔 You can validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not. If an affiliation is validated, it will also validate all the works with that affiliation string.
+                    <br />
+                    🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing. If any errors, please use the first tab to send feedback.
+                    <br />
+                    💾 You can save (export to a file) those decisions, and restore them later on.
+                  </p>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <ActionsAffiliations
+                  allAffiliations={allAffiliations}
+                  setAllAffiliations={setAllAffiliations}
+                  tagAffiliations={tagAffiliations}
+                />
+              </Col>
+            </Row>
+          </>
+        )
+      }
       <Row>
         <Col xs="12">
           {
@@ -132,6 +167,7 @@ Datasets.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
+  setAllAffiliations: PropTypes.func.isRequired,
   setSelectedAffiliations: PropTypes.func.isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
   tagAffiliations: PropTypes.func.isRequired,

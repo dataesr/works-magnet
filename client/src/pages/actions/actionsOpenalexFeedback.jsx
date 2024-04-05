@@ -41,6 +41,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
       <Button
         disabled={!allOpenalexCorrections.length > 0}
         onClick={openModal}
+        size="sm"
       >
         Send feedback to OpenAlex
       </Button>

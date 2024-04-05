@@ -161,6 +161,7 @@ export default function Home() {
               options={options}
               selectedAffiliations={selectedAffiliations}
               selectedDatasets={selectedDatasets}
+              setAllAffiliations={setAllAffiliations}
               setSelectedAffiliations={setSelectedAffiliations}
               setSelectedDatasets={setSelectedDatasets}
               tagAffiliations={tagAffiliations}

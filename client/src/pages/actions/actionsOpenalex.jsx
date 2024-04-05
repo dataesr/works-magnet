@@ -7,7 +7,11 @@ export default function ActionsOpenalex({
 }) {
   const [searchParams] = useSearchParams();
   return (
-    <ButtonDropdown data={allOpenalexCorrections} label="OpenAlex errors" searchParams={searchParams} />
+    <ButtonDropdown
+      data={allOpenalexCorrections}
+      label="OpenAlex errors"
+      searchParams={searchParams}
+    />
   );
 }
 
