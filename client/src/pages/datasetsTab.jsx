@@ -86,18 +86,11 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
       </Row>
       <Row gutters>
         <Col xs="12">
-          <TextInput
-            label="Search in any field"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
-        </Col>
-      </Row>
-      <Row gutters>
-        <Col xs="12">
           <DatasetsView
+            filteredAffiliationName={filteredAffiliationName}
             publishers={publishers}
             selectedWorks={selectedDatasets}
+            setFilteredAffiliationName={setFilteredAffiliationName}
             setSelectedWorks={setSelectedDatasets}
             works={filteredDatasets}
           />

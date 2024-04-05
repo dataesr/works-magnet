@@ -1,11 +1,12 @@
 /* eslint-disable max-len */
-import { useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   Row, Col,
   SegmentedControl, SegmentedElement,
   Title,
 } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+
 import ActionsAffiliations from '../actions/actionsAffiliations';
 import AffiliationsTab from '../affiliationsTab';
 import PublicationsTab from '../publicationsTab';
@@ -17,7 +18,6 @@ export default function Publications({
   options,
   selectedAffiliations,
   selectedPublications,
-  setAllAffiliations,
   setSelectedAffiliations,
   setSelectedPublications,
   tagAffiliations,
@@ -95,7 +95,6 @@ export default function Publications({
             <Col>
               <ActionsAffiliations
                 allAffiliations={allAffiliations}
-                setAllAffiliations={setAllAffiliations}
                 tagAffiliations={tagAffiliations}
               />
             </Col>

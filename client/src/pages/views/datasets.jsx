@@ -18,7 +18,6 @@ export default function Datasets({
   data,
   selectedAffiliations,
   selectedDatasets,
-  setAllAffiliations,
   setSelectedAffiliations,
   setSelectedDatasets,
   tagAffiliations,
@@ -82,7 +81,6 @@ export default function Datasets({
               <Col>
                 <ActionsAffiliations
                   allAffiliations={allAffiliations}
-                  setAllAffiliations={setAllAffiliations}
                   tagAffiliations={tagAffiliations}
                 />
               </Col>

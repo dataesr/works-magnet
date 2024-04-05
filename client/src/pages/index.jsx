@@ -1,9 +1,6 @@
-import {
-  Container, Row, Col,
-  Spinner,
-} from '@dataesr/dsfr-plus';
+import { Col, Container, Row, Spinner } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import DatasetsTile from '../components/tiles/datasets';
@@ -21,9 +18,6 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [allAffiliations, setAllAffiliations] = useState([]);
-  const [allDatasets, setAllDatasets] = useState([]);
-  const [allPublications, setAllPublications] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [options, setOptions] = useState({});
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
@@ -38,65 +32,37 @@ export default function Home() {
   };
 
   const { data, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['data'],
+    queryKey: ['data', JSON.stringify(options)],
     queryFn: () => getData(options),
     enabled: false,
-    staleTime: Infinity,
-    cacheTime: Infinity,
+    cacheTime: 60 * (60 * 1000), // 1h
   });
 
   const sendQuery = async (_options) => {
-    setAllAffiliations([]);
-    setAllDatasets([]);
-    setAllPublications([]);
-    setAllOpenalexCorrections([]);
     await setOptions(_options);
     refetch();
   };
 
-  useEffect(() => {
-    if (data) {
-      setAllAffiliations(data?.affiliations ?? []);
-      setAllDatasets(data?.datasets?.results ?? []);
-      setAllPublications(data?.publications?.results ?? []);
-    }
-  }, [data]);
-
   const tagPublications = (publications, action) => {
-    const allPublicationsTmp = [...allPublications];
     const publicationsIds = publications.map((publication) => publication.id);
-    // eslint-disable-next-line no-return-assign, no-param-reassign
-    allPublicationsTmp.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
-    setAllPublications(allPublicationsTmp);
+    data?.publications?.results?.filter((publication) => publicationsIds.includes(publication.id)).map((publication) => publication.status = action);
     setSelectedPublications([]);
   };
 
   const tagDatasets = (datasets, action) => {
-    const allDatasetsTmp = [...allDatasets];
     const datasetsIds = datasets.map((dataset) => dataset.id);
-    // eslint-disable-next-line no-return-assign, no-param-reassign
-    allDatasetsTmp.filter((dataset) => datasetsIds.includes(dataset.id)).map((dataset) => dataset.status = action);
-    setAllDatasets(allDatasetsTmp);
+    data?.datasets?.results?.filter((dataset) => datasetsIds.includes(dataset.id)).map((dataset) => dataset.status = action);
     setSelectedDatasets([]);
   };
 
   const tagAffiliations = (affiliations, action) => {
     if (action !== status.excluded.id) {
       const worksIds = affiliations.map((affiliation) => affiliation.works).flat();
-      const allPublicationsTmp = [...allPublications];
-      // eslint-disable-next-line no-return-assign, no-param-reassign
-      allPublicationsTmp.filter((publication) => worksIds.includes(publication.id)).map((publication) => publication.status = action);
-      setAllPublications(allPublicationsTmp);
-      const allDatasetsTmp = [...allDatasets];
-      // eslint-disable-next-line no-return-assign, no-param-reassign
-      allDatasetsTmp.filter((dataset) => worksIds.includes(dataset.id)).map((dataset) => dataset.status = action);
-      setAllDatasets(allDatasetsTmp);
+      data?.publications?.results?.filter((publication) => worksIds.includes(publication.id)).map((publication) => publication.status = action);
+      data?.datasets?.results?.filter((dataset) => worksIds.includes(dataset.id)).map((dataset) => dataset.status = action);
     }
-    const allAffiliationsTmp = [...allAffiliations];
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
-    // eslint-disable-next-line no-return-assign, no-param-reassign
-    allAffiliationsTmp.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
-    setAllAffiliations(allAffiliationsTmp);
+    data?.affiliations?.filter((affiliation) => affiliationIds.includes(affiliation.id)).map((affiliation) => affiliation.status = action);
     setSelectedAffiliations([]);
   };
 
@@ -122,11 +88,11 @@ export default function Home() {
         )}
 
         {!isFetching
-          && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0)
+          && (data?.affiliations?.length > 0 || data?.datasets?.results?.length > 0 || data?.publications?.results?.length > 0)
           && searchParams.get('view') === 'openalex'
           && (
             <Openalex
-              allAffiliations={allAffiliations}
+              allAffiliations={data?.affiliations}
               allOpenalexCorrections={allOpenalexCorrections}
               options={options}
               setAllOpenalexCorrections={setAllOpenalexCorrections}
@@ -134,17 +100,16 @@ export default function Home() {
           )}
 
         {!isFetching
-          && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0)
+          && (data?.affiliations?.length > 0 || data?.datasets?.results?.length > 0 || data?.publications?.results?.length > 0)
           && searchParams.get('view') === 'publications'
           && (
             <Publications
-              allAffiliations={allAffiliations}
-              allPublications={allPublications}
+              allAffiliations={data?.affiliations}
+              allPublications={data?.publications?.results}
               data={data}
               options={options}
               selectedAffiliations={selectedAffiliations}
               selectedPublications={selectedPublications}
-              setAllAffiliations={setAllAffiliations}
               setSelectedAffiliations={setSelectedAffiliations}
               setSelectedPublications={setSelectedPublications}
               tagAffiliations={tagAffiliations}
@@ -153,17 +118,16 @@ export default function Home() {
           )}
 
         {!isFetching
-          && (allAffiliations?.length > 0 || allDatasets?.length > 0 || allPublications?.length > 0)
+          && (data?.affiliations?.length > 0 || data?.datasets?.results?.length > 0 || data?.publications?.results?.length > 0)
           && searchParams.get('view') === 'datasets'
           && (
             <Datasets
-              allAffiliations={allAffiliations}
-              allDatasets={allDatasets}
+              allAffiliations={data?.affiliations}
+              allDatasets={data?.datasets?.results}
               data={data}
               options={options}
               selectedAffiliations={selectedAffiliations}
               selectedDatasets={selectedDatasets}
-              setAllAffiliations={setAllAffiliations}
               setSelectedAffiliations={setSelectedAffiliations}
               setSelectedDatasets={setSelectedDatasets}
               tagAffiliations={tagAffiliations}

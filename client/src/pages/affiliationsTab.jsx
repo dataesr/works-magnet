@@ -66,19 +66,12 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
         </Col>
       </Row>
       <Row gutters>
-        <Col xs="12" offset="0">
-          <TextInput
-            label="Search in affiliations name"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
-        </Col>
-      </Row>
-      <Row gutters>
         <Col xs="12">
           <AffiliationsView
             allAffiliations={filteredAffiliations}
+            filteredAffiliationName={filteredAffiliationName}
             selectedAffiliations={selectedAffiliations}
+            setFilteredAffiliationName={setFilteredAffiliationName}
             setSelectedAffiliations={setSelectedAffiliations}
           />
         </Col>
