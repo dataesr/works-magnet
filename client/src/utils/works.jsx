@@ -81,7 +81,7 @@ const renderButtonDataset = (selected, fn, label, icon) => (
     className="fr-mb-1w fr-mr-1w btn-keep"
     disabled={!selected.length}
     onClick={() => fn(selected, 'validated')}
-    size="lg"
+    size="sm"
   >
     <i className={`${icon} fr-mr-1w`} />
     {`Validate ${selected.length} dataset${selected.length === 1 ? '' : 's'} ${label}`}

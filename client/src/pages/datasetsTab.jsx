@@ -71,12 +71,11 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
         </div>
       </div>
       <Row gutters>
-        <Col xs="9">
-          {/* {renderButtons(selectedDatasets, tagDatasets, 'dataset')} */}
+        <Col xs="12" className="text-right">
           {renderButtonDataset(datasetLinkedArticle, tagDatasets, 'without affiliations but linked to an article from my institution', 'ri-link')}
           {renderButtonDataset(datasetPerson, tagDatasets, 'without affiliations but at least 3 authors detected from my institution', 'ri-team-line')}
         </Col>
-        <Col xs="3">
+        <Col xs="12">
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,

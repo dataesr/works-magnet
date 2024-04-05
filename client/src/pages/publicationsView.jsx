@@ -42,12 +42,18 @@ export default function PublicationsView({
   );
 
   const paginatorLeft = () => (
-    <TextInput
-      disableAutoValidation
-      label="Search in any field"
-      onChange={(e) => setFilteredAffiliationName(e.target.value)}
-      value={filteredAffiliationName}
-    />
+    <div>
+      <i className="fr-icon-search-line fr-mr-1w" />
+      Search in any field
+      <input
+        className="fr-ml-1w"
+        // disableAutoValidation
+        // label="Search in any field"
+        onChange={(e) => setFilteredAffiliationName(e.target.value)}
+        value={filteredAffiliationName}
+        style={{ width: '500px', border: '1px solid #ced4da', borderRadius: '4px', padding: '0.375rem 0.75rem' }}
+      />
+    </div>
   );
 
   return (
