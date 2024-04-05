@@ -16,7 +16,6 @@ router.route('/works')
       } else {
         const queryId = Math.floor(Math.random() * SEED_MEX);
         console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
-        options.datasets = options.datasets === 'true';
         options.years = range(options.startYear, options.endYear);
         const queries = [];
         queries.push(getFosmWorks({ options }));
