@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button,
   Row, Col,
   SegmentedControl, SegmentedElement,
   Title,
@@ -25,6 +24,7 @@ export default function Publications({
   tagPublications,
 }) {
   const [Tab, setTab] = useState('selectAffiliations');
+
   return (
     <div>
       {options.datasets ? (
