@@ -108,12 +108,12 @@ export default function Datasets({
                 />
                 <DatasetsTab
                   datasets={allDatasets}
-                  publishers={data.datasets?.publishers ?? []}
+                  publishers={data?.datasets?.publishers ?? {}}
                   selectedDatasets={selectedDatasets}
                   setSelectedDatasets={setSelectedDatasets}
                   tagDatasets={tagDatasets}
-                  types={data.datasets.types}
-                  years={data.datasets.years}
+                  types={data?.datasets?.types ?? {}}
+                  years={data?.datasets?.years ?? {}}
                 />
               </>
             )
