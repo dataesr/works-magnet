@@ -104,8 +104,8 @@ export default function Home() {
           && searchParams.get('view') === 'publications'
           && (
             <Publications
-              allAffiliations={data?.affiliations}
-              allPublications={data?.publications?.results}
+              allAffiliations={data?.affiliations ?? []}
+              allPublications={data?.publications?.results ?? []}
               data={data}
               options={options}
               selectedAffiliations={selectedAffiliations}
@@ -122,8 +122,8 @@ export default function Home() {
           && searchParams.get('view') === 'datasets'
           && (
             <Datasets
-              allAffiliations={data?.affiliations}
-              allDatasets={data?.datasets?.results}
+              allAffiliations={data?.affiliations ?? []}
+              allDatasets={data?.datasets?.results ?? []}
               data={data}
               options={options}
               selectedAffiliations={selectedAffiliations}
