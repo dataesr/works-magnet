@@ -1,10 +1,9 @@
-import {
-  Col,
-  Row,
-  TextInput,
-} from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  Col, Row,
+} from '@dataesr/dsfr-plus';
 
 import PublicationsView from './publicationsView';
 import Gauge from '../components/gauge';
@@ -18,13 +17,12 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
   const [filteredPublishers, setFilteredPublishers] = useState([]);
   const [filteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [filteredTypes, setFilteredTypes] = useState([]);
-  const [filteredYears, setFilteredYears] = useState([]);
   const [timer, setTimer] = useState();
+  const [fixedMenu, setFixedMenu] = useState(false);
 
   useEffect(() => {
     setFilteredPublications(publications);
     setFilteredPublishers(Object.keys(publishers));
-    setFilteredYears(Object.keys(years));
     setFilteredTypes(Object.keys(types));
   }, [publications, publishers, types, years]);
 
@@ -37,22 +35,36 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
         && filteredDatasources.filter((filteredDatasource) => publication.datasource.includes(filteredDatasource)).length
         && filteredPublishers.includes(publication.publisher)
         && filteredStatus.includes(publication.status)
-        && filteredTypes.includes(publication.type)
-        && filteredYears.includes(publication.year));
+        && filteredTypes.includes(publication.type));
       setFilteredPublications(filteredPublicationsTmp);
     }, 500);
     setTimer(timerTmp);
     // The timer should not be tracked
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publications, filteredAffiliationName, filteredDatasources, filteredPublishers, filteredStatus, filteredTypes, filteredYears]);
+  }, [publications, filteredAffiliationName, filteredDatasources, filteredPublishers, filteredStatus, filteredTypes]);
 
   return (
     <>
+      <div className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`} title="actions">
+        <div className={`selected-item ${selectedPublications.length && 'selected'}`}>
+          <span className="number">
+            {selectedPublications.length}
+          </span>
+          {`selected publication${selectedPublications.length === 1 ? '' : 's'}`}
+        </div>
+        {renderButtons(selectedPublications, tagPublications, 'publication')}
+        <div className="text-right">
+          <Button
+            onClick={() => setFixedMenu(!fixedMenu)}
+            size="sm"
+            variant="tertiary"
+          >
+            {fixedMenu ? <i className="ri-pushpin-fill" /> : <i className="ri-pushpin-line" />}
+          </Button>
+        </div>
+      </div>
       <Row gutters>
-        <Col n="9">
-          {renderButtons(selectedPublications, tagPublications, 'publication')}
-        </Col>
-        <Col n="3">
+        <Col xs="12">
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
@@ -60,22 +72,14 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
             }))}
           />
         </Col>
-      </Row>
-      <Row gutters>
-        <Col n="12">
-          <TextInput
-            label="Search in any field"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
-        </Col>
-      </Row>
-      <Row gutters>
-        <Col n="12">
+        <Col xs="12">
           <PublicationsView
+            filteredAffiliationName={filteredAffiliationName}
             selectedWorks={selectedPublications}
+            setFilteredAffiliationName={setFilteredAffiliationName}
             setSelectedWorks={setSelectedPublications}
             works={filteredPublications}
+            years={years}
           />
         </Col>
       </Row>

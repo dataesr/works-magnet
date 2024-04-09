@@ -1,8 +1,4 @@
-import {
-  Col,
-  Row,
-  TextInput,
-} from '@dataesr/react-dsfr';
+import { Button, Col, Row } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
@@ -20,6 +16,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [timer, setTimer] = useState();
+  const [fixedMenu, setFixedMenu] = useState(false);
 
   useEffect(() => {
     setFilteredDatasets(datasets);
@@ -51,13 +48,30 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
 
   return (
     <>
+      <div className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`} title="actions">
+        <div className={`selected-item ${selectedDatasets.length && 'selected'}`}>
+          <span className="number">
+            {selectedDatasets.length}
+          </span>
+          {`selected dataset${selectedDatasets.length === 1 ? '' : 's'}`}
+        </div>
+        {renderButtons(selectedDatasets, tagDatasets, 'dataset')}
+        <div className="text-right">
+          <Button
+            onClick={() => setFixedMenu(!fixedMenu)}
+            size="sm"
+            variant="tertiary"
+          >
+            {fixedMenu ? <i className="ri-pushpin-fill" /> : <i className="ri-pushpin-line" />}
+          </Button>
+        </div>
+      </div>
       <Row gutters>
-        <Col n="9">
-          {renderButtons(selectedDatasets, tagDatasets, 'dataset')}
+        <Col xs="12" className="text-right">
           {renderButtonDataset(datasetLinkedArticle, tagDatasets, 'without affiliations but linked to an article from my institution', 'ri-link')}
           {renderButtonDataset(datasetPerson, tagDatasets, 'without affiliations but at least 3 authors detected from my institution', 'ri-team-line')}
         </Col>
-        <Col n="3">
+        <Col xs="12">
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
@@ -67,19 +81,12 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
         </Col>
       </Row>
       <Row gutters>
-        <Col n="12">
-          <TextInput
-            label="Search in any field"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
-        </Col>
-      </Row>
-      <Row gutters>
-        <Col n="12">
+        <Col xs="12">
           <DatasetsView
+            filteredAffiliationName={filteredAffiliationName}
             publishers={publishers}
             selectedWorks={selectedDatasets}
+            setFilteredAffiliationName={setFilteredAffiliationName}
             setSelectedWorks={setSelectedDatasets}
             works={filteredDatasets}
           />

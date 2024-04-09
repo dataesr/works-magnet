@@ -1,13 +1,17 @@
-import { Col, File, Row } from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Tooltip } from 'react-tooltip';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  Container, Row, Col,
+  Modal, ModalContent,
+  Title,
+} from '@dataesr/dsfr-plus';
 import useToast from '../../hooks/useToast';
 
-import Button from '../../components/button';
 import { status } from '../../config';
 import { export2json, importJson } from '../../utils/files';
+import File from '../../components/File';
 
 export default function ActionsAffiliations({
   allAffiliations,
@@ -15,8 +19,8 @@ export default function ActionsAffiliations({
 }) {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
-  const [displayFileUpload, setDisplayFileUpload] = useState(false);
   const decidedAffiliations = allAffiliations?.filter((affiliation) => affiliation.status !== status.tobedecided.id) || [];
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const onExport = () => {
     export2json({ data: decidedAffiliations, label: 'affiliations', searchParams });
     toast({
@@ -28,7 +32,6 @@ export default function ActionsAffiliations({
   };
   const onImport = (e) => {
     importJson(e, tagAffiliations);
-    setDisplayFileUpload(false);
     toast({
       description: `${decidedAffiliations.length} affiliations are now flagged`,
       id: 'importAffiliations',
@@ -36,49 +39,59 @@ export default function ActionsAffiliations({
       toastType: 'success',
     });
   };
+
   return (
-    <>
-      <Row className="fr-mb-1w">
-        <Col className="text-right">
-          <Button
-            data-tooltip-id="save-affiliations-button"
-            disabled={!decidedAffiliations.length}
-            icon="ri-save-line"
-            onClick={() => onExport()}
-            size="sm"
-          >
-            Save decided affiliations
-          </Button>
-          <Tooltip id="save-affiliations-button" hidden={!decidedAffiliations.length}>
-            Save the decided affiliations in order to restore it later
-          </Tooltip>
-          <Button
-            data-tooltip-id="restore-affiliations-button"
-            icon="ri-file-upload-line"
-            onClick={() => setDisplayFileUpload(true)}
-            secondary
-            size="sm"
-          >
+    <div className="text-right">
+      <Modal isOpen={isModalOpen} hide={() => setIsModalOpen(!isModalOpen)}>
+        <ModalContent>
+          <Title as="h2" look="h5">
+            <i className="ri-save-line fr-mr-1w" />
+            Save the decided affiliations
+          </Title>
+          <Container className="fr-mb-5w">
+            <Row>
+              <Col>
+                <p>
+                  Save the decided affiliations in order to restore it later
+                </p>
+                <Button
+                  data-tooltip-id="save-affiliations-button"
+                  disabled={!decidedAffiliations.length}
+                  onClick={() => onExport()}
+                >
+                  <i className="ri-save-line fr-mr-1w" />
+                  Save decided affiliations
+                </Button>
+              </Col>
+            </Row>
+          </Container>
+          <hr />
+          <Title as="h2" look="h5">
+            <i className="ri-file-upload-line fr-mr-1w" />
             Restore affiliations
-          </Button>
-          <Tooltip id="restore-affiliations-button">
-            Restore affiliations from saved file
-          </Tooltip>
-        </Col>
-      </Row>
-      {displayFileUpload && (
-        <Row className="fr-mb-1w">
-          <Col>
-            <File
-              accept=".json"
-              hint="Select JSON file to restore from previous state"
-              label="JSON file"
-              onChange={(e) => { onImport(e); }}
-            />
-          </Col>
-        </Row>
-      )}
-    </>
+          </Title>
+          <Container>
+            <Row>
+              <Col>
+                <File
+                  accept=".json"
+                  label="Restore affiliations from saved file"
+                  onChange={(e) => { onImport(e); }}
+                />
+              </Col>
+            </Row>
+          </Container>
+        </ModalContent>
+      </Modal>
+
+      <Button
+        icon="save-line"
+        onClick={() => setIsModalOpen(!isModalOpen)}
+        size="sm"
+      >
+        Save & restore
+      </Button>
+    </div>
   );
 }
 

@@ -30,8 +30,7 @@ const getRorData = async (affiliation, getChildren = false) => {
       childrenRes = await Promise.all(childrenQueries);
     }
   }
-  const ans = topLevel.concat(childrenRes.flat());
-  return ans;
+  return topLevel.concat(childrenRes.flat());
 };
 
 export {

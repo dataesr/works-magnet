@@ -3,44 +3,44 @@ import express from 'express';
 import { chunkArray, countUniqueValues, range } from '../utils/utils';
 import { datasetsType, deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
 
+const SEED_MEX = 2048;
+
 const router = new express.Router();
 
 router.route('/works')
-  .get(async (req, res) => {
+  .post(async (req, res) => {
     try {
-      const options = req?.query ?? {};
+      const options = req?.body ?? {};
       if (!options?.affiliationStrings && !options?.rors) {
         res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
       } else {
-        console.time(`1. Requests ${options.affiliationStrings}`);
-        options.affiliationStrings = options.affiliationStrings.split(',');
-        if (options?.rors?.length > 0) {
-          options.rors = options.rors.split(',');
-        }
-        options.datasets = options.datasets === 'true';
+        const queryId = Math.floor(Math.random() * SEED_MEX);
+        console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
         options.years = range(options.startYear, options.endYear);
         const queries = [];
         queries.push(getFosmWorks({ options }));
         const affiliationStringsChunks = chunkArray({ array: options.affiliationStrings });
+        const rorsChunks = chunkArray({ array: options.rors });
+        // Separate RoRs from Affiliations strings to query OpenAlex
         affiliationStringsChunks.forEach((affiliationStrings) => {
           queries.push(getOpenAlexPublications({ options: { ...options, affiliationStrings, rors: [] } }));
         });
-        if (options?.rors?.length > 0) {
-          queries.push(getOpenAlexPublications({ options: { ...options, affiliationStrings: [] } }));
-        }
+        rorsChunks.forEach((rors) => {
+          queries.push(getOpenAlexPublications({ options: { ...options, rors, affiliationStrings: [] } }));
+        });
         const responses = await Promise.all(queries);
-        console.timeEnd(`1. Requests ${options.affiliationStrings}`);
+        console.timeEnd(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
         const works = responses.flat();
-        console.time(`2. Dedup ${options.affiliationStrings}`);
+        console.time(`2. Query ${queryId} | Dedup ${options.affiliationStrings}`);
         // Deduplicate publications by ids
         const deduplicatedWorks = deduplicateWorks(works);
-        console.timeEnd(`2. Dedup ${options.affiliationStrings}`);
+        console.timeEnd(`2. Query ${queryId} | Dedup ${options.affiliationStrings}`);
         // Compute distinct affiliations of works
-        console.time(`3. GroupBy ${options.affiliationStrings}`);
+        console.time(`3. Query ${queryId} | GroupBy ${options.affiliationStrings}`);
         const uniqueAffiliations = groupByAffiliations({ options, works: deduplicatedWorks });
-        console.timeEnd(`3. GroupBy ${options.affiliationStrings}`);
+        console.timeEnd(`3. Query ${queryId} | GroupBy ${options.affiliationStrings}`);
         // Sort between publications and datasets
-        console.time(`4. Sort works ${options.affiliationStrings}`);
+        console.time(`4. Query ${queryId} | Sort works ${options.affiliationStrings}`);
         const publications = [];
         let datasets = [];
         const deduplicatedWorksLength = deduplicatedWorks.length;
@@ -56,18 +56,18 @@ router.route('/works')
             }
           }
         }
-        console.timeEnd(`4. Sort works ${options.affiliationStrings}`);
+        console.timeEnd(`4. Query ${queryId} | Sort works ${options.affiliationStrings}`);
         // Compute distinct types & years for facet
-        console.time(`5. Facet ${options.affiliationStrings}`);
+        console.time(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
         const publicationsYears = countUniqueValues({ data: publications, field: 'year' });
         const datasetsYears = countUniqueValues({ data: datasets, field: 'year' });
         const publicationsTypes = countUniqueValues({ data: publications, field: 'type' });
         const datasetsTypes = countUniqueValues({ data: datasets, field: 'type' });
         const publicationsPublishers = countUniqueValues({ data: publications, field: 'publisher' });
         const datasetsPublishers = countUniqueValues({ data: datasets, field: 'publisher' });
-        console.timeEnd(`5. Facet ${options.affiliationStrings}`);
+        console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
         // Build and serialize response
-        console.time(`6. Serialization ${options.affiliationStrings}`);
+        console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
         res.status(200).json({
           affiliations: uniqueAffiliations,
           datasets: {
@@ -83,7 +83,7 @@ router.route('/works')
             years: publicationsYears,
           },
         });
-        console.timeEnd(`6. Serialization ${options.affiliationStrings}`);
+        console.timeEnd(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
       }
     } catch (err) {
       console.error(err);

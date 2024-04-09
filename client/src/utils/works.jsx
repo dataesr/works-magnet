@@ -1,4 +1,4 @@
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@dataesr/dsfr-plus';
 
 import { status } from '../config';
 
@@ -8,14 +8,20 @@ const {
 
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const getData = async (options) => {
-  const urlParams = new URLSearchParams(options).toString();
-  return fetch(`${VITE_API}/works?${urlParams}`)
-    .then((response) => {
-      if (response.ok) return response.json();
-      return 'Oops... FOSM API request did not work';
-    });
-};
+const getData = async (options) => fetch(`${VITE_API}/works`, {
+  body: JSON.stringify(options),
+  headers: { 'Content-Type': 'application/json' },
+  method: 'POST',
+}).then((response) => {
+  if (response.ok) return response.json();
+  console.error(response);
+  console.error('Oops... FOSM API request did not work');
+  return {};
+}).catch((error) => {
+  console.error(error);
+  console.error('Oops... FOSM API request did not work');
+  return {};
+});
 
 const getIdLink = (type, id) => {
   let prefix = null;
@@ -58,31 +64,29 @@ const range = (startYear, endYear = new Date().getFullYear()) => {
   return (start === end) ? [start] : [start, ...range(start + 1, end)];
 };
 
-const renderButtons = (selected, fn, entityLabel) => (
-  <>
-    {Object.values(status).map((st) => (
-      <Button
-        className={`fr-mb-1w fr-mr-1w ${st.buttonClassName}`}
-        disabled={!selected.length}
-        icon={st.buttonIcon}
-        key={st.id}
-        onClick={() => fn(selected, st.id)}
-        size="lg"
-      >
-        {`${st.buttonLabel} ${selected.length} ${entityLabel}${selected.length === 1 ? '' : 's'}`}
-      </Button>
-    ))}
-  </>
-);
+const renderButtons = (selected, fn) => Object.values(status).map((st) => (
+  <Button
+    className={`fr-mb-1w ${st.buttonClassName} fr-pl-1w button`}
+    disabled={!selected.length}
+    key={st.id}
+    onClick={() => fn(selected, st.id)}
+    size="lg"
+    style={{ display: 'block', width: '100%', textAlign: 'left' }}
+    color="blue-ecume"
+  >
+    <i className={`${st.buttonIcon} fr-mr-2w`} style={{ color: st.iconColor }} />
+    {st.buttonLabel}
+  </Button>
+));
 
 const renderButtonDataset = (selected, fn, label, icon) => (
   <Button
     className="fr-mb-1w fr-mr-1w btn-keep"
     disabled={!selected.length}
-    icon={icon}
     onClick={() => fn(selected, 'validated')}
-    size="lg"
+    size="sm"
   >
+    <i className={`${icon} fr-mr-1w`} />
     {`Validate ${selected.length} dataset${selected.length === 1 ? '' : 's'} ${label}`}
   </Button>
 );

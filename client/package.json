@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dataesr/react-dsfr": "^3.9.2",
+    "@dataesr/dsfr-plus": "^0.3.2",
     "@m4tt72/matomo-tracker-react": "^0.6.2",
     "@tanstack/react-query": "^4.29.5",
     "@tanstack/react-query-devtools": "^4.29.6",
@@ -23,7 +23,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.1",
-    "react-tooltip": "^5.18.1"
+    "react-tooltip": "^5.18.1",
+    "remixicon": "^4.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

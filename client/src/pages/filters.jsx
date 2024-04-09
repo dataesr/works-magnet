@@ -2,28 +2,40 @@ import {
   Badge,
   Button,
   Checkbox,
-  CheckboxGroup,
-  Col,
-  Row,
-  Select,
-} from '@dataesr/react-dsfr';
+  Container, Row, Col,
+  Modal, ModalContent,
+  SegmentedControl, SegmentedElement,
+  Select, SelectOption,
+  TagGroup, Tag,
+  Title,
+} from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import Ribbon from '../components/ribbon';
 import TagInput from '../components/tag-input';
 import useScroll from '../hooks/useScroll';
 import { getRorData, isRor } from '../utils/ror';
 
+const {
+  VITE_APP_NAME,
+  VITE_HEADER_TAG,
+  VITE_HEADER_TAG_COLOR,
+} = import.meta.env;
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
 const START_YEAR = 2010;
+// Generate an array of objects with all years from START_YEAR
 const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()].map((year) => (year + START_YEAR).toString()).map((year) => ({ label: year, value: year }));
 
 const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
-export default function Filters({ sendQuery }) {
+
+export default function Filters({ isFetched, sendQuery }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [getRoRChildren, setGetRoRChildren] = useState(false);
   const [message, setMessage] = useState('');
@@ -32,53 +44,59 @@ export default function Filters({ sendQuery }) {
   const [tags, setTags] = useState([]);
   const { scrollTop } = useScroll();
 
-  // useEffect(() => {
-  //   if (!isSticky && scrollTop > 50) {
-  //     setIsSticky(true);
-  //   } else if (isSticky && scrollTop < 50) {
-  //     setIsSticky(false);
-  //   }
-  // }, [isSticky, scrollTop]);
+  useEffect(() => {
+    if (!isSticky && scrollTop > 100) {
+      setIsSticky(true);
+    } else if (isSticky && scrollTop <= 80) {
+      setIsSticky(false);
+    }
+  }, [isSticky, scrollTop]);
 
   useEffect(() => {
     const getData = async () => {
-      if (searchParams.size === 0) {
+      if (searchParams.size === 0) { // default values
         setSearchParams({
           affiliations: [],
           datasets: false,
           deletedAffiliations: [],
           endYear: '2023',
           startYear: '2023',
-          view: 'openalex',
+          view: '',
         });
         setTags([]);
       } else {
-        const affiliations = searchParams.getAll('affiliations');
+        setIsLoading(true);
+        const affiliations = searchParams.getAll('affiliations') || [];
         const deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
+
         setCurrentSearchParams({
           affiliations,
           datasets: searchParams.get('datasets') === 'true',
           deletedAffiliations,
           endYear: searchParams.get('endYear', '2023'),
           startYear: searchParams.get('startYear', '2023'),
-          view: searchParams.get('view', 'openalex'),
+          view: searchParams.get('view', ''),
         });
+
         const queries = affiliations.map((affiliation) => getRorData(affiliation, getRoRChildren));
         let rorNames = await Promise.all(queries);
-        rorNames = rorNames.filter((aff) => !deletedAffiliations.includes(aff));
+        rorNames = rorNames.filter((rorName) => !deletedAffiliations.includes(rorName));
+
         const allTags = [];
         const knownTags = {};
         setMessageType('');
         setMessage('');
+
         affiliations.forEach((affiliation) => {
-          if (isRor(affiliation)) {
-            const label = affiliation.replace('https://ror.org/', '').replace('ror.org/', '');
+          const label = affiliation.replace('https://ror.org/', '').replace('ror.org/', '');
+          if (isRor(label)) {
             allTags.push({ disable: label.length < VITE_APP_TAG_LIMIT, label, source: 'user', type: 'rorId' });
           } else {
             allTags.push({ disable: affiliation.length < VITE_APP_TAG_LIMIT, label: affiliation, source: 'user', type: 'affiliationString' });
           }
-          knownTags[affiliation.toLowerCase()] = 1;
+          knownTags[label.toLowerCase()] = 1;
         });
+
         rorNames.flat().forEach((rorElt) => {
           if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
             if (!deletedAffiliations.includes(rorElt.rorId)) {
@@ -86,6 +104,7 @@ export default function Filters({ sendQuery }) {
               knownTags[rorElt.rorId.toLowerCase()] = 1;
             }
           }
+
           rorElt.names.forEach((rorName) => {
             if (knownTags[rorName.toLowerCase()] === undefined) {
               if (!deletedAffiliations.includes(rorName)) {
@@ -97,10 +116,11 @@ export default function Filters({ sendQuery }) {
           });
         });
         setTags(allTags);
+        setIsLoading(false);
       }
     };
     getData();
-  }, [searchParams, setSearchParams, getRoRChildren]);
+  }, [getRoRChildren, searchParams, setSearchParams]);
 
   const onTagsChange = async (affiliations, deletedAffiliations) => {
     const previousDeleted = currentSearchParams.deletedAffiliations || [];
@@ -125,103 +145,280 @@ export default function Filters({ sendQuery }) {
     setMessageType('');
     setMessage('');
     const queryParams = { ...currentSearchParams };
-    // TO REVIEW
-    queryParams.affiliationStrings = tags.filter((tag) => !tag.disable && tag.type === 'affiliationString').map((tag) => normalizeStr(tag.label)).slice(0, 100);
-    queryParams.rors = tags.filter((tag) => !tag.disable && tag.type === 'rorId').map((tag) => tag.label).slice(0, 100);
+    queryParams.affiliationStrings = tags.filter((tag) => !tag.disable && tag.type === 'affiliationString').map((tag) => normalizeStr(tag.label));
+    queryParams.rors = tags.filter((tag) => !tag.disable && tag.type === 'rorId').map((tag) => tag.label);
     if (queryParams.affiliationStrings.length === 0 && queryParams.rors.length === 0) {
       setMessageType('error');
       setMessage(`You must provide at least one affiliation longer than ${VITE_APP_TAG_LIMIT} letters.`);
       return;
     }
     sendQuery(queryParams);
+    setIsOpen(false);
   };
-
+  const NB_TAGS_STICKY = 2;
+  const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
+  if (tags.length > NB_TAGS_STICKY) {
+    tagsDisplayed.push({ label: '...' });
+  }
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {isSticky ? (
-        <Row alignItems="top" className="fr-p-3w">
-          <Col n="2">
-            Filters :
-          </Col>
-          <Col n="2">
-            <Badge
-              colorFamily="brown-cafe-creme"
-              text={currentSearchParams.startYear}
-            />
-            <span className="fr-mx-1w">-</span>
-            <Badge
-              colorFamily="brown-cafe-creme"
-              text={currentSearchParams.endYear}
-            />
-          </Col>
-          <Col n="2">
-            {tags.map((tag) => (
-              <Badge
-                colorFamily="brown-cafe-creme"
-                isSmall
-                key={tag.label}
-                text={tag.label}
-              />
-            ))}
-          </Col>
-        </Row>
+        <Container fluid as="section" className="filters">
+          <Row verticalAlign="top" className="fr-p-2w">
+            <Ribbon />
+            <Col xs="2" offsetXs="1">
+              <Title as="h1" look="h6" className="fr-m-0">
+                {VITE_APP_NAME}
+                <br />
+                {VITE_HEADER_TAG && (
+                  <Badge
+                    color={VITE_HEADER_TAG_COLOR}
+                    size="sm"
+                  >
+                    {VITE_HEADER_TAG}
+                  </Badge>
+                )}
+              </Title>
+            </Col>
+            <Col>
+              <Row>
+                <Col xs="1" className="text-right fr-pr-1w">
+                  <Title title="Selected filters" className="fr-icon-filter-line" as="h2" look="h4" />
+                </Col>
+                <Col onClick={(e) => { setIsOpen(true); e.preventDefault(); }}>
+                  <TagGroup>
+                    <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
+                      {`${currentSearchParams.startYear} - ${currentSearchParams.endYear}`}
+                    </Tag>
+                    {tagsDisplayed.map((tag) => (
+                      <Tag color="blue-ecume" key={`tag-sticky-${tag.label}`} size="sm">
+                        {tag.label}
+                      </Tag>
+                    ))}
+                  </TagGroup>
+                </Col>
+                <Col className="text-right">
+                  <SegmentedControl
+                    id="segSelector"
+                    name="segSelector"
+                    onChangeValue={(view) => setSearchParams({ ...currentSearchParams, view })}
+                  >
+                    <SegmentedElement
+                      checked={currentSearchParams.view === 'openalex'}
+                      label="Improve RoR matching in OpenAlex"
+                      value="openalex"
+                    />
+                    <SegmentedElement
+                      checked={currentSearchParams.view === 'publications'}
+                      label="Find affiliated publications"
+                      value="publications"
+                    />
+                    <SegmentedElement
+                      checked={currentSearchParams.view === 'datasets'}
+                      label="Find affiliated datasets"
+                      value="datasets"
+                    />
+                  </SegmentedControl>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </Container>
       ) : (
-        <Row gutters alignItems="top" className="fr-p-3w">
-          <Col n="2">
-            <Select
-              label="Start year"
-              onChange={(e) => setSearchParams({ ...currentSearchParams, startYear: e.target.value })}
-              options={years}
-              selected={currentSearchParams.startYear}
-            />
-          </Col>
-          <Col n="2">
-            <Select
-              label="End year"
-              onChange={(e) => setSearchParams({ ...currentSearchParams, endYear: e.target.value })}
-              options={years}
-              selected={currentSearchParams.endYear}
-            />
-          </Col>
-          <Col n="3">
-            <CheckboxGroup
-              legend="&nbsp;"
-            >
-              <Checkbox
-                checked={currentSearchParams?.datasets ?? false}
-                label="Search for datasets only"
-                onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
-              />
-            </CheckboxGroup>
-          </Col>
-          <Col n="5">
-            <Button
-              icon="ri-search-line"
-              onClick={checkAndSendQuery}
-            >
-              Search works
-            </Button>
-          </Col>
-          <Col n="12">
-            <TagInput
-              getRoRChildren={getRoRChildren}
-              hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-              label="Affiliation name, RoR identifier"
-              message={message}
-              messageType={messageType}
-              onInputHandler={setOnInputAffiliationsHandler}
-              onTagsChange={onTagsChange}
-              setGetRoRChildren={setGetRoRChildren}
-              tags={tags}
-            />
-          </Col>
-        </Row>
+        <>
+          <Container as="section" className="filters fr-my-5w">
+            <Row className="fr-p-2w">
+              <Col xs="8">
+                <TagInput
+                  getRoRChildren={getRoRChildren}
+                  hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
+                  isLoading={isLoading}
+                  label="Affiliation name, RoR identifier"
+                  message={message}
+                  messageType={messageType}
+                  onInputHandler={setOnInputAffiliationsHandler}
+                  onTagsChange={onTagsChange}
+                  seeMoreAction={(e) => { setIsOpen(true); e.preventDefault(); }}
+                  setGetRoRChildren={setGetRoRChildren}
+                  tags={tags}
+                />
+              </Col>
+              <Col offsetXs="1" className="text-right fr-pl-3w">
+                <Row gutters verticalAlign="bottom">
+                  <Col>
+                    <Select
+                      aria-label="Select a start year for search"
+                      buttonLabel={currentSearchParams.startYear}
+                      label="Start year"
+                      onSelectionChange={(startYear) => setSearchParams({ ...currentSearchParams, startYear })}
+                    >
+                      {years.map((year) => (
+                        <SelectOption
+                          color="blue-cumulus"
+                          key={year.value}
+                          selected={year.value === currentSearchParams.startYear}
+                        >
+                          {year.label}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </Col>
+                  <Col>
+                    <Select
+                      aria-label="Select an end year for search"
+                      buttonLabel={currentSearchParams.endYear}
+                      label="End year"
+                      onSelectionChange={(endYear) => setSearchParams({ ...currentSearchParams, endYear })}
+                    >
+                      {years.map((year) => (
+                        <SelectOption
+                          color="blue-cumulus"
+                          key={year.value}
+                          selected={year.value === currentSearchParams.startYear}
+                        >
+                          {year.label}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </Col>
+                  <Col>
+                    <Checkbox
+                      checked={currentSearchParams?.datasets ?? false}
+                      label="Search for datasets only"
+                      onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
+                    />
+                  </Col>
+                </Row>
+                <Button
+                  className="fr-mt-2w"
+                  disabled={searchParams.getAll('affiliations').length === 0}
+                  icon="search-line"
+                  onClick={checkAndSendQuery}
+                >
+                  Search works
+                </Button>
+              </Col>
+            </Row>
+          </Container>
+          {
+            isFetched && (
+              <Container as="section" className="fr-my-3w">
+                <Row>
+                  <Col style={{ textAlign: 'center' }}>
+                    <SegmentedControl
+                      id="segSelector"
+                      name="segSelector"
+                      onChangeValue={(view) => setSearchParams({ ...currentSearchParams, view })}
+                    >
+                      <SegmentedElement
+                        checked={currentSearchParams.view === 'openalex'}
+                        label="Improve RoR matching in OpenAlex"
+                        value="openalex"
+                      />
+                      <SegmentedElement
+                        checked={currentSearchParams.view === 'publications'}
+                        label="Find affiliated publications"
+                        value="publications"
+                      />
+                      <SegmentedElement
+                        checked={currentSearchParams.view === 'datasets'}
+                        label="Find affiliated datasets"
+                        value="datasets"
+                      />
+                    </SegmentedControl>
+                  </Col>
+                </Row>
+              </Container>
+            )
+          }
+        </>
       )}
+      <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
+        <ModalContent>
+          <Container as="section" className="filters fr-my-5w">
+            <Row className="fr-p-2w">
+              <Col xs="12" className="fr-pb-3w">
+                <Row gutters verticalAlign="bottom">
+                  <Col>
+                    <Select
+                      aria-label="Select a start year for search"
+                      buttonLabel={currentSearchParams.startYear}
+                      label="Start year"
+                      onSelectionChange={(startYear) => setSearchParams({ ...currentSearchParams, startYear })}
+                    >
+                      {years.map((year) => (
+                        <SelectOption
+                          color="blue-cumulus"
+                          key={year.value}
+                          selected={year.value === currentSearchParams.startYear}
+                        >
+                          {year.label}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </Col>
+                  <Col>
+                    <Select
+                      aria-label="Select an end year for search"
+                      buttonLabel={currentSearchParams.endYear}
+                      label="End year"
+                      onSelectionChange={(endYear) => setSearchParams({ ...currentSearchParams, endYear })}
+                    >
+                      {years.map((year) => (
+                        <SelectOption
+                          color="blue-cumulus"
+                          key={year.value}
+                          selected={year.value === currentSearchParams.startYear}
+                        >
+                          {year.label}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </Col>
+                  <Col>
+                    <Checkbox
+                      checked={currentSearchParams?.datasets ?? false}
+                      label="Search for datasets only"
+                      onChange={(e) => setSearchParams({ ...currentSearchParams, datasets: e.target.checked })}
+                    />
+                  </Col>
+                </Row>
+              </Col>
+              <Col xs="12">
+                <TagInput
+                  getRoRChildren={getRoRChildren}
+                  hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
+                  isLoading={isLoading}
+                  label="Affiliation name, RoR identifier"
+                  message={message}
+                  messageType={messageType}
+                  onInputHandler={setOnInputAffiliationsHandler}
+                  onTagsChange={onTagsChange}
+                  seeMoreAfter={0}
+                  setGetRoRChildren={setGetRoRChildren}
+                  tags={tags}
+                />
+              </Col>
+              <Col xs="12">
+                <Button
+                  className="fr-mt-2w"
+                  disabled={searchParams.getAll('affiliations').length === 0}
+                  icon="search-line"
+                  onClick={checkAndSendQuery}
+                >
+                  Search works
+                </Button>
+              </Col>
+            </Row>
+          </Container>
+        </ModalContent>
+      </Modal>
     </>
   );
 }
 
 Filters.propTypes = {
+  isFetched: PropTypes.bool.isRequired,
   sendQuery: PropTypes.func.isRequired,
 };

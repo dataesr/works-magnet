@@ -1,8 +1,8 @@
+import PropTypes from 'prop-types';
+
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { InputTextarea } from 'primereact/inputtextarea';
-import PropTypes from 'prop-types';
-
 import useToast from '../hooks/useToast';
 import { isRor } from '../utils/ror';
 import { correctionTemplate, hasCorrectionTemplate, nameTemplate, rorTemplate, worksExampleTemplate } from '../utils/templates';
@@ -10,6 +10,8 @@ import { correctionTemplate, hasCorrectionTemplate, nameTemplate, rorTemplate, w
 export default function OpenalexView({
   allAffiliations,
   setAllOpenalexCorrections,
+  setFilteredAffiliationName,
+  filteredAffiliationName,
 }) {
   const cellEditor = (options) => <InputTextarea type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
   const { toast } = useToast();
@@ -43,6 +45,19 @@ export default function OpenalexView({
     }
   };
 
+  const paginatorLeft = () => (
+    <div>
+      <i className="fr-icon-search-line fr-mr-1w" />
+      Search in affiliations name
+      <input
+        className="fr-ml-1w"
+        onChange={(e) => setFilteredAffiliationName(e.target.value)}
+        value={filteredAffiliationName}
+        style={{ width: '400px', border: '1px solid #ced4da', borderRadius: '4px', padding: '0.375rem 0.75rem' }}
+      />
+    </div>
+  );
+
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -50,8 +65,9 @@ export default function OpenalexView({
       filterDisplay="row"
       metaKeySelection
       paginator
+      paginatorLeft={paginatorLeft}
       paginatorPosition="top bottom"
-      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks  NextPageLink LastPageLink RowsPerPageDropdown"
+      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       rows={100}
       rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
@@ -86,4 +102,6 @@ OpenalexView.propTypes = {
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
   setAllOpenalexCorrections: PropTypes.func.isRequired,
+  setFilteredAffiliationName: PropTypes.func.isRequired,
+  filteredAffiliationName: PropTypes.string.isRequired,
 };

@@ -1,6 +1,11 @@
-import { Col, Row, TextInput } from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  Row, Col,
+  TextInput,
+  Title,
+} from '@dataesr/dsfr-plus';
 
 import AffiliationsView from './affiliationsView';
 import Gauge from '../components/gauge';
@@ -11,8 +16,9 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [timer, setTimer] = useState();
+  const [fixedMenu, setFixedMenu] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { // TODO : look for a better way to do this
     setFilteredAffiliations(affiliations);
   }, [affiliations]);
 
@@ -21,7 +27,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName)));
+      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.replace('[ source', '').includes(normalizeName(filteredAffiliationName)));
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
@@ -31,11 +37,26 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
 
   return (
     <>
+      <div className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`} title="actions">
+        <div className={`selected-item ${selectedAffiliations.length && 'selected'}`}>
+          <span className="number">
+            {selectedAffiliations.length}
+          </span>
+          {`selected affiliation${selectedAffiliations.length === 1 ? '' : 's'}`}
+        </div>
+        {renderButtons(selectedAffiliations, tagAffiliations, 'affiliation')}
+        <div className="text-right">
+          <Button
+            onClick={() => setFixedMenu(!fixedMenu)}
+            size="sm"
+            variant="tertiary"
+          >
+            {fixedMenu ? <i className="ri-pushpin-fill" /> : <i className="ri-pushpin-line" />}
+          </Button>
+        </div>
+      </div>
       <Row>
-        <Col n="9">
-          {renderButtons(selectedAffiliations, tagAffiliations, 'affiliation')}
-        </Col>
-        <Col n="3">
+        <Col>
           <Gauge
             data={Object.values(status).map((st) => ({
               ...st,
@@ -45,19 +66,12 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
         </Col>
       </Row>
       <Row gutters>
-        <Col n="12" offset="0">
-          <TextInput
-            label="Search in affiliations name"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
-        </Col>
-      </Row>
-      <Row gutters>
-        <Col n="12">
+        <Col xs="12">
           <AffiliationsView
             allAffiliations={filteredAffiliations}
+            filteredAffiliationName={filteredAffiliationName}
             selectedAffiliations={selectedAffiliations}
+            setFilteredAffiliationName={setFilteredAffiliationName}
             setSelectedAffiliations={setSelectedAffiliations}
           />
         </Col>

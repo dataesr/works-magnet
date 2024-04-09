@@ -1,6 +1,6 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
-import { Badge } from '@dataesr/react-dsfr';
+import { Badge } from '@dataesr/dsfr-plus';
 import { Tooltip } from 'react-tooltip';
 import { MultiSelect } from 'primereact/multiselect';
 
@@ -24,15 +24,15 @@ const statusesItemTemplate = (option) => (
 
 const statusRowFilterTemplate = (options) => (
   <MultiSelect
-    value={options.value}
-    options={Object.values(status).map((item) => ({ name: item.label, value: item.id }))}
+    className="p-column-filter"
     itemTemplate={statusesItemTemplate}
+    maxSelectedLabels={1}
     onChange={(e) => options.filterApplyCallback(e.value)}
     optionLabel="name"
+    options={Object.values(status).map((item) => ({ name: item.label, value: item.id }))}
     placeholder="Any"
-    className="p-column-filter"
-    maxSelectedLabels={1}
     style={{ maxWidth: '9rem', minWidth: '9rem' }}
+    value={options.value}
   />
 );
 
@@ -132,19 +132,12 @@ const correctionTemplate = (rowData) => {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-const getAffiliationsTooltipField = (rowData) => {
-  let html = '<ul>';
-  html += (rowData?.affiliations ?? []).map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation.rawAffiliation}</li>`).join('');
-  html += '</ul>';
-  return html;
-};
-
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
-const statusTemplate = (rowData) => <Badge text={status[rowData?.status ?? rowData]?.label} type={status[rowData?.status ?? rowData]?.badgeType} />;
+const statusTemplate = (rowData) => <Badge variant={status[rowData?.status ?? rowData]?.badgeType}>{status[rowData?.status ?? rowData]?.label}</Badge>;
 
 const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection
-  ? <Badge text={correction.corrected.label} type={correction.corrected.badgeType} />
+  ? <Badge variant={correction.corrected.badgeType}>{correction.corrected.label}</Badge>
   : '');
 
 export {
@@ -154,7 +147,6 @@ export {
   correctionTemplate,
   datasourceTemplate,
   frAuthorsTemplate,
-  getAffiliationsTooltipField,
   hasCorrectionTemplate,
   linkedDOITemplate,
   linkedORCIDTemplate,

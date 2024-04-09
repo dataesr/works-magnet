@@ -36,16 +36,14 @@ const deduplicateWorks = (works) => {
 
 const getFosmQuery = (options, pit, searchAfter) => {
   const query = { size: process.env.FOSM_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
-  const affiliationsFields = ['affiliations.name'];
   options.affiliationStrings.forEach((affiliation) => {
-    query.query.bool.should.push({ multi_match: { fields: affiliationsFields, query: `"${affiliation}"`, operator: 'and' } });
+    query.query.bool.should.push({ match: { 'affiliations.name': { query: `"${affiliation}"`, operator: 'and' } } });
   });
   if (options.rors?.length > 0) {
-    options.rors.forEach((ror) => {
-      query.query.bool.should.push({ match: { rors: ror } });
-      query.query.bool.should.push({ match: { 'affiliations.affiliationIdentifier': ror } });
-      query.query.bool.should.push({ match: { 'authors.affiliations.affiliationIdentifier': ror } });
-    });
+    const fullRors = options.rors.map((r) => 'https://ror.org/'.concat(r));
+    query.query.bool.should.push({ terms: { 'rors.keyword': options.rors } });
+    query.query.bool.should.push({ terms: { 'affiliations.affiliationIdentifier.keyword': fullRors } });
+    query.query.bool.should.push({ terms: { 'authors.affiliations.affiliationIdentifier.keyword': fullRors } });
   }
   query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
   // Exclude files for Datacite
@@ -123,6 +121,13 @@ const getAffiliationsHtmlField = ({ affiliations, id, regexp }) => {
   return html;
 };
 
+const getAffiliationsTooltipField = ({ affiliations, id }) => {
+  let html = '<ul>';
+  html += (affiliations || []).map((affiliation, index) => `<li key="tooltip-affiliation-${id}-${index}">${affiliation.rawAffiliation}</li>`).join('');
+  html += '</ul>';
+  return html;
+};
+
 const getRegexpFromOptions = ({ options }) => {
   const pattern = options.affiliationStrings
     // Replace all accentuated characters, multiple spaces and toLowercase()
@@ -138,7 +143,7 @@ const getRegexpFromOptions = ({ options }) => {
   return new RegExp(pattern, 'gi');
 };
 
-const formatResultFosm = (result, options) => {
+const formatFosmResult = (result, options) => {
   const answer = {
     affiliations: result._source.affiliations
       ?.map((affiliation) => getFosmAffiliation(affiliation))
@@ -177,11 +182,12 @@ const formatResultFosm = (result, options) => {
   answer.levelCertainty = levelCertainty;
   const regexp = getRegexpFromOptions({ options });
   answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
+  answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
   answer.allInfos = JSON.stringify(answer);
   return answer;
 };
 
-const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) => {
+const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
       `${process.env.FOSM_URL}/${process.env.FOSM_INDEX}/_pit?keep_alive=${process.env.FOSM_PIT_KEEP_ALIVE}`,
@@ -205,12 +211,12 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
       if (response.ok) return response.json();
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
-      return 'Oops... FOSM API request did not work';
+      return [];
     })
     .then((response) => {
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
-      results = results.concat(hits.map((result) => formatResultFosm(result, options))).filter((r) => r.levelCertainty !== '3.low');
+      results = results.concat(hits.map((result) => formatFosmResult(result, options))).filter((r) => r.levelCertainty !== '3.low');
       if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || results.length < Number(process.env.FOSM_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
@@ -227,6 +233,15 @@ const getFosmWorksByYear = async ({ results = [], options, pit, searchAfter }) =
         );
       }
       return results;
+    })
+    .catch((error) => {
+      if (remainingTries > 0) {
+        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000)))
+          .then(() => getFosmWorksByYear({ remainingTries: remainingTries - 1, results, options, pit, searchAfter }));
+      }
+      console.error(`Error while fetching ${url} :`);
+      console.error(error);
+      return [];
     });
 };
 
@@ -301,12 +316,12 @@ const getOpenAlexAffiliation = (author) => {
   return { key, label, rawAffiliation, rors, rorsToCorrect, source };
 };
 
-const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = []) => {
+const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = [], remainingTries = 3) => {
   let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
   if (options.affiliationStrings.length) {
-    url += `,raw_affiliation_string.search:(${options.affiliationStrings.map((aff) => `"${aff}"`).join(' OR ')})`;
+    url += `,raw_affiliation_string.search:(${options.affiliationStrings.map((aff) => `"${encodeURIComponent(aff)}"`).join(' OR ')})`;
   }
   if (options.rors.length) {
     url += `,authorships.institutions.ror:${options.rors.join('|')}`;
@@ -324,11 +339,11 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     .then((response) => {
       if (response.ok) return response.json();
       if (response.status === 429) {
-        return new Promise((resolve) => setTimeout(resolve, 500)).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
+        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
       }
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
-      return 'Oops... OpenAlex API request did not work';
+      return [];
     })
     .then((response) => {
       const hits = response?.results ?? [];
@@ -352,6 +367,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
         };
         const regexp = getRegexpFromOptions({ options });
         answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
+        answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
         answer.allInfos = JSON.stringify(answer);
         return answer;
       }));
@@ -360,6 +376,15 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
         return getOpenAlexPublicationsByYear(options, nextCursor, results);
       }
       return results;
+    })
+    .catch((error) => {
+      if (remainingTries > 0) {
+        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000)))
+          .then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse, remainingTries - 1));
+      }
+      console.error(`Error while fetching ${url} :`);
+      console.error(error);
+      return [];
     });
 };
 

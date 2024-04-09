@@ -1,7 +1,5 @@
-import { Col, Row } from '@dataesr/react-dsfr';
-import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
-
+import PropTypes from 'prop-types';
 import ButtonDropdown from '../../components/button-dropdown';
 
 export default function ActionsOpenalex({
@@ -9,11 +7,11 @@ export default function ActionsOpenalex({
 }) {
   const [searchParams] = useSearchParams();
   return (
-    <Row className="fr-mb-1w">
-      <Col className="text-right">
-        <ButtonDropdown data={allOpenalexCorrections} label="OpenAlex errors" searchParams={searchParams} />
-      </Col>
-    </Row>
+    <ButtonDropdown
+      data={allOpenalexCorrections}
+      label="OpenAlex errors"
+      searchParams={searchParams}
+    />
   );
 }
 

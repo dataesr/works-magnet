@@ -1,13 +1,9 @@
-import {
-  Col,
-  Row,
-  TextInput,
-} from '@dataesr/react-dsfr';
+import { Col, Container, Row } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-import OpenalexView from './openalexView';
 import { status } from '../config';
+import OpenalexView from './openalexView';
 import { normalizeName } from '../utils/works';
 
 export default function OpenalexTab({ affiliations, setAllOpenalexCorrections }) {
@@ -21,7 +17,7 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName)));
+      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.replace('[ source', '').includes(normalizeName(filteredAffiliationName)));
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
@@ -30,25 +26,18 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
   }, [affiliations, filteredAffiliationName, filteredStatus]);
 
   return (
-    <>
-      <Row gutters>
-        <Col n="12" offset="0">
-          <TextInput
-            label="Search in affiliations name"
-            onChange={(e) => setFilteredAffiliationName(e.target.value)}
-            value={filteredAffiliationName}
-          />
-        </Col>
-      </Row>
+    <Container fluid>
       <Row gutters>
         <Col n="12">
           <OpenalexView
             allAffiliations={filteredAffiliations}
+            filteredAffiliationName={filteredAffiliationName}
             setAllOpenalexCorrections={setAllOpenalexCorrections}
+            setFilteredAffiliationName={setFilteredAffiliationName}
           />
         </Col>
       </Row>
-    </>
+    </Container>
   );
 }
 
