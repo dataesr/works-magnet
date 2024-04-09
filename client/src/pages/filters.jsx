@@ -45,9 +45,9 @@ export default function Filters({ isFetched, sendQuery }) {
   const { scrollTop } = useScroll();
 
   useEffect(() => {
-    if (!isSticky && scrollTop > 50) {
+    if (!isSticky && scrollTop > 100) {
       setIsSticky(true);
-    } else if (isSticky && scrollTop < 50) {
+    } else if (isSticky && scrollTop <= 80) {
       setIsSticky(false);
     }
   }, [isSticky, scrollTop]);
@@ -164,7 +164,7 @@ export default function Filters({ isFetched, sendQuery }) {
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {isSticky ? (
-        <Container fluid as="section" className="filters fr-my-5w">
+        <Container fluid as="section" className="filters">
           <Row verticalAlign="top" className="fr-p-2w">
             <Ribbon />
             <Col xs="2" offsetXs="1">

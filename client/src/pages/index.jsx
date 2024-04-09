@@ -70,7 +70,7 @@ export default function Home() {
     // TODO:do a cleaner way to display the spinner and views
     <>
       <Filters isFetched sendQuery={sendQuery} />
-      <Container as="section">
+      <Container as="section" className="fr-mt-10w">
         {isFetching && <Spinner size={48} />}
 
         {(!isFetching && !searchParams.get('view') && isFetched) && (
