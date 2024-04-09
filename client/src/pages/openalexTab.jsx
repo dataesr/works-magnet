@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Col, Container, Row } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
-import {
-  Container, Row, Col,
-  TextInput,
-} from '@dataesr/dsfr-plus';
-import OpenalexView from './openalexView';
+import { useEffect, useState } from 'react';
+
 import { status } from '../config';
+import OpenalexView from './openalexView';
 import { normalizeName } from '../utils/works';
 
 export default function OpenalexTab({ affiliations, setAllOpenalexCorrections }) {
@@ -19,10 +17,8 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      console.log('ttt', normalizeName(filteredAffiliationName));
       const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.replace('[ source', '').includes(normalizeName(filteredAffiliationName)));
       setFilteredAffiliations(filteredAffiliationsTmp);
-      console.log('ttt', filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
     // The timer should not be tracked
