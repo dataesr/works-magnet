@@ -19,8 +19,10 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.includes(normalizeName(filteredAffiliationName)));
+      console.log('ttt', normalizeName(filteredAffiliationName));
+      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.replace('[ source', '').includes(normalizeName(filteredAffiliationName)));
       setFilteredAffiliations(filteredAffiliationsTmp);
+      console.log('ttt', filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
     // The timer should not be tracked
