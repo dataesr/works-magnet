@@ -25,7 +25,7 @@ export default function Header() {
                 </div>
               </div>
               <div className="fr-header__service">
-                <a href="/" title={`Accueil - ${VITE_MINISTER_NAME}`}>
+                <a href="/" title={`Accueil - ${VITE_MINISTER_NAME.replaceAll('<br>', ' ')}`}>
                   <p className="fr-header__service-title">
                     {VITE_APP_NAME}
                     {VITE_HEADER_TAG && (
