@@ -186,7 +186,7 @@ export default function Filters({ isFetched, sendQuery }) {
                 <Col xs="1" className="text-right fr-pr-1w">
                   <Title title="Selected filters" className="fr-icon-filter-line" as="h2" look="h4" />
                 </Col>
-                <Col>
+                <Col onClick={(e) => { setIsOpen(true); e.preventDefault(); }}>
                   <TagGroup>
                     <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
                       {`${currentSearchParams.startYear} - ${currentSearchParams.endYear}`}
