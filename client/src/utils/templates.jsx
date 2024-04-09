@@ -24,15 +24,15 @@ const statusesItemTemplate = (option) => (
 
 const statusRowFilterTemplate = (options) => (
   <MultiSelect
-    value={options.value}
-    options={Object.values(status).map((item) => ({ name: item.label, value: item.id }))}
+    className="p-column-filter"
     itemTemplate={statusesItemTemplate}
+    maxSelectedLabels={1}
     onChange={(e) => options.filterApplyCallback(e.value)}
     optionLabel="name"
+    options={Object.values(status).map((item) => ({ name: item.label, value: item.id }))}
     placeholder="Any"
-    className="p-column-filter"
-    maxSelectedLabels={1}
     style={{ maxWidth: '9rem', minWidth: '9rem' }}
+    value={options.value}
   />
 );
 

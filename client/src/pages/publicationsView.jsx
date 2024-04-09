@@ -29,14 +29,14 @@ export default function PublicationsView({
 
   const yearRowFilterTemplate = (options) => (
     <MultiSelect
-      value={options.value}
-      options={Object.keys(years).map((year) => ({ name: `${year} (${years[year]})`, value: year }))}
-      onChange={(e) => options.filterApplyCallback(e.value)}
-      optionLabel="name"
-      placeholder="Any"
       className="p-column-filter"
       maxSelectedLabels={1}
+      onChange={(e) => options.filterApplyCallback(e.value)}
+      optionLabel="name"
+      options={Object.keys(years).map((year) => ({ name: `${year} (${years[year]})`, value: year }))}
+      placeholder="Any"
       style={{ maxWidth: '9rem', minWidth: '9rem' }}
+      value={options.value}
     />
   );
 
