@@ -74,7 +74,7 @@ router.route('/works')
           const datasetsPublishers = countUniqueValues({ data: datasets, field: 'publisher' });
           console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
           // Build and serialize response
-          console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+          console.time(`6. Query ${queryId} | Cache ${options.affiliationStrings}`);
           const result = {
             affiliations: uniqueAffiliations,
             datasets: {
@@ -91,8 +91,10 @@ router.route('/works')
             },
           };
           await saveCache({ result, searchId });
+          console.timeEnd(`6. Query ${queryId} | Cache ${options.affiliationStrings}`);
+          console.time(`7. Query ${queryId} | Serialization ${options.affiliationStrings}`);
           res.status(200).json(result);
-          console.timeEnd(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+          console.timeEnd(`7. Query ${queryId} | Serialization ${options.affiliationStrings}`);
         }
       } else {
         const cache = await getCache({ searchId });
