@@ -71,7 +71,13 @@ export default function Home() {
     <>
       <Filters isFetched sendQuery={sendQuery} />
       <Container as="section" className="fr-mt-10w">
-        {isFetching && <Spinner size={48} />}
+        {isFetching && (
+          <Row>
+            <Col xs="2" offsetXs="6">
+              <Spinner size={48} />
+            </Col>
+          </Row>
+        )}
 
         {(!isFetching && !searchParams.get('view') && isFetched) && (
           <Row gutters>
