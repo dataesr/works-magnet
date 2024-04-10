@@ -27,11 +27,12 @@ const saveCache = async ({ result, searchId }) => {
   const storage = await getStorage();
   const fileName = `${searchId}.json`;
   const localPath = `/tmp/${fileName}`;
-  // TODO: Remove local path
   await fs.writeFileSync(localPath, JSON.stringify(result));
   const remotePath = `/${container}/${fileName}`;
   await storage.objects().saveFile(localPath, remotePath);
   // const tmp = await storage.objects().expire_after_with_result(remotePath, 86400); // 1 day - 24 hours
+  // Delete local path
+  await fs.unlinkSync(localPath);
 };
 
 const getCache = async ({ searchId }) => {
@@ -45,7 +46,8 @@ const getCache = async ({ searchId }) => {
     const localPath = `/tmp/${filteredFiles?.[0]?.name}`;
     await storage.objects().download(remotePath, localPath);
     const data = fs.readFileSync(localPath, { encoding: 'utf8', flag: 'r' });
-    // TODO: Remove local path
+    // Delete local path
+    await fs.unlinkSync(localPath);
     return JSON.parse(data);
   }
   return false;
