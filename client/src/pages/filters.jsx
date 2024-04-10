@@ -211,12 +211,12 @@ export default function Filters({ isFetched, sendQuery }) {
                     />
                     <SegmentedElement
                       checked={currentSearchParams.view === 'publications'}
-                      label="Find affiliated publications"
+                      label="Publications corpus"
                       value="publications"
                     />
                     <SegmentedElement
                       checked={currentSearchParams.view === 'datasets'}
-                      label="Find affiliated datasets"
+                      label="Datasets corpus"
                       value="datasets"
                     />
                   </SegmentedControl>
@@ -318,12 +318,12 @@ export default function Filters({ isFetched, sendQuery }) {
                       />
                       <SegmentedElement
                         checked={currentSearchParams.view === 'publications'}
-                        label="Find affiliated publications"
+                        label="Publications corpus"
                         value="publications"
                       />
                       <SegmentedElement
                         checked={currentSearchParams.view === 'datasets'}
-                        label="Find affiliated datasets"
+                        label="Datasets corpus"
                         value="datasets"
                       />
                     </SegmentedControl>
