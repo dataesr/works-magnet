@@ -8,6 +8,8 @@ import {
   TextInput,
 } from '@dataesr/dsfr-plus';
 
+import './index.scss';
+
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
 const SEE_MORE_AFTER = 3;
@@ -133,12 +135,12 @@ export default function TagInput({
                   <TagGroup>
                     {currentTags.map((tag) => (
                       <DismissibleTag
-                        className="fr-mr-1w"
+                        className={`fr-mr-1w ${tag.disable ? 'scratched' : ''}`}
                         color={getTagColor(tag)}
                         key={tag.label}
                         onClick={() => handleDeleteClick(tag)}
                         size="sm"
-                        title={`Tag ${tag.label}${tag.disable ? ' (not searched)' : ''}`}
+                        title={`${tag.label}${tag.disable ? ' (not searched)' : ''}`}
                       >
                         {tag.label}
                       </DismissibleTag>
