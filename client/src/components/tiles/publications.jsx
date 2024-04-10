@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
+import './tiles.scss';
 
 export default function PublicationsTile({ setView }) {
   return (
     <div
-      className="fr-tile fr-tile--horizontal"
+      className="fr-tile fr-tile--horizontal click"
       onClick={() => setView('publications')}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {

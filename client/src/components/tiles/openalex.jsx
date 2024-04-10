@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
+import './tiles.scss';
 
 export default function OpenalexTile({ setView }) {
   return (
     <div
-      className="fr-tile fr-tile--horizontal"
+      className="fr-tile fr-tile--horizontal click"
+      size="sm"
       onClick={() => setView('openalex')}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {

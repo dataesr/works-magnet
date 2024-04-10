@@ -165,12 +165,11 @@ export default function Filters({ isFetched, sendQuery }) {
     <>
       {isSticky ? (
         <Container fluid as="section" className="filters">
-          <Row verticalAlign="top" className="fr-p-2w">
+          <Row verticalAlign="top" className="fr-p-1w">
             <Ribbon />
             <Col xs="2" offsetXs="1">
               <Title as="h1" look="h6" className="fr-m-0">
                 {VITE_APP_NAME}
-                <br />
                 {VITE_HEADER_TAG && (
                   <Badge
                     color={VITE_HEADER_TAG_COLOR}
@@ -183,9 +182,10 @@ export default function Filters({ isFetched, sendQuery }) {
             </Col>
             <Col>
               <Row>
-                <Col xs="1" className="text-right fr-pr-1w">
-                  <Title title="Selected filters" className="fr-icon-filter-line" as="h2" look="h4" />
+                { /* <Col xs="1" className="text-right fr-pr-1w">
+                 <Title title="Selected filters" className="fr-icon-filter-line" as="h2" look="h4" />
                 </Col>
+               */ }
                 <Col onClick={(e) => { setIsOpen(true); e.preventDefault(); }}>
                   <TagGroup>
                     <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
@@ -206,7 +206,7 @@ export default function Filters({ isFetched, sendQuery }) {
                   >
                     <SegmentedElement
                       checked={currentSearchParams.view === 'openalex'}
-                      label="Improve RoR matching in OpenAlex"
+                      label="Improve OpenAlex (RoRs)"
                       value="openalex"
                     />
                     <SegmentedElement
