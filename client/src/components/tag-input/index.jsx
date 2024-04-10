@@ -10,7 +10,7 @@ import {
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
-const SEE_MORE_AFTER = 5;
+const SEE_MORE_AFTER = 3;
 
 export default function TagInput({
   deletedTags,
