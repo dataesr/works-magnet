@@ -100,17 +100,19 @@ const getMatchingRoRs = (affiliations, options) => {
 };
 
 const getAffiliationsHtmlField = ({ affiliations, id, regexp }) => {
-  let affiliationsAll = affiliations
-    .map((a) => removeDiacritics(a.rawAffiliation))
-    .sort((a, b) => (regexp.exec(b)?.length ?? 0) - (regexp.exec(a)?.length ?? 0))
-    .map((affiliation) => {
-      let displayAffiliation = affiliation;
-      regexp.exec(affiliation)?.slice(1)?.forEach((match) => {
-        displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
-      });
-      return displayAffiliation;
-    })
-    .filter((affiliation) => affiliation?.length ?? 0);
+  let affiliationsAll = affiliations.map((a) => a.rawAffiliation);
+  if (regexp) {
+    affiliationsAll = affiliationsAll.map((a) => removeDiacritics(a))
+      .sort((a, b) => (regexp.exec(b)?.length ?? 0) - (regexp.exec(a)?.length ?? 0))
+      .map((affiliation) => {
+        let displayAffiliation = affiliation;
+        regexp.exec(affiliation)?.slice(1)?.forEach((match) => {
+          displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
+        });
+        return displayAffiliation;
+      })
+      .filter((affiliation) => affiliation?.length ?? 0);
+  }
   affiliationsAll = [...new Set(affiliationsAll)];
   let html = `<ul data-tooltip-id="tooltip-affiliation-${id}">`;
   html += affiliationsAll.slice(0, 3).map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
@@ -180,8 +182,8 @@ const formatFosmResult = (result, options) => {
     levelCertainty = '3.low';
   }
   answer.levelCertainty = levelCertainty;
-  const regexp = getRegexpFromOptions({ options });
-  answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
+  // const regexp = getRegexpFromOptions({ options });
+  answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id });
   answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
   answer.allInfos = JSON.stringify(answer);
   return answer;
@@ -365,8 +367,8 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
           type: getTypeFromOpenAlex(result.type),
           year: result?.publication_year?.toString() ?? '',
         };
-        const regexp = getRegexpFromOptions({ options });
-        answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
+        // const regexp = getRegexpFromOptions({ options });
+        answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id });
         answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
         answer.allInfos = JSON.stringify(answer);
         return answer;
