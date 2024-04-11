@@ -9,14 +9,24 @@ const SEED_MAX = 2048;
 
 const router = new express.Router();
 
+const arrayBufferToBase64 = (buffer) => {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+
 const getData = async ({ options, type }) => {
   const shasum = crypto.createHash('sha1');
   shasum.update(JSON.stringify(options));
   const searchId = shasum.digest('hex');
   const queryId = Math.floor(Math.random() * SEED_MAX);
-  console.time(`0. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  console.time(`0. Query ${queryId} ${type} | Cache ${options.affiliationStrings}`);
   const cache = await getCache({ searchId, type });
-  console.timeEnd(`0. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  console.timeEnd(`0. Query ${queryId} ${type} | Cache ${options.affiliationStrings}`);
   if (cache) return cache;
   console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
   // eslint-disable-next-line no-param-reassign
@@ -87,11 +97,28 @@ const getData = async ({ options, type }) => {
       years: publicationsYears,
     },
   };
+  // Convert JSON to Stream
+  const stream = new Blob([JSON.stringify(result)], {
+    type: 'application/json',
+  }).stream();
+  const compressedReadableStream = stream.pipeThrough(
+    new CompressionStream('gzip'),
+  );
+  // create Response
+  const compressedResponse = 
+    await new Response(compressedReadableStream);
   console.timeEnd(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+  const blob = await compressedResponse.blob();
+  // Get the ArrayBuffer
+  const buffer = await blob.arrayBuffer();
+  // convert ArrayBuffer to base64 encoded string
+  const compressedBase64 = arrayBufferToBase64(buffer);
+  const compressedResult = { compressedBase64 };
   console.time(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
-  await saveCache({ result, searchId });
+  await saveCache({ result: compressedResult, searchId });
   console.timeEnd(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
-  return result[type];
+  return compressedResult;
+  // return result[type];
 };
 
 router.route('/affiliations')
@@ -101,8 +128,8 @@ router.route('/affiliations')
       if (!options?.affiliationStrings && !options?.rors) {
         res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
       } else {
-        const affiliations = await getData({ options, type: 'affiliations' });
-        res.status(200).json({ affiliations });
+        const compressedResult = await getData({ options, type: 'affiliations' });
+        res.status(200).json(compressedResult);
       }
     } catch (err) {
       console.error(err);
@@ -117,8 +144,8 @@ router.route('/datasets')
       if (!options?.affiliationStrings && !options?.rors) {
         res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
       } else {
-        const datasets = await getData({ options, type: 'datasets' });
-        res.status(200).json({ datasets });
+        const compressedBase64 = await getData({ options, type: 'datasets' });
+        res.status(200).json({ compressedBase64 });
       }
     } catch (err) {
       console.error(err);
@@ -133,8 +160,8 @@ router.route('/publications')
       if (!options?.affiliationStrings && !options?.rors) {
         res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
       } else {
-        const publications = await getData({ options, type: 'publications' });
-        res.status(200).json({ publications });
+        const compressedBase64 = await getData({ options, type: 'publications' });
+        res.status(200).json({ compressedBase64 });
       }
     } catch (err) {
       console.error(err);

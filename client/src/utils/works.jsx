@@ -8,6 +8,29 @@ const {
 
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
+const b64decode = (str) => {
+  const binaryString = window.atob(str);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(new ArrayBuffer(len));
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+};
+
+const unzipData = async (compressedBase64) => {
+  const stream = new Blob([b64decode(compressedBase64)], {
+    type: 'application/json',
+  }).stream();
+  const compressedReadableStream = stream.pipeThrough(
+    new DecompressionStream('gzip'),
+  );
+  const resp = await new Response(compressedReadableStream);
+  const blob = await resp.blob();
+  const data = JSON.parse(await blob.text());
+  return data;
+};
+
 const getData = async (options) => {
   try {
     const responseAffiliations = await fetch(`${VITE_API}/affiliations`, {
@@ -16,21 +39,9 @@ const getData = async (options) => {
       method: 'POST',
     });
     if (responseAffiliations.ok) {
-      const affiliations = await responseAffiliations.json();
-      const datasetsPromise = fetch(`${VITE_API}/datasets`, {
-        body: JSON.stringify(options),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-      });
-      const publicationsPromise = fetch(`${VITE_API}/publications`, {
-        body: JSON.stringify(options),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-      });
-      const responses = await Promise.all([datasetsPromise, publicationsPromise]);
-      const datasets = await responses[0].json();
-      const publications = await responses[1].json();
-      return { ...affiliations, ...datasets, ...publications };
+      const { compressedBase64 } = await responseAffiliations.json();
+      const data = await unzipData(compressedBase64);
+      return data;
     }
     console.error(responseAffiliations);
     console.error('Oops... FOSM API request did not work');
