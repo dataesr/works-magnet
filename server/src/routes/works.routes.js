@@ -12,6 +12,7 @@ const router = new express.Router();
 router.route('/works')
   .post(async (req, res) => {
     try {
+      console.log('WORKS');
       const options = req?.body ?? {};
       const shasum = crypto.createHash('sha1');
       shasum.update(JSON.stringify(options));
