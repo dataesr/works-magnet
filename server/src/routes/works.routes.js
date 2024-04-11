@@ -6,7 +6,7 @@ import { chunkArray, countUniqueValues, range } from '../utils/utils';
 import { datasetsType, deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
 
 const SEED_MEX = 2048;
-
+const USE_CACHE = true;
 const router = new express.Router();
 
 router.route('/works')
@@ -19,7 +19,7 @@ router.route('/works')
       const searchId = shasum.digest('hex');
       const hasCached = await isCached({ searchId });
       const queryId = Math.floor(Math.random() * SEED_MEX);
-      if (!hasCached) {
+      if (!hasCached || !USE_CACHE) {
         if (!options?.affiliationStrings && !options?.rors) {
           res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
         } else {
@@ -91,7 +91,9 @@ router.route('/works')
               years: publicationsYears,
             },
           };
-          await saveCache({ result, searchId });
+          if (USE_CACHE) {
+            await saveCache({ result, searchId });
+          }
           console.timeEnd(`6. Query ${queryId} | Cache ${options.affiliationStrings}`);
           console.time(`7. Query ${queryId} | Serialization ${options.affiliationStrings}`);
           res.status(200).json(result);
