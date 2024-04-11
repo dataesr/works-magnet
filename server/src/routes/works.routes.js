@@ -13,8 +13,10 @@ const getData = async ({ options, type }) => {
   const shasum = crypto.createHash('sha1');
   shasum.update(JSON.stringify(options));
   const searchId = shasum.digest('hex');
-  const cache = await getCache({ searchId, type });
   const queryId = Math.floor(Math.random() * SEED_MAX);
+  console.time(`0. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  const cache = await getCache({ searchId, type });
+  console.timeEnd(`0. Query ${queryId} | Cache ${options.affiliationStrings}`);
   if (cache) return cache;
   console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
   // eslint-disable-next-line no-param-reassign
@@ -86,9 +88,9 @@ const getData = async ({ options, type }) => {
     },
   };
   console.timeEnd(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
-  console.time(`7. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  console.time(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
   await saveCache({ result, searchId });
-  console.timeEnd(`7. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  console.timeEnd(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
   return result[type];
 };
 
