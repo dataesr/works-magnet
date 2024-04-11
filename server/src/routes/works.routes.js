@@ -69,7 +69,7 @@ const getData = async ({ options, type }) => {
   const datasetsPublishers = countUniqueValues({ data: datasets, field: 'publisher' });
   console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
   // Build and serialize response
-  console.time(`6. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
   const result = {
     affiliations: uniqueAffiliations,
     datasets: {
@@ -85,11 +85,11 @@ const getData = async ({ options, type }) => {
       years: publicationsYears,
     },
   };
+  console.timeEnd(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+  console.time(`7. Query ${queryId} | Cache ${options.affiliationStrings}`);
   await saveCache({ result, searchId });
-  console.timeEnd(`6. Query ${queryId} | Cache ${options.affiliationStrings}`);
-  console.time(`7. Query ${queryId} | Serialization ${options.affiliationStrings}`);
-  console.timeEnd(`7. Query ${queryId} | Serialization ${options.affiliationStrings}`);
-  return result;
+  console.timeEnd(`7. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  return result[type];
 };
 
 router.route('/affiliations')
