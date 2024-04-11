@@ -39,8 +39,11 @@ const getData = async (options) => {
       method: 'POST',
     });
     if (responseAffiliations.ok) {
-      const { compressedBase64 } = await responseAffiliations.json();
-      const data = await unzipData(compressedBase64);
+      const { affiliations, datasets, publications } = await responseAffiliations.json();
+      const resAffiliations = await unzipData(affiliations);
+      const resDatasets = await unzipData(datasets);
+      const resPublications = await unzipData(publications);
+      const data = { affiliations: resAffiliations, datasets: resDatasets, publications: resPublications };
       return data;
     }
     console.error(responseAffiliations);

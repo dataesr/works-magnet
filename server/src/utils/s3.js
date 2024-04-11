@@ -17,7 +17,7 @@ const getStorage = async () => {
 };
 
 const getCache = async ({ searchId, type }) => {
-  const fileName = `${searchId}.json.gzip`;
+  const fileName = `${searchId}.v2.json.gzip`;
   const storage = await getStorage();
   const files = await storage.containers().list(container);
   const filteredFiles = files.filter((file) => file?.name === fileName);
@@ -35,7 +35,7 @@ const getCache = async ({ searchId, type }) => {
 
 const saveCache = async ({ result, searchId }) => {
   const storage = await getStorage();
-  const fileName = `${searchId}.json.gzip`;
+  const fileName = `${searchId}.v2.json.gzip`;
   const localPath = `/tmp/${fileName}`;
   await fs.writeFileSync(localPath, JSON.stringify(result));
   const remotePath = `/${container}/${fileName}`;

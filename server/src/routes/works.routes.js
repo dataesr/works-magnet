@@ -19,6 +19,25 @@ const arrayBufferToBase64 = (buffer) => {
   return btoa(binary);
 };
 
+const compressData = async (result) => {
+  // Convert JSON to Stream
+  const stream = new Blob([JSON.stringify(result)], {
+    type: 'application/json',
+  }).stream();
+  const compressedReadableStream = stream.pipeThrough(
+    new CompressionStream('gzip'),
+  );
+  // create Response
+  const compressedResponse = 
+    await new Response(compressedReadableStream);
+  const blob = await compressedResponse.blob();
+  // Get the ArrayBuffer
+  const buffer = await blob.arrayBuffer();
+  // convert ArrayBuffer to base64 encoded string
+  const compressedBase64 = arrayBufferToBase64(buffer);
+  return compressedBase64;
+};
+
 const getData = async ({ options, type }) => {
   const shasum = crypto.createHash('sha1');
   shasum.update(JSON.stringify(options));
@@ -82,42 +101,28 @@ const getData = async ({ options, type }) => {
   console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
   // Build and serialize response
   console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+  const resDatasets = await compressData({
+    publishers: datasetsPublishers,
+    results: datasets,
+    types: datasetsTypes,
+    years: datasetsYears,
+  });
+  const resPublications = await compressData({
+    publishers: publicationsPublishers,
+    results: publications,
+    types: publicationsTypes,
+    years: publicationsYears,
+  });
+  const resAffiliations = await compressData(uniqueAffiliations);
   const result = {
-    affiliations: uniqueAffiliations,
-    datasets: {
-      publishers: datasetsPublishers,
-      results: datasets,
-      types: datasetsTypes,
-      years: datasetsYears,
-    },
-    publications: {
-      publishers: publicationsPublishers,
-      results: publications,
-      types: publicationsTypes,
-      years: publicationsYears,
-    },
+    affiliations: resAffiliations,
+    datasets: resDatasets,
+    publications: resPublications,
   };
-  // Convert JSON to Stream
-  const stream = new Blob([JSON.stringify(result)], {
-    type: 'application/json',
-  }).stream();
-  const compressedReadableStream = stream.pipeThrough(
-    new CompressionStream('gzip'),
-  );
-  // create Response
-  const compressedResponse = 
-    await new Response(compressedReadableStream);
-  console.timeEnd(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
-  const blob = await compressedResponse.blob();
-  // Get the ArrayBuffer
-  const buffer = await blob.arrayBuffer();
-  // convert ArrayBuffer to base64 encoded string
-  const compressedBase64 = arrayBufferToBase64(buffer);
-  const compressedResult = { compressedBase64 };
   console.time(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
-  await saveCache({ result: compressedResult, searchId });
+  await saveCache({ result, searchId });
   console.timeEnd(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
-  return compressedResult;
+  return result;
   // return result[type];
 };
 
