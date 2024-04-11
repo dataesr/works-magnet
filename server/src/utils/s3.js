@@ -20,6 +20,7 @@ const isCached = async ({ searchId }) => {
   const storage = await getStorage();
   const files = await storage.containers().list(container);
   const filteredFiles = files.filter((file) => file?.name === `${searchId}.json`);
+  // TODO measure if cache is less than 24 hours old
   return (filteredFiles?.length ?? 0) > 0;
 };
 
@@ -36,9 +37,9 @@ const saveCache = async ({ result, searchId }) => {
 };
 
 const getCache = async ({ searchId }) => {
+  console.log('getCache', `getting cache for ${searchId}`);
   const storage = await getStorage();
   const fileName = `${searchId}.json`;
-  // TODO measure if cache is less than 24 hours old
   const files = await storage.containers().list(container);
   const filteredFiles = files.filter((file) => file?.name === fileName);
   if (filteredFiles.length > 0) {
