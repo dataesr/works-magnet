@@ -98,7 +98,9 @@ router.route('/works')
           console.timeEnd(`7. Query ${queryId} | Serialization ${options.affiliationStrings}`);
         }
       } else {
+        console.time(`1. Query ${queryId} | Get cache ${options.affiliationStrings}`);
         const cache = await getCache({ searchId });
+        console.timeEnd(`1. Query ${queryId} | Get cache ${options.affiliationStrings}`);
         res.status(200).json(cache);
       }
     } catch (err) {
