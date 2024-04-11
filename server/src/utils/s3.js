@@ -16,35 +16,14 @@ const getStorage = async () => {
   return storage;
 };
 
-const isCached = async ({ searchId }) => {
+const getCache = async ({ searchId, type }) => {
+  const fileName = `${searchId}_${type}.json`;
   const storage = await getStorage();
-  const files = await storage.containers().list(container);
-  const filteredFiles = files.filter((file) => file?.name === `${searchId}.json`);
-  // TODO measure if cache is less than 24 hours old
-  return (filteredFiles?.length ?? 0) > 0;
-};
-
-const saveCache = async ({ result, searchId }) => {
-  const storage = await getStorage();
-  const fileName = `${searchId}.json`;
-  const localPath = `/tmp/${fileName}`;
-  await fs.writeFileSync(localPath, JSON.stringify(result));
-  const remotePath = `/${container}/${fileName}`;
-  await storage.objects().save_with_result(localPath, remotePath);
-  // const tmp = await storage.objects().expire_after_with_result(remotePath, 86400); // 1 day - 24 hours
-  // Delete local path
-  await fs.unlinkSync(localPath);
-};
-
-const getCache = async ({ searchId }) => {
-  console.log('getCache', `getting cache for ${searchId}`);
-  const storage = await getStorage();
-  const fileName = `${searchId}.json`;
   const files = await storage.containers().list(container);
   const filteredFiles = files.filter((file) => file?.name === fileName);
   if (filteredFiles.length > 0) {
-    const remotePath = `/${container}/${filteredFiles?.[0]?.name}`;
-    const localPath = `/tmp/${filteredFiles?.[0]?.name}`;
+    const remotePath = `/${container}/${fileName}`;
+    const localPath = `/tmp/${fileName}`;
     await storage.objects().download(remotePath, localPath);
     const data = fs.readFileSync(localPath, { encoding: 'utf8', flag: 'r' });
     // Delete local path
@@ -54,8 +33,22 @@ const getCache = async ({ searchId }) => {
   return false;
 };
 
+const saveCache = async ({ result, searchId }) => {
+  const storage = await getStorage();
+  const items = ['affiliations', 'datasets', 'publications'];
+  for (let i = 0; i < items.length; i += 1) {
+    const fileName = `${searchId}_${items[i]}.json`;
+    const localPath = `/tmp/${fileName}`;
+    await fs.writeFileSync(localPath, JSON.stringify(result?.[items[i]]));
+    const remotePath = `/${container}/${fileName}`;
+    await storage.objects().save_with_result(localPath, remotePath);
+    // const tmp = await storage.objects().expire_after_with_result(remotePath, 86400); // 1 day - 24 hours
+    // Delete local path
+    await fs.unlinkSync(localPath);
+  }
+};
+
 export {
   getCache,
-  isCached,
   saveCache,
 };

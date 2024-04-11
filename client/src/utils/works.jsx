@@ -8,20 +8,39 @@ const {
 
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const getData = async (options) => fetch(`${VITE_API}/works`, {
-  body: JSON.stringify(options),
-  headers: { 'Content-Type': 'application/json' },
-  method: 'POST',
-}).then((response) => {
-  if (response.ok) return response.json();
-  console.error(response);
-  console.error('Oops... FOSM API request did not work');
-  return {};
-}).catch((error) => {
-  console.error(error);
-  console.error('Oops... FOSM API request did not work');
-  return {};
-});
+const getData = async (options) => {
+  try {
+    const responseAffiliations = await fetch(`${VITE_API}/affiliations`, {
+      body: JSON.stringify(options),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+    });
+    if (responseAffiliations.ok) {
+      const affiliations = await responseAffiliations.json();
+      const datasetsPromise = fetch(`${VITE_API}/datasets`, {
+        body: JSON.stringify(options),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      });
+      const publicationsPromise = fetch(`${VITE_API}/publications`, {
+        body: JSON.stringify(options),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      });
+      const responses = await Promise.all([datasetsPromise, publicationsPromise]);
+      const datasets = await responses[0].json();
+      const publications = await responses[1].json();
+      return { ...affiliations, ...datasets, ...publications };
+    }
+    console.error(responseAffiliations);
+    console.error('Oops... FOSM API request did not work');
+    return {};
+  } catch (error) {
+    console.error(error);
+    console.error('Oops... FOSM API request did not work');
+    return {};
+  }
+};
 
 const getIdLink = (type, id) => {
   let prefix = null;
