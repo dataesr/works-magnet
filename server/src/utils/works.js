@@ -409,6 +409,7 @@ const groupByAffiliations = ({ options, works }) => {
     .join('|');
   const regexp = new RegExp(pattern, 'gi');
   const queryRors = options.rors || [];
+  const toKeep = {};
   // Compute distinct affiliations of works
   let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
     const { affiliations = [], id } = work;
@@ -416,20 +417,23 @@ const groupByAffiliations = ({ options, works }) => {
     for (let i = 0; i < length; i += 1) {
       const affiliation = affiliations[i];
       const normalizedAffiliation = affiliation.key;
-      let displayAffiliation = affiliation.label;
-      const matches = regexp.exec(displayAffiliation);
-      // Set each matched word in bold
-      matches?.slice(1)?.forEach((match) => {
-        displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
-      });
-      let keepAffiliation = displayAffiliation.includes('</b>');
-      const rorsInAffiliation = affiliation.rors?.map((a) => a.rorId) || [];
-      rorsInAffiliation.forEach((r) => {
-        if (queryRors.includes(r)) {
-          keepAffiliation = true;
-        }
-      });
-      if (keepAffiliation) {
+      if (toKeep[normalizedAffiliation] === undefined) {
+        let displayAffiliation = affiliation.label;
+        const matches = regexp.exec(displayAffiliation);
+        // Set each matched word in bold
+        matches?.slice(1)?.forEach((match) => {
+          displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
+        });
+        let keepAffiliation = displayAffiliation.includes('</b>');
+        const rorsInAffiliation = affiliation.rors?.map((a) => a.rorId) || [];
+        rorsInAffiliation.forEach((r) => {
+          if (queryRors.includes(r)) {
+            keepAffiliation = true;
+          }
+        });
+        toKeep[normalizedAffiliation] = { keepAffiliation, displayAffiliation };
+      }
+      if (toKeep[normalizedAffiliation]?.keepAffiliation) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
           deduplicatedAffiliations[normalizedAffiliation].works.push(id);
           if (deduplicatedAffiliations[normalizedAffiliation].worksExample.length < 10) {
@@ -442,7 +446,7 @@ const groupByAffiliations = ({ options, works }) => {
             rors: affiliation.rors || [],
             rorsToCorrect: (affiliation.rorsToCorrect || []).join(';'),
             hasCorrection: false,
-            nameHtml: displayAffiliation,
+            nameHtml: toKeep[normalizedAffiliation].displayAffiliation,
             key: affiliation.key,
             source: affiliation.source,
             status: 'tobedecided',
