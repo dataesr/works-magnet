@@ -20,7 +20,6 @@ const isCached = async ({ searchId }) => {
   const storage = await getStorage();
   const files = await storage.containers().list(container);
   const filteredFiles = files.filter((file) => file?.name === `${searchId}.json`);
-  console.log('1', JSON.stringify(filteredFiles));
   return (filteredFiles?.length ?? 0) > 0;
 };
 
@@ -30,8 +29,7 @@ const saveCache = async ({ result, searchId }) => {
   const localPath = `/tmp/${fileName}`;
   await fs.writeFileSync(localPath, JSON.stringify(result));
   const remotePath = `/${container}/${fileName}`;
-  // await storage.objects().saveFile(localPath, remotePath);
-  console.log(await storage.objects().save_with_result(localPath, remotePath));
+  await storage.objects().save_with_result(localPath, remotePath);
   // const tmp = await storage.objects().expire_after_with_result(remotePath, 86400); // 1 day - 24 hours
   // Delete local path
   await fs.unlinkSync(localPath);
