@@ -18,11 +18,11 @@ router.route('/works')
       shasum.update(JSON.stringify(options));
       const searchId = shasum.digest('hex');
       const hasCached = await isCached({ searchId });
+      const queryId = Math.floor(Math.random() * SEED_MEX);
       if (!hasCached) {
         if (!options?.affiliationStrings && !options?.rors) {
           res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
         } else {
-          const queryId = Math.floor(Math.random() * SEED_MEX);
           console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
           options.years = range(options.startYear, options.endYear);
           const queries = [];
@@ -98,9 +98,9 @@ router.route('/works')
           console.timeEnd(`7. Query ${queryId} | Serialization ${options.affiliationStrings}`);
         }
       } else {
-        console.time(`1. Query ${queryId} | Get cache ${options.affiliationStrings}`);
+        console.time(`1. Query ${queryId} ${searchId} | Get cache ${options.affiliationStrings}`);
         const cache = await getCache({ searchId });
-        console.timeEnd(`1. Query ${queryId} | Get cache ${options.affiliationStrings}`);
+        console.timeEnd(`1. Query ${queryId} ${searchId} | Get cache ${options.affiliationStrings}`);
         res.status(200).json(cache);
       }
     } catch (err) {
