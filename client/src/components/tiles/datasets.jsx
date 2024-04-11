@@ -20,8 +20,11 @@ export default function DatasetsTile({ setView }) {
             <p>🗃 Find the datasets affiliated to your institution</p>
           </h3>
           <p className="fr-tile__detail">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Voluptates, ratione recusandae deserunt non inventore, dolor placeat itaque eveniet, impedit facere reiciendis rem. Nihil mollitia inventore, nostrum dolores quas ea optio.
+            🔎 Explore the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query (datasets only).
+            <br />
+            🤔 Validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not. 
+            <br />
+            💾 Save (export to a file) those decisions and the datasets corpus you just built.
           </p>
         </div>
       </div>

@@ -302,7 +302,7 @@ export default function Filters({ isFetched, sendQuery }) {
             </Row>
           </Container>
           {
-            isFetched && (
+            isFetched && false && (
               <Container as="section" className="fr-my-3w">
                 <Row>
                   <Col style={{ textAlign: 'center' }}>
@@ -313,7 +313,7 @@ export default function Filters({ isFetched, sendQuery }) {
                     >
                       <SegmentedElement
                         checked={currentSearchParams.view === 'openalex'}
-                        label="Improve RoR matching in OpenAlex"
+                        label="1.Improve RoR matching in OpenAlex"
                         value="openalex"
                       />
                       <SegmentedElement
