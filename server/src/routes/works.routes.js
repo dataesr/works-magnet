@@ -36,6 +36,14 @@ const compressData = async (result) => {
   return arrayBufferToBase64(buffer);
 };
 
+const chunkAndCompress = async (data) => {
+  const chunks = chunkArray({ array: data, perChunk: 2500 });
+  const res = await Promise.all(chunks.map(async (c) => { 
+    return compressData(c);
+  }));
+  return res;
+};
+
 const getData = async ({ options, type }) => {
   const shasum = crypto.createHash('sha1');
   shasum.update(JSON.stringify(options));
@@ -99,19 +107,9 @@ const getData = async ({ options, type }) => {
   console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
   // Build and serialize response
   console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
-  const resDatasets = await compressData({
-    publishers: datasetsPublishers,
-    results: datasets,
-    types: datasetsTypes,
-    years: datasetsYears,
-  });
-  const resPublications = await compressData({
-    publishers: publicationsPublishers,
-    results: publications,
-    types: publicationsTypes,
-    years: publicationsYears,
-  });
-  const resAffiliations = await compressData(uniqueAffiliations);
+  const resDatasets = await chunkAndCompress(datasets);
+  const resPublications = await chunkAndCompress(publications);
+  const resAffiliations = await chunkAndCompress(uniqueAffiliations);
   const result = {
     affiliations: resAffiliations,
     datasets: resDatasets,

@@ -31,6 +31,13 @@ const unzipData = async (compressedBase64) => {
   return data;
 };
 
+const decompressAll = async (chunks) => {
+  const res = await Promise.all(chunks.map(async (c) => {
+    return unzipData(c);
+  }));
+  return res.flat();
+};
+
 const getData = async (options) => {
   try {
     const responseAffiliations = await fetch(`${VITE_API}/affiliations`, {
@@ -40,9 +47,9 @@ const getData = async (options) => {
     });
     if (responseAffiliations.ok) {
       const { affiliations, datasets, publications } = await responseAffiliations.json();
-      const resAffiliations = await unzipData(affiliations);
-      const resDatasets = await unzipData(datasets);
-      const resPublications = await unzipData(publications);
+      const resAffiliations = await decompressAll(affiliations);
+      const resDatasets = await decompressAll(datasets);
+      const resPublications = await decompressAll(publications);
       const data = { affiliations: resAffiliations, datasets: resDatasets, publications: resPublications };
       return data;
     }
