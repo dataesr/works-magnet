@@ -93,17 +93,8 @@ const getData = async ({ options, type }) => {
     }
   }
   console.timeEnd(`4. Query ${queryId} | Sort works ${options.affiliationStrings}`);
-  // Compute distinct types & years for facet
-  console.time(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
-  const publicationsYears = countUniqueValues({ data: publications, field: 'year' });
-  const datasetsYears = countUniqueValues({ data: datasets, field: 'year' });
-  const publicationsTypes = countUniqueValues({ data: publications, field: 'type' });
-  const datasetsTypes = countUniqueValues({ data: datasets, field: 'type' });
-  const publicationsPublishers = countUniqueValues({ data: publications, field: 'publisher' });
-  const datasetsPublishers = countUniqueValues({ data: datasets, field: 'publisher' });
-  console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
   // Build and serialize response
-  console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+  console.time(`5. Query ${queryId} | Serialization ${options.affiliationStrings}`);
   const resAffiliations = await chunkAndCompress(uniqueAffiliations);
   const resDatasets = await chunkAndCompress(datasets);
   const resPublications = await chunkAndCompress(publications);
@@ -112,9 +103,10 @@ const getData = async ({ options, type }) => {
     datasets: resDatasets,
     publications: resPublications,
   };
-  console.time(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
+  console.timeEnd(`5. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+  console.time(`6. Query ${queryId} | Save cache ${options.affiliationStrings}`);
   await saveCache({ result, searchId });
-  console.timeEnd(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
+  console.timeEnd(`6. Query ${queryId} | Save cache ${options.affiliationStrings}`);
   return result;
 };
 
