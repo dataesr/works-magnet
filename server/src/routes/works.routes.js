@@ -118,7 +118,7 @@ const getData = async ({ options, type }) => {
   return result;
 };
 
-router.route('/affiliations')
+router.route('/works')
   .post(async (req, res) => {
     try {
       const options = req?.body ?? {};
@@ -127,38 +127,6 @@ router.route('/affiliations')
       } else {
         const compressedResult = await getData({ options, type: 'affiliations' });
         res.status(200).json(compressedResult);
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Internal Server Error.' });
-    }
-  });
-
-router.route('/datasets')
-  .post(async (req, res) => {
-    try {
-      const options = req?.body ?? {};
-      if (!options?.affiliationStrings && !options?.rors) {
-        res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
-      } else {
-        const compressedBase64 = await getData({ options, type: 'datasets' });
-        res.status(200).json({ compressedBase64 });
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Internal Server Error.' });
-    }
-  });
-
-router.route('/publications')
-  .post(async (req, res) => {
-    try {
-      const options = req?.body ?? {};
-      if (!options?.affiliationStrings && !options?.rors) {
-        res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
-      } else {
-        const compressedBase64 = await getData({ options, type: 'publications' });
-        res.status(200).json({ compressedBase64 });
       }
     } catch (err) {
       console.error(err);
