@@ -12,7 +12,7 @@ const b64decode = (str) => {
   const binaryString = window.atob(str);
   const len = binaryString.length;
   const bytes = new Uint8Array(new ArrayBuffer(len));
-  for (let i = 0; i < len; i += 1) {
+  for (let i = 0; i < len; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }
   return bytes;
@@ -43,7 +43,7 @@ const getData = async (options) => {
       const resAffiliations = await unzipData(affiliations);
       const resDatasets = await unzipData(datasets);
       const resPublications = await unzipData(publications);
-      const data = { affiliations: resAffiliations.affiliations, datasets: resDatasets, publications: resPublications };
+      const data = { affiliations: resAffiliations, datasets: resDatasets, publications: resPublications };
       return data;
     }
     console.error(responseAffiliations);

@@ -19,51 +19,11 @@ const arrayBufferToBase64 = (buffer) => {
   return btoa(binary);
 };
 
-function jsonToBlob(json) {
-  const textEncoder = new TextEncoder();
-  const seen = new WeakSet();
-
-  function processValue(value) {
-    if (seen.has(value)) {
-      throw new TypeError('Converting circular structure to JSON');
-    }
-
-    if (value && typeof value.toJSON === 'function') {
-      // eslint-disable-next-line no-param-reassign
-      value = value.toJSON();
-    }
-
-    if (typeof value === 'object' && value !== null) {
-      // seen.add(value);
-
-      const blobParts = [];
-      const entries = Array.isArray(value) ? value : Object.entries(value);
-      for (let i = 0; i < entries.length; i += 1) {
-        if (Array.isArray(value)) {
-          blobParts.push(processValue(entries[i]));
-        } else {
-          const [key, val] = entries[i];
-          blobParts.push(textEncoder.encode(`${JSON.stringify(key)}:`), processValue(val));
-        }
-        if (i !== entries.length - 1) blobParts.push(textEncoder.encode(','));
-      }
-
-      const startBracket = Array.isArray(value) ? '[' : '{';
-      const endBracket = Array.isArray(value) ? ']' : '}';
-      return new Blob([textEncoder.encode(startBracket), ...blobParts, textEncoder.encode(endBracket)]);
-    } if (typeof value === 'function' || typeof value === 'undefined') {
-      return textEncoder.encode('null');
-    }
-    // For primitives we just convert it to string and encode
-    return textEncoder.encode(JSON.stringify(value));
-  }
-
-  return processValue(json);
-}
-
 const compressData = async (result) => {
   // Convert JSON to Stream
-  const stream = jsonToBlob(result).stream();
+  const stream = new Blob([JSON.stringify(result)], {
+    type: 'application/json',
+  }).stream();
   const compressedReadableStream = stream.pipeThrough(
     new CompressionStream('gzip'),
   );
@@ -139,7 +99,6 @@ const getData = async ({ options, type }) => {
   console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
   // Build and serialize response
   console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
-  const resAffiliations = await compressData({ affiliations: uniqueAffiliations });
   const resDatasets = await compressData({
     publishers: datasetsPublishers,
     results: datasets,
@@ -152,6 +111,7 @@ const getData = async ({ options, type }) => {
     types: publicationsTypes,
     years: publicationsYears,
   });
+  const resAffiliations = await compressData(uniqueAffiliations);
   const result = {
     affiliations: resAffiliations,
     datasets: resDatasets,
