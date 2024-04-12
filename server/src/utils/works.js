@@ -410,9 +410,15 @@ const groupByAffiliations = ({ options, works }) => {
   const regexp = new RegExp(pattern, 'gi');
   const queryRors = options.rors || [];
   const toKeep = {};
+  let nbWorksTreated = 0;
+  const nbWorksTotal = works.length;
   // Compute distinct affiliations of works
   let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
     const { affiliations = [], id } = work;
+    nbWorksTreated += 1;
+    if (nbWorksTreated % 5000 === 0) {
+      console.log('groupby affiliation', `${nbWorksTreated} / ${nbWorksTotal}`);
+    }
     const { length } = affiliations;
     for (let i = 0; i < length; i += 1) {
       const affiliation = affiliations[i];
