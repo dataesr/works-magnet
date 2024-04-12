@@ -72,7 +72,7 @@ export default function Home() {
     // TODO:do a cleaner way to display the spinner and views
     <>
       <Filters isFetched sendQuery={sendQuery} />
-      <Container as="section" className="fr-mt-10w">
+      <Container as="section" className="fr-mt-10w mainContainer">
         {isFetching && (
           <Row>
             <Col xs="2" offsetXs="6">
