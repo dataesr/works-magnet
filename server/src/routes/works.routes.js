@@ -36,12 +36,9 @@ const compressData = async (result) => {
   return arrayBufferToBase64(buffer);
 };
 
-const chunkAndCompress = async (data) => {
+const chunkAndCompress = (data) => {
   const chunks = chunkArray({ array: data, perChunk: 2500 });
-  const res = await Promise.all(chunks.map(async (c) => { 
-    return compressData(c);
-  }));
-  return res;
+  return Promise.all(chunks.map((c) => compressData(c)));
 };
 
 const getData = async ({ options, type }) => {
@@ -107,9 +104,9 @@ const getData = async ({ options, type }) => {
   console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
   // Build and serialize response
   console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+  const resAffiliations = await chunkAndCompress(uniqueAffiliations);
   const resDatasets = await chunkAndCompress(datasets);
   const resPublications = await chunkAndCompress(publications);
-  const resAffiliations = await chunkAndCompress(uniqueAffiliations);
   const result = {
     affiliations: resAffiliations,
     datasets: resDatasets,
@@ -119,7 +116,6 @@ const getData = async ({ options, type }) => {
   await saveCache({ result, searchId });
   console.timeEnd(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
   return result;
-  // return result[type];
 };
 
 router.route('/affiliations')
