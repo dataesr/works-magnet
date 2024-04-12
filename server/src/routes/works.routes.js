@@ -13,7 +13,7 @@ const arrayBufferToBase64 = (buffer) => {
   let binary = '';
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;
-  for (var i = 0; i < len; i++) {
+  for (let i = 0; i < len; i += 1) {
     binary += String.fromCharCode(bytes[i]);
   }
   return btoa(binary);
@@ -28,14 +28,12 @@ const compressData = async (result) => {
     new CompressionStream('gzip'),
   );
   // create Response
-  const compressedResponse = 
-    await new Response(compressedReadableStream);
+  const compressedResponse = await new Response(compressedReadableStream);
   const blob = await compressedResponse.blob();
   // Get the ArrayBuffer
   const buffer = await blob.arrayBuffer();
   // convert ArrayBuffer to base64 encoded string
-  const compressedBase64 = arrayBufferToBase64(buffer);
-  return compressedBase64;
+  return arrayBufferToBase64(buffer);
 };
 
 const getData = async ({ options, type }) => {
@@ -44,7 +42,7 @@ const getData = async ({ options, type }) => {
   const searchId = shasum.digest('hex');
   const queryId = Math.floor(Math.random() * SEED_MAX);
   console.time(`0. Query ${queryId} ${type} | Cache ${options.affiliationStrings}`);
-  const cache = await getCache({ searchId, type });
+  const cache = await getCache({ searchId });
   console.timeEnd(`0. Query ${queryId} ${type} | Cache ${options.affiliationStrings}`);
   if (cache) return cache;
   console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
