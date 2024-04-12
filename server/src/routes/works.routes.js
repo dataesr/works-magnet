@@ -41,15 +41,15 @@ const chunkAndCompress = (data) => {
   return Promise.all(chunks.map((c) => compressData(c)));
 };
 
-const getData = async ({ options, type }) => {
+const getData = async ({ options, resetCache = false }) => {
   const shasum = crypto.createHash('sha1');
   shasum.update(JSON.stringify(options));
   const searchId = shasum.digest('hex');
   const queryId = Math.floor(Math.random() * SEED_MAX);
-  console.time(`0. Query ${queryId} ${type} | Cache ${options.affiliationStrings}`);
+  console.time(`0. Query ${queryId} | Cache ${options.affiliationStrings}`);
   const cache = await getCache({ searchId });
-  console.timeEnd(`0. Query ${queryId} ${type} | Cache ${options.affiliationStrings}`);
-  if (cache) return cache;
+  console.timeEnd(`0. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  if (cache && !resetCache) return cache;
   console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
   // eslint-disable-next-line no-param-reassign
   options.years = range(options.startYear, options.endYear);
@@ -93,20 +93,38 @@ const getData = async ({ options, type }) => {
     }
   }
   console.timeEnd(`4. Query ${queryId} | Sort works ${options.affiliationStrings}`);
+  console.time(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
+  const publicationsYears = countUniqueValues({ data: publications, field: 'year' });
+  const datasetsYears = countUniqueValues({ data: datasets, field: 'year' });
+  const publicationsTypes = countUniqueValues({ data: publications, field: 'type' });
+  const datasetsTypes = countUniqueValues({ data: datasets, field: 'type' });
+  const publicationsPublishers = countUniqueValues({ data: publications, field: 'publisher' });
+  const datasetsPublishers = countUniqueValues({ data: datasets, field: 'publisher' });
+  console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
   // Build and serialize response
-  console.time(`5. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+  console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
   const resAffiliations = await chunkAndCompress(uniqueAffiliations);
   const resDatasets = await chunkAndCompress(datasets);
   const resPublications = await chunkAndCompress(publications);
   const result = {
     affiliations: resAffiliations,
-    datasets: resDatasets,
-    publications: resPublications,
+    datasets: {
+      results: resDatasets,
+      publishers: datasetsPublishers,
+      types: datasetsTypes,
+      years: datasetsYears,
+    },
+    publications: {
+      results: resPublications,
+      publishers: publicationsPublishers,
+      types: publicationsTypes,
+      years: publicationsYears,
+    },
   };
-  console.timeEnd(`5. Query ${queryId} | Serialization ${options.affiliationStrings}`);
-  console.time(`6. Query ${queryId} | Save cache ${options.affiliationStrings}`);
+  console.timeEnd(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
+  console.time(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
   await saveCache({ result, searchId });
-  console.timeEnd(`6. Query ${queryId} | Save cache ${options.affiliationStrings}`);
+  console.timeEnd(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);
   return result;
 };
 
@@ -117,7 +135,7 @@ router.route('/works')
       if (!options?.affiliationStrings && !options?.rors) {
         res.status(400).json({ message: 'You must provide at least one affiliation string or RoR.' });
       } else {
-        const compressedResult = await getData({ options, type: 'affiliations' });
+        const compressedResult = await getData({ options });
         res.status(200).json(compressedResult);
       }
     } catch (err) {

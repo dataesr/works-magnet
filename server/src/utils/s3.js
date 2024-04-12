@@ -16,8 +16,12 @@ const getStorage = async () => {
   return storage;
 };
 
+const getFileName = (searchId) => {
+  return `${searchId}.v2.json`;
+};
+
 const getCache = async ({ searchId }) => {
-  const fileName = `${searchId}.json`;
+  const fileName = getFileName(searchId);
   const storage = await getStorage();
   const files = await storage.containers().list(container);
   const filteredFiles = files.filter((file) => file?.name === fileName);
@@ -35,7 +39,8 @@ const getCache = async ({ searchId }) => {
 
 const saveCache = async ({ result, searchId }) => {
   const storage = await getStorage();
-  const remotePath = `/${container}/${searchId}.json`;
+  const fileName = getFileName(searchId);
+  const remotePath = `/${container}/${fileName}`;
   await storage.objects().saveData(JSON.stringify(result), remotePath);
   // const tmp = await storage.objects().expire_after_with_result(remotePath, 86400); // 1 day - 24 hours
 };

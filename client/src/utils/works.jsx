@@ -50,9 +50,11 @@ const getData = async (options) => {
     if (responseAffiliations.ok) {
       const { affiliations, datasets, publications } = await responseAffiliations.json();
       const resAffiliations = await decompressAll(affiliations);
-      const resDatasets = await decompressAll(datasets);
-      const resPublications = await decompressAll(publications);
-      const data = { affiliations: resAffiliations, datasets: resDatasets, publications: resPublications };
+      const resDatasets = await decompressAll(datasets.results);
+      const resPublications = await decompressAll(publications.results);
+      datasets.results = resDatasets;
+      publications.results = resPublications;
+      const data = { affiliations: resAffiliations, datasets, publications };
       return data;
     }
     console.error(responseAffiliations);
