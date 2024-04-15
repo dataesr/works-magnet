@@ -103,19 +103,19 @@ const getData = async ({ options, resetCache = false }) => {
   console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
   // Build and serialize response
   console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
-  const resAffiliations = await chunkAndCompress(uniqueAffiliations);
-  const resDatasets = await chunkAndCompress(datasets);
-  const resPublications = await chunkAndCompress(publications);
+  const affiliations = await chunkAndCompress(uniqueAffiliations);
+  const datasetsResults = await chunkAndCompress(datasets);
+  const publicationsResults = await chunkAndCompress(publications);
   const result = {
-    affiliations: resAffiliations,
+    affiliations,
     datasets: {
-      results: resDatasets,
+      results: datasetsResults,
       publishers: datasetsPublishers,
       types: datasetsTypes,
       years: datasetsYears,
     },
     publications: {
-      results: resPublications,
+      results: publicationsResults,
       publishers: publicationsPublishers,
       types: publicationsTypes,
       years: publicationsYears,

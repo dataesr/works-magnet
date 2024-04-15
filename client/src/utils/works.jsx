@@ -50,12 +50,9 @@ const getData = async (options) => {
     if (responseAffiliations.ok) {
       const { affiliations, datasets, publications } = await responseAffiliations.json();
       const resAffiliations = await decompressAll(affiliations);
-      const resDatasets = await decompressAll(datasets.results);
-      const resPublications = await decompressAll(publications.results);
-      datasets.results = resDatasets;
-      publications.results = resPublications;
-      const data = { affiliations: resAffiliations, datasets, publications };
-      return data;
+      datasets.results = await decompressAll(datasets.results);
+      publications.results = await decompressAll(publications.results);
+      return { affiliations: resAffiliations, datasets, publications };
     }
     console.error(responseAffiliations);
     console.error('Oops... FOSM API request did not work');

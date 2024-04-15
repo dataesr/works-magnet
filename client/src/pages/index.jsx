@@ -16,8 +16,6 @@ import Publications from './views/publications';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
-import './index.scss';
-
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
@@ -72,7 +70,7 @@ export default function Home() {
     // TODO:do a cleaner way to display the spinner and views
     <>
       <Filters isFetched sendQuery={sendQuery} />
-      <Container as="section" className="fr-mt-10w mainContainer">
+      <Container as="section" className="fr-mt-4w">
         {isFetching && (
           <Row>
             <Col xs="2" offsetXs="6">
@@ -82,7 +80,7 @@ export default function Home() {
         )}
 
         {(!isFetching && !searchParams.get('view') && isFetched) && (
-          <Row gutters className="bottomSpaced">
+          <Row gutters className="fr-mb-16w">
             <Col xs="12">
               <div> The data has been fetched, please start with one of the use cases described below. You will be able to switch from one to another. </div>
             </Col>

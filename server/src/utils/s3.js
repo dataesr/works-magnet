@@ -16,9 +16,7 @@ const getStorage = async () => {
   return storage;
 };
 
-const getFileName = (searchId) => {
-  return `${searchId}.v2.json`;
-};
+const getFileName = (searchId) => `${searchId}.json`;
 
 const getCache = async ({ searchId }) => {
   const fileName = getFileName(searchId);
