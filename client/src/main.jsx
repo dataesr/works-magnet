@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter, useLocation } from 'react-router-dom';
+import { DSFRConfig } from '@dataesr/dsfr-plus';
 import { createInstance, MatomoProvider, useMatomo } from '@m4tt72/matomo-tracker-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, RouterLink, useLocation } from 'react-router-dom';
 
 import Router from './router';
 import { ToastContextProvider } from './hooks/useToast';
@@ -40,10 +41,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <BrowserRouter>
         <PageTracker />
         <ToastContextProvider>
-          <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools />
-            <Router />
-          </QueryClientProvider>
+          <DSFRConfig routerComponent={RouterLink}>
+            <QueryClientProvider client={queryClient}>
+              <ReactQueryDevtools />
+              <Router />
+            </QueryClientProvider>
+          </DSFRConfig>
         </ToastContextProvider>
       </BrowserRouter>
     </MatomoProvider>
