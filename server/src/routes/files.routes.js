@@ -12,7 +12,7 @@ const user = `${tenantName}:${username}`;
 
 router.route('/download')
   .get(async (_, res) => {
-    const container = 'works-finder';
+    const container = 'works-magnet';
     // eslint-disable-next-line max-len
     const initCmd = `swift --os-auth-url https://auth.cloud.ovh.net/v3 --auth-version 3 --key ${key} --user ${user} --os-project-domain-name Default --os-project-id ${projectId} --os-project-name ${projectName} --os-region-name GRA`;
     const cmd = `${initCmd} list ${container} > list_files_${container}`;

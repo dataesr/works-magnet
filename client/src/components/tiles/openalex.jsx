@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
+import './tiles.scss';
 
 export default function OpenalexTile({ setView }) {
   return (
     <div
-      className="fr-tile fr-tile--horizontal"
+      className="fr-tile fr-tile--horizontal click"
+      size="sm"
       onClick={() => setView('openalex')}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -19,8 +21,11 @@ export default function OpenalexTile({ setView }) {
             <p>✏️ Improve RoR matching in OpenAlex - Provide your feedback!</p>
           </h3>
           <p className="fr-tile__detail">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Voluptates, ratione recusandae deserunt non inventore, dolor placeat itaque eveniet, impedit facere reiciendis rem. Nihil mollitia inventore, nostrum dolores quas ea optio.
+            🔎 Analyze the most frequent raw affiliation strings retrieved in OpenAlex for your query.
+            <br />
+            🤖 Check the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
+            <br />
+            ✏️  Correct the errors (inaccurate or missing RoRs) and send feedback to OpenAlex.
           </p>
         </div>
       </div>

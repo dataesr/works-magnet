@@ -2,26 +2,67 @@ import { Button } from '@dataesr/dsfr-plus';
 
 import { status } from '../config';
 
-const {
-  VITE_API,
-} = import.meta.env;
+const { VITE_API } = import.meta.env;
 
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const getData = async (options) => fetch(`${VITE_API}/works`, {
-  body: JSON.stringify(options),
-  headers: { 'Content-Type': 'application/json' },
-  method: 'POST',
-}).then((response) => {
-  if (response.ok) return response.json();
-  console.error(response);
-  console.error('Oops... FOSM API request did not work');
-  return {};
-}).catch((error) => {
-  console.error(error);
-  console.error('Oops... FOSM API request did not work');
-  return {};
-});
+const b64decode = (str) => {
+  const binaryString = window.atob(str);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(new ArrayBuffer(len));
+  for (let i = 0; i < len; i += 1) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+};
+
+const unzipData = async (compressedBase64) => {
+  const stream = new Blob([b64decode(compressedBase64)], {
+    type: 'application/json',
+  }).stream();
+  const compressedReadableStream = stream.pipeThrough(
+    new DecompressionStream('gzip'),
+  );
+  const resp = new Response(compressedReadableStream);
+  const blob = await resp.blob();
+  return JSON.parse(await blob.text());
+};
+
+const decompressAll = async (chunks) => {
+  const res = await Promise.all(chunks.map(async (c) => unzipData(c)));
+  return res.flat();
+};
+
+const Timeout = (time) => {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), time * 1000);
+  return controller;
+};
+
+const getData = async (options) => {
+  try {
+    const responseAffiliations = await fetch(`${VITE_API}/works`, {
+      body: JSON.stringify(options),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      signal: Timeout(600).signal, // 10 minutes
+    });
+    if (responseAffiliations.ok) {
+      const { affiliations, datasets, publications } = await responseAffiliations.json();
+      const resAffiliations = await decompressAll(affiliations);
+      datasets.results = await decompressAll(datasets.results);
+      publications.results = await decompressAll(publications.results);
+      return { affiliations: resAffiliations, datasets, publications };
+    }
+    console.error(responseAffiliations);
+    console.error('Oops... FOSM API request did not work');
+    return {};
+  } catch (error) {
+    console.error(error);
+    console.error('Oops... FOSM API request did not work');
+    return {};
+  }
+};
 
 const getIdLink = (type, id) => {
   let prefix = null;

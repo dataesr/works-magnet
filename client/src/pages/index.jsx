@@ -70,11 +70,20 @@ export default function Home() {
     // TODO:do a cleaner way to display the spinner and views
     <>
       <Filters isFetched sendQuery={sendQuery} />
-      <Container as="section" className="fr-mt-10w">
-        {isFetching && <Spinner size={48} />}
+      <Container as="section" className="fr-mt-4w">
+        {isFetching && (
+          <Row>
+            <Col xs="2" offsetXs="6">
+              <Spinner size={48} />
+            </Col>
+          </Row>
+        )}
 
         {(!isFetching && !searchParams.get('view') && isFetched) && (
-          <Row gutters>
+          <Row gutters className="fr-mb-16w">
+            <Col xs="12">
+              <div> The data has been fetched, please start with one of the use cases described below. You will be able to switch from one to another. </div>
+            </Col>
             <Col>
               <OpenalexTile setView={setView} />
             </Col>

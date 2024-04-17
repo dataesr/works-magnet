@@ -63,14 +63,18 @@ export default function Footer() {
           <div className="fr-footer__brand fr-enlarge-link">
             <a href="/" title="Retour à l’accueil du site - Nom de l’entité (ministère, secrétariat d‘état, gouvernement)">
               <p className="fr-logo">
-                Intitulé
+                MINISTÈRE
                 <br />
-                officiel
+                DE L'ENSEIGNEMENT
+                <br />
+                SUPÉRIEUR
+                <br />
+                ET DE LA RECHERCHE
               </p>
             </a>
           </div>
           <div className="fr-footer__content">
-            <p className="fr-footer__content-desc">Lorem [...] elit ut.</p>
+            <p className="fr-footer__content-desc">Retrieve the scholarly works of your institution</p>
             <ul className="fr-footer__content-list">
               <li className="fr-footer__content-item">
                 <a className="fr-footer__content-link" target="_blank" rel="noopener external noreferrer" title="[À MODIFIER - Intitulé] - nouvelle fenêtre" href="https://legifrance.gouv.fr">legifrance.gouv.fr</a>

@@ -32,12 +32,13 @@ export default function Openalex({
             </p>
           </div>
         </Col>
-        <Col xs="12">
+        <Col xs="3">
           <ActionsOpenalex
             allOpenalexCorrections={allOpenalexCorrections}
             options={options}
           />
-          &nbsp;
+        </Col>
+        <Col xs="3">
           <ActionsOpenalexFeedback
             allOpenalexCorrections={allOpenalexCorrections}
             options={options}

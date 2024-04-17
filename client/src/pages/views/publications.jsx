@@ -34,7 +34,7 @@ export default function Publications({
           </Title>
           <Row>
             <Col xs="12">
-              <div className="fr-callout">
+              <div className="fr-callout fr-mb-16w">
                 <p className="fr-callout__text fr-text--sm">
                   To search for publications, please disable the "Search for datasets only" option
                 </p>

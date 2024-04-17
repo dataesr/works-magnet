@@ -100,17 +100,19 @@ const getMatchingRoRs = (affiliations, options) => {
 };
 
 const getAffiliationsHtmlField = ({ affiliations, id, regexp }) => {
-  let affiliationsAll = affiliations
-    .map((a) => removeDiacritics(a.rawAffiliation))
-    .sort((a, b) => (regexp.exec(b)?.length ?? 0) - (regexp.exec(a)?.length ?? 0))
-    .map((affiliation) => {
-      let displayAffiliation = affiliation;
-      regexp.exec(affiliation)?.slice(1)?.forEach((match) => {
-        displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
-      });
-      return displayAffiliation;
-    })
-    .filter((affiliation) => affiliation?.length ?? 0);
+  let affiliationsAll = affiliations.map((a) => a.rawAffiliation);
+  if (regexp) {
+    affiliationsAll = affiliationsAll.map((a) => removeDiacritics(a))
+      .sort((a, b) => (regexp.exec(b)?.length ?? 0) - (regexp.exec(a)?.length ?? 0))
+      .map((affiliation) => {
+        let displayAffiliation = affiliation;
+        regexp.exec(affiliation)?.slice(1)?.forEach((match) => {
+          displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
+        });
+        return displayAffiliation;
+      })
+      .filter((affiliation) => affiliation?.length ?? 0);
+  }
   affiliationsAll = [...new Set(affiliationsAll)];
   let html = `<ul data-tooltip-id="tooltip-affiliation-${id}">`;
   html += affiliationsAll.slice(0, 3).map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
@@ -180,8 +182,8 @@ const formatFosmResult = (result, options) => {
     levelCertainty = '3.low';
   }
   answer.levelCertainty = levelCertainty;
-  const regexp = getRegexpFromOptions({ options });
-  answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
+  // const regexp = getRegexpFromOptions({ options });
+  answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id });
   answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
   answer.allInfos = JSON.stringify(answer);
   return answer;
@@ -365,8 +367,8 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
           type: getTypeFromOpenAlex(result.type),
           year: result?.publication_year?.toString() ?? '',
         };
-        const regexp = getRegexpFromOptions({ options });
-        answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id, regexp });
+        // const regexp = getRegexpFromOptions({ options });
+        answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id });
         answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
         answer.allInfos = JSON.stringify(answer);
         return answer;
@@ -407,27 +409,37 @@ const groupByAffiliations = ({ options, works }) => {
     .join('|');
   const regexp = new RegExp(pattern, 'gi');
   const queryRors = options.rors || [];
+  const toKeep = {};
+  let nbWorksTreated = 0;
+  const nbWorksTotal = works.length;
   // Compute distinct affiliations of works
   let allAffiliationsTmp = works.reduce((deduplicatedAffiliations, work) => {
     const { affiliations = [], id } = work;
+    nbWorksTreated += 1;
+    if (nbWorksTreated % 5000 === 0) {
+      console.log('groupby affiliation', `${nbWorksTreated} / ${nbWorksTotal}`);
+    }
     const { length } = affiliations;
     for (let i = 0; i < length; i += 1) {
       const affiliation = affiliations[i];
       const normalizedAffiliation = affiliation.key;
-      let displayAffiliation = affiliation.label;
-      const matches = regexp.exec(displayAffiliation);
-      // Set each matched word in bold
-      matches?.slice(1)?.forEach((match) => {
-        displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
-      });
-      let keepAffiliation = displayAffiliation.includes('</b>');
-      const rorsInAffiliation = affiliation.rors?.map((a) => a.rorId) || [];
-      rorsInAffiliation.forEach((r) => {
-        if (queryRors.includes(r)) {
-          keepAffiliation = true;
-        }
-      });
-      if (keepAffiliation) {
+      if (toKeep[normalizedAffiliation] === undefined) {
+        let displayAffiliation = affiliation.label;
+        const matches = regexp.exec(displayAffiliation);
+        // Set each matched word in bold
+        matches?.slice(1)?.forEach((match) => {
+          displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
+        });
+        let keepAffiliation = displayAffiliation.includes('</b>');
+        const rorsInAffiliation = affiliation.rors?.map((a) => a.rorId) || [];
+        rorsInAffiliation.forEach((r) => {
+          if (queryRors.includes(r)) {
+            keepAffiliation = true;
+          }
+        });
+        toKeep[normalizedAffiliation] = { keepAffiliation, displayAffiliation };
+      }
+      if (toKeep[normalizedAffiliation]?.keepAffiliation) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
           deduplicatedAffiliations[normalizedAffiliation].works.push(id);
           if (deduplicatedAffiliations[normalizedAffiliation].worksExample.length < 10) {
@@ -440,7 +452,7 @@ const groupByAffiliations = ({ options, works }) => {
             rors: affiliation.rors || [],
             rorsToCorrect: (affiliation.rorsToCorrect || []).join(';'),
             hasCorrection: false,
-            nameHtml: displayAffiliation,
+            nameHtml: toKeep[normalizedAffiliation].displayAffiliation,
             key: affiliation.key,
             source: affiliation.source,
             status: 'tobedecided',

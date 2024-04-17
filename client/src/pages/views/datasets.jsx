@@ -23,7 +23,7 @@ export default function Datasets({
   tagAffiliations,
   tagDatasets,
 }) {
-  const [Tab, setTab] = useState('listOfDatasets');
+  const [Tab, setTab] = useState('selectAffiliations');
   return (
     <>
       <Row>

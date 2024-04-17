@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
+import './tiles.scss';
 
 export default function PublicationsTile({ setView }) {
   return (
     <div
-      className="fr-tile fr-tile--horizontal"
+      className="fr-tile fr-tile--horizontal click"
       onClick={() => setView('publications')}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -19,8 +20,11 @@ export default function PublicationsTile({ setView }) {
             <p>📑 Find the publications affiliated to your institution</p>
           </h3>
           <p className="fr-tile__detail">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Voluptates, ratione recusandae deserunt non inventore, dolor placeat itaque eveniet, impedit facere reiciendis rem. Nihil mollitia inventore, nostrum dolores quas ea optio.
+            🔎 Explore the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query.
+            <br />
+            🤔 Validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not. 
+            <br />
+            💾 Save (export to a file) those decisions and the publications corpus you just built.
           </p>
         </div>
       </div>
