@@ -1,14 +1,14 @@
 import fs from 'fs';
 import OVHStorage from 'node-ovh-objectstorage';
 
-const container = process.env.OS_CONTAINER;
+const { OS_CONTAINER, OS_PASSWORD, OS_TENANT_ID, OS_TENANT_NAME, OS_USERNAME } = process.env;
 
 const getStorage = async () => {
   const config = {
-    username: process.env.OS_USERNAME,
-    password: process.env.OS_PASSWORD,
+    username: OS_USERNAME,
+    password: OS_PASSWORD,
     authURL: 'https://auth.cloud.ovh.net/v3/auth',
-    tenantId: process.env.OS_TENANT_ID,
+    tenantId: OS_TENANT_ID,
     region: 'GRA',
   };
   const storage = new OVHStorage(config);
@@ -21,10 +21,10 @@ const getFileName = (searchId) => `${searchId}.json`;
 const getCache = async ({ searchId }) => {
   const fileName = getFileName(searchId);
   const storage = await getStorage();
-  const files = await storage.containers().list(container);
+  const files = await storage.containers().list(OS_CONTAINER);
   const filteredFiles = files.filter((file) => file?.name === fileName);
   if (filteredFiles.length > 0) {
-    const remotePath = `/${container}/${fileName}`;
+    const remotePath = `/${OS_CONTAINER}/${fileName}`;
     const localPath = `/tmp/${fileName}`;
     await storage.objects().download(remotePath, localPath);
     const data = fs.readFileSync(localPath, { encoding: 'utf8', flag: 'r' });
@@ -36,14 +36,43 @@ const getCache = async ({ searchId }) => {
 };
 
 const saveCache = async ({ result, searchId }) => {
-  const storage = await getStorage();
   const fileName = getFileName(searchId);
-  const remotePath = `/${container}/${fileName}`;
-  await storage.objects().saveData(JSON.stringify(result), remotePath);
-  // const tmp = await storage.objects().expire_after_with_result(remotePath, 86400); // 1 day - 24 hours
+  const remotePath = `${OS_CONTAINER}/${fileName}`;
+
+  const body = {
+    auth: {
+      identity: {
+        methods: ['password'],
+        password: {
+          user: {
+            name: OS_USERNAME,
+            domain: { id: 'default' },
+            password: OS_PASSWORD,
+          },
+        },
+      },
+      scope: {
+        project: { name: OS_TENANT_NAME, domain: { id: 'default' } },
+      },
+    },
+  };
+
+  const response = await fetch('https://auth.cloud.ovh.net/v3/auth/tokens', {
+    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+  });
+  const token = response?.headers?.get('x-subject-token');
+  if (token) {
+    await fetch(
+      `https://storage.gra.cloud.ovh.net/v1/AUTH_${OS_TENANT_ID}/${remotePath}`,
+      {
+        body: JSON.stringify(result),
+        headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token, 'X-Delete-After': '86400' }, // 24 hours
+        method: 'PUT',
+      },
+    );
+  }
 };
 
-export {
-  getCache,
-  saveCache,
-};
+export { getCache, saveCache };
