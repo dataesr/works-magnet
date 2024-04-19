@@ -62,8 +62,10 @@ export default function OpenalexView({
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       dataKey="key"
+      editMode="row"
       filterDisplay="row"
       metaKeySelection
+      onRowEditComplete={onRowEditComplete}
       paginator
       paginatorLeft={paginatorLeft}
       paginatorPosition="top bottom"
@@ -75,11 +77,9 @@ export default function OpenalexView({
       sortField="worksNumber"
       sortOrder={-1}
       stripedRows
-      style={{ fontSize: '11px', lineHeight: '10px' }}
+      style={{ fontSize: '14px', lineHeight: '13px' }}
       tableStyle={{ minWidth: '50rem' }}
       value={allAffiliations}
-      editMode="row"
-      onRowEditComplete={onRowEditComplete}
     >
       <Column field="nameHtml" header="OpenAlex Raw affiliation" body={nameTemplate} style={{ maxWidth: '250px' }} />
       <Column field="rorHtml" header="RoR computed by OpenAlex" body={rorTemplate} style={{ maxWidth: '200px' }} />
