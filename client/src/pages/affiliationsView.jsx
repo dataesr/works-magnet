@@ -50,7 +50,7 @@ export default function AffiliationsView({
       sortField="worksNumber"
       sortOrder={-1}
       stripedRows
-      style={{ fontSize: '11px', lineHeight: '10px' }}
+      style={{ fontSize: '14px', lineHeight: '13px' }}
       tableStyle={{ minWidth: '50rem' }}
       value={allAffiliations}
     >

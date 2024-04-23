@@ -73,7 +73,7 @@ export default function PublicationsView({
       selectionPageOnly
       size="small"
       stripedRows
-      style={{ fontSize: '11px', lineHeight: '10px' }}
+      style={{ fontSize: '14px', lineHeight: '13px' }}
       value={works}
     >
       <Column selectionMode="multiple" />
