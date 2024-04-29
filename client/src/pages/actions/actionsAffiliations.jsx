@@ -89,7 +89,7 @@ export default function ActionsAffiliations({
         onClick={() => setIsModalOpen(!isModalOpen)}
         size="sm"
       >
-        Save & restore
+        Save or restore
       </Button>
     </div>
   );
