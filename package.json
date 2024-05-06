@@ -1,6 +1,6 @@
 {
   "name": "works-magnet",
-  "version": "0.0.0",
+  "version": "0.3.1",
   "private": true,
   "workspaces": [
     "client",
@@ -13,7 +13,7 @@
     "build": "rm -rf server/dist && npm -w client run build -- --mode ${npm_config_mode} --emptyOutDir --outDir ../server/dist",
     "client": "npm -w client run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "deploy": "git switch main && git pull origin main --rebase --tags && git merge origin staging && npm version $npm_config_level --workspaces && git push origin main --tags && git switch staging",
+    "deploy": "git switch main && git pull origin main --rebase --tags && git merge origin staging && npm version patch -ws && git add **/package.json && git add package-lock.json && npm version patch --include-workspace-root --force && git push origin main --tags && git switch staging",
     "preview": "npm run build --mode=${npm_config_mode} && npm -w server start",
     "server": "npm -w server run dev",
     "start": "npm run dev"
