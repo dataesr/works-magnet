@@ -164,7 +164,7 @@ export default function Filters({ isFetched, sendQuery }) {
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {isSticky ? (
-        <Container fluid as="section" className="filters">
+        <Container fluid as="section" className="filters sticky">
           <Row verticalAlign="top" className="fr-p-1w">
             <Ribbon />
             <Col xs="2" offsetXs="1">
