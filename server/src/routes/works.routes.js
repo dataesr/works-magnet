@@ -49,7 +49,10 @@ const getData = async ({ options, resetCache = false }) => {
   console.time(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
   const cache = await getCache({ searchId });
   console.timeEnd(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
-  if (cache && !resetCache) return cache;
+  if (cache && !resetCache) {
+    console.log(`0. Query ${queryId}`, 'returning cached data');
+    return cache;
+  }
   console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
   // eslint-disable-next-line no-param-reassign
   options.years = range(options.startYear, options.endYear);
@@ -104,8 +107,11 @@ const getData = async ({ options, resetCache = false }) => {
   // Build and serialize response
   console.time(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
   const affiliations = await chunkAndCompress(uniqueAffiliations);
+  console.log('serialization', `${uniqueAffiliations.length} affiliations serialized`);
   const datasetsResults = await chunkAndCompress(datasets);
+  console.log('serialization', `${datasets.length} datasets serialized`);
   const publicationsResults = await chunkAndCompress(publications);
+  console.log('serialization', `${publications.length} publications serialized`);
   const result = {
     affiliations,
     datasets: {
