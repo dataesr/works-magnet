@@ -45,7 +45,7 @@ const getData = async (options) => {
       body: JSON.stringify(options),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      signal: Timeout(600).signal, // 10 minutes
+      signal: Timeout(1200).signal, // 20 minutes
     });
     if (responseAffiliations.ok) {
       const { affiliations, datasets, publications } = await responseAffiliations.json();
