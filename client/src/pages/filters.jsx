@@ -164,7 +164,7 @@ export default function Filters({ isFetched, sendQuery }) {
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {isSticky ? (
-        <Container fluid as="section" className="filters">
+        <Container fluid as="section" className="filters sticky">
           <Row verticalAlign="top" className="fr-p-1w">
             <Ribbon />
             <Col xs="2" offsetXs="1">
@@ -172,6 +172,7 @@ export default function Filters({ isFetched, sendQuery }) {
                 {VITE_APP_NAME}
                 {VITE_HEADER_TAG && (
                   <Badge
+                    className="fr-ml-1w"
                     color={VITE_HEADER_TAG_COLOR}
                     size="sm"
                   >
@@ -182,10 +183,6 @@ export default function Filters({ isFetched, sendQuery }) {
             </Col>
             <Col>
               <Row>
-                { /* <Col xs="1" className="text-right fr-pr-1w">
-                 <Title title="Selected filters" className="fr-icon-filter-line" as="h2" look="h4" />
-                </Col>
-               */ }
                 <Col onClick={(e) => { setIsOpen(true); e.preventDefault(); }}>
                   <TagGroup>
                     <Tag color="blue-ecume" key="tag-sticky-years" size="sm">

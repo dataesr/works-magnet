@@ -17,3 +17,16 @@
     width: 200px;
   }
 }
+
+.sticky {
+  .ribbon {
+    left: -80px;
+    top: 3px;
+
+    .badge {
+      font-size: 14px;
+      height: 30px;
+      line-height: 30px;
+    }
+  }
+}
