@@ -46,9 +46,9 @@ const getData = async ({ options, resetCache = false }) => {
   shasum.update(JSON.stringify(options));
   const searchId = shasum.digest('hex');
   const queryId = Math.floor(Math.random() * SEED_MAX);
-  console.time(`0. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  console.time(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
   const cache = await getCache({ searchId });
-  console.timeEnd(`0. Query ${queryId} | Cache ${options.affiliationStrings}`);
+  console.timeEnd(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
   if (cache && !resetCache) return cache;
   console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
   // eslint-disable-next-line no-param-reassign
