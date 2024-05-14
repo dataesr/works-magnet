@@ -50,7 +50,8 @@ const getData = async ({ options, resetCache = false }) => {
   const cache = await getCache({ searchId });
   console.timeEnd(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
   if (cache && !resetCache) {
-    console.log(`0. Query ${queryId}`, 'returning cached data');
+    const extractionDate = new Date(cache.extractionDate);
+    console.log(`0. Query ${queryId}`, `returning cached data from ${extractionDate}`);
     return cache;
   }
   console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
@@ -126,6 +127,7 @@ const getData = async ({ options, resetCache = false }) => {
       types: publicationsTypes,
       years: publicationsYears,
     },
+    extractionDate: Date.now(),
   };
   console.timeEnd(`6. Query ${queryId} | Serialization ${options.affiliationStrings}`);
   console.time(`7. Query ${queryId} | Save cache ${options.affiliationStrings}`);

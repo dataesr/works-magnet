@@ -68,7 +68,7 @@ const saveCache = async ({ result, searchId }) => {
       `https://storage.gra.cloud.ovh.net/v1/AUTH_${OS_TENANT_ID}/${remotePath}`,
       {
         body: JSON.stringify(result),
-        headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token, 'X-Delete-After': '86400' }, // 24 hours
+        headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token, 'X-Delete-After': '604800' }, // 7 days
         method: 'PUT',
       },
     );
