@@ -37,7 +37,7 @@ const compressData = async (result) => {
 };
 
 const chunkAndCompress = (data) => {
-  const chunks = chunkArray({ array: data, perChunk: 2500 });
+  const chunks = chunkArray({ array: data, perChunk: 1000 });
   return Promise.all(chunks.map((c) => compressData(c)));
 };
 
