@@ -2,13 +2,17 @@ import { useSearchParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ButtonDropdown from '../../components/button-dropdown';
 
-export default function ActionsPublications({ allPublications }) {
+export default function ActionsPublications({ allPublications, className }) {
   const [searchParams] = useSearchParams();
 
   return (
-    <ButtonDropdown data={allPublications} label="publications" searchParams={searchParams} />
+    <ButtonDropdown className={className} data={allPublications} label="publications" searchParams={searchParams} />
   );
 }
+
+ActionsPublications.defaultProps = {
+  className: '',
+};
 
 ActionsPublications.propTypes = {
   allPublications: PropTypes.arrayOf(PropTypes.shape({
@@ -19,4 +23,5 @@ ActionsPublications.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   })).isRequired,
+  className: PropTypes.string,
 };
