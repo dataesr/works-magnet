@@ -1,15 +1,22 @@
 // https://www.w3schools.com/css/css_dropdowns.asp
-import PropTypes from 'prop-types';
 import { Button } from '@dataesr/dsfr-plus';
-import useToast from '../../hooks/useToast';
+import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
+import useToast from '../../hooks/useToast';
 import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/files';
 import { capitalize } from '../../utils/works';
 
 import './index.scss';
 
-export default function ButtonDropdown({ data, label, searchParams }) {
+export default function ButtonDropdown({ className, data, label, searchParams }) {
   const { toast } = useToast();
+
+  const _className = classNames(
+    'dropdown',
+    data.length > 0 ? 'enabled' : 'disabled',
+    className,
+  );
 
   const toastExport = () => {
     toast({
@@ -21,7 +28,7 @@ export default function ButtonDropdown({ data, label, searchParams }) {
   };
 
   return (
-    <div className={`dropdown ${data.length > 0 ? 'enabled' : 'disabled'}`}>
+    <div className={_className}>
       <Button
         disabled={!data.length}
         icon="save-line"
@@ -55,7 +62,12 @@ export default function ButtonDropdown({ data, label, searchParams }) {
   );
 }
 
+ButtonDropdown.defaultProps = {
+  className: '',
+};
+
 ButtonDropdown.propTypes = {
+  className: PropTypes.string,
   data: PropTypes.array.isRequired,
   label: PropTypes.string.isRequired,
   searchParams: PropTypes.object.isRequired,

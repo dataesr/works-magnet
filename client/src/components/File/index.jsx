@@ -1,8 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
-// import '@gouvfr/dsfr/dist/component/link/link.css';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const getAll = (props) => {
   const newProps = {};
@@ -17,13 +15,13 @@ const getAll = (props) => {
 };
 
 function File({
+  accept,
   className,
-  label,
   errorMessage,
   hint,
-  onChange,
+  label,
   multiple,
-  accept,
+  onChange,
   ...remainingProps
 }) {
   const _className = classNames(
