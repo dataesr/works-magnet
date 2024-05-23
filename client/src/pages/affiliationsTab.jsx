@@ -1,16 +1,14 @@
-import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   Button,
   Row, Col,
-  TextInput,
-  Title,
 } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 
 import AffiliationsView from './affiliationsView';
 import Gauge from '../components/gauge';
 import { status } from '../config';
-import { normalizeName, renderButtons } from '../utils/works';
+import { renderButtons } from '../utils/works';
 
 export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -27,7 +25,10 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.replace('[ source', '').includes(normalizeName(filteredAffiliationName)));
+      const filteredAffiliationsTmp = affiliations.filter((affiliation) => {
+        const regex = new RegExp(filteredAffiliationName);
+        return regex.test(affiliation.key.replace('[ source', ''));
+      });
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);

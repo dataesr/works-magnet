@@ -1,18 +1,18 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
+import { FilterMatchMode } from 'primereact/api';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
-import { FilterMatchMode } from 'primereact/api';
 
 import { nameTemplate, rorTemplate, statusRowFilterTemplate, statusTemplate, worksExampleTemplate } from '../utils/templates';
 
 export default function AffiliationsView({
   allAffiliations,
-  selectedAffiliations,
-  setSelectedAffiliations,
-  setFilteredAffiliationName,
   filteredAffiliationName,
+  selectedAffiliations,
+  setFilteredAffiliationName,
+  setSelectedAffiliations,
 }) {
   const [filters] = useState({ status: { value: null, matchMode: FilterMatchMode.IN } });
 
@@ -81,6 +81,7 @@ AffiliationsView.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
+  filteredAffiliationName: PropTypes.string.isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
@@ -88,7 +89,6 @@ AffiliationsView.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
-  setSelectedAffiliations: PropTypes.func.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
-  filteredAffiliationName: PropTypes.string.isRequired,
+  setSelectedAffiliations: PropTypes.func.isRequired,
 };

@@ -437,7 +437,7 @@ const groupByAffiliations = ({ options, works }) => {
             keepAffiliation = true;
           }
         });
-        toKeep[normalizedAffiliation] = { keepAffiliation, displayAffiliation };
+        toKeep[normalizedAffiliation] = { displayAffiliation, keepAffiliation };
       }
       if (toKeep[normalizedAffiliation]?.keepAffiliation) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
@@ -448,12 +448,12 @@ const groupByAffiliations = ({ options, works }) => {
         } else {
           // eslint-disable-next-line no-param-reassign
           deduplicatedAffiliations[normalizedAffiliation] = {
+            hasCorrection: false,
+            key: affiliation.key,
             name: affiliation.rawAffiliation,
+            nameHtml: toKeep[normalizedAffiliation].displayAffiliation,
             rors: affiliation.rors || [],
             rorsToCorrect: (affiliation.rorsToCorrect || []).join(';'),
-            hasCorrection: false,
-            nameHtml: toKeep[normalizedAffiliation].displayAffiliation,
-            key: affiliation.key,
             source: affiliation.source,
             status: 'tobedecided',
             works: [id],
