@@ -5,14 +5,6 @@ const chunkArray = ({ array, perChunk = 30 }) => array.reduce((all, one, i) => {
   return all;
 }, []);
 
-const onlyUnique = (value, index, array) => (
-  array.indexOf(value) === index
-);
-
-const removeDuplicates = (mylist) => (
-  mylist.filter(onlyUnique)
-);
-
 const cleanId = (id) => (
   id
     ? id
@@ -168,5 +160,4 @@ export {
   intersectArrays,
   range,
   removeDiacritics,
-  removeDuplicates,
 };

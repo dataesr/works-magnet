@@ -29,7 +29,7 @@ export default function DatasetsYearlyDistribution({ allDatasets, field, subfiel
       allFields[currentField][i] += 1;
     });
   });
-  const colors = ['#ea5545', '#f46a9b', '#ef9b20', '#edbf33', '#ede15b', '#bdcf32', '#87bc45', '#27aeef', '#b33dc6'];
+  const colors = ['#ea5545', '#f46a9b', '#ef9b20', '#edbf33', '#ede15b', '#bdcf32', '#87bc45', '#27aeef', '#544fc5', '#b33dc6', '#d3d3d3'];
   const NB_TOP = 10;
   const series = Object.keys(allFields)
     .map((name) => ({
