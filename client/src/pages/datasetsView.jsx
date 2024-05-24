@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { Col, Row, Toggle } from '@dataesr/dsfr-plus';
 import { FilterMatchMode } from 'primereact/api';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { MultiSelect } from 'primereact/multiselect';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 import {
   affiliationsTemplate,
@@ -15,19 +16,22 @@ import {
   statusTemplate,
 } from '../utils/templates';
 
+import './publicationsView.scss';
+
 export default function DatasetsView({
+  filteredAffiliationName,
   publishers = [],
   selectedWorks,
+  setFilteredAffiliationName,
   setSelectedWorks,
   works,
-  filteredAffiliationName,
-  setFilteredAffiliationName,
 }) {
   const [filters] = useState({
     publisher: { value: null, matchMode: FilterMatchMode.IN },
     status: { value: null, matchMode: FilterMatchMode.IN },
     type: { value: null, matchMode: FilterMatchMode.IN },
   });
+  const [selectionPageOnly, setSelectionPageOnly] = useState(true);
 
   const publishersFilterTemplate = (options) => (
     <MultiSelect
@@ -35,7 +39,10 @@ export default function DatasetsView({
       maxSelectedLabels={1}
       onChange={(e) => options.filterApplyCallback(e.value)}
       optionLabel="name"
-      options={Object.keys(publishers).map((publisher) => ({ name: publisher, value: publisher }))}
+      options={Object.keys(publishers).map((publisher) => ({
+        name: publisher,
+        value: publisher,
+      }))}
       placeholder="Any"
       style={{ maxWidth: '9rem', minWidth: '9rem' }}
       value={options.value}
@@ -43,16 +50,32 @@ export default function DatasetsView({
   );
 
   const paginatorLeft = () => (
-    <div>
-      <i className="fr-icon-search-line fr-mr-1w" />
-      Search in any field
-      <input
-        className="fr-ml-1w"
-        onChange={(e) => setFilteredAffiliationName(e.target.value)}
-        value={filteredAffiliationName}
-        style={{ width: '500px', border: '1px solid #ced4da', borderRadius: '4px', padding: '0.375rem 0.75rem' }}
-      />
-    </div>
+    <Row>
+      <Col xs="4">
+        <Toggle
+          checked={selectionPageOnly}
+          hint="Or select all"
+          label="Select page"
+          name="Select page only"
+          onChange={(e) => setSelectionPageOnly(e.target.checked)}
+        />
+      </Col>
+      <Col xs="8">
+        <i className="fr-icon-search-line fr-mr-1w" />
+        Search in any field
+        <input
+          className="fr-ml-1w"
+          onChange={(e) => setFilteredAffiliationName(e.target.value)}
+          style={{
+            border: '1px solid #ced4da',
+            borderRadius: '4px',
+            padding: '0.375rem 0.75rem',
+            width: '500px',
+          }}
+          value={filteredAffiliationName}
+        />
+      </Col>
+    </Row>
   );
 
   return (
@@ -71,7 +94,7 @@ export default function DatasetsView({
       rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
       selection={selectedWorks}
-      selectionPageOnly
+      selectionPageOnly={selectionPageOnly}
       sortOrder={1}
       size="small"
       stripedRows
@@ -79,9 +102,27 @@ export default function DatasetsView({
       value={works}
     >
       <Column selectionMode="multiple" />
-      <Column field="status" header="Status" body={statusTemplate} style={{ minWidth: '180px', maxWidth: '180px' }} showFilterMenu={false} filter filterElement={statusRowFilterTemplate} />
-      <Column field="allIds" header="Ids" body={allIdsTemplate} style={{ maxWidth: '180px' }} />
-      <Column field="type" header="Type" style={{ maxWidth: '90px' }} showFilterMenu={false} />
+      <Column
+        field="status"
+        header="Status"
+        body={statusTemplate}
+        style={{ minWidth: '180px', maxWidth: '180px' }}
+        showFilterMenu={false}
+        filter
+        filterElement={statusRowFilterTemplate}
+      />
+      <Column
+        field="allIds"
+        header="Ids"
+        body={allIdsTemplate}
+        style={{ maxWidth: '180px' }}
+      />
+      <Column
+        field="type"
+        header="Type"
+        style={{ maxWidth: '90px' }}
+        showFilterMenu={false}
+      />
       <Column field="year" header="Year" style={{ maxWidth: '70px' }} />
       <Column
         field="publisher"
@@ -93,37 +134,61 @@ export default function DatasetsView({
         showFilterMenu={false}
         style={{ maxWidth: '70px' }}
       />
-      <Column field="affiliationsHtml" header="Affiliations" body={affiliationsTemplate} style={{ maxWidth: '220px' }} />
-      <Column field="fr_publications_linked" header="Linked Article" body={linkedDOITemplate} style={{ maxWidth: '180px' }} />
-      <Column field="fr_authors_orcid" header="My institution author ORCID" body={linkedORCIDTemplate} style={{ maxWidth: '150px' }} />
-      <Column field="fr_authors_name" header="My institution author name" body={frAuthorsTemplate} style={{ maxWidth: '150px' }} />
+      <Column
+        field="affiliationsHtml"
+        header="Affiliations"
+        body={affiliationsTemplate}
+        style={{ maxWidth: '220px' }}
+      />
+      <Column
+        field="fr_publications_linked"
+        header="Linked Article"
+        body={linkedDOITemplate}
+        style={{ maxWidth: '180px' }}
+      />
+      <Column
+        field="fr_authors_orcid"
+        header="My institution author ORCID"
+        body={linkedORCIDTemplate}
+        style={{ maxWidth: '150px' }}
+      />
+      <Column
+        field="fr_authors_name"
+        header="My institution author name"
+        body={frAuthorsTemplate}
+        style={{ maxWidth: '150px' }}
+      />
     </DataTable>
   );
 }
 
 DatasetsView.propTypes = {
   publishers: PropTypes.object,
-  selectedWorks: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
-    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
-    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
-    id: PropTypes.string.isRequired,
-    publisher: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-  })).isRequired,
+  selectedWorks: PropTypes.arrayOf(
+    PropTypes.shape({
+      affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+      allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+      authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+      datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
+      id: PropTypes.string.isRequired,
+      publisher: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
   setSelectedWorks: PropTypes.func.isRequired,
-  works: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
-    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    authors: PropTypes.arrayOf(PropTypes.string).isRequired,
-    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
-    id: PropTypes.string.isRequired,
-    publisher: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-  })).isRequired,
+  works: PropTypes.arrayOf(
+    PropTypes.shape({
+      affiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
+      allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
+      authors: PropTypes.arrayOf(PropTypes.string).isRequired,
+      datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
+      id: PropTypes.string.isRequired,
+      publisher: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
   filteredAffiliationName: PropTypes.string.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
 };
