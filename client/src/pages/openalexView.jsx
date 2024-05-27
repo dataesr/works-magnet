@@ -15,8 +15,6 @@ import {
   worksExampleTemplate,
 } from '../utils/templates';
 
-import './publicationsView.scss';
-
 export default function OpenalexView({
   allAffiliations,
   setAllOpenalexCorrections,
@@ -72,16 +70,18 @@ export default function OpenalexView({
 
   const paginatorLeft = () => (
     <Row>
-      <Col xs="4">
+      <Col xs="2">
+        <div className="before-toggle">Select all</div>
+      </Col>
+      <Col xs="3">
         <Toggle
           checked={selectionPageOnly}
-          hint="Or select all"
           label="Select page"
           name="Select page only"
           onChange={(e) => setSelectionPageOnly(e.target.checked)}
         />
       </Col>
-      <Col xs="8">
+      <Col xs="7">
         <i className="fr-icon-search-line fr-mr-1w" />
         Search in affiliations name
         <input
@@ -91,7 +91,7 @@ export default function OpenalexView({
             border: '1px solid #ced4da',
             borderRadius: '4px',
             padding: '0.375rem 0.75rem',
-            width: '400px',
+            width: '100%',
           }}
           value={filteredAffiliationName}
         />

@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import Layout from './layout';
 import Home from './pages';
 
 export default function Router() {
+  const [isSticky, setIsSticky] = useState(false);
+
   return (
     <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
+      <Route element={<Layout isSticky={isSticky} />}>
+        <Route path="/" element={<Home isSticky={isSticky} setIsSticky={setIsSticky} />} />
       </Route>
     </Routes>
   );

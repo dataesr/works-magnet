@@ -15,8 +15,6 @@ import {
   statusTemplate,
 } from '../utils/templates';
 
-import './publicationsView.scss';
-
 export default function PublicationsView({
   filteredAffiliationName,
   selectedWorks,
@@ -50,7 +48,7 @@ export default function PublicationsView({
   const paginatorLeft = () => (
     <Row>
       <Col xs="2">
-        <span className="before-toggle">Select all</span>
+        <div className="before-toggle">Select all</div>
       </Col>
       <Col xs="3">
         <Toggle
@@ -70,7 +68,7 @@ export default function PublicationsView({
             border: '1px solid #ced4da',
             borderRadius: '4px',
             padding: '0.375rem 0.75rem',
-            width: '500px',
+            width: '100%',
           }}
           value={filteredAffiliationName}
         />

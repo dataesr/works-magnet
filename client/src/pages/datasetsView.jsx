@@ -16,8 +16,6 @@ import {
   statusTemplate,
 } from '../utils/templates';
 
-import './publicationsView.scss';
-
 export default function DatasetsView({
   filteredAffiliationName,
   publishers = [],
@@ -51,16 +49,18 @@ export default function DatasetsView({
 
   const paginatorLeft = () => (
     <Row>
-      <Col xs="4">
+      <Col xs="2">
+        <div className="before-toggle">Select all</div>
+      </Col>
+      <Col xs="3">
         <Toggle
           checked={selectionPageOnly}
-          hint="Or select all"
           label="Select page"
           name="Select page only"
           onChange={(e) => setSelectionPageOnly(e.target.checked)}
         />
       </Col>
-      <Col xs="8">
+      <Col xs="7">
         <i className="fr-icon-search-line fr-mr-1w" />
         Search in any field
         <input
@@ -70,7 +70,7 @@ export default function DatasetsView({
             border: '1px solid #ced4da',
             borderRadius: '4px',
             padding: '0.375rem 0.75rem',
-            width: '500px',
+            width: '100%',
           }}
           value={filteredAffiliationName}
         />

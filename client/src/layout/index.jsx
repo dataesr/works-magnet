@@ -1,13 +1,14 @@
 import { Container } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
 import { Outlet } from 'react-router-dom';
 
 import Footer from './Footer';
 import Header from './Header';
 
-export default function Layout() {
+export default function Layout({ isSticky }) {
   return (
     <>
-      <Header />
+      <Header isSticky={isSticky} />
       <Container fluid as="main" role="main">
         <Outlet />
       </Container>
@@ -15,3 +16,7 @@ export default function Layout() {
     </>
   );
 }
+
+Layout.propTypes = {
+  isSticky: PropTypes.bool.isRequired,
+};

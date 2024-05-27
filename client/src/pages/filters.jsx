@@ -21,10 +21,14 @@ import { useSearchParams } from 'react-router-dom';
 
 import Ribbon from '../components/ribbon';
 import TagInput from '../components/tag-input';
-import useScroll from '../hooks/useScroll';
 import { getRorData, isRor } from '../utils/ror';
 
-const { VITE_APP_NAME, VITE_APP_TAG_LIMIT, VITE_HEADER_TAG, VITE_HEADER_TAG_COLOR } = import.meta.env;
+const {
+  VITE_APP_NAME,
+  VITE_APP_TAG_LIMIT,
+  VITE_HEADER_TAG,
+  VITE_HEADER_TAG_COLOR,
+} = import.meta.env;
 
 const START_YEAR = 2010;
 // Generate an array of objects with all years from START_YEAR
@@ -34,27 +38,17 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
 
 const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
 
-export default function Filters({ isFetched, sendQuery }) {
+export default function Filters({ isFetched, isSticky, sendQuery, setIsSticky }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isSticky, setIsSticky] = useState(false);
   const [getRoRChildren, setGetRoRChildren] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
   const [tags, setTags] = useState([]);
-  const { scrollTop } = useScroll();
-
-  useEffect(() => {
-    if (!isSticky && scrollTop > 100) {
-      setIsSticky(true);
-    } else if (isSticky && scrollTop <= 80) {
-      setIsSticky(false);
-    }
-  }, [isSticky, scrollTop]);
 
   useEffect(() => {
     const getData = async () => {
@@ -83,7 +77,9 @@ export default function Filters({ isFetched, sendQuery }) {
           view: searchParams.get('view', ''),
         });
 
-        const newAffiliations = affiliations.filter((x) => !searchedAffiliations.includes(x));
+        const newAffiliations = affiliations.filter(
+          (x) => !searchedAffiliations.includes(x),
+        );
         if (newAffiliations.length > 0) {
           setSearchedAffiliations(affiliations);
         }
@@ -149,11 +145,11 @@ export default function Filters({ isFetched, sendQuery }) {
               const isDangerous = rorName.length < 4;
               allTags.push({
                 disable: rorName.length < VITE_APP_TAG_LIMIT,
+                isDangerous,
                 label: rorName,
+                rorId: rorElt.rorId,
                 source: 'ror',
                 type: 'affiliationString',
-                rorId: rorElt.rorId,
-                isDangerous,
               });
               knownTags[rorName.toLowerCase()] = 1;
             }
@@ -166,7 +162,7 @@ export default function Filters({ isFetched, sendQuery }) {
     };
 
     getData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchedAffiliations]);
 
   const onTagsChange = async (affiliations, deletedAffiliations) => {
@@ -217,6 +213,7 @@ export default function Filters({ isFetched, sendQuery }) {
     }
     sendQuery(queryParams);
     setIsOpen(false);
+    setIsSticky(true);
   };
 
   const NB_TAGS_STICKY = 2;
@@ -232,7 +229,7 @@ export default function Filters({ isFetched, sendQuery }) {
         <Container fluid as="section" className="filters sticky">
           <Row verticalAlign="top" className="fr-p-1w">
             <Ribbon />
-            <Col xs="2" offsetXs="1">
+            <Col xs="2" className="cursor-pointer" offsetXs="1" onClick={() => setIsSticky(false)}>
               <Title as="h1" look="h6" className="fr-m-0">
                 {VITE_APP_NAME}
                 {VITE_HEADER_TAG && (
@@ -249,6 +246,7 @@ export default function Filters({ isFetched, sendQuery }) {
             <Col>
               <Row>
                 <Col
+                  className="cursor-pointers"
                   onClick={(e) => {
                     setIsOpen(true);
                     e.preventDefault();
@@ -506,5 +504,7 @@ export default function Filters({ isFetched, sendQuery }) {
 
 Filters.propTypes = {
   isFetched: PropTypes.bool.isRequired,
+  isSticky: PropTypes.bool.isRequired,
   sendQuery: PropTypes.func.isRequired,
+  setIsSticky: PropTypes.func.isRequired,
 };
