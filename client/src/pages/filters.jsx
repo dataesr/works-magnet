@@ -246,7 +246,7 @@ export default function Filters({ isFetched, isSticky, sendQuery, setIsSticky })
             <Col>
               <Row>
                 <Col
-                  className="cursor-pointers"
+                  className="cursor-pointer"
                   onClick={(e) => {
                     setIsOpen(true);
                     e.preventDefault();
