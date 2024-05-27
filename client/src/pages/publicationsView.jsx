@@ -49,16 +49,18 @@ export default function PublicationsView({
 
   const paginatorLeft = () => (
     <Row>
-      <Col xs="4">
+      <Col xs="2">
+        <span className="before-toggle">Select all</span>
+      </Col>
+      <Col xs="3">
         <Toggle
           checked={selectionPageOnly}
-          hint="Or select all"
           label="Select page"
           name="Select page only"
           onChange={(e) => setSelectionPageOnly(e.target.checked)}
         />
       </Col>
-      <Col xs="8">
+      <Col xs="7">
         <i className="fr-icon-search-line fr-mr-1w" />
         Search in any field
         <input
