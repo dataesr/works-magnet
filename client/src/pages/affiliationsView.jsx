@@ -1,10 +1,9 @@
 import { Col, Row, Toggle } from '@dataesr/dsfr-plus';
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-
 import { FilterMatchMode } from 'primereact/api';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 import {
   nameTemplate,

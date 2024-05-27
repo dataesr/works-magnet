@@ -1,14 +1,15 @@
 import {
   Button,
-  Row, Col,
+  Col,
+  Row,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-import AffiliationsView from './affiliationsView';
 import Gauge from '../components/gauge';
 import { status } from '../config';
 import { renderButtons } from '../utils/works';
+import AffiliationsView from './affiliationsView';
 
 export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
