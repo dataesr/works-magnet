@@ -38,7 +38,12 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
 
 const normalizeStr = (x) => x.replaceAll(',', ' ').replaceAll('  ', ' ');
 
-export default function Filters({ isFetched, isSticky, sendQuery, setIsSticky }) {
+export default function Filters({
+  isFetched,
+  isSticky,
+  sendQuery,
+  setIsSticky,
+}) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -163,7 +168,7 @@ export default function Filters({ isFetched, isSticky, sendQuery, setIsSticky })
 
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchedAffiliations]);
+  }, [getRoRChildren, searchedAffiliations]);
 
   const onTagsChange = async (affiliations, deletedAffiliations) => {
     const previousDeleted = currentSearchParams.deletedAffiliations || [];
@@ -229,7 +234,12 @@ export default function Filters({ isFetched, isSticky, sendQuery, setIsSticky })
         <Container fluid as="section" className="filters sticky">
           <Row verticalAlign="top" className="fr-p-1w">
             <Ribbon />
-            <Col xs="2" className="cursor-pointer" offsetXs="1" onClick={() => setIsSticky(false)}>
+            <Col
+              xs="2"
+              className="cursor-pointer"
+              offsetXs="1"
+              onClick={() => setIsSticky(false)}
+            >
               <Title as="h1" look="h6" className="fr-m-0">
                 {VITE_APP_NAME}
                 {VITE_HEADER_TAG && (
