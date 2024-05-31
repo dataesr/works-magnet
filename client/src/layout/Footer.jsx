@@ -1,3 +1,5 @@
+import { Link, Title } from '@dataesr/dsfr-plus';
+
 export default function Footer() {
   return (
     <footer
@@ -23,14 +25,47 @@ export default function Footer() {
               </p>
             </a>
           </div>
+          <div className="fr-grid-row fr-grid-row--center">
+            <div style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Title as="h3" className="fr-footer__top-cat">
+                Contact
+              </Title>
+              <ul className="fr-footer__top-list">
+                <li>
+                  <Link
+                    className="fr-footer__top-link"
+                    href="https://groupes.renater.fr/sympa/info/bso-etablissements"
+                    target="_blank"
+                  >
+                    <span
+                      className="fr-icon-group-line fr-icon--sm fr-mr-1w"
+                      aria-hidden="true"
+                    />
+                    Mailing list
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="fr-footer__top-link"
+                    href="mailto:bso@recherche.gouv.fr"
+                    target="_blank"
+                  >
+                    <span
+                      className="fr-icon-mail-line fr-icon--sm fr-mr-1w"
+                      aria-hidden="true"
+                    />
+                    Email
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
           <div className="fr-footer__content">
             <p className="fr-footer__content-desc">
               Retrieve the scholarly works of your institution
             </p>
             <p className="fr-footer__content-desc">
-              {`v${
-              import.meta.env.VITE_VERSION
-            }`}
+              {`v${import.meta.env.VITE_VERSION}`}
             </p>
             <ul className="fr-footer__content-list">
               <li className="fr-footer__content-item">
