@@ -32,6 +32,7 @@ export default function MainFooter() {
                         href="mailto:bso@recherche.gouv.fr"
                         icon="mail-fill"
                         iconPosition="left"
+                        target="_blank"
                       >
                         Email
                       </Link>
@@ -42,8 +43,28 @@ export default function MainFooter() {
                         href="https://groupes.renater.fr/sympa/info/bso-etablissements"
                         icon="group-fill"
                         iconPosition="left"
+                        target="_blank"
                       >
                         Mailing-list
+                      </Link>
+                    </li>
+                  </ul>
+                  <Title
+                    as="h3"
+                    className={cn('fr-footer__top-cat', 'fr-mt-2w', 'text-left')}
+                  >
+                    Communication
+                  </Title>
+                  <ul>
+                    <li>
+                      <Link
+                        className="fr-footer__top-link"
+                        href="https://hal.univ-lorraine.fr/hal-04598201"
+                        icon="pie-chart-box-fill"
+                        iconPosition="left"
+                        target="_blank"
+                      >
+                        Poster
                       </Link>
                     </li>
                   </ul>
@@ -119,15 +140,6 @@ export default function MainFooter() {
                     <li>
                       <Link
                         className="fr-footer__top-link"
-                        href="https://curiexplore.enseignementsup-recherche.gouv.fr/"
-                        target="_blank"
-                      >
-                        CurieXplore
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        className="fr-footer__top-link"
                         href="https://frenchopensciencemonitor.esr.gouv.fr/"
                         target="_blank"
                       >
@@ -137,10 +149,19 @@ export default function MainFooter() {
                     <li>
                       <Link
                         className="fr-footer__top-link"
-                        href="https://data.esr.gouv.fr/EN/"
+                        href="https://scanr.enseignementsup-recherche.gouv.fr/"
                         target="_blank"
                       >
-                        #dataESR
+                        scanR, explore the world of French research & innovation
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className="fr-footer__top-link"
+                        href="https://curiexplore.enseignementsup-recherche.gouv.fr/"
+                        target="_blank"
+                      >
+                        CurieXplore
                       </Link>
                     </li>
                     <li>
@@ -152,6 +173,15 @@ export default function MainFooter() {
                         Open Data Platform
                       </Link>
                     </li>
+                    <li>
+                      <Link
+                        className="fr-footer__top-link"
+                        href="https://data.esr.gouv.fr/EN/"
+                        target="_blank"
+                      >
+                        #dataESR
+                      </Link>
+                    </li>
                   </ul>
                 </div>
               </Row>
@@ -159,9 +189,7 @@ export default function MainFooter() {
           </Row>
         </Container>
       </FooterTop>
-      <FooterBody
-        description="Retrieve the scholarly works of your institution"
-      >
+      <FooterBody description="Retrieve the scholarly works of your institution">
         <Logo
           splitCharacter="|"
           text="Ministère|de l'enseignement|supérieur|et de la recherche"
@@ -170,7 +198,7 @@ export default function MainFooter() {
           className="fr-footer__content-link"
           target="_blank"
           rel="noreferrer noopener external"
-          title="[À MODIFIER - Intitulé] - nouvelle fenêtre"
+          title="LégiFrance, the French public service for the dissemination of law - new window"
           href="https://legifrance.gouv.fr"
         >
           legifrance.gouv.fr
@@ -179,16 +207,16 @@ export default function MainFooter() {
           className="fr-footer__content-link"
           target="_blank"
           rel="noreferrer noopener external"
-          title="[À MODIFIER - Intitulé] - nouvelle fenêtre"
-          href="https://gouvernement.fr"
+          title="InfoGouv, Website of the French government - new window"
+          href="https://www.info.gouv.fr/"
         >
-          gouvernement.fr
+          info.gouv.fr
         </Link>
         <Link
           className="fr-footer__content-link"
           target="_blank"
           rel="noreferrer noopener external"
-          title="[À MODIFIER - Intitulé] - nouvelle fenêtre"
+          title="ServicePublic, The official French administration website - new window"
           href="https://service-public.fr"
         >
           service-public.fr
@@ -197,7 +225,7 @@ export default function MainFooter() {
           className="fr-footer__content-link"
           target="_blank"
           rel="noreferrer noopener external"
-          title="[À MODIFIER - Intitulé] - nouvelle fenêtre"
+          title="DataGouv, Open platform for French public data - new window"
           href="https://data.gouv.fr"
         >
           data.gouv.fr
