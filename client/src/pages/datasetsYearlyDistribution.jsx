@@ -1,10 +1,11 @@
-import PropTypes from 'prop-types';
-import { useSearchParams } from 'react-router-dom';
 import {
-  Row, Col,
+  Col,
+  Row,
 } from '@dataesr/dsfr-plus';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import PropTypes from 'prop-types';
+import { useSearchParams } from 'react-router-dom';
 
 import { range } from '../utils/works';
 
@@ -29,8 +30,8 @@ export default function DatasetsYearlyDistribution({ allDatasets, field, subfiel
       allFields[currentField][i] += 1;
     });
   });
-  const colors = ['#ea5545', '#f46a9b', '#ef9b20', '#edbf33', '#ede15b', '#bdcf32', '#87bc45', '#27aeef', '#b33dc6'];
-  const NB_TOP = 8;
+  const colors = ['#ea5545', '#f46a9b', '#ef9b20', '#edbf33', '#ede15b', '#bdcf32', '#87bc45', '#27aeef', '#544fc5', '#b33dc6', '#d3d3d3'];
+  const NB_TOP = 10;
   const series = Object.keys(allFields)
     .map((name) => ({
       name,

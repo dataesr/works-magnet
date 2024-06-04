@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 
 import Gauge from '../components/gauge';
 import { datasources, status } from '../config';
+import { normalizeName, renderButtonDataset, renderButtons } from '../utils/works';
 import DatasetsView from './datasetsView';
-import { normalizeName, renderButtons, renderButtonDataset } from '../utils/works';
 
 export default function DatasetsTab({ datasets, publishers, selectedDatasets, setSelectedDatasets, tagDatasets, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');

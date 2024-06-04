@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 import { status } from '../config';
 import OpenalexView from './openalexView';
-import { normalizeName } from '../utils/works';
 
 export default function OpenalexTab({ affiliations, setAllOpenalexCorrections }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -17,7 +16,10 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => affiliation.key.replace('[ source', '').includes(normalizeName(filteredAffiliationName)));
+      const filteredAffiliationsTmp = affiliations.filter((affiliation) => {
+        const regex = new RegExp(filteredAffiliationName);
+        return regex.test(affiliation.key.replace('[ source', ''));
+      });
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);

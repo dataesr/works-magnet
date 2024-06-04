@@ -1,7 +1,28 @@
-import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics, removeDuplicates } from './utils';
+import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics } from './utils';
 
 const datasetsType = ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
   'software', 'computationalnotebook', 'film', 'interactiveresource', 'image'];
+
+const getFormat = (formats) => {
+  const formatsMapping = {
+    'application/zip': 'archive',
+    'Arbitrary ZIP archive': 'archive',
+    'video/mp4': 'video',
+    ZIP: 'archive',
+  };
+  // Set format as unique
+  let uniqueFormats = [...new Set(formats)];
+  // Mapping
+  uniqueFormats = uniqueFormats.map((format) => formatsMapping?.[format] ?? format);
+  return uniqueFormats.toString() ?? '';
+};
+
+const getPublisher = (publisher) => {
+  const publishersMapping = {
+    'SAGE Journals': 'SAGE',
+  };
+  return publishersMapping?.[publisher] ?? publisher;
+};
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
@@ -46,8 +67,8 @@ const getFosmQuery = (options, pit, searchAfter) => {
     query.query.bool.should.push({ terms: { 'authors.affiliations.affiliationIdentifier.keyword': fullRors } });
   }
   query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
-  // Exclude files for Datacite
-  query.query.bool.must_not.push({ terms: { genre: ['file', 'version', 'file_'] } });
+  // Exclude files and duplicates for Datacite
+  query.query.bool.must_not.push({ terms: { genre: ['file', 'version', 'file_', 'identical'] } });
   query.query.bool.minimum_should_match = 1;
   query._source = [
     'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher', 'format', 'client_id',
@@ -154,7 +175,7 @@ const formatFosmResult = (result, options) => {
     authors: (result._source?.authors ?? []).map((author) => author.full_name),
     client_id: result._source.client_id,
     datasource: ['fosm'],
-    format: removeDuplicates(result?._source?.format || []).toString() ?? '',
+    format: getFormat(result?._source?.format || []),
     fr_reasons: result?._source?.fr_reasons_concat?.toString() ?? '',
     fr_publications_linked: getLinkedDoi(result?._source?.fr_publications_linked, options),
     fr_authors_name: [...new Set(result?._source?.fr_authors_name
@@ -164,7 +185,7 @@ const formatFosmResult = (result, options) => {
       ?.filter((el) => intersectArrays(el?.rors || [], options.rors))
       .map((el) => getAuthorOrcid(el)))],
     id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
-    publisher: result._source?.publisher_dissemination ?? result._source?.publisher ?? result._source?.publisher_raw ?? '',
+    publisher: getPublisher(result._source?.publisher_dissemination ?? result._source?.publisher ?? result._source?.publisher_raw ?? ''),
     status: 'tobedecided',
     title: result._source.title,
     type: result._source?.genre_raw ?? result._source.genre,
@@ -361,7 +382,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
           doi: cleanId(result?.doi),
           id: cleanId(result?.ids?.doi
             ?? result?.primary_location?.landing_page_url?.split('/')?.filter((item) => item)?.pop() ?? result?.ids?.openalex),
-          publisher: (result?.primary_location?.source?.host_organization_name ?? result?.primary_location?.source?.display_name) ?? '',
+          publisher: getPublisher(result?.primary_location?.source?.host_organization_name ?? result?.primary_location?.source?.display_name ?? ''),
           status: 'tobedecided',
           title: result?.display_name,
           type: getTypeFromOpenAlex(result.type),
@@ -437,7 +458,7 @@ const groupByAffiliations = ({ options, works }) => {
             keepAffiliation = true;
           }
         });
-        toKeep[normalizedAffiliation] = { keepAffiliation, displayAffiliation };
+        toKeep[normalizedAffiliation] = { displayAffiliation, keepAffiliation };
       }
       if (toKeep[normalizedAffiliation]?.keepAffiliation) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
@@ -448,12 +469,12 @@ const groupByAffiliations = ({ options, works }) => {
         } else {
           // eslint-disable-next-line no-param-reassign
           deduplicatedAffiliations[normalizedAffiliation] = {
+            hasCorrection: false,
+            key: affiliation.key,
             name: affiliation.rawAffiliation,
+            nameHtml: toKeep[normalizedAffiliation].displayAffiliation,
             rors: affiliation.rors || [],
             rorsToCorrect: (affiliation.rorsToCorrect || []).join(';'),
-            hasCorrection: false,
-            nameHtml: toKeep[normalizedAffiliation].displayAffiliation,
-            key: affiliation.key,
             source: affiliation.source,
             status: 'tobedecided',
             works: [id],

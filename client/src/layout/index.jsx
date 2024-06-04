@@ -1,19 +1,14 @@
 import { Container } from '@dataesr/dsfr-plus';
-
-// import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Outlet } from 'react-router-dom';
 
 import Footer from './Footer';
 import Header from './Header';
 
-export default function Layout() {
-  // TODO: restore SwitchTheme
-  // const [isSwitchThemeOpen, setIsSwitchThemeOpen] = useState(false);
-
+export default function Layout({ isSticky }) {
   return (
     <>
-      <Header />
-      {/* <SwitchTheme isOpen={isSwitchThemeOpen} setIsOpen={setIsSwitchThemeOpen} /> */}
+      <Header isSticky={isSticky} />
       <Container fluid as="main" role="main">
         <Outlet />
       </Container>
@@ -21,3 +16,7 @@ export default function Layout() {
     </>
   );
 }
+
+Layout.propTypes = {
+  isSticky: PropTypes.bool.isRequired,
+};

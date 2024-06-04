@@ -1,5 +1,6 @@
 import { Col, Container, Row, Spinner } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -7,8 +8,8 @@ import DatasetsTile from '../components/tiles/datasets';
 import OpenalexTile from '../components/tiles/openalex';
 import PublicationsTile from '../components/tiles/publications';
 import { status } from '../config';
-import Filters from './filters';
 import { getData } from '../utils/works';
+import Filters from './filters';
 import Datasets from './views/datasets';
 import Openalex from './views/openalex';
 import Publications from './views/publications';
@@ -16,7 +17,7 @@ import Publications from './views/publications';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
-export default function Home() {
+export default function Home({ isSticky, setIsSticky }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [options, setOptions] = useState({});
@@ -69,7 +70,7 @@ export default function Home() {
   return (
     // TODO:do a cleaner way to display the spinner and views
     <>
-      <Filters isFetched sendQuery={sendQuery} />
+      <Filters isFetched isSticky={isSticky} sendQuery={sendQuery} setIsSticky={setIsSticky} />
       <Container as="section" className="fr-mt-4w">
         {isFetching && (
           <Row>
@@ -147,3 +148,8 @@ export default function Home() {
     </>
   );
 }
+
+Home.propTypes = {
+  isSticky: PropTypes.bool.isRequired,
+  setIsSticky: PropTypes.func.isRequired,
+};
