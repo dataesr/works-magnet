@@ -45,7 +45,9 @@ export default function Filters({
   setIsSticky,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
+
   const [currentSearchParams, setCurrentSearchParams] = useState({});
+  const [deletedAffiliations, setDeletedAffiliations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [getRoRChildren, setGetRoRChildren] = useState(false);
@@ -71,35 +73,39 @@ export default function Filters({
       } else {
         setIsLoading(true);
         const affiliations = searchParams.getAll('affiliations') || [];
-        const deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
+        const deletedAffiliations1 = searchParams.getAll('deletedAffiliations') || [];
 
         setCurrentSearchParams({
           affiliations,
           datasets: searchParams.get('datasets') === 'true',
-          deletedAffiliations,
+          deletedAffiliations: deletedAffiliations1,
           endYear: searchParams.get('endYear', '2023'),
           startYear: searchParams.get('startYear', '2023'),
           view: searchParams.get('view', ''),
         });
 
-        const newAffiliations = affiliations.filter(
-          (x) => !searchedAffiliations.includes(x),
+        const newSearchedAffiliations = affiliations.filter(
+          (affiliation) => !searchedAffiliations.includes(affiliation),
         );
-        if (newAffiliations.length > 0) {
+        if (newSearchedAffiliations.length > 0) {
           setSearchedAffiliations(affiliations);
+        }
+        const newDeletedAffiliations = deletedAffiliations1.filter(
+          (affiliation) => !deletedAffiliations.includes(affiliation),
+        );
+        if (newDeletedAffiliations.length > 0) {
+          setDeletedAffiliations(deletedAffiliations1);
         }
 
         setIsLoading(false);
       }
     };
     getData();
-  }, [getRoRChildren, searchedAffiliations, searchParams, setSearchParams]);
+  }, [deletedAffiliations, getRoRChildren, searchedAffiliations, searchParams, setSearchParams]);
 
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true);
-      const deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
-
       const queries = searchedAffiliations.map((affiliation) => getRorData(affiliation, getRoRChildren));
       let rorNames = await Promise.all(queries);
       rorNames = rorNames.filter(
@@ -168,8 +174,9 @@ export default function Filters({
 
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getRoRChildren, searchedAffiliations]);
+  }, [deletedAffiliations, getRoRChildren, searchedAffiliations]);
 
+  // eslint-disable-next-line no-shadow
   const onTagsChange = async (affiliations, deletedAffiliations) => {
     const previousDeleted = currentSearchParams.deletedAffiliations || [];
     setSearchParams({
