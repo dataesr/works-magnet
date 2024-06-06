@@ -106,7 +106,9 @@ export default function Filters({
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true);
-      const queries = searchedAffiliations.map((affiliation) => getRorData(affiliation, getRoRChildren));
+      const filteredSearchedAffiliation = searchedAffiliations
+        .filter((affiliation) => !deletedAffiliations.includes(affiliation));
+      const queries = filteredSearchedAffiliation.map((affiliation) => getRorData(affiliation, getRoRChildren));
       let rorNames = await Promise.all(queries);
       rorNames = rorNames.filter(
         (rorName) => !deletedAffiliations.includes(rorName),
@@ -115,7 +117,7 @@ export default function Filters({
       const allTags = [];
       const knownTags = {};
 
-      searchedAffiliations.forEach((affiliation) => {
+      filteredSearchedAffiliation.forEach((affiliation) => {
         const label = affiliation
           .replace('https://ror.org/', '')
           .replace('ror.org/', '');
@@ -176,18 +178,17 @@ export default function Filters({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deletedAffiliations, getRoRChildren, searchedAffiliations]);
 
-  // eslint-disable-next-line no-shadow
-  const onTagsChange = async (affiliations, deletedAffiliations) => {
+  const onTagsChange = async (affiliations, _deletedAffiliations) => {
     const previousDeleted = currentSearchParams.deletedAffiliations || [];
+    const nextDeleted = [...new Set(_deletedAffiliations
+      .map((affiliation) => affiliation.label)
+      .concat(previousDeleted))];
     setSearchParams({
       ...currentSearchParams,
       affiliations: affiliations
         .filter((affiliation) => affiliation.source === 'user')
         .map((affiliation) => affiliation.label),
-      deletedAffiliations: deletedAffiliations
-        .filter((affiliation) => affiliation.source !== 'user')
-        .map((affiliation) => affiliation.label)
-        .concat(previousDeleted),
+      deletedAffiliations: nextDeleted,
     });
   };
 
