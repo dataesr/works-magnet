@@ -51,7 +51,11 @@ export default function MainFooter() {
                   </ul>
                   <Title
                     as="h3"
-                    className={cn('fr-footer__top-cat', 'fr-mt-2w', 'text-left')}
+                    className={cn(
+                      'fr-footer__top-cat',
+                      'fr-mt-2w',
+                      'text-left',
+                    )}
                   >
                     Communication
                   </Title>
@@ -65,6 +69,17 @@ export default function MainFooter() {
                         target="_blank"
                       >
                         Poster
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className="fr-footer__top-link"
+                        href="https://www.youtube.com/watch?v=zkLFj5Wnsy0"
+                        icon="play-circle-fill"
+                        iconPosition="left"
+                        target="_blank"
+                      >
+                        Tutorial
                       </Link>
                     </li>
                   </ul>
