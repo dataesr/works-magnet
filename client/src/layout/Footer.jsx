@@ -79,7 +79,7 @@ export default function MainFooter() {
                         iconPosition="left"
                         target="_blank"
                       >
-                        Tutorial
+                        Tutorial [FR]
                       </Link>
                     </li>
                   </ul>
