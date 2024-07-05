@@ -1,4 +1,4 @@
-import { Col, Row, Toggle } from '@dataesr/dsfr-plus';
+import { Col, Row, TextInput, Toggle } from '@dataesr/dsfr-plus';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -17,9 +17,11 @@ import {
 
 export default function OpenalexView({
   allAffiliations,
-  setAllOpenalexCorrections,
-  setFilteredAffiliationName,
+  filteredAffiliationId,
   filteredAffiliationName,
+  setAllOpenalexCorrections,
+  setFilteredAffiliationId,
+  setFilteredAffiliationName,
 }) {
   const [selectionPageOnly, setSelectionPageOnly] = useState(true);
 
@@ -73,7 +75,7 @@ export default function OpenalexView({
       <Col xs="2">
         <div className="before-toggle">Select all</div>
       </Col>
-      <Col xs="3">
+      <Col xs="2">
         <Toggle
           checked={selectionPageOnly}
           label="Select page"
@@ -81,19 +83,30 @@ export default function OpenalexView({
           onChange={(e) => setSelectionPageOnly(e.target.checked)}
         />
       </Col>
-      <Col xs="7">
-        <i className="fr-icon-search-line fr-mr-1w" />
-        Search in affiliations name
-        <input
+      <Col xs="4">
+        <TextInput
           className="fr-ml-1w"
+          hint="Use regex"
+          icon="search-line"
+          label="Search in affiliations name"
           onChange={(e) => setFilteredAffiliationName(e.target.value)}
-          style={{
-            border: '1px solid #ced4da',
-            borderRadius: '4px',
-            padding: '0.375rem 0.75rem',
-            width: '100%',
-          }}
           value={filteredAffiliationName}
+        />
+      </Col>
+      <Col xs="4">
+        <TextInput
+          className="fr-ml-1w"
+          hint={(
+            <>
+              Use regex
+              {' '}
+              <i>(ex: ^((?!MY_ROR).)*$ to exclude a specific RoR)</i>
+            </>
+          )}
+          icon="search-line"
+          label="Search in affiliations RoR"
+          onChange={(e) => setFilteredAffiliationId(e.target.value)}
+          value={filteredAffiliationId}
         />
       </Col>
     </Row>
@@ -181,7 +194,9 @@ OpenalexView.propTypes = {
       worksNumber: PropTypes.number.isRequired,
     }),
   ).isRequired,
-  setAllOpenalexCorrections: PropTypes.func.isRequired,
-  setFilteredAffiliationName: PropTypes.func.isRequired,
+  filteredAffiliationId: PropTypes.string.isRequired,
   filteredAffiliationName: PropTypes.string.isRequired,
+  setAllOpenalexCorrections: PropTypes.func.isRequired,
+  setFilteredAffiliationId: PropTypes.func.isRequired,
+  setFilteredAffiliationName: PropTypes.func.isRequired,
 };

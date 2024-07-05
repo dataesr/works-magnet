@@ -7,6 +7,7 @@ import OpenalexView from './openalexView';
 
 export default function OpenalexTab({ affiliations, setAllOpenalexCorrections }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
+  const [filteredAffiliationId, setFilteredAffiliationId] = useState('');
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredStatus] = useState([status.tobedecided.id, status.validated.id, status.excluded.id]);
   const [timer, setTimer] = useState();
@@ -16,16 +17,20 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter((affiliation) => {
-        const regex = new RegExp(filteredAffiliationName);
-        return regex.test(affiliation.key.replace('[ source', ''));
-      });
+      const filteredAffiliationsTmp = affiliations
+        .filter((affiliation) => {
+          const regex = new RegExp(filteredAffiliationName);
+          return regex.test(affiliation.key.replace('[ source', ''));
+        }).filter((affiliation) => {
+          const regex = new RegExp(filteredAffiliationId);
+          return regex.test(affiliation.rors.map((ror) => ror.rorId).join(' '));
+        });
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
     // The timer should not be tracked
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [affiliations, filteredAffiliationName, filteredStatus]);
+  }, [affiliations, filteredAffiliationId, filteredAffiliationName, filteredStatus]);
 
   return (
     <Container fluid>
@@ -33,8 +38,10 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
         <Col n="12">
           <OpenalexView
             allAffiliations={filteredAffiliations}
+            filteredAffiliationId={filteredAffiliationId}
             filteredAffiliationName={filteredAffiliationName}
             setAllOpenalexCorrections={setAllOpenalexCorrections}
+            setFilteredAffiliationId={setFilteredAffiliationId}
             setFilteredAffiliationName={setFilteredAffiliationName}
           />
         </Col>
