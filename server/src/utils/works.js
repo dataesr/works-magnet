@@ -352,6 +352,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   if (options.datasets) {
     url += ',type:dataset';
   }
+  // Polite mode https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#the-polite-pool
   if (process?.env?.OPENALEX_KEY) {
     url += `&api_key=${process.env.OPENALEX_KEY}`;
   } else {
