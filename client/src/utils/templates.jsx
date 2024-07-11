@@ -118,16 +118,16 @@ const datasourceTemplate = (rowData) => {
 
 const correctionTemplate = (rowData) => {
   let html = '';
-  if (rowData.hasCorrection) {
-    html = html.concat('<strong>');
-  }
-  html = html.concat('<ul>');
-  rowData.rorsToCorrect.split(';').forEach((ror) => {
-    html = html.concat(`<li key="ror-${ror}">${ror}</li>`);
-  });
-  html = html.concat('</ul>');
-  if (rowData.hasCorrection) {
-    html = html.concat('</strong>');
+  const rorsToCorrect = rowData.rorsToCorrect.split(';').map((item) => item.trim()).filter((item) => item.length > 0);
+  if (rorsToCorrect.length > 0) {
+    html = html.concat('<ul>');
+    rorsToCorrect.forEach((ror) => {
+      html = html.concat(`<li key="ror-${ror}">${ror}</li>`);
+    });
+    html = html.concat('</ul>');
+    if (rowData.hasCorrection) {
+      html = `<strong>${ html }</strong>`;
+    }
   }
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
