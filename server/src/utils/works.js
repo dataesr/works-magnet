@@ -329,7 +329,7 @@ const getOpenAlexAffiliation = (author) => {
   const rorsToCorrect = [];
   author?.institutions?.forEach((institution) => {
     if (institution.ror) {
-      const rorId = (institution.ror).replace('https://ror.org/', '');
+      const rorId = (institution.ror).replace('https://ror.org/', '').replace('ror.org/', '');
       const rorElt = { rorCountry: institution.country_code, rorId, rorName: institution.display_name };
       key = `${key}##${rorId}`;
       rors.push(rorElt);
@@ -347,10 +347,13 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     url += `,raw_affiliation_strings.search:(${options.affiliationStrings.map((aff) => `"${encodeURIComponent(aff)}"`).join(' OR ')})`;
   }
   if (options.rors.length) {
-    url += `,authorships.institutions.ror:${options.rors.join('|')}`;
+    url += `,institutions.ror:${options.rors.join('|')}`;
   }
   if (options.datasets) {
     url += ',type:dataset';
+  }
+  if (options.openAlexExclusions.length) {
+    url += `,${options.openAlexExclusions.map((institutionId) => `authorships.institutions.lineage:!${institutionId}`).join()}`;
   }
   // Polite mode https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#the-polite-pool
   if (process?.env?.OPENALEX_KEY) {

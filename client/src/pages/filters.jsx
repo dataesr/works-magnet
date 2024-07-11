@@ -13,6 +13,7 @@ import {
   SelectOption,
   Tag,
   TagGroup,
+  TextInput,
   Title,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
@@ -54,6 +55,7 @@ export default function Filters({
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
+  const [rorExclusions, setRorExclusions] = useState('');
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
   const [tags, setTags] = useState([]);
 
@@ -101,13 +103,20 @@ export default function Filters({
       }
     };
     getData();
-  }, [deletedAffiliations, getRoRChildren, searchedAffiliations, searchParams, setSearchParams]);
+  }, [
+    deletedAffiliations,
+    getRoRChildren,
+    searchedAffiliations,
+    searchParams,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true);
-      const filteredSearchedAffiliation = searchedAffiliations
-        .filter((affiliation) => !deletedAffiliations.includes(affiliation));
+      const filteredSearchedAffiliation = searchedAffiliations.filter(
+        (affiliation) => !deletedAffiliations.includes(affiliation),
+      );
       const queries = filteredSearchedAffiliation.map((affiliation) => getRorData(affiliation, getRoRChildren));
       let rorNames = await Promise.all(queries);
       rorNames = rorNames.filter(
@@ -180,9 +189,13 @@ export default function Filters({
 
   const onTagsChange = async (affiliations, _deletedAffiliations) => {
     const previousDeleted = currentSearchParams.deletedAffiliations || [];
-    const nextDeleted = [...new Set(_deletedAffiliations
-      .map((affiliation) => affiliation.label)
-      .concat(previousDeleted))];
+    const nextDeleted = [
+      ...new Set(
+        _deletedAffiliations
+          .map((affiliation) => affiliation.label)
+          .concat(previousDeleted),
+      ),
+    ];
     setSearchParams({
       ...currentSearchParams,
       affiliations: affiliations
@@ -214,6 +227,7 @@ export default function Filters({
     queryParams.rors = tags
       .filter((tag) => !tag.disable && tag.type === 'rorId')
       .map((tag) => tag.label);
+    queryParams.rorExclusions = rorExclusions.split(' ');
     if (
       queryParams.affiliationStrings.length === 0
       && queryParams.rors.length === 0
@@ -315,7 +329,7 @@ export default function Filters({
       ) : (
         <>
           <Container as="section" className="filters fr-my-5w">
-            <Row className="fr-p-2w">
+            <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
               <Col xs="8">
                 <TagInput
                   getRoRChildren={getRoRChildren}
@@ -387,6 +401,18 @@ export default function Filters({
                     />
                   </Col>
                 </Row>
+              </Col>
+            </Row>
+            <Row className="fr-pt-0 fr-pr-2w fr-pb-2w fr-pl-2w">
+              <Col xs="8">
+                <TextInput
+                  hint="If several, separate by space"
+                  label="RoR identifiers to exclude"
+                  onChange={(e) => setRorExclusions(e.target.value)}
+                  value={rorExclusions}
+                />
+              </Col>
+              <Col offsetXs="1" className="text-right fr-pl-3w">
                 <Button
                   className="fr-mt-2w"
                   disabled={searchParams.getAll('affiliations').length === 0}
@@ -500,6 +526,14 @@ export default function Filters({
                   seeMoreAfter={0}
                   setGetRoRChildren={setGetRoRChildren}
                   tags={tags}
+                />
+              </Col>
+              <Col xs="12">
+                <TextInput
+                  hint="If several, separate by space"
+                  label="Affiliation name, RoR identifier to exclude"
+                  onChange={(e) => setRorExclusions(e.target.value)}
+                  value={rorExclusions}
                 />
               </Col>
               <Col xs="12">

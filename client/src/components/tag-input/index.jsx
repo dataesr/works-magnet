@@ -179,7 +179,7 @@ export default function TagInput({
           ))}
           {seeMoreAfter !== 0 && structuredTags.length > seeMoreAfter && (
             <Button
-              className="fr-mr-1w"
+              className="fr-mr-1w fr-mb-2w"
               onClick={_seeMoreAction}
               size="sm"
             >
