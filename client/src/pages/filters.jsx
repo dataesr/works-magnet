@@ -227,7 +227,7 @@ export default function Filters({
     queryParams.rors = tags
       .filter((tag) => !tag.disable && tag.type === 'rorId')
       .map((tag) => tag.label);
-    queryParams.rorExclusions = rorExclusions.split(' ');
+    queryParams.rorExclusions = rorExclusions.split(' ').filter((item) => item?.length ?? false);
     if (
       queryParams.affiliationStrings.length === 0
       && queryParams.rors.length === 0

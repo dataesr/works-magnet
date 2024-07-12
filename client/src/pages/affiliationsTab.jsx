@@ -6,10 +6,11 @@ import {
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
+import AffiliationsView from './affiliationsView';
 import Gauge from '../components/gauge';
 import { status } from '../config';
+import { removeDiacritics } from '../utils/strings';
 import { renderButtons } from '../utils/works';
-import AffiliationsView from './affiliationsView';
 
 export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -27,8 +28,8 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
     }
     const timerTmp = setTimeout(() => {
       const filteredAffiliationsTmp = affiliations.filter((affiliation) => {
-        const regex = new RegExp(filteredAffiliationName);
-        return regex.test(affiliation.key.replace('[ source', ''));
+        const regex = new RegExp(removeDiacritics(filteredAffiliationName));
+        return regex.test(affiliation.key.replace('[ source: ', '').replace(' ]', ''));
       });
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
