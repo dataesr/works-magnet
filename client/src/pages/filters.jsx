@@ -335,6 +335,7 @@ export default function Filters({
                   getRoRChildren={getRoRChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
+                  isRequired
                   label="Affiliation name, RoR of your institution"
                   message={message}
                   messageType={messageType}
@@ -518,6 +519,7 @@ export default function Filters({
                   getRoRChildren={getRoRChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
+                  isRequired
                   label="Affiliation name, RoR of your institution"
                   message={message}
                   messageType={messageType}
