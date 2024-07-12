@@ -408,7 +408,7 @@ export default function Filters({
               <Col xs="8">
                 <TextInput
                   hint="You can focus on recall issues in OpenAlex (missing RoR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific RoR will be retrieved. If several RoR to exclude, separate them by space."
-                  label="(Optional) RoR to exclude: exclude affiliation strings already mapped to a specific RoR in OpenAlex"
+                  label="RoR to exclude: exclude affiliation strings already mapped to a specific RoR in OpenAlex"
                   onChange={(e) => setRorExclusions(e.target.value)}
                   value={rorExclusions}
                 />
@@ -532,8 +532,8 @@ export default function Filters({
               </Col>
               <Col xs="12">
                 <TextInput
-                  hint="If several, separate by space"
-                  label="Affiliation name, RoR identifier to exclude"
+                  hint="You can focus on recall issues in OpenAlex (missing RoR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific RoR will be retrieved. If several RoR to exclude, separate them by space."
+                  label="RoR to exclude: exclude affiliation strings already mapped to a specific RoR in OpenAlex"
                   onChange={(e) => setRorExclusions(e.target.value)}
                   value={rorExclusions}
                 />
