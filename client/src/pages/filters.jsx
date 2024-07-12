@@ -335,7 +335,7 @@ export default function Filters({
                   getRoRChildren={getRoRChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
-                  label="Affiliation name, RoR identifier"
+                  label="Affiliation name, RoR of your institution"
                   message={message}
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
@@ -406,8 +406,8 @@ export default function Filters({
             <Row className="fr-pt-0 fr-pr-2w fr-pb-2w fr-pl-2w">
               <Col xs="8">
                 <TextInput
-                  hint="If several, separate by space"
-                  label="RoR identifiers to exclude"
+                  hint="You can focus on recall issues in OpenAlex (missing RoR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific RoR will be retrieved. If several RoR to exclude, separate them by space."
+                  label="(Optional) RoR to exclude: exclude affiliation strings already mapped to a specific RoR in OpenAlex"
                   onChange={(e) => setRorExclusions(e.target.value)}
                   value={rorExclusions}
                 />
@@ -518,7 +518,7 @@ export default function Filters({
                   getRoRChildren={getRoRChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
-                  label="Affiliation name, RoR identifier"
+                  label="Affiliation name, RoR of your institution"
                   message={message}
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
