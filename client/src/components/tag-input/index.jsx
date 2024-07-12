@@ -109,7 +109,7 @@ export default function TagInput({
                   className="fr-ml-1w"
                   color="yellow-tournesol"
                   icon="delete-line"
-                  onClick={() => onTagsChange([], excludedValues)}
+                  onClick={() => onTagsChange([], tags)}
                   size="sm"
                   title="Remove all affiliations"
                   variant="text"
