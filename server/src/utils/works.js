@@ -1,7 +1,7 @@
 import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics } from './utils';
 
 const datasetsType = ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
-  'software', 'computationalnotebook', 'film', 'interactiveresource', 'image'];
+  'software', 'computationalnotebook', 'film', 'image'];
 
 const getFormat = (formats) => {
   const formatsMapping = {
