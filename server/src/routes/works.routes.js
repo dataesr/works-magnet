@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import express from 'express';
 
+import { getInstitutionIdFromRor } from '../utils/openalex';
 import { getCache, saveCache } from '../utils/s3';
 import { chunkArray, countUniqueValues, range } from '../utils/utils';
 import { datasetsType, deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
@@ -57,6 +58,8 @@ const getData = async ({ options, resetCache = false }) => {
   console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
   // eslint-disable-next-line no-param-reassign
   options.years = range(options.startYear, options.endYear);
+  // eslint-disable-next-line no-param-reassign
+  options.openAlexExclusions = await Promise.all(options.rorExclusions.map((ror) => getInstitutionIdFromRor(ror)));
   const queries = [];
   queries.push(getFosmWorks({ options }));
   const affiliationStringsChunks = chunkArray({ array: options.affiliationStrings });

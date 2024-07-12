@@ -13,6 +13,7 @@ import {
   SelectOption,
   Tag,
   TagGroup,
+  TextInput,
   Title,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
@@ -54,6 +55,7 @@ export default function Filters({
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
+  const [rorExclusions, setRorExclusions] = useState('');
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
   const [tags, setTags] = useState([]);
 
@@ -92,7 +94,10 @@ export default function Filters({
         }
         const newDeletedAffiliations = deletedAffiliations1.filter(
           (affiliation) => !deletedAffiliations.includes(affiliation),
-        );
+        )
+          + deletedAffiliations.filter(
+            (affiliation) => !deletedAffiliations1.includes(affiliation),
+          );
         if (newDeletedAffiliations.length > 0) {
           setDeletedAffiliations(deletedAffiliations1);
         }
@@ -101,13 +106,20 @@ export default function Filters({
       }
     };
     getData();
-  }, [deletedAffiliations, getRoRChildren, searchedAffiliations, searchParams, setSearchParams]);
+  }, [
+    deletedAffiliations,
+    getRoRChildren,
+    searchedAffiliations,
+    searchParams,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true);
-      const filteredSearchedAffiliation = searchedAffiliations
-        .filter((affiliation) => !deletedAffiliations.includes(affiliation));
+      const filteredSearchedAffiliation = searchedAffiliations.filter(
+        (affiliation) => !deletedAffiliations.includes(affiliation),
+      );
       const queries = filteredSearchedAffiliation.map((affiliation) => getRorData(affiliation, getRoRChildren));
       let rorNames = await Promise.all(queries);
       rorNames = rorNames.filter(
@@ -178,17 +190,23 @@ export default function Filters({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deletedAffiliations, getRoRChildren, searchedAffiliations]);
 
-  const onTagsChange = async (affiliations, _deletedAffiliations) => {
-    const previousDeleted = currentSearchParams.deletedAffiliations || [];
-    const nextDeleted = [...new Set(_deletedAffiliations
-      .map((affiliation) => affiliation.label)
-      .concat(previousDeleted))];
+  const onTagsChange = async (_affiliations, _deletedAffiliations) => {
+    const affiliations = _affiliations
+      .filter((affiliation) => affiliation.source === 'user')
+      .map((affiliation) => affiliation.label);
+    const deletedAffiliations1 = [
+      ...new Set(
+        _deletedAffiliations
+          .map((affiliation) => affiliation.label)
+          .concat(currentSearchParams.deletedAffiliations || []),
+      ),
+    ].filter(
+      (item) => !_affiliations.map((affiliation) => affiliation.label).includes(item),
+    );
     setSearchParams({
       ...currentSearchParams,
-      affiliations: affiliations
-        .filter((affiliation) => affiliation.source === 'user')
-        .map((affiliation) => affiliation.label),
-      deletedAffiliations: nextDeleted,
+      affiliations,
+      deletedAffiliations: deletedAffiliations1,
     });
   };
 
@@ -214,6 +232,9 @@ export default function Filters({
     queryParams.rors = tags
       .filter((tag) => !tag.disable && tag.type === 'rorId')
       .map((tag) => tag.label);
+    queryParams.rorExclusions = rorExclusions
+      .split(' ')
+      .filter((item) => item?.length ?? false);
     if (
       queryParams.affiliationStrings.length === 0
       && queryParams.rors.length === 0
@@ -315,13 +336,14 @@ export default function Filters({
       ) : (
         <>
           <Container as="section" className="filters fr-my-5w">
-            <Row className="fr-p-2w">
+            <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
               <Col xs="8">
                 <TagInput
                   getRoRChildren={getRoRChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
-                  label="Affiliation name, RoR identifier"
+                  isRequired
+                  label="Affiliation name, RoR of your institution"
                   message={message}
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
@@ -387,6 +409,18 @@ export default function Filters({
                     />
                   </Col>
                 </Row>
+              </Col>
+            </Row>
+            <Row className="fr-pt-0 fr-pr-2w fr-pb-2w fr-pl-2w">
+              <Col xs="8">
+                <TextInput
+                  hint="You can focus on recall issues in OpenAlex (missing RoR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific RoR will be retrieved. If several RoR to exclude, separate them by space."
+                  label="RoR to exclude: exclude affiliation strings already mapped to a specific RoR in OpenAlex"
+                  onChange={(e) => setRorExclusions(e.target.value)}
+                  value={rorExclusions}
+                />
+              </Col>
+              <Col offsetXs="1" className="text-right fr-pl-3w">
                 <Button
                   className="fr-mt-2w"
                   disabled={searchParams.getAll('affiliations').length === 0}
@@ -492,7 +526,8 @@ export default function Filters({
                   getRoRChildren={getRoRChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
-                  label="Affiliation name, RoR identifier"
+                  isRequired
+                  label="Affiliation name, RoR of your institution"
                   message={message}
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
@@ -500,6 +535,14 @@ export default function Filters({
                   seeMoreAfter={0}
                   setGetRoRChildren={setGetRoRChildren}
                   tags={tags}
+                />
+              </Col>
+              <Col xs="12">
+                <TextInput
+                  hint="You can focus on recall issues in OpenAlex (missing RoR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific RoR will be retrieved. If several RoR to exclude, separate them by space."
+                  label="RoR to exclude: exclude affiliation strings already mapped to a specific RoR in OpenAlex"
+                  onChange={(e) => setRorExclusions(e.target.value)}
+                  value={rorExclusions}
                 />
               </Col>
               <Col xs="12">

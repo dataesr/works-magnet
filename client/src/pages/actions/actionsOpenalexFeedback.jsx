@@ -21,12 +21,13 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   const feedback = () => {
     sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail });
     toast({
-      description: `${allOpenalexCorrections.length} corrections to OpenAlex have been saved - 
+      description: `${allOpenalexCorrections.length} correction(s) to OpenAlex have been saved - 
         see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
       id: 'saveOpenAlex',
       title: 'OpenAlex corrections sent',
       toastType: 'success',
     });
+    openModal();
   };
 
   useEffect(() => {
@@ -50,9 +51,9 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
           Improve OpenAlex data
         </ModalTitle>
         <ModalContent>
-          {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliations strings.`}
+          {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliation(s) string(s).`}
           <TextInput
-            label="Please indicate your email"
+            label="Please indicate your email. Only an encrpted version of your email will be public."
             onChange={(e) => setUserEmail(e.target.value)}
             required
             type="email"

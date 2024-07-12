@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { status } from '../config';
 import OpenalexView from './openalexView';
+import { removeDiacritics } from '../utils/strings';
 
 export default function OpenalexTab({ affiliations, setAllOpenalexCorrections }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -17,8 +18,8 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
     }
     const timerTmp = setTimeout(() => {
       const filteredAffiliationsTmp = affiliations.filter((affiliation) => {
-        const regex = new RegExp(filteredAffiliationName);
-        return regex.test(affiliation.key.replace('[ source', ''));
+        const regex = new RegExp(removeDiacritics(filteredAffiliationName));
+        return regex.test(affiliation.key.replace('[ source: ', '').replace(' ]', ''));
       });
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);

@@ -2,18 +2,6 @@ import { Container, Link, Logo } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const modules = import.meta.glob('./locales/*.json', {
-  eager: true,
-  import: 'default',
-});
-const messages = Object.keys(modules).reduce((acc, key) => {
-  const locale = key.match(/\.\/locales\/(.+)\.json$/)?.[1];
-  if (locale) {
-    return { ...acc, [locale]: modules[key] };
-  }
-  return acc;
-}, {});
-
 export function FooterTop({ children }) {
   return <div className="fr-footer__top">{children}</div>;
 }
@@ -24,7 +12,9 @@ FooterTop.propTypes = {
 export function Footer({ children, fluid = false }) {
   return (
     <footer className="fr-footer fr-mt-3w" role="contentinfo" id="footer">
-      <Container fluid={fluid}>{children}</Container>
+      <Container fluid={fluid}>
+        {children}
+      </Container>
     </footer>
   );
 }
@@ -32,7 +22,7 @@ Footer.defaultProps = {
   fluid: false,
 };
 Footer.propTypes = {
-  children: PropTypes.object.isRequired,
+  children: PropTypes.array.isRequired,
   fluid: PropTypes.bool,
 };
 
@@ -103,6 +93,6 @@ FooterBody.defaultProps = {
   description: undefined,
 };
 FooterBody.propTypes = {
-  children: PropTypes.object.isRequired,
+  children: PropTypes.array.isRequired,
   description: PropTypes.string,
 };

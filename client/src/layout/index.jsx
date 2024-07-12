@@ -2,8 +2,8 @@ import { Container } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { Outlet } from 'react-router-dom';
 
-import Footer from './Footer';
-import Header from './Header';
+import Footer from './footer';
+import Header from './header';
 
 export default function Layout({ isSticky }) {
   return (

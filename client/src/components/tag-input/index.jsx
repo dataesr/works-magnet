@@ -19,6 +19,7 @@ export default function TagInput({
   getRoRChildren,
   hint,
   isLoading,
+  isRequired,
   label,
   message,
   messageType,
@@ -108,7 +109,7 @@ export default function TagInput({
                   className="fr-ml-1w"
                   color="yellow-tournesol"
                   icon="delete-line"
-                  onClick={() => onTagsChange([], excludedValues)}
+                  onClick={() => onTagsChange([], tags)}
                   size="sm"
                   title="Remove all affiliations"
                   variant="text"
@@ -120,6 +121,7 @@ export default function TagInput({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
+            required={isRequired}
             type="text"
             value={input}
           />
@@ -179,7 +181,7 @@ export default function TagInput({
           ))}
           {seeMoreAfter !== 0 && structuredTags.length > seeMoreAfter && (
             <Button
-              className="fr-mr-1w"
+              className="fr-mr-1w fr-mb-2w"
               onClick={_seeMoreAction}
               size="sm"
             >
@@ -201,6 +203,7 @@ TagInput.propTypes = {
   getRoRChildren: PropTypes.bool,
   hint: PropTypes.string,
   isLoading: PropTypes.bool,
+  isRequired: PropTypes.bool,
   label: PropTypes.string.isRequired,
   message: PropTypes.string,
   messageType: PropTypes.oneOf(['error', 'valid', '']),
@@ -218,6 +221,7 @@ TagInput.defaultProps = {
   getRoRChildren: false,
   hint: 'Press "ENTER" to search for several terms',
   isLoading: false,
+  isRequired: false,
   message: '',
   messageType: '',
   onInputHandler: () => { },

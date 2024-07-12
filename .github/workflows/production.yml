@@ -33,6 +33,9 @@ jobs:
           node-version: 18
       - run: npm ci --silent && npm run build --mode=production
 
+      - name: 🤖 Delete robots.txt file for production
+        run: rm server/dist/robots.txt
+
       - name: 🐋 Build Docker image
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository }}

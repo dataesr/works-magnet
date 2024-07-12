@@ -44,13 +44,13 @@ export default function AffiliationsView({
         <input
           className="fr-ml-1w"
           onChange={(e) => setFilteredAffiliationName(e.target.value)}
-          value={filteredAffiliationName}
           style={{
             border: '1px solid #ced4da',
             borderRadius: '4px',
             padding: '0.375rem 0.75rem',
             width: '100%',
           }}
+          value={filteredAffiliationName}
         />
       </Col>
     </Row>
