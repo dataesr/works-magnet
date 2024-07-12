@@ -94,7 +94,10 @@ export default function Filters({
         }
         const newDeletedAffiliations = deletedAffiliations1.filter(
           (affiliation) => !deletedAffiliations.includes(affiliation),
-        );
+        )
+          + deletedAffiliations.filter(
+            (affiliation) => !deletedAffiliations1.includes(affiliation),
+          );
         if (newDeletedAffiliations.length > 0) {
           setDeletedAffiliations(deletedAffiliations1);
         }
@@ -187,21 +190,23 @@ export default function Filters({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deletedAffiliations, getRoRChildren, searchedAffiliations]);
 
-  const onTagsChange = async (affiliations, _deletedAffiliations) => {
-    const previousDeleted = currentSearchParams.deletedAffiliations || [];
-    const nextDeleted = [
+  const onTagsChange = async (_affiliations, _deletedAffiliations) => {
+    const affiliations = _affiliations
+      .filter((affiliation) => affiliation.source === 'user')
+      .map((affiliation) => affiliation.label);
+    const deletedAffiliations1 = [
       ...new Set(
         _deletedAffiliations
           .map((affiliation) => affiliation.label)
-          .concat(previousDeleted),
+          .concat(currentSearchParams.deletedAffiliations || []),
       ),
-    ];
+    ].filter(
+      (item) => !_affiliations.map((affiliation) => affiliation.label).includes(item),
+    );
     setSearchParams({
       ...currentSearchParams,
-      affiliations: affiliations
-        .filter((affiliation) => affiliation.source === 'user')
-        .map((affiliation) => affiliation.label),
-      deletedAffiliations: nextDeleted,
+      affiliations,
+      deletedAffiliations: deletedAffiliations1,
     });
   };
 
@@ -227,7 +232,9 @@ export default function Filters({
     queryParams.rors = tags
       .filter((tag) => !tag.disable && tag.type === 'rorId')
       .map((tag) => tag.label);
-    queryParams.rorExclusions = rorExclusions.split(' ').filter((item) => item?.length ?? false);
+    queryParams.rorExclusions = rorExclusions
+      .split(' ')
+      .filter((item) => item?.length ?? false);
     if (
       queryParams.affiliationStrings.length === 0
       && queryParams.rors.length === 0
