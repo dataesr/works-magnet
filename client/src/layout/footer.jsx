@@ -82,6 +82,17 @@ export default function MainFooter() {
                         Tutorial [FR]
                       </Link>
                     </li>
+                    <li>
+                      <Link
+                        className="fr-footer__top-link"
+                        href="https://youtube.com/watch?v=OIFHhz2OQPg"
+                        icon="play-circle-fill"
+                        iconPosition="left"
+                        target="_blank"
+                      >
+                        Tutorial [EN]
+                      </Link>
+                    </li>
                   </ul>
                 </div>
               </Row>
