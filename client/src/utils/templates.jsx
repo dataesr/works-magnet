@@ -39,9 +39,13 @@ const statusRowFilterTemplate = (options) => (
 const getIdsTemplate = (ids) => {
   let html = '<ul>';
   ids.forEach((id) => {
-    html += `<li key="${id.id_value}">${id.id_type}: `;
+    html += `<li key="${id.id_value}"> `;
     const idLink = getIdLink(id.id_type, id.id_value);
-    html += idLink ? `<a target="_blank" href="${idLink}">${id.id_value}</a>` : `<span>${id.id_value}</span>`;
+    let idValueDisplay = '';
+    if (id.id_value.length > 18) {
+      idValueDisplay = id.id_value.slice(0, 18).concat('..');
+    }
+    html += idLink ? `<a target="_blank" href="${idLink}">${idValueDisplay}</a>` : `<span>${id.id_value}</span>`;
     html += '</li>';
   });
   html += '</ul>';
@@ -118,16 +122,18 @@ const datasourceTemplate = (rowData) => {
 
 const correctionTemplate = (rowData) => {
   let html = '';
+  html = html.concat('<ul>');
   const rorsToCorrect = rowData.rorsToCorrect.split(';').map((item) => item.trim()).filter((item) => item.length > 0);
   if (rorsToCorrect.length > 0) {
-    html = html.concat('<ul>');
     rorsToCorrect.forEach((ror) => {
       html = html.concat(`<li key="ror-${ror}">${ror}</li>`);
     });
-    html = html.concat('</ul>');
-    if (rowData.hasCorrection) {
-      html = `<strong>${ html }</strong>`;
-    }
+  } else {
+    html = html.concat('<li key="noror"> </li>');
+  }
+  html = html.concat('</ul>');
+  if (rowData.hasCorrection) {
+    html = `<strong>${ html }</strong>`;
   }
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
@@ -136,8 +142,17 @@ const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowDa
 
 const statusTemplate = (rowData) => <Badge variant={status[rowData?.status ?? rowData]?.badgeType}>{status[rowData?.status ?? rowData]?.label}</Badge>;
 
+const resetCorrection = (rowData, allAffiliations) => {
+  console.log('ttt', rowData);
+  const row = { rowData };
+  row.rowData.hasCorrection = false;
+  row.rowData.rorsToCorrect = rowData.rors.map((e) => e.rorId).join(';');
+};
+
 const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection
-  ? <Badge variant={correction.corrected.badgeType}>{correction.corrected.label}</Badge>
+  ? (
+    <Badge variant={correction.corrected.badgeType}>{correction.corrected.label}</Badge>
+  )
   : '');
 
 export {

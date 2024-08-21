@@ -478,6 +478,7 @@ const groupByAffiliations = ({ options, works }) => {
             name: affiliation.rawAffiliation,
             nameHtml: toKeep[normalizedAffiliation].displayAffiliation,
             rors: affiliation.rors || [],
+            rorsNumber: affiliation.rors?.length || 0,
             rorsToCorrect: (affiliation.rorsToCorrect || []).join(';'),
             source: affiliation.source,
             status: 'tobedecided',
