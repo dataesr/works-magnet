@@ -24,7 +24,10 @@ const createIssue = (issue, email) => {
   body += `new_rors: ${issue.correctedRors}\n`;
   const previousRoRs = issue.rorsInOpenAlex.map((e) => e.rorId).join(';');
   body += `previous_rors: ${previousRoRs}\n`;
-  const workIds = issue.worksExample.filter((e) => e.id_type === 'openalex').map((e) => e.id_value).join(';');
+  let workIds = issue.worksExample.filter((e) => e.id_type === 'openalex').map((e) => e.id_value).join(';');
+  if (issue.worksOpenAlex) {
+    workIds = issue.worksOpenAlex.join(';');
+  }
   body += `works_examples: ${workIds}\n`;
   body += `contact: ${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}\n`;
   octokit.rest.issues.create({

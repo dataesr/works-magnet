@@ -467,7 +467,7 @@ const groupByAffiliations = ({ options, works }) => {
       if (toKeep[normalizedAffiliation]?.keepAffiliation) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
           deduplicatedAffiliations[normalizedAffiliation].works.push(id);
-          if (deduplicatedAffiliations[normalizedAffiliation].worksExample.length < 10) {
+          if (deduplicatedAffiliations[normalizedAffiliation].worksExample.length < 999) {
             deduplicatedAffiliations[normalizedAffiliation].worksExample.push(work.allIds);
           }
         } else {
@@ -498,8 +498,9 @@ const groupByAffiliations = ({ options, works }) => {
         ...affiliation,
         id: index.toString(),
         works: uniqueWorks,
-        worksExample: uniqueWorksExample,
+        worksExample: uniqueWorksExample.slice(0, 10),
         worksNumber: uniqueWorks.length,
+        worksOpenAlex: uniqueWorksExample.filter((w) => w.id_type === 'openalex').map((w) => w.id_value || 0).filter((w) => w !== 0),
       });
     });
   return allAffiliationsTmp;

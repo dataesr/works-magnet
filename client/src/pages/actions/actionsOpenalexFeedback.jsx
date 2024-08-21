@@ -75,12 +75,13 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
 }
 
 ActionsOpenalexFeedback.propTypes = {
-  allOpenalexCorrections: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object),
-    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
-    id: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-  })).isRequired,
+  allOpenalexCorrections: PropTypes.arrayOf(
+    PropTypes.shape({
+      rawAffiliationString: PropTypes.string.isRequired,
+      rorsInOpenAlex: PropTypes.arrayOf(PropTypes.object).isRequired,
+      correctedRors: PropTypes.string.isRequired,
+      worksExample: PropTypes.arrayOf(PropTypes.object).isRequired,
+      worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
+    }),
+  ).isRequired,
 };

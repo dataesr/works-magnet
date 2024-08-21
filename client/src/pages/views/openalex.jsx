@@ -67,6 +67,7 @@ Openalex.propTypes = {
       rorsInOpenAlex: PropTypes.arrayOf(PropTypes.object).isRequired,
       correctedRors: PropTypes.string.isRequired,
       worksExample: PropTypes.arrayOf(PropTypes.object).isRequired,
+      worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
     }),
   ).isRequired,
   setAllOpenalexCorrections: PropTypes.func.isRequired,
