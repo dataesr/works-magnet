@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { status } from '../config';
 import OpenalexView from './openalexView';
+import { getCorrections } from '../utils/openalex';
 import { removeDiacritics } from '../utils/strings';
 
 export default function OpenalexTab({ affiliations, setAllOpenalexCorrections }) {
@@ -21,6 +22,11 @@ export default function OpenalexTab({ affiliations, setAllOpenalexCorrections })
         const regex = new RegExp(removeDiacritics(filteredAffiliationName));
         return regex.test(affiliation.key.replace('[ source: ', '').replace(' ]', ''));
       });
+      // recompute corrections only when the array has changed
+      if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
+        const newCorrections = getCorrections(filteredAffiliationsTmp);
+        setAllOpenalexCorrections(newCorrections);
+      }
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);

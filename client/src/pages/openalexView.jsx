@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 
 import useToast from '../hooks/useToast';
+import { getCorrections } from '../utils/openalex';
 import { isRor } from '../utils/ror';
 import {
   correctionTemplate,
@@ -51,18 +52,7 @@ export default function OpenalexView({
       if (isValid) {
         data.rorsToCorrect = newValue;
         data.hasCorrection = true;
-        const newCorrections = [];
-        allAffiliations
-          .filter((aff) => aff.hasCorrection)
-          .forEach((aff) => {
-            const correction = {
-              rawAffiliationString: aff.name,
-              rorsInOpenAlex: aff.rors,
-              correctedRors: aff.rorsToCorrect,
-              worksExample: aff.worksExample,
-            };
-            newCorrections.push(correction);
-          });
+        const newCorrections = getCorrections(allAffiliations);
         setAllOpenalexCorrections(newCorrections);
       }
     }

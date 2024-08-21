@@ -61,14 +61,14 @@ Openalex.propTypes = {
     works: PropTypes.arrayOf(PropTypes.string).isRequired,
     worksNumber: PropTypes.number.isRequired,
   })).isRequired,
-  allOpenalexCorrections: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object),
-    allIds: PropTypes.arrayOf(PropTypes.object).isRequired,
-    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
-    id: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-  }).isRequired).isRequired,
+  allOpenalexCorrections: PropTypes.arrayOf(
+    PropTypes.shape({
+      rawAffiliationString: PropTypes.string.isRequired,
+      rorsInOpenAlex: PropTypes.arrayOf(PropTypes.object).isRequired,
+      correctedRors: PropTypes.string.isRequired,
+      worksExample: PropTypes.arrayOf(PropTypes.object).isRequired,
+    }),
+  ).isRequired,
   setAllOpenalexCorrections: PropTypes.func.isRequired,
   options: PropTypes.object.isRequired,
 };
