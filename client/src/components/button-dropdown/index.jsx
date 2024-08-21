@@ -34,7 +34,7 @@ export default function ButtonDropdown({ className, data, label, searchParams })
         icon="save-line"
         size="sm"
       >
-        {`Export ${label}`}
+        {`Export ${label} (${data.length})`}
       </Button>
       <div className="dropdown-content">
         <Button

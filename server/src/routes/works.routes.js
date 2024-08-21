@@ -7,6 +7,7 @@ import { chunkArray, countUniqueValues, range } from '../utils/utils';
 import { datasetsType, deduplicateWorks, getFosmWorks, getOpenAlexPublications, groupByAffiliations } from '../utils/works';
 
 const SEED_MAX = 2048;
+const USE_CACHE = true;
 
 const router = new express.Router();
 
@@ -48,7 +49,10 @@ const getData = async ({ options, resetCache = false }) => {
   const searchId = shasum.digest('hex');
   const queryId = Math.floor(Math.random() * SEED_MAX);
   console.time(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
-  const cache = await getCache({ searchId });
+  let cache = false;
+  if (USE_CACHE) {
+    cache = await getCache({ searchId });
+  }
   console.timeEnd(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
   if (cache && !resetCache) {
     const extractionDate = new Date(cache.extractionDate);

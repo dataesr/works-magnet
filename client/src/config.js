@@ -33,7 +33,11 @@ const status = {
 const correction = {
   corrected: {
     badgeType: 'error',
-    label: 'CORRECTION',
+    label: 'MODIFIED',
+  },
+  reset: {
+    badgeType: 'info',
+    label: 'CANCEL',
   },
   notcorrected: {
     badgeType: 'info',

@@ -1,4 +1,4 @@
-import { Col, Row, Toggle } from '@dataesr/dsfr-plus';
+import { Button, Col, Row, Toggle } from '@dataesr/dsfr-plus';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 
 import useToast from '../hooks/useToast';
+import { getCorrections } from '../utils/openalex';
 import { isRor } from '../utils/ror';
 import {
   correctionTemplate,
@@ -24,11 +25,27 @@ export default function OpenalexView({
   const [selectionPageOnly, setSelectionPageOnly] = useState(true);
 
   const cellEditor = (options) => (
-    <InputTextarea
-      type="text"
-      value={options.value}
-      onChange={(e) => options.editorCallback(e.target.value)}
-    />
+    <Row gutters>
+      <Col>
+        <InputTextarea
+          type="text"
+          id="mytext"
+          value={options.value}
+          onChange={(e) => options.editorCallback(e.target.value)}
+        />
+      </Col>
+      <Col>
+        <Button
+          variant="info"
+          size="sm"
+          disabled={options.rowData.rors.map((r) => r.rorId).join(';') === options.value}
+          icon="delete-line"
+          onClick={() => { options.editorCallback(options.rowData.rors.map((r) => r.rorId).join(';')); }}
+        >
+          UNDO
+        </Button>
+      </Col>
+    </Row>
   );
   const { toast } = useToast();
 
@@ -50,19 +67,12 @@ export default function OpenalexView({
       });
       if (isValid) {
         data.rorsToCorrect = newValue;
-        data.hasCorrection = true;
-        const newCorrections = [];
-        allAffiliations
-          .filter((aff) => aff.hasCorrection)
-          .forEach((aff) => {
-            const correction = {
-              rawAffiliationString: aff.name,
-              rorsInOpenAlex: aff.rors,
-              correctedRors: aff.rorsToCorrect,
-              worksExample: aff.worksExample,
-            };
-            newCorrections.push(correction);
-          });
+        if (data.rors.map((r) => r.rorId).join(';') !== newValue) {
+          data.hasCorrection = true;
+        } else {
+          data.hasCorrection = false;
+        }
+        const newCorrections = getCorrections(allAffiliations);
         setAllOpenalexCorrections(newCorrections);
       }
     }
@@ -111,7 +121,7 @@ export default function OpenalexView({
       paginatorLeft={paginatorLeft}
       paginatorPosition="top bottom"
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-      rows={100}
+      rows={50}
       rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
       selectionPageOnly={selectionPageOnly}
@@ -131,39 +141,38 @@ export default function OpenalexView({
       />
       <Column
         field="rorHtml"
+        sortField="rorsNumber"
         header="RoR computed by OpenAlex"
         body={rorTemplate}
         style={{ maxWidth: '200px' }}
+        sortable
       />
       <Column
         field="rorsToCorrect"
         header="Click to improve / edit RoRs"
         body={correctionTemplate}
-        style={{ maxWidth: '200px' }}
+        style={{ maxWidth: '190px' }}
         editor={(options) => cellEditor(options)}
       />
       <Column
         rowEditor
         headerStyle={{ width: '10%', minWidth: '8rem' }}
         bodyStyle={{ textAlign: 'center' }}
+        style={{ maxWidth: '80px' }}
       />
       <Column
         field="hasCorrection"
         header="Modified by user?"
         body={hasCorrectionTemplate}
-        style={{ maxWidth: '120px' }}
+        style={{ maxWidth: '110px' }}
         sortable
       />
       <Column
         field="worksExamples"
-        header="Examples of works"
+        sortField="worksNumber"
+        header="Works"
         body={worksExampleTemplate}
-        style={{ maxWidth: '200px' }}
-      />
-      <Column
-        field="worksNumber"
-        header="Number of works"
-        style={{ maxWidth: '100px' }}
+        style={{ maxWidth: '150px' }}
         sortable
       />
     </DataTable>
