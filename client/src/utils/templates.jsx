@@ -41,7 +41,7 @@ const getIdsTemplate = (ids) => {
   ids.forEach((id) => {
     html += `<li key="${id.id_value}"> `;
     const idLink = getIdLink(id.id_type, id.id_value);
-    let idValueDisplay = '';
+    let idValueDisplay = id.id_value;
     if (id.id_value.length > 18) {
       idValueDisplay = id.id_value.slice(0, 18).concat('..');
     }
