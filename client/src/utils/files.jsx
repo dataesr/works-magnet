@@ -69,12 +69,11 @@ const export2Csv = ({ data, label, searchParams }) => {
     delete work.authors;
     delete work.datasource;
     delete work.id;
-    if ((work?.fr_authors_orcid ?? []).length > 0) {
-      work.fr_authors_orcid = JSON.stringify(work?.fr_authors_orcid ?? []);
-    }
-    if ((work?.fr_publications_linked ?? []).length > 0) {
-      work.fr_publications_linked = JSON.stringify(work?.fr_publications_linked ?? []);
-    }
+    ['fr_authors_orcid', 'fr_publications_linked', 'rorsInOpenAlex', 'worksExample'].forEach((field) => {
+      if ((work?.[field] ?? []).length > 0) {
+        work[field] = JSON.stringify(work[field]);
+      }
+    });
   });
   const csvFile = Papa.unparse(data, { skipEmptyLines: 'greedy' });
   const link = document.createElement('a');
