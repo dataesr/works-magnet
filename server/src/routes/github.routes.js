@@ -32,7 +32,7 @@ const createIssue = (issue, email) => {
         );
       },
       onSecondaryRateLimit: (retryAfter, options) => {
-        // Retry 3 times after hitting a rate limit error, then give up
+        // Retry 5 times after hitting a rate limit error after 60 seconds
         if (options.request.retryCount <= 5) {
           return true;
         }
@@ -59,7 +59,7 @@ const createIssue = (issue, email) => {
   }
   body += `works_examples: ${workIds}\n`;
   body += `contact: ${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}\n`;
-  octokit.rest.issues.create({
+  return octokit.rest.issues.create({
     body,
     owner: 'dataesr',
     repo: 'openalex-affiliations',
@@ -71,9 +71,10 @@ router.route('/github-issue')
   .post(async (req, res) => {
     const data = req.body?.data || [];
     const email = req.body?.email || '';
-    const promises = data.map((item) => createIssue(item, email));
-    await Promise.all(promises);
-    res.status(200).json({ message: 'GitHub Issues created' });
+    const promises = data.map((item) => createIssue(item, email).catch((error) => error));
+    const results = await Promise.all(promises);
+    const firstError = results.find((result) => !result.status.toString().startsWith('2'));
+    res.status(firstError?.status ?? 200).json({ message: firstError?.message ?? 'GitHub issues created' });
   });
 
 export default router;

@@ -142,13 +142,6 @@ const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowDa
 
 const statusTemplate = (rowData) => <Badge variant={status[rowData?.status ?? rowData]?.badgeType}>{status[rowData?.status ?? rowData]?.label}</Badge>;
 
-const resetCorrection = (rowData, allAffiliations) => {
-  console.log('ttt', rowData);
-  const row = { rowData };
-  row.rowData.hasCorrection = false;
-  row.rowData.rorsToCorrect = rowData.rors.map((e) => e.rorId).join(';');
-};
-
 const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection
   ? (
     <Badge variant={correction.corrected.badgeType}>{correction.corrected.label}</Badge>

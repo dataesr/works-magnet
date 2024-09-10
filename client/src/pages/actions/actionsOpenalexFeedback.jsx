@@ -14,20 +14,30 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   const [validEmail, setValidEmail] = useState(null);
   const { toast } = useToast();
 
-  const openModal = () => {
+  const switchModal = () => {
     setIsModalOpen((prev) => !prev);
   };
 
-  const feedback = () => {
-    sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail });
-    toast({
-      description: `${allOpenalexCorrections.length} correction(s) to OpenAlex have been saved - 
-        see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
-      id: 'saveOpenAlex',
-      title: 'OpenAlex corrections sent',
-      toastType: 'success',
-    });
-    openModal();
+  const feedback = async () => {
+    try {
+      await sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail });
+      toast({
+        description: `${allOpenalexCorrections.length} correction(s) to OpenAlex have been saved - 
+          see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
+        id: 'saveOpenAlex',
+        title: 'OpenAlex corrections sent',
+        toastType: 'success',
+      });
+    } catch (error) {
+      toast({
+        description: error.message,
+        id: 'errorOpenAlex',
+        title: 'Error while sending OpenAlex corrections',
+        toastType: 'error',
+      });
+    } finally {
+      switchModal();
+    }
   };
 
   useEffect(() => {
@@ -41,12 +51,12 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
     <>
       <Button
         disabled={!allOpenalexCorrections.length > 0}
-        onClick={openModal}
+        onClick={switchModal}
         size="sm"
       >
         Send feedback to OpenAlex
       </Button>
-      <Modal isOpen={isModalOpen} hide={openModal}>
+      <Modal isOpen={isModalOpen} hide={switchModal}>
         <ModalTitle>
           Improve OpenAlex data
         </ModalTitle>

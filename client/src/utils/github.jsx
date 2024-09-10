@@ -10,7 +10,7 @@ const sendGitHubIssue = async (data) => {
     headers: { 'Content-Type': 'application/json' },
   }).then((response) => {
     if (response.ok) return response.json();
-    return 'Oops... GitHub request error';
+    throw new Error(response.statusText);
   });
 };
 
