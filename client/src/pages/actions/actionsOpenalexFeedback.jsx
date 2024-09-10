@@ -53,11 +53,10 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
         <ModalContent>
           {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliation(s) string(s).`}
           <TextInput
-            label="Please indicate your email. Only an encrpted version of your email will be public."
+            label="Please indicate your email. Only an encrypted version of your email will be public."
             onChange={(e) => setUserEmail(e.target.value)}
             required
             type="email"
-            withAutoValidation
           />
         </ModalContent>
         <ModalFooter>
