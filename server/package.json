@@ -21,7 +21,7 @@
     "express-openapi-validator": "^5.0.4",
     "node-ovh-objectstorage": "^2.0.5",
     "winston": "^3.8.2",
-    "ws": "^8.16.0",
+    "ws": "^8.18.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

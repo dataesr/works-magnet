@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {
   createContext,
   useState,
@@ -6,7 +7,7 @@ import {
   useMemo,
 } from 'react';
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
+
 import Toast from '../components/toast';
 
 function ToastContainer({ children }) {

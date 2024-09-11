@@ -1,10 +1,14 @@
-import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
 import {
   Button,
-  Modal, ModalContent, ModalFooter, ModalTitle,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalTitle,
   TextInput,
 } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+
 import useToast from '../../hooks/useToast';
 import { sendGitHubIssue } from '../../utils/github';
 
@@ -14,18 +18,9 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   const [validEmail, setValidEmail] = useState(null);
   const { toast } = useToast();
 
-  const switchModal = () => {
-    setIsModalOpen((prev) => !prev);
-  };
+  const switchModal = () => setIsModalOpen((prev) => !prev);
 
   const feedback = async () => {
-    toast({
-      autoDismissAfter: 5000,
-      description: 'Your correction(s) are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
-      id: 'saveOpenAlex',
-      title: 'OpenAlex corrections submitted',
-      toastType: 'info',
-    });
     try {
       await sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail });
       toast({
@@ -48,7 +43,9 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   };
 
   useEffect(() => {
-    const emailRegex = new RegExp(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+    const emailRegex = new RegExp(
+      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
+    );
     const testEmail = (email) => setValidEmail(emailRegex.test(email) ? email : null);
     const timeOutId = setTimeout(() => testEmail(userEmail), 500);
     return () => clearTimeout(timeOutId);
@@ -64,9 +61,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
         Send feedback to OpenAlex
       </Button>
       <Modal isOpen={isModalOpen} hide={switchModal}>
-        <ModalTitle>
-          Improve OpenAlex data
-        </ModalTitle>
+        <ModalTitle>Improve OpenAlex data</ModalTitle>
         <ModalContent>
           {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliation(s) string(s).`}
           <TextInput
