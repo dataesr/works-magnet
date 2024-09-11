@@ -19,6 +19,13 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   };
 
   const feedback = async () => {
+    toast({
+      autoDismissAfter: 5000,
+      description: 'Your correction(s) are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
+      id: 'saveOpenAlex',
+      title: 'OpenAlex corrections submitted',
+      toastType: 'info',
+    });
     try {
       await sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail });
       toast({
