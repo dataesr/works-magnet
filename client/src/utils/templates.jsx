@@ -128,8 +128,6 @@ const correctionTemplate = (rowData) => {
     rorsToCorrect.forEach((ror) => {
       html = html.concat(`<li key="ror-${ror}">${ror}</li>`);
     });
-  } else {
-    html = html.concat('<li key="noror"> </li>');
   }
   html = html.concat('</ul>');
   if (rowData.hasCorrection) {
