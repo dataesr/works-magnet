@@ -41,6 +41,7 @@ export default function Home({ isSticky, setIsSticky }) {
         toastType: toastType ?? 'info',
       });
     },
+    onError: (e) => console.error(e),
     share: true,
   });
 
