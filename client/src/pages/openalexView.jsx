@@ -68,8 +68,9 @@ export default function OpenalexView({
         }
       });
       if (isValid) {
-        data.rorsToCorrect = newValue;
-        if (data.rors.map((r) => r.rorId).join(';') !== newValue) {
+        const rorsToCorrect = [...new Set(newValue.split(';'))].join(';');
+        data.rorsToCorrect = rorsToCorrect;
+        if (data.rors.map((r) => r.rorId).join(';') !== rorsToCorrect) {
           data.hasCorrection = true;
         } else {
           data.hasCorrection = false;
