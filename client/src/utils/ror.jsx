@@ -1,7 +1,7 @@
 // https://ror.readme.io/docs/ror-identifier-pattern
 const rorRegex = /^0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
 
-const isRor = (affiliation) => rorRegex.test(affiliation);
+const isRor = (affiliation) => (affiliation ? rorRegex.test(affiliation) : false);
 
 const getRorData = async (affiliation, getChildren = false) => {
   const affiliationId = affiliation.replace('https://ror.org/', '').replace('ror.org/', '');

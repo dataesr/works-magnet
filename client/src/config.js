@@ -3,7 +3,6 @@ const datasources = [{ key: 'fosm', label: 'French OSM' }, { key: 'openalex', la
 const status = {
   validated: {
     badgeType: 'success',
-    buttonClassName: 'btn-keep',
     buttonIcon: 'ri-checkbox-circle-line',
     buttonLabel: 'Validate',
     iconColor: '#8dc572',
@@ -12,7 +11,6 @@ const status = {
   },
   excluded: {
     badgeType: 'error',
-    buttonClassName: 'btn-hide',
     buttonIcon: 'ri-indeterminate-circle-line',
     buttonLabel: 'Exclude',
     iconColor: '#be6464',
@@ -21,7 +19,6 @@ const status = {
   },
   tobedecided: {
     badgeType: 'info',
-    buttonClassName: 'btn-reset',
     buttonIcon: 'ri-reply-fill',
     buttonLabel: 'Reset status',
     iconColor: '#337ab7',

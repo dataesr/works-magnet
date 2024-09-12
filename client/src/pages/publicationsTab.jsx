@@ -52,7 +52,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
           </span>
           {`selected publication${selectedPublications.length === 1 ? '' : 's'}`}
         </div>
-        {renderButtons(selectedPublications, tagPublications, 'publication')}
+        {renderButtons(selectedPublications, tagPublications)}
         <div className="text-right">
           <Button
             onClick={() => setFixedMenu(!fixedMenu)}

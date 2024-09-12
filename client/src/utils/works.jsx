@@ -4,7 +4,7 @@ import { status } from '../config';
 
 const { VITE_API } = import.meta.env;
 
-const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+const capitalize = (str) => (str && str.length > 0 ? str.charAt(0).toUpperCase() + str.slice(1) : '');
 
 const b64decode = (str) => {
   const binaryString = window.atob(str);
@@ -107,7 +107,7 @@ const range = (startYear, endYear = new Date().getFullYear()) => {
 
 const renderButtons = (selected, fn) => Object.values(status).map((st) => (
   <Button
-    className={`fr-mb-1w ${st.buttonClassName} fr-pl-1w button`}
+    className="fr-mb-1w fr-pl-1w button"
     disabled={!selected.length}
     key={st.id}
     onClick={() => fn(selected, st.id)}
@@ -122,7 +122,7 @@ const renderButtons = (selected, fn) => Object.values(status).map((st) => (
 
 const renderButtonDataset = (selected, fn, label, icon) => (
   <Button
-    className="fr-mb-1w fr-mr-1w btn-keep"
+    className="fr-mb-1w fr-mr-1w"
     disabled={!selected.length}
     onClick={() => fn(selected, 'validated')}
     size="sm"
