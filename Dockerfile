@@ -4,4 +4,4 @@ COPY package*.json ./
 COPY server ./server
 RUN npm ci --silent
 CMD ["npm", "run", "-w", "server", "start"]
-EXPOSE 3000 443 80
+EXPOSE 3000 3001
