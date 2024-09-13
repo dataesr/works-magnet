@@ -51,6 +51,8 @@ export default function OpenalexTab({
       item.hasCorrection = item.rors.map((r) => r.rorId).join(';') !== item.rorsToCorrect;
       return item;
     });
+    const newCorrections = getCorrections(_selectedOpenAlex);
+    setAllOpenalexCorrections(newCorrections);
   };
 
   useEffect(() => {
@@ -123,6 +125,7 @@ export default function OpenalexTab({
           }}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
+          title="Add RoR"
         >
           <i
             className="ri-add-circle-line fr-mr-2w"
@@ -141,6 +144,7 @@ export default function OpenalexTab({
           }}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
+          title="Delete RoR"
         >
           <i
             className="ri-close-circle-line fr-mr-2w"
