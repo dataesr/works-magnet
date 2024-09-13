@@ -42,7 +42,7 @@ export default function Home({ isSticky, setIsSticky }) {
       });
     },
     onError: (e) => console.error(e),
-    // share: true,
+    share: true,
     onOpen: () => console.log('WebSocket connection established.'),
   });
   console.log(readyState);
