@@ -20,7 +20,7 @@ expressServer.on('upgrade', (request, socket, head) => {
   });
 });
 
-expressServer.on('connection', () => console.log('Conneted !'));
+expressServer.on('connection', () => console.log('Connected !'));
 
 app.use(express.json({ limit: 52428800 }));
 app.use(express.urlencoded({ extended: false }));
