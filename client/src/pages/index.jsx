@@ -30,7 +30,7 @@ export default function Home({ isSticky, setIsSticky }) {
   const { VITE_WS_HOST, VITE_WS_PORT } = import.meta.env;
   const { toast } = useToast();
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(`${VITE_WS_HOST}`, {
+  const { sendMessage, lastMessage, readyState } = useWebSocket(`${VITE_WS_HOST}:${VITE_WS_PORT}/ws`, {
     onMessage: (event) => {
       const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
       return toast({
