@@ -30,7 +30,8 @@ export default function Home({ isSticky, setIsSticky }) {
   const { VITE_WS_HOST } = import.meta.env;
   const { toast } = useToast();
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(`${VITE_WS_HOST}/ws`, {
+  useWebSocket(`${VITE_WS_HOST}/ws`, {
+    onError: (e) => console.error(e),
     onMessage: (event) => {
       const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
       return toast({
@@ -41,12 +42,8 @@ export default function Home({ isSticky, setIsSticky }) {
         toastType: toastType ?? 'info',
       });
     },
-    onError: (e) => console.error(e),
     share: true,
-    onOpen: () => console.log('WebSocket connection established.'),
   });
-  console.log(readyState);
-  console.log(lastMessage);
 
   const setView = (_view) => {
     setSearchParams((params) => {
