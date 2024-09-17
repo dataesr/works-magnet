@@ -27,10 +27,10 @@ export default function Home({ isSticky, setIsSticky }) {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
 
-  const { VITE_WS_HOST, VITE_WS_PORT } = import.meta.env;
+  const { VITE_WS_HOST } = import.meta.env;
   const { toast } = useToast();
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(`${VITE_WS_HOST}:${VITE_WS_PORT}/ws`, {
+  const { sendMessage, lastMessage, readyState } = useWebSocket(`${VITE_WS_HOST}/ws`, {
     onMessage: (event) => {
       const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
       return toast({
