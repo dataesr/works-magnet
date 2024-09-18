@@ -10,8 +10,9 @@ import OpenalexTab from '../openalexTab';
 export default function Openalex({
   allAffiliations,
   allOpenalexCorrections,
-  setAllOpenalexCorrections,
   options,
+  setAllOpenalexCorrections,
+  uuid,
 }) {
   return (
     <>
@@ -41,7 +42,7 @@ export default function Openalex({
         <Col xs="3">
           <ActionsOpenalexFeedback
             allOpenalexCorrections={allOpenalexCorrections}
-            options={options}
+            uuid={uuid}
           />
         </Col>
       </Row>
@@ -70,6 +71,7 @@ Openalex.propTypes = {
       worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
     }),
   ).isRequired,
-  setAllOpenalexCorrections: PropTypes.func.isRequired,
   options: PropTypes.object.isRequired,
+  setAllOpenalexCorrections: PropTypes.func.isRequired,
+  uuid: PropTypes.string.isRequired,
 };

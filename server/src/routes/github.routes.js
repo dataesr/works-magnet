@@ -4,7 +4,7 @@ import { Octokit } from '@octokit/rest';
 import { throttling } from '@octokit/plugin-throttling';
 
 import { chunkArray } from '../utils/utils';
-import webSocketServer from '../webSocketServer';
+import wss from '../webSocketServer';
 
 const MyOctokit = Octokit.plugin(throttling);
 const auth = process.env.GITHUB_PAT;
@@ -73,31 +73,54 @@ const createIssue = (issue, email) => {
 };
 
 router.route('/github-issue').post(async (req, res) => {
-  const toast = {
+  const data = req.body?.data || [];
+  const email = req.body?.email || '';
+  const uuid = req.body?.uuid || '';
+
+  let toast = {
     autoDismissAfter: 5000,
     description:
       'Your correction(s) are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
+    id: 'initOpenAlex',
     title: 'OpenAlex corrections submitted',
   };
-  webSocketServer.broadcast(JSON.stringify(toast));
+  wss.send({ message: JSON.stringify(toast), uuid });
 
-  const data = req.body?.data || [];
-  const email = req.body?.email || '';
   const perChunk = 30;
   const results = [];
   for (const [i, d] of chunkArray({ array: data, perChunk }).entries()) {
     const promises = d.map((item) => createIssue(item, email).catch((error) => error));
     const r = await Promise.all(promises);
     results.push(...r);
-    const toast = {
+    toast = {
       description: `${Math.min(data.length, (i + 1) * perChunk)} / ${data.length} issue(s) submitted`,
+      id: `processOpenAlex${i}`,
       title: 'OpenAlex corrections are being processed',
     };
-    webSocketServer.broadcast(JSON.stringify(toast));
+    wss.send({ message: JSON.stringify(toast), uuid });
   }
+
   const firstError = results.find(
     (result) => !result.status.toString().startsWith('2'),
   );
+  if (firstError?.status) {
+    toast = {
+      description: `Error while submitting Github issues : ${firstError?.message}`,
+      id: 'errorOpenAlex',
+      title: `Error ${firstError.status}`,
+      toastType: 'error',
+    };
+    wss.send({ message: JSON.stringify(toast), uuid });
+  } else {
+    toast = {
+      description: `${data.length} correction(s) to OpenAlex have been saved - 
+        see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
+      id: 'successOpenAlex',
+      title: 'OpenAlex corrections sent',
+      toastType: 'success',
+    };
+    wss.send({ message: JSON.stringify(toast), uuid });
+  }
   res
     .status(firstError?.status ?? 200)
     .json({ message: firstError?.message ?? 'GitHub issues created' });

@@ -1,14 +1,19 @@
-import WebSocket, { WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 
-const wsServer = new WebSocketServer({ noServer: true, path: '/ws' });
+const webSocketServer = new WebSocketServer({ noServer: true, path: '/ws' });
+const webSockets = {};
 
-// eslint-disable-next-line arrow-body-style, func-names
-wsServer.broadcast = function (message) {
-  return this.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(message);
-    }
-  });
+webSocketServer.on('connection', (webSocket, request) => {
+  const uuid = request?.url.match(/ws\?uuid=([\w-]*)/)[1];
+  webSockets[uuid] = webSocket;
+});
+
+webSocketServer.send = ({ message, uuid }) => {
+  if (Object.keys(webSockets).includes(uuid)) {
+    webSockets[uuid].send(message);
+  } else {
+    console.error(`Websocket client ${uuid} does not exist.`);
+  }
 };
 
-export default wsServer;
+export default webSocketServer;

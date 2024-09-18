@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
+import { v4 as uuidv4 } from 'uuid';
 
 import DatasetsTile from '../components/tiles/datasets';
 import OpenalexTile from '../components/tiles/openalex';
@@ -29,8 +30,9 @@ export default function Home({ isSticky, setIsSticky }) {
 
   const { VITE_WS_HOST } = import.meta.env;
   const { toast } = useToast();
+  const [uuid] = useState(uuidv4());
 
-  useWebSocket(`${VITE_WS_HOST}/ws`, {
+  useWebSocket(`${VITE_WS_HOST}/ws?uuid=${uuid}`, {
     onError: (e) => console.error(e),
     onMessage: (event) => {
       const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
@@ -150,6 +152,7 @@ export default function Home({ isSticky, setIsSticky }) {
             allOpenalexCorrections={allOpenalexCorrections}
             options={options}
             setAllOpenalexCorrections={setAllOpenalexCorrections}
+            uuid={uuid}
           />
         )}
 

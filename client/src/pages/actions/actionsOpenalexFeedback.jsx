@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import useToast from '../../hooks/useToast';
 import { sendGitHubIssue } from '../../utils/github';
 
-export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
+export default function ActionsOpenalexFeedback({ allOpenalexCorrections, uuid }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
@@ -22,14 +22,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
 
   const feedback = async () => {
     try {
-      await sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail });
-      toast({
-        description: `${allOpenalexCorrections.length} correction(s) to OpenAlex have been saved - 
-          see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
-        id: 'saveOpenAlex',
-        title: 'OpenAlex corrections sent',
-        toastType: 'success',
-      });
+      sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail, uuid });
     } catch (error) {
       toast({
         description: error.message,
@@ -95,4 +88,5 @@ ActionsOpenalexFeedback.propTypes = {
       worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
     }),
   ).isRequired,
+  uuid: PropTypes.string.isRequired,
 };
