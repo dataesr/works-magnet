@@ -24,6 +24,7 @@ export default function Openalex({
   const [uuid] = useState(uuidv4());
 
   useWebSocket(`${VITE_WS_HOST}/ws?uuid=${uuid}`, {
+    onClose: () => console.log(`Websocket connection closed: ${uuid}`),
     onError: (event) => console.error(event),
     onMessage: (event) => {
       const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
@@ -35,6 +36,7 @@ export default function Openalex({
         toastType: toastType ?? 'info',
       });
     },
+    onOpen: () => console.log(`Websocket connection open: ${uuid}`),
     share: true,
   });
 
