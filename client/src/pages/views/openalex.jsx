@@ -20,14 +20,14 @@ export default function Openalex({
         <Col xs="12">
           <div className="fr-callout fr-callout--pink-tuile">
             <Title as="h2" look="h6">
-              Improve RoR matching in OpenAlex - Provide your feedback!
+              Improve ROR matching in OpenAlex - Provide your feedback!
             </Title>
             <p className="fr-callout__text fr-text--sm">
               🔎 The array below summarizes the most frequent raw affiliation strings retrieved in OpenAlex for your query.
               <br />
-              🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
+              🤖 The second column indicates the ROR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
               <br />
-              ✏️  Click the third column to edit and input the right RoRs for this raw affiliation string. Use a ';' to input multiple RoRs.
+              ✏️  Click the third column to edit and input the right RORs for this raw affiliation string. Use a ';' to input multiple RORs.
               <br />
               🗣 Once finished, you can use the Export button on the right to send this feedback to OpenAlex.
             </p>

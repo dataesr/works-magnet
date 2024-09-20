@@ -81,13 +81,13 @@ export default function OpenalexTab({
   return (
     <Container fluid>
       <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)}>
-        <ModalTitle>{`${capitalize(action)} RoR to ${selectedOpenAlex.length} OpenAlex affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}</ModalTitle>
+        <ModalTitle>{`${capitalize(action)} ROR to ${selectedOpenAlex.length} OpenAlex affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}</ModalTitle>
         <ModalContent>
           <TextInput
-            label={`Which RoR do you want to ${action} ?`}
+            label={`Which ROR do you want to ${action} ?`}
             onChange={(e) => setRor(e.target.value)}
             required
-            message={isRor(ror) ? 'RoR valid' : 'RoR invalid'}
+            message={isRor(ror) ? 'ROR valid' : 'ROR invalid'}
             messageType={isRor(ror) ? 'valid' : 'error'}
           />
         </ModalContent>
@@ -125,13 +125,13 @@ export default function OpenalexTab({
           }}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Add RoR"
+          title="Add ROR"
         >
           <i
             className="ri-add-circle-line fr-mr-2w"
             style={{ color: '#8dc572' }}
           />
-          Add RoR
+          Add ROR
         </Button>
         <Button
           className="fr-mb-1w fr-pl-1w button"
@@ -144,13 +144,13 @@ export default function OpenalexTab({
           }}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Delete RoR"
+          title="Delete ROR"
         >
           <i
             className="ri-close-circle-line fr-mr-2w"
             style={{ color: '#be6464' }}
           />
-          Delete RoR
+          Delete ROR
         </Button>
         <div className="text-right">
           <Button

@@ -56,7 +56,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections, uuid }
       <Modal isOpen={isModalOpen} hide={switchModal}>
         <ModalTitle>Improve OpenAlex data</ModalTitle>
         <ModalContent>
-          {`You corrected RoR matching for ${allOpenalexCorrections.length} raw affiliation(s) string(s).`}
+          {`You corrected ROR matching for ${allOpenalexCorrections.length} raw affiliation(s) string(s).`}
           <TextInput
             label="Please indicate your email. Only an encrypted version of your email will be public."
             onChange={(e) => setUserEmail(e.target.value)}

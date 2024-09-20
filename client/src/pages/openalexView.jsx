@@ -60,9 +60,9 @@ export default function OpenalexView({
         if (!isRor(x) && x.length > 0) {
           isValid = false;
           toast({
-            description: `${x} is not a valid RoR`,
+            description: `${x} is not a valid ROR`,
             id: 'rorError',
-            title: 'Invalid RoR identifier',
+            title: 'Invalid ROR identifier',
             toastType: 'error',
           });
         }
@@ -148,7 +148,7 @@ export default function OpenalexView({
       <Column
         body={rorTemplate}
         field="rorHtml"
-        header="RoR computed by OpenAlex"
+        header="ROR computed by OpenAlex"
         sortable
         sortField="rorsNumber"
         style={{ maxWidth: '200px' }}
@@ -157,7 +157,7 @@ export default function OpenalexView({
         body={correctionTemplate}
         editor={(options) => cellEditor(options)}
         field="rorsToCorrect"
-        header="Click to improve / edit RoRs"
+        header="Click to improve / edit RORs"
         style={{ maxWidth: '190px' }}
       />
       <Column
