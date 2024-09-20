@@ -1,8 +1,14 @@
-import PropTypes from 'prop-types';
 import {
-  Row, Col,
+  Col,
+  Row,
   Title,
 } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import useWebSocket from 'react-use-websocket';
+import { v4 as uuidv4 } from 'uuid';
+
+import useToast from '../../hooks/useToast';
 import ActionsOpenalex from '../actions/actionsOpenalex';
 import ActionsOpenalexFeedback from '../actions/actionsOpenalexFeedback';
 import OpenalexTab from '../openalexTab';
@@ -12,8 +18,26 @@ export default function Openalex({
   allOpenalexCorrections,
   options,
   setAllOpenalexCorrections,
-  uuid,
 }) {
+  const { VITE_WS_HOST } = import.meta.env;
+  const { toast } = useToast();
+  const [uuid] = useState(uuidv4());
+
+  useWebSocket(`${VITE_WS_HOST}/ws?uuid=${uuid}`, {
+    onError: (event) => console.error(event),
+    onMessage: (event) => {
+      const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
+      return toast({
+        autoDismissAfter: autoDismissAfter ?? 10000,
+        description: description ?? '',
+        id: 'websocket',
+        title: title ?? 'Message renvoyé par le WebSocket',
+        toastType: toastType ?? 'info',
+      });
+    },
+    share: true,
+  });
+
   return (
     <>
       <Row className="fr-pb-1w fr-grid-row--top">
@@ -73,5 +97,4 @@ Openalex.propTypes = {
   ).isRequired,
   options: PropTypes.object.isRequired,
   setAllOpenalexCorrections: PropTypes.func.isRequired,
-  uuid: PropTypes.string.isRequired,
 };
