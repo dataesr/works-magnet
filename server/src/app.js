@@ -7,10 +7,18 @@ import * as OAV from 'express-openapi-validator';
 
 import { handleErrors } from './commons/middlewares/handle-errors';
 import router from './router';
+import webSocketServer from './webSocketServer';
 
 const apiSpec = 'src/openapi/api.yml';
 const apiDocument = YAML.load(apiSpec);
 const app = express();
+
+const expressServer = app.listen(process.env.WS_PORT, () => { console.log(`WebSocket server is running on port ${process.env.WS_PORT}`); });
+expressServer.on('upgrade', (request, socket, head) => {
+  webSocketServer.handleUpgrade(request, socket, head, (websocket) => {
+    webSocketServer.emit('connection', websocket, request);
+  });
+});
 
 app.use(express.json({ limit: 52428800 }));
 app.use(express.urlencoded({ extended: false }));

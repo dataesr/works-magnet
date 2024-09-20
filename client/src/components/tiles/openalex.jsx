@@ -18,14 +18,14 @@ export default function OpenalexTile({ setView }) {
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <p>✏️ Improve RoR matching in OpenAlex - Provide your feedback!</p>
+            <p>✏️ Improve ROR matching in OpenAlex - Provide your feedback!</p>
           </h3>
           <p className="fr-tile__detail">
             🔎 Analyze the most frequent raw affiliation strings retrieved in OpenAlex for your query.
             <br />
-            🤖 Check the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
+            🤖 Check the ROR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
             <br />
-            ✏️  Correct the errors (inaccurate or missing RoRs) and send feedback to OpenAlex.
+            ✏️  Correct the errors (inaccurate or missing RORs) and send feedback to OpenAlex.
           </p>
         </div>
       </div>

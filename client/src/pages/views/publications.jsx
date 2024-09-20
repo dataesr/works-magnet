@@ -92,7 +92,7 @@ export default function Publications({
                       affiliation is validated, it will also validate all the
                       works with that affiliation string.
                       <br />
-                      🤖 The second column indicates the RoR automatically
+                      🤖 The second column indicates the ROR automatically
                       computed by OpenAlex. Sometimes, they can be inaccurate or
                       missing. If any errors, please use the first tab to send
                       feedback.

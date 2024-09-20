@@ -55,7 +55,7 @@ export default function DatasetsTab({ datasets, publishers, selectedDatasets, se
           </span>
           {`selected dataset${selectedDatasets.length === 1 ? '' : 's'}`}
         </div>
-        {renderButtons(selectedDatasets, tagDatasets, 'dataset')}
+        {renderButtons(selectedDatasets, tagDatasets)}
         <div className="text-right">
           <Button
             onClick={() => setFixedMenu(!fixedMenu)}

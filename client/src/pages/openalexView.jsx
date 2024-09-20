@@ -18,9 +18,11 @@ import {
 
 export default function OpenalexView({
   allAffiliations,
+  filteredAffiliationName,
+  selectedOpenAlex,
   setAllOpenalexCorrections,
   setFilteredAffiliationName,
-  filteredAffiliationName,
+  setSelectedOpenAlex,
 }) {
   const [selectionPageOnly, setSelectionPageOnly] = useState(true);
 
@@ -58,16 +60,17 @@ export default function OpenalexView({
         if (!isRor(x) && x.length > 0) {
           isValid = false;
           toast({
-            description: `${x} is not a valid RoR`,
+            description: `${x} is not a valid ROR`,
             id: 'rorError',
-            title: 'Invalid RoR identifier',
+            title: 'Invalid ROR identifier',
             toastType: 'error',
           });
         }
       });
       if (isValid) {
-        data.rorsToCorrect = newValue;
-        if (data.rors.map((r) => r.rorId).join(';') !== newValue) {
+        const rorsToCorrect = [...new Set(newValue.split(';'))].join(';');
+        data.rorsToCorrect = rorsToCorrect;
+        if (data.rors.map((r) => r.rorId).join(';') !== rorsToCorrect) {
           data.hasCorrection = true;
         } else {
           data.hasCorrection = false;
@@ -117,6 +120,7 @@ export default function OpenalexView({
       filterDisplay="row"
       metaKeySelection
       onRowEditComplete={onRowEditComplete}
+      onSelectionChange={(e) => setSelectedOpenAlex(e.value)}
       paginator
       paginatorLeft={paginatorLeft}
       paginatorPosition="top bottom"
@@ -124,6 +128,7 @@ export default function OpenalexView({
       rows={50}
       rowsPerPageOptions={[50, 100, 200, 500]}
       scrollable
+      selection={selectedOpenAlex}
       selectionPageOnly={selectionPageOnly}
       size="small"
       sortField="worksNumber"
@@ -133,47 +138,48 @@ export default function OpenalexView({
       tableStyle={{ minWidth: '50rem' }}
       value={allAffiliations}
     >
+      <Column selectionMode="multiple" />
       <Column
+        body={nameTemplate}
         field="nameHtml"
         header="OpenAlex Raw affiliation"
-        body={nameTemplate}
         style={{ maxWidth: '250px' }}
       />
       <Column
-        field="rorHtml"
-        sortField="rorsNumber"
-        header="RoR computed by OpenAlex"
         body={rorTemplate}
-        style={{ maxWidth: '200px' }}
+        field="rorHtml"
+        header="ROR computed by OpenAlex"
         sortable
+        sortField="rorsNumber"
+        style={{ maxWidth: '200px' }}
       />
       <Column
-        field="rorsToCorrect"
-        header="Click to improve / edit RoRs"
         body={correctionTemplate}
-        style={{ maxWidth: '190px' }}
         editor={(options) => cellEditor(options)}
+        field="rorsToCorrect"
+        header="Click to improve / edit RORs"
+        style={{ maxWidth: '190px' }}
       />
       <Column
-        rowEditor
-        headerStyle={{ width: '10%', minWidth: '8rem' }}
         bodyStyle={{ textAlign: 'center' }}
+        headerStyle={{ width: '10%', minWidth: '8rem' }}
+        rowEditor
         style={{ maxWidth: '80px' }}
       />
       <Column
+        body={hasCorrectionTemplate}
         field="hasCorrection"
         header="Modified by user?"
-        body={hasCorrectionTemplate}
-        style={{ maxWidth: '110px' }}
         sortable
+        style={{ maxWidth: '110px' }}
       />
       <Column
-        field="worksExamples"
-        sortField="worksNumber"
-        header="Works"
         body={worksExampleTemplate}
-        style={{ maxWidth: '150px' }}
+        field="worksExamples"
+        header="Works"
         sortable
+        sortField="worksNumber"
+        style={{ maxWidth: '150px' }}
       />
     </DataTable>
   );
@@ -193,4 +199,15 @@ OpenalexView.propTypes = {
   setAllOpenalexCorrections: PropTypes.func.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
   filteredAffiliationName: PropTypes.string.isRequired,
+  selectedOpenAlex: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      source: PropTypes.string.isRequired,
+      nameHtml: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+      works: PropTypes.arrayOf(PropTypes.string).isRequired,
+      worksNumber: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
+  setSelectedOpenAlex: PropTypes.func.isRequired,
 };

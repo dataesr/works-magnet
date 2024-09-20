@@ -86,9 +86,10 @@ const frAuthorsTemplate = (rowData) => {
 const rorTemplate = (rowData) => {
   let html = '<ul>';
   rowData.rors.forEach((id) => {
-    html += `<li key="${id.rorId}">ror: `;
-    const idLink = 'https://ror.org/'.concat(id.rorId);
-    html += idLink ? `<a target="_blank" href="${idLink}">${id.rorId} (${id.rorName} - ${id.rorCountry})</a>` : `<span>${id.rorId}</span>`;
+    html += `<li key="${id.rorId}">`;
+    html += '<img alt="ROR logo" class="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />';
+    html += ` <a target="_blank" href="https://ror.org/${id.rorId}">https://ror.org/${id.rorId}</a>`;
+    html += ` (${id.rorName} - ${id.rorCountry})`;
     html += '</li>';
   });
   html += '</ul>';
@@ -128,8 +129,6 @@ const correctionTemplate = (rowData) => {
     rorsToCorrect.forEach((ror) => {
       html = html.concat(`<li key="ror-${ror}">${ror}</li>`);
     });
-  } else {
-    html = html.concat('<li key="noror"> </li>');
   }
   html = html.concat('</ul>');
   if (rowData.hasCorrection) {
@@ -141,13 +140,6 @@ const correctionTemplate = (rowData) => {
 const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
 
 const statusTemplate = (rowData) => <Badge variant={status[rowData?.status ?? rowData]?.badgeType}>{status[rowData?.status ?? rowData]?.label}</Badge>;
-
-const resetCorrection = (rowData, allAffiliations) => {
-  console.log('ttt', rowData);
-  const row = { rowData };
-  row.rowData.hasCorrection = false;
-  row.rowData.rorsToCorrect = rowData.rors.map((e) => e.rorId).join(';');
-};
 
 const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection
   ? (

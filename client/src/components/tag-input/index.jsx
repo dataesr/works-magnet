@@ -16,7 +16,7 @@ const SEE_MORE_AFTER = 3;
 
 export default function TagInput({
   deletedTags,
-  getRoRChildren,
+  getRorChildren,
   hint,
   isLoading,
   isRequired,
@@ -28,7 +28,7 @@ export default function TagInput({
   placeholder,
   seeMoreAction,
   seeMoreAfter,
-  setGetRoRChildren,
+  setGetRorChildren,
   tags,
 }) {
   const [excludedValues, setExcludedValues] = useState(deletedTags);
@@ -79,12 +79,12 @@ export default function TagInput({
 
   useEffect(() => setExcludedValues(deletedTags), [deletedTags]);
 
-  let hasRoR = false;
+  let hasRor = false;
   let newLine = [];
   const structuredTags = [];
   tags.forEach((tag) => {
     if (tag.type === 'rorId') {
-      hasRoR = true;
+      hasRor = true;
       if (newLine.length) {
         structuredTags.push(newLine);
       }
@@ -149,27 +149,27 @@ export default function TagInput({
 
                     ))}
                   </TagGroup>
-                  {index === 0 && hasRoR && (
+                  {index === 0 && hasRor && (
                     <Button
                       className="fr-mr-1w"
                       // eslint-disable-next-line react/no-array-index-key
                       key={`tags-ror-${index}`}
-                      onClick={() => setGetRoRChildren(!getRoRChildren)}
+                      onClick={() => setGetRorChildren(!getRorChildren)}
                       size="sm"
                       variant="text"
                     >
                       {
-                        getRoRChildren
+                        getRorChildren
                           ? (
                             <>
                               <i className="ri-arrow-go-back-line fr-mr-1w" />
-                              Remove RoR children
+                              Remove ROR children
                             </>
                           )
                           : (
                             <>
                               <i className="ri-node-tree fr-mr-1w" />
-                              Get children from RoR
+                              Get children from ROR
                             </>
                           )
                       }
@@ -200,7 +200,7 @@ export default function TagInput({
 
 TagInput.propTypes = {
   deletedTags: PropTypes.arrayOf(PropTypes.object),
-  getRoRChildren: PropTypes.bool,
+  getRorChildren: PropTypes.bool,
   hint: PropTypes.string,
   isLoading: PropTypes.bool,
   isRequired: PropTypes.bool,
@@ -212,13 +212,13 @@ TagInput.propTypes = {
   placeholder: PropTypes.string,
   seeMoreAction: PropTypes.func,
   seeMoreAfter: PropTypes.number,
-  setGetRoRChildren: PropTypes.func,
+  setGetRorChildren: PropTypes.func,
   tags: PropTypes.arrayOf(PropTypes.object),
 };
 
 TagInput.defaultProps = {
   deletedTags: [],
-  getRoRChildren: false,
+  getRorChildren: false,
   hint: 'Press "ENTER" to search for several terms',
   isLoading: false,
   isRequired: false,
@@ -228,6 +228,6 @@ TagInput.defaultProps = {
   placeholder: '',
   seeMoreAfter: SEE_MORE_AFTER,
   seeMoreAction: undefined,
-  setGetRoRChildren: () => { },
+  setGetRorChildren: () => { },
   tags: [],
 };
