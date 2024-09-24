@@ -55,10 +55,13 @@ const createIssue = (issue, email) => {
   body += `new_rors: ${issue.correctedRors}\n`;
   const previousRoRs = issue.rorsInOpenAlex.map((e) => e.rorId).join(';');
   body += `previous_rors: ${previousRoRs}\n`;
-  let workIds = issue.worksExample
-    .filter((e) => e.id_type === 'openalex')
-    .map((e) => e.id_value)
-    .join(';');
+  let workIds = '';
+  if (issue.worksExample) {
+    workIds = issue.worksExample
+      .filter((e) => e.id_type === 'openalex')
+      .map((e) => e.id_value)
+      .join(';');
+  }
   if (issue.worksOpenAlex) {
     workIds = issue.worksOpenAlex.join(';');
   }
@@ -93,7 +96,9 @@ router.route('/github-issue').post(async (req, res) => {
     const r = await Promise.all(promises);
     results.push(...r);
     toast = {
-      description: `${Math.min(data.length, (i + 1) * perChunk)} / ${data.length} issue(s) submitted`,
+      description: `${Math.min(data.length, (i + 1) * perChunk)} / ${
+        data.length
+      } issue(s) submitted`,
       id: `processOpenAlex${i}`,
       title: 'OpenAlex corrections are being processed',
     };

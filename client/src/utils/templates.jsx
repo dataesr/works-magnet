@@ -41,9 +41,9 @@ const getIdsTemplate = (ids) => {
   ids.forEach((id) => {
     html += `<li key="${id.id_value}"> `;
     const idLink = getIdLink(id.id_type, id.id_value);
-    let idValueDisplay = '';
-    if (id.id_value.length > 18) {
-      idValueDisplay = id.id_value.slice(0, 18).concat('..');
+    let idValueDisplay = id.id_value;
+    if (idValueDisplay.length > 18) {
+      idValueDisplay = idValueDisplay.slice(0, 18).concat('..');
     }
     html += idLink ? `<a target="_blank" href="${idLink}">${idValueDisplay}</a>` : `<span>${id.id_value}</span>`;
     html += '</li>';
@@ -56,7 +56,7 @@ const allIdsTemplate = (rowData) => getIdsTemplate(rowData?.allIds ?? []);
 
 const linkedDOITemplate = (rowData) => getIdsTemplate(rowData?.fr_publications_linked ?? []);
 
-const worksExampleTemplate = (rowData) => getIdsTemplate(rowData?.worksExample?.filter((e) => ['doi', 'hal_id', 'crossref', 'datacite']?.includes(e.id_type))?.slice(0, 5) ?? []);
+const worksExampleTemplate = (rowData) => getIdsTemplate(rowData?.worksExample?.filter((e) => ['crossref', 'datacite', 'doi', 'hal_id']?.includes(e.id_type))?.slice(0, 5) ?? []);
 
 const linkedORCIDTemplate = (rowData) => {
   let html = '<ul>';
