@@ -13,7 +13,7 @@ import {
   hasCorrectionTemplate,
   nameTemplate,
   rorTemplate,
-  worksExampleTemplateOpenAlex,
+  worksExampleTemplate,
 } from '../utils/templates';
 
 export default function OpenalexView({
@@ -174,7 +174,7 @@ export default function OpenalexView({
         style={{ maxWidth: '110px' }}
       />
       <Column
-        body={worksExampleTemplateOpenAlex}
+        body={worksExampleTemplate}
         field="worksExamples"
         header="Works"
         sortable

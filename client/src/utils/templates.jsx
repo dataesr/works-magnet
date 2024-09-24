@@ -56,9 +56,7 @@ const allIdsTemplate = (rowData) => getIdsTemplate(rowData?.allIds ?? []);
 
 const linkedDOITemplate = (rowData) => getIdsTemplate(rowData?.fr_publications_linked ?? []);
 
-const worksExampleTemplate = (rowData) => getIdsTemplate(rowData?.worksExample?.filter((e) => ['crossref', 'datacite', 'doi', 'hal_id']?.includes(e.id_type))?.slice(0, 5) ?? []);
-
-const worksExampleTemplateOpenAlex = (rowData) => getIdsTemplate(rowData?.worksExample?.filter((e) => ['crossref', 'datacite', 'doi', 'hal_id', 'openalex']?.includes(e.id_type))?.slice(0, 5) ?? []);
+const worksExampleTemplate = (rowData) => getIdsTemplate(rowData?.worksExample?.filter((e) => ['crossref', 'datacite', 'doi', 'hal_id', 'openalex']?.includes(e.id_type))?.slice(0, 5) ?? []);
 
 const linkedORCIDTemplate = (rowData) => {
   let html = '<ul>';
@@ -164,5 +162,4 @@ export {
   statusRowFilterTemplate,
   statusTemplate,
   worksExampleTemplate,
-  worksExampleTemplateOpenAlex,
 };
