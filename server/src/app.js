@@ -1,9 +1,9 @@
-import path from 'path';
-import YAML from 'yamljs';
+import cors from 'cors';
 import express from 'express';
 import 'express-async-errors';
-import cors from 'cors';
 import * as OAV from 'express-openapi-validator';
+import path from 'path';
+import YAML from 'yamljs';
 
 import { handleErrors } from './commons/middlewares/handle-errors';
 import router from './router';
