@@ -100,7 +100,7 @@ export default function AffiliationsView({
       />
       <Column
         field="rorHtml"
-        header="RoR computed by OpenAlex"
+        header="ROR computed by OpenAlex"
         body={rorTemplate}
         style={{ maxWidth: '150px' }}
       />

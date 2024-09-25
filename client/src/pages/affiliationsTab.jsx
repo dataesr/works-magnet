@@ -15,8 +15,8 @@ import { renderButtons } from '../utils/works';
 export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
-  const [timer, setTimer] = useState();
   const [fixedMenu, setFixedMenu] = useState(false);
+  const [timer, setTimer] = useState();
 
   useEffect(() => { // TODO : look for a better way to do this
     setFilteredAffiliations(affiliations);
@@ -47,7 +47,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
           </span>
           {`selected affiliation${selectedAffiliations.length === 1 ? '' : 's'}`}
         </div>
-        {renderButtons(selectedAffiliations, tagAffiliations, 'affiliation')}
+        {renderButtons(selectedAffiliations, tagAffiliations)}
         <div className="text-right">
           <Button
             onClick={() => setFixedMenu(!fixedMenu)}

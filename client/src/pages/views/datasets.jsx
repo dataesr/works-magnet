@@ -70,7 +70,7 @@ export default function Datasets({
                     <br />
                     🤔 You can validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not. If an affiliation is validated, it will also validate all the works with that affiliation string.
                     <br />
-                    🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing. If any errors, please use the first tab to send feedback.
+                    🤖 The second column indicates the ROR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing. If any errors, please use the first tab to send feedback.
                     <br />
                     💾 You can save (export to a file) those decisions, and restore them later on.
                   </p>

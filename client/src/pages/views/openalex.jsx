@@ -1,8 +1,14 @@
-import PropTypes from 'prop-types';
 import {
-  Row, Col,
+  Col,
+  Row,
   Title,
 } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import useWebSocket from 'react-use-websocket';
+import { v4 as uuidv4 } from 'uuid';
+
+import useToast from '../../hooks/useToast';
 import ActionsOpenalex from '../actions/actionsOpenalex';
 import ActionsOpenalexFeedback from '../actions/actionsOpenalexFeedback';
 import OpenalexTab from '../openalexTab';
@@ -10,23 +16,44 @@ import OpenalexTab from '../openalexTab';
 export default function Openalex({
   allAffiliations,
   allOpenalexCorrections,
-  setAllOpenalexCorrections,
   options,
+  setAllOpenalexCorrections,
 }) {
+  const { VITE_WS_HOST } = import.meta.env;
+  const { toast } = useToast();
+  const [uuid] = useState(uuidv4());
+
+  useWebSocket(`${VITE_WS_HOST}/ws?uuid=${uuid}`, {
+    onClose: () => console.log(`Websocket connection closed: ${uuid}`),
+    onError: (event) => console.error(event),
+    onMessage: (event) => {
+      const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
+      return toast({
+        autoDismissAfter: autoDismissAfter ?? 10000,
+        description: description ?? '',
+        id: 'websocket',
+        title: title ?? 'Message renvoyé par le WebSocket',
+        toastType: toastType ?? 'info',
+      });
+    },
+    onOpen: () => console.log(`Websocket connection open: ${uuid}`),
+    share: true,
+  });
+
   return (
     <>
       <Row className="fr-pb-1w fr-grid-row--top">
         <Col xs="12">
           <div className="fr-callout fr-callout--pink-tuile">
             <Title as="h2" look="h6">
-              Improve RoR matching in OpenAlex - Provide your feedback!
+              Improve ROR matching in OpenAlex - Provide your feedback!
             </Title>
             <p className="fr-callout__text fr-text--sm">
               🔎 The array below summarizes the most frequent raw affiliation strings retrieved in OpenAlex for your query.
               <br />
-              🤖 The second column indicates the RoR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
+              🤖 The second column indicates the ROR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
               <br />
-              ✏️  Click the third column to edit and input the right RoRs for this raw affiliation string. Use a ';' to input multiple RoRs.
+              ✏️  Click the third column to edit and input the right RORs for this raw affiliation string. Use a ';' to input multiple RORs.
               <br />
               🗣 Once finished, you can use the Export button on the right to send this feedback to OpenAlex.
             </p>
@@ -41,7 +68,7 @@ export default function Openalex({
         <Col xs="3">
           <ActionsOpenalexFeedback
             allOpenalexCorrections={allOpenalexCorrections}
-            options={options}
+            uuid={uuid}
           />
         </Col>
       </Row>
@@ -70,6 +97,6 @@ Openalex.propTypes = {
       worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
     }),
   ).isRequired,
-  setAllOpenalexCorrections: PropTypes.func.isRequired,
   options: PropTypes.object.isRequired,
+  setAllOpenalexCorrections: PropTypes.func.isRequired,
 };

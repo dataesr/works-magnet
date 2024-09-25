@@ -30,8 +30,9 @@ export default function DatasetsYearlyDistribution({ allDatasets, field, subfiel
       allFields[currentField][i] += 1;
     });
   });
-  const colors = ['#ea5545', '#f46a9b', '#ef9b20', '#edbf33', '#ede15b', '#bdcf32', '#87bc45', '#27aeef', '#544fc5', '#b33dc6', '#d3d3d3'];
-  const NB_TOP = 10;
+  // const colors = ['#ea5545', '#f46a9b', '#ef9b20', '#edbf33', '#ede15b', '#bdcf32', '#87bc45', '#27aeef', '#544fc5', '#b33dc6', '#d3d3d3']
+  const colors = ['#5DA5DA', '#FAA43A', '#60BD68', '#F17CB0', '#B2912F', '#B276B2', '#DECF3F', '#F15854', '#265DAB', '#DF5C24', '#059748', '#E5126F', '#9D722A', '#7B3A96', '#C7B42E', '#CB2027'];
+  const NB_TOP = 13;
   const series = Object.keys(allFields)
     .map((name) => ({
       name,

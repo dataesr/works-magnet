@@ -51,7 +51,7 @@ export default function Filters({
   const [deletedAffiliations, setDeletedAffiliations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [getRoRChildren, setGetRoRChildren] = useState(false);
+  const [getRorChildren, setGetRorChildren] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
@@ -108,7 +108,7 @@ export default function Filters({
     getData();
   }, [
     deletedAffiliations,
-    getRoRChildren,
+    getRorChildren,
     searchedAffiliations,
     searchParams,
     setSearchParams,
@@ -120,7 +120,7 @@ export default function Filters({
       const filteredSearchedAffiliation = searchedAffiliations.filter(
         (affiliation) => !deletedAffiliations.includes(affiliation),
       );
-      const queries = filteredSearchedAffiliation.map((affiliation) => getRorData(affiliation, getRoRChildren));
+      const queries = filteredSearchedAffiliation.map((affiliation) => getRorData(affiliation, getRorChildren));
       let rorNames = await Promise.all(queries);
       rorNames = rorNames.filter(
         (rorName) => !deletedAffiliations.includes(rorName),
@@ -188,7 +188,7 @@ export default function Filters({
 
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deletedAffiliations, getRoRChildren, searchedAffiliations]);
+  }, [deletedAffiliations, getRorChildren, searchedAffiliations]);
 
   const onTagsChange = async (_affiliations, _deletedAffiliations) => {
     const affiliations = _affiliations
@@ -314,7 +314,7 @@ export default function Filters({
                   >
                     <SegmentedElement
                       checked={currentSearchParams.view === 'openalex'}
-                      label="Improve OpenAlex (RoRs)"
+                      label="Improve OpenAlex (RORs)"
                       value="openalex"
                     />
                     <SegmentedElement
@@ -339,11 +339,11 @@ export default function Filters({
             <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
               <Col xs="8">
                 <TagInput
-                  getRoRChildren={getRoRChildren}
+                  getRorChildren={getRorChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
                   isRequired
-                  label="Affiliation name, RoR of your institution"
+                  label="Affiliation name, ROR of your institution"
                   message={message}
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
@@ -352,7 +352,7 @@ export default function Filters({
                     setIsOpen(true);
                     e.preventDefault();
                   }}
-                  setGetRoRChildren={setGetRoRChildren}
+                  setGetRorChildren={setGetRorChildren}
                   tags={tags}
                 />
               </Col>
@@ -414,8 +414,8 @@ export default function Filters({
             <Row className="fr-pt-0 fr-pr-2w fr-pb-2w fr-pl-2w">
               <Col xs="8">
                 <TextInput
-                  hint="You can focus on recall issues in OpenAlex (missing RoR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific RoR will be retrieved. If several RoR to exclude, separate them by space."
-                  label="RoR to exclude: exclude affiliation strings already mapped to a specific RoR in OpenAlex"
+                  hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
+                  label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
                   onChange={(e) => setRorExclusions(e.target.value)}
                   value={rorExclusions}
                 />
@@ -443,7 +443,7 @@ export default function Filters({
                   >
                     <SegmentedElement
                       checked={currentSearchParams.view === 'openalex'}
-                      label="1.Improve RoR matching in OpenAlex"
+                      label="1.Improve ROR matching in OpenAlex"
                       value="openalex"
                     />
                     <SegmentedElement
@@ -523,24 +523,24 @@ export default function Filters({
               </Col>
               <Col xs="12">
                 <TagInput
-                  getRoRChildren={getRoRChildren}
+                  getRorChildren={getRorChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
                   isRequired
-                  label="Affiliation name, RoR of your institution"
+                  label="Affiliation name, ROR of your institution"
                   message={message}
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
                   onTagsChange={onTagsChange}
                   seeMoreAfter={0}
-                  setGetRoRChildren={setGetRoRChildren}
+                  setGetRorChildren={setGetRorChildren}
                   tags={tags}
                 />
               </Col>
               <Col xs="12">
                 <TextInput
-                  hint="You can focus on recall issues in OpenAlex (missing RoR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific RoR will be retrieved. If several RoR to exclude, separate them by space."
-                  label="RoR to exclude: exclude affiliation strings already mapped to a specific RoR in OpenAlex"
+                  hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
+                  label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
                   onChange={(e) => setRorExclusions(e.target.value)}
                   value={rorExclusions}
                 />

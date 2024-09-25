@@ -24,7 +24,9 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.1",
     "react-tooltip": "^5.18.1",
-    "remixicon": "^4.2.0"
+    "react-use-websocket": "^4.8.1",
+    "remixicon": "^4.2.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

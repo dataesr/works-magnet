@@ -17,6 +17,7 @@ const getFormat = (formats) => {
   return uniqueFormats.toString() ?? '';
 };
 
+// TODO should be backend in the bso-datacite index generation
 const getPublisher = (publisher) => {
   const publishersMapping = {
     'SAGE Journals': 'SAGE',
