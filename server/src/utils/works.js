@@ -440,7 +440,7 @@ const groupByAffiliations = ({ options, works }) => {
         const matches = regexp.exec(displayAffiliation);
         // Set each matched word in bold
         matches?.slice(1)?.forEach((match) => {
-          displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
+          displayAffiliation = displayAffiliation.replaceAll(match, '<b>$&</b>');
         });
         let keepAffiliation = displayAffiliation.includes('</b>');
         const rorsInAffiliation = affiliation.rors?.map((a) => a.rorId) || [];
