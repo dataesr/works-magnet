@@ -48,12 +48,12 @@ const getData = async ({ options, resetCache = false }) => {
   shasum.update(JSON.stringify(options));
   const searchId = shasum.digest('hex');
   const queryId = Math.floor(Math.random() * SEED_MAX);
-  console.time(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
   let cache = false;
   if (USE_CACHE) {
+    console.time(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
     cache = await getCache({ searchId });
+    console.timeEnd(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
   }
-  console.timeEnd(`0. Query ${queryId} | Retrieve cache if exists ${options.affiliationStrings}`);
   if (cache && !resetCache) {
     const extractionDate = new Date(cache.extractionDate);
     console.log(`0. Query ${queryId}`, `returning cached data from ${extractionDate}`);
