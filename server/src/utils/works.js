@@ -409,8 +409,11 @@ const groupByAffiliations = ({ options, works }) => {
   const pattern = options.affiliationStrings
     // Replace all accentuated characters, multiple spaces and toLowercase()
     .map((affiliation) => removeDiacritics(affiliation)
-      // Set universite, university and univ as synonyms
-      .replaceAll(/universite|university|univ/gi, 'universite|university|univ')
+      // Set universiteit, universitat, universite, university, universita, universidad and univ as synonyms
+      .replaceAll(
+        /\buniversiteit|universitat|universite|university|universita|universidad|univ\b/gi,
+        'universiteit|universitat|universite|university|universita|universidad|univ',
+      )
       .split(' ')
       // Each word should be map at least one time, whatever the order
       .map((item) => `(?=.*?\\b(${item})\\b)`)
