@@ -10,9 +10,8 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
 import useToast from '../../hooks/useToast';
-import { sendGitHubIssue } from '../../utils/github';
 
-export default function ActionsOpenalexFeedback({ allOpenalexCorrections, uuid }) {
+export default function ActionsOpenalexFeedback({ allOpenalexCorrections, sendJsonMessage }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
@@ -22,7 +21,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections, uuid }
 
   const feedback = async () => {
     try {
-      sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail, uuid });
+      sendJsonMessage({ data: allOpenalexCorrections, email: userEmail });
     } catch (error) {
       toast({
         description: error.message,
@@ -88,5 +87,5 @@ ActionsOpenalexFeedback.propTypes = {
       worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
     }),
   ).isRequired,
-  uuid: PropTypes.string.isRequired,
+  sendJsonMessage: PropTypes.func.isRequired,
 };

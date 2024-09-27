@@ -4,9 +4,7 @@ import {
   Title,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { v4 as uuidv4 } from 'uuid';
 
 import useToast from '../../hooks/useToast';
 import ActionsOpenalex from '../actions/actionsOpenalex';
@@ -21,10 +19,8 @@ export default function Openalex({
 }) {
   const { VITE_WS_HOST } = import.meta.env;
   const { toast } = useToast();
-  const [uuid] = useState(uuidv4());
 
-  useWebSocket(`${VITE_WS_HOST}/ws?uuid=${uuid}`, {
-    onClose: () => console.log(`Websocket connection closed: ${uuid}`),
+  const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
     onError: (event) => console.error(event),
     onMessage: (event) => {
       const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
@@ -36,7 +32,6 @@ export default function Openalex({
         toastType: toastType ?? 'info',
       });
     },
-    onOpen: () => console.log(`Websocket connection open: ${uuid}`),
     share: true,
   });
 
@@ -68,7 +63,7 @@ export default function Openalex({
         <Col xs="3">
           <ActionsOpenalexFeedback
             allOpenalexCorrections={allOpenalexCorrections}
-            uuid={uuid}
+            sendJsonMessage={sendJsonMessage}
           />
         </Col>
       </Row>

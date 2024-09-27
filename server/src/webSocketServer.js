@@ -1,26 +1,61 @@
 import { WebSocketServer } from 'ws';
 
+import { chunkArray } from './utils/utils';
+import { createIssue } from './utils/github';
+
 const webSocketServer = new WebSocketServer({ noServer: true, path: '/ws' });
-const webSockets = {};
 
-webSocketServer.on('connection', (webSocket, request) => {
-  const uuid = request?.url.match(/ws\?uuid=([\w-]*)/)[1];
-  webSockets[uuid] = webSocket;
-  console.log(`Websocket connection opened: ${uuid}`);
-  webSocket.on('close', () => {
-    delete webSockets[uuid];
-    console.log(`Closing websocket ${uuid}`);
-  });
+webSocketServer.on('connection', (webSocket) => {
   webSocket.on('error', console.error);
-  webSocket.on('open', () => { console.log(`Opening websocket ${uuid}`); });
-});
+  webSocket.on('message', async (json) => {
+    const { data, email } = JSON.parse(json);
+    let toast = {
+      autoDismissAfter: 5000,
+      description:
+        'Your correction(s) are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
+      id: 'initOpenAlex',
+      title: 'OpenAlex corrections submitted',
+    };
+    webSocket.send(JSON.stringify(toast));
 
-webSocketServer.send = ({ message, uuid }) => {
-  if (Object.keys(webSockets).includes(uuid)) {
-    webSockets[uuid].send(message);
-  } else {
-    console.error(`Websocket client ${uuid} does not exist.`);
-  }
-};
+    const perChunk = 30;
+    const results = [];
+    for (const [i, d] of chunkArray({ array: data, perChunk }).entries()) {
+      const promises = d.map((item) => createIssue(item, email).catch((error) => error));
+      const r = await Promise.all(promises);
+      results.push(...r);
+      toast = {
+        description: `${Math.min(data.length, (i + 1) * perChunk)} / ${
+          data.length
+        } issue(s) submitted`,
+        id: `processOpenAlex${i}`,
+        title: 'OpenAlex corrections are being processed',
+      };
+      webSocket.send(JSON.stringify(toast));
+    }
+
+    const firstError = results.find(
+      (result) => !result.status.toString().startsWith('2'),
+    );
+    if (firstError?.status) {
+      toast = {
+        description: `Error while submitting Github issues : ${firstError?.message}`,
+        id: 'errorOpenAlex',
+        title: `Error ${firstError.status}`,
+        toastType: 'error',
+      };
+      webSocket.send(JSON.stringify(toast));
+    } else {
+      toast = {
+        description: `${data.length} correction(s) to OpenAlex have been saved -
+          see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
+        id: 'successOpenAlex',
+        title: 'OpenAlex corrections sent',
+        toastType: 'success',
+      };
+      webSocket.send(JSON.stringify(toast));
+    }
+  });
+});
 
 export default webSocketServer;
