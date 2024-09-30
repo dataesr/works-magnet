@@ -32,6 +32,7 @@ export default function Openalex({
         toastType: toastType ?? 'info',
       });
     },
+    onOpen: () => console.log('opened'),
     share: true,
   });
 

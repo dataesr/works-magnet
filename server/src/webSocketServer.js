@@ -7,6 +7,7 @@ const webSocketServer = new WebSocketServer({ noServer: true, path: '/ws' });
 
 webSocketServer.on('connection', (webSocket) => {
   webSocket.on('error', console.error);
+  webSocket.on('open', () => console.log('Opening websocket connexion'));
   webSocket.on('message', async (json) => {
     const { data, email } = JSON.parse(json);
     let toast = {
