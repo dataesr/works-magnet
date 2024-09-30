@@ -32,7 +32,8 @@ export default function Openalex({
         toastType: toastType ?? 'info',
       });
     },
-    onOpen: () => console.log('opened'),
+    onOpen: () => console.log('Websocket opened'),
+    onClose: () => console.log('Websocket closed'),
     share: true,
   });
 
