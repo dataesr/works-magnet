@@ -21,6 +21,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections, sendJs
 
   const feedback = async () => {
     try {
+      console.log('Send WS message');
       sendJsonMessage({ data: allOpenalexCorrections, email: userEmail });
     } catch (error) {
       toast({
