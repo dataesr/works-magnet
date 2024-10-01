@@ -4,9 +4,7 @@ import {
   Title,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
-import useWebSocket from 'react-use-websocket';
 
-import useToast from '../../hooks/useToast';
 import ActionsOpenalex from '../actions/actionsOpenalex';
 import ActionsOpenalexFeedback from '../actions/actionsOpenalexFeedback';
 import OpenalexTab from '../openalexTab';
@@ -17,26 +15,6 @@ export default function Openalex({
   options,
   setAllOpenalexCorrections,
 }) {
-  const { VITE_WS_HOST } = import.meta.env;
-  const { toast } = useToast();
-
-  const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
-    onError: (event) => console.error(event),
-    onMessage: (event) => {
-      const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
-      return toast({
-        autoDismissAfter: autoDismissAfter ?? 10000,
-        description: description ?? '',
-        id: 'websocket',
-        title: title ?? 'Message renvoyé par le WebSocket',
-        toastType: toastType ?? 'info',
-      });
-    },
-    onOpen: () => console.log('Websocket opened'),
-    onClose: () => console.log('Websocket closed'),
-    share: true,
-  });
-
   return (
     <>
       <Row className="fr-pb-1w fr-grid-row--top">
@@ -63,10 +41,7 @@ export default function Openalex({
           />
         </Col>
         <Col xs="3">
-          <ActionsOpenalexFeedback
-            allOpenalexCorrections={allOpenalexCorrections}
-            sendJsonMessage={sendJsonMessage}
-          />
+          <ActionsOpenalexFeedback allOpenalexCorrections={allOpenalexCorrections} />
         </Col>
       </Row>
       <OpenalexTab
