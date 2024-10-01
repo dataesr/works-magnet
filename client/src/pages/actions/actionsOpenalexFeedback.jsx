@@ -21,10 +21,13 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections, sendJs
 
   const feedback = async () => {
     try {
-      console.log('Send WS message');
-      console.log(sendJsonMessage);
-      const tmp = sendJsonMessage({ data: allOpenalexCorrections, email: userEmail });
-      console.log(tmp);
+      sendJsonMessage({ data: allOpenalexCorrections, email: userEmail });
+      toast({
+        autoDismissAfter: 5000,
+        description: 'Your correction(s) are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
+        id: 'initOpenAlex',
+        title: 'OpenAlex corrections submitted',
+      });
     } catch (error) {
       toast({
         description: error.message,

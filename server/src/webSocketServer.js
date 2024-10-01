@@ -10,17 +10,9 @@ webSocketServer.on('connection', (webSocket) => {
   webSocket.on('open', () => console.log('Opening websocket connexion'));
   webSocket.on('message', async (json) => {
     const { data, email } = JSON.parse(json);
-    let toast = {
-      autoDismissAfter: 5000,
-      description:
-        'Your correction(s) are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
-      id: 'initOpenAlex',
-      title: 'OpenAlex corrections submitted',
-    };
-    webSocket.send(JSON.stringify(toast));
-
     const perChunk = 30;
     const results = [];
+    let toast = {};
     for (const [i, d] of chunkArray({ array: data, perChunk }).entries()) {
       const promises = d.map((item) => createIssue(item, email).catch((error) => error));
       const r = await Promise.all(promises);
