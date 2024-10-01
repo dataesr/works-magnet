@@ -8,11 +8,13 @@ import {
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
 
 import useToast from '../../hooks/useToast';
-import { sendGitHubIssue } from '../../utils/github';
 
-export default function ActionsOpenalexFeedback({ allOpenalexCorrections, uuid }) {
+const { VITE_WS_HOST } = import.meta.env;
+
+export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
@@ -20,9 +22,33 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections, uuid }
 
   const switchModal = () => setIsModalOpen((prev) => !prev);
 
+  const { readyState, sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
+    onError: (event) => console.error(event),
+    onMessage: (event) => {
+      const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
+      return toast({
+        autoDismissAfter: autoDismissAfter ?? 10000,
+        description: description ?? '',
+        id: 'websocket',
+        title: title ?? 'Message renvoyé par le WebSocket',
+        toastType: toastType ?? 'info',
+      });
+    },
+    onOpen: () => console.log('Websocket opened'),
+    onClose: () => console.log('Websocket closed'),
+    shouldReconnect: () => true,
+  });
+
   const feedback = async () => {
     try {
-      sendGitHubIssue({ data: allOpenalexCorrections, email: userEmail, uuid });
+      console.log(readyState);
+      sendJsonMessage({ data: allOpenalexCorrections, email: userEmail });
+      toast({
+        autoDismissAfter: 5000,
+        description: 'Your correction(s) are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
+        id: 'initOpenAlex',
+        title: 'OpenAlex corrections submitted',
+      });
     } catch (error) {
       toast({
         description: error.message,
@@ -88,5 +114,4 @@ ActionsOpenalexFeedback.propTypes = {
       worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
     }),
   ).isRequired,
-  uuid: PropTypes.string.isRequired,
 };
