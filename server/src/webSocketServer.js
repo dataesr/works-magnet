@@ -24,7 +24,9 @@ webSocketServer.on('connection', (webSocket) => {
         id: `processOpenAlex${i}`,
         title: 'OpenAlex corrections are being processed',
       };
-      webSocket.send(JSON.stringify(toast));
+      if (data.length > perChunk) {
+        webSocket.send(JSON.stringify(toast));
+      }
     }
 
     const firstError = results.find(
