@@ -18,9 +18,10 @@ export default function ButtonDropdown({ className, data, label, searchParams })
     className,
   );
 
-  const toastExport = () => {
+  const toastExport = (numberOfLines) => {
+    const size = numberOfLines ?? data.length;
     toast({
-      description: `${data.length} ${label} have been saved`,
+      description: `${size} ${label} have been saved`,
       id: 'saveWork',
       title: `${capitalize(label)} saved`,
       toastType: 'success',
@@ -51,7 +52,10 @@ export default function ButtonDropdown({ className, data, label, searchParams })
         </Button>
         {['publications', 'datasets'].includes(label) && (
           <Button
-            onClick={() => { export2FosmCsv({ data, label, searchParams }); toastExport(); }}
+            onClick={() => {
+              const numberOfLines = export2FosmCsv({ data, label, searchParams });
+              toastExport(numberOfLines);
+            }}
             size="sm"
           >
             Custom export for French OSM
