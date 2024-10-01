@@ -44,7 +44,10 @@ const encrypt = (text) => {
 };
 
 const createIssue = (issue, email) => {
-  const title = `Correction for raw affiliation ${issue.rawAffiliationString}`;
+  let title = `Correction for raw affiliation ${issue.rawAffiliationString}`;
+  if (title.length > 1000) {
+    title = `${title.slice(0, 1000)}...`;
+  }
   let body = `Correction needed for raw affiliation ${issue.rawAffiliationString}\n`;
   body += `raw_affiliation_name: ${issue.rawAffiliationString}\n`;
   body += `new_rors: ${issue.correctedRors}\n`;
