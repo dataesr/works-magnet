@@ -86,7 +86,7 @@ const frAuthorsTemplate = (rowData) => {
 const rorTemplate = (rowData) => {
   let html = '<ul>';
   rowData.rors.forEach((id) => {
-    html += `<li key="${id.rorId}">`;
+    html += `<li key="${id.rorId}" class="fr-pb-2w list-none">`;
     html += '<img alt="ROR logo" class="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />';
     html += ` <a target="_blank" href="https://ror.org/${id.rorId}">https://ror.org/${id.rorId}</a>`;
     html += ` (${id.rorName} - ${id.rorCountry})`;

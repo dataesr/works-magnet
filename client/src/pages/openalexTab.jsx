@@ -144,13 +144,13 @@ export default function OpenalexTab({
           }}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Delete ROR"
+          title="Remove ROR"
         >
           <i
             className="ri-close-circle-line fr-mr-2w"
             style={{ color: '#be6464' }}
           />
-          Delete ROR
+          Remove ROR
         </Button>
         <div className="text-right">
           <Button

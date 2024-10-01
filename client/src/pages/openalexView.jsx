@@ -30,19 +30,20 @@ export default function OpenalexView({
     <Row gutters>
       <Col>
         <InputTextarea
-          type="text"
           id="mytext"
-          value={options.value}
           onChange={(e) => options.editorCallback(e.target.value)}
+          type="text"
+          value={options.value}
         />
       </Col>
       <Col>
         <Button
-          variant="info"
-          size="sm"
           disabled={options.rowData.rors.map((r) => r.rorId).join(';') === options.value}
           icon="delete-line"
           onClick={() => { options.editorCallback(options.rowData.rors.map((r) => r.rorId).join(';')); }}
+          size="sm"
+          title="Undo changes"
+          variant="info"
         >
           UNDO
         </Button>
