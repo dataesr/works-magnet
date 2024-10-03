@@ -28,11 +28,11 @@ const getFileName = ({ extension, label, searchParams }) => {
 };
 
 const export2FosmCsv = ({ data, label, searchParams }) => {
+  // For publications, DOI from Datacite will be ignored as it is not supported in the FOSM
   let idsToExport = ['doi', 'hal_id', 'nnt_id', 'openalex'];
-  let csvHeader = idsToExport.join(';');
+  // For datasets
   if (label === 'datasets') {
     idsToExport = ['datacite', 'crossref'];
-    csvHeader = 'dataset';
   }
   const rows = data
     .filter((publication) => publication.status === status.validated.id)
@@ -46,15 +46,17 @@ const export2FosmCsv = ({ data, label, searchParams }) => {
           row.push('');
         }
       });
-      return row.join(label === 'datasets' ? '' : ';');
+      return row;
     });
-  const csvFile = Papa.unparse(rows, { columns: csvHeader, skipEmptyLines: 'greedy' });
+  const csvFile = Papa.unparse([idsToExport, ...rows], { skipEmptyLines: 'greedy' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csvFile], { type: 'text/csv;charset=utf-8' }));
-  link.setAttribute('download', getFileName({ extension: 'csv', label: label.concat('BSO'), searchParams }));
+  link.setAttribute('download', getFileName({ extension: 'csv', label: label.concat('_bso'), searchParams }));
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  // Count lines in the CSV file
+  return csvFile.split('\n').length;
 };
 
 const export2Csv = ({ data, label, searchParams }) => {
