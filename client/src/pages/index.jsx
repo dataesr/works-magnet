@@ -32,7 +32,7 @@ export default function Home({ isSticky, setIsSticky }) {
     });
   };
 
-  const { data, isFetched, isFetching, refetch } = useQuery({
+  const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['data', JSON.stringify(options)],
     queryFn: () => getData(options),
     enabled: false,
@@ -93,6 +93,16 @@ export default function Home({ isSticky, setIsSticky }) {
           <Row>
             <Col xs="2" offsetXs="6">
               <Spinner size={48} />
+            </Col>
+          </Row>
+        )}
+
+        {error && (
+          <Row gutters className="fr-mb-16w">
+            <Col xs="12">
+              <div>
+                Error while fetching data, please try again later or contact the team (see footer).
+              </div>
             </Col>
           </Row>
         )}

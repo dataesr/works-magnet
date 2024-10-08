@@ -40,28 +40,20 @@ const Timeout = (time) => {
 };
 
 const getData = async (options) => {
-  try {
-    const responseAffiliations = await fetch(`${VITE_API}/works`, {
-      body: JSON.stringify(options),
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-      signal: Timeout(1200).signal, // 20 minutes
-    });
-    if (responseAffiliations.ok) {
-      const { affiliations, datasets, publications } = await responseAffiliations.json();
-      const resAffiliations = await decompressAll(affiliations);
-      datasets.results = await decompressAll(datasets.results);
-      publications.results = await decompressAll(publications.results);
-      return { affiliations: resAffiliations, datasets, publications };
-    }
-    console.error(responseAffiliations);
-    console.error('Oops... FOSM API request did not work');
-    return {};
-  } catch (error) {
-    console.error(error);
-    console.error('Oops... FOSM API request did not work');
-    return {};
+  const response = await fetch(`${VITE_API}/works`, {
+    body: JSON.stringify(options),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    signal: Timeout(1200).signal, // 20 minutes
+  });
+  if (!response.ok) {
+    throw new Error('Oops... FOSM API request did not work');
   }
+  const { affiliations, datasets, publications } = await response.json();
+  const resAffiliations = await decompressAll(affiliations);
+  datasets.results = await decompressAll(datasets.results);
+  publications.results = await decompressAll(publications.results);
+  return { affiliations: resAffiliations, datasets, publications };
 };
 
 const getIdLink = (type, id) => {
