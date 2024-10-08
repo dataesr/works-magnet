@@ -182,10 +182,11 @@ const formatFosmResult = (result, options) => {
   answer.nbPublicationsLinked = answer.fr_publications_linked.length;
   answer.matchingRoRs = getMatchingRoRs(answer?.affiliations || [], options);
   answer.nbMatchingRoRs = answer.matchingRoRs.length;
+  answer.nbAffiliations = answer.affiliations.length;
   let levelCertainty = '2.medium';
   if (answer.nbMatchingRoRs > 0 || answer.nbPublicationsLinked > 0 || answer.nbOrcid >= 2 || answer.nbAuthorsName >= 3) {
     levelCertainty = '1.high';
-  } else if (answer.nbAuthorsName <= 1 && answer.nbOrcid <= 1) {
+  } else if (answer.nbAuthorsName <= 1 && answer.nbOrcid <= 1 && answer.nbAffiliations === 0) {
     levelCertainty = '3.low';
   }
   answer.levelCertainty = levelCertainty;

@@ -56,7 +56,7 @@ const getData = async ({ options, resetCache = false }) => {
   }
   if (cache && !resetCache) {
     const extractionDate = new Date(cache.extractionDate);
-    console.log(`0. Query ${queryId}`, `returning cached data from ${extractionDate}`);
+    console.log(`0. Query ${queryId} | Returning cached data from ${extractionDate}`);
     return cache;
   }
   console.time(`1. Query ${queryId} | Requests ${options.affiliationStrings}`);
