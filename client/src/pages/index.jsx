@@ -32,7 +32,7 @@ export default function Home({ isSticky, setIsSticky }) {
     });
   };
 
-  const { data, isFetched, isFetching, refetch } = useQuery({
+  const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['data', JSON.stringify(options)],
     queryFn: () => getData(options),
     enabled: false,
@@ -97,6 +97,17 @@ export default function Home({ isSticky, setIsSticky }) {
           </Row>
         )}
 
+        {error && (
+          <Row gutters className="fr-mb-16w">
+            <Col xs="12">
+              <div>
+                Error while fetching data, please try again later or contact the
+                team (see footer).
+              </div>
+            </Col>
+          </Row>
+        )}
+
         {!isFetching && !searchParams.get('view') && isFetched && (
           <Row gutters className="fr-mb-16w">
             <Col xs="12">
@@ -120,11 +131,7 @@ export default function Home({ isSticky, setIsSticky }) {
           </Row>
         )}
 
-        {!isFetching
-          && (data?.affiliations?.length > 0
-            || data?.datasets?.results?.length > 0
-            || data?.publications?.results?.length > 0)
-          && searchParams.get('view') === 'openalex' && (
+        {!isFetching && searchParams.get('view') === 'openalex' && (
           <Openalex
             allAffiliations={data?.affiliations}
             allOpenalexCorrections={allOpenalexCorrections}
@@ -133,11 +140,7 @@ export default function Home({ isSticky, setIsSticky }) {
           />
         )}
 
-        {!isFetching
-          && (data?.affiliations?.length > 0
-            || data?.datasets?.results?.length > 0
-            || data?.publications?.results?.length > 0)
-          && searchParams.get('view') === 'publications' && (
+        {!isFetching && searchParams.get('view') === 'publications' && (
           <Publications
             allAffiliations={data?.affiliations ?? []}
             allPublications={data?.publications?.results ?? []}
@@ -152,11 +155,7 @@ export default function Home({ isSticky, setIsSticky }) {
           />
         )}
 
-        {!isFetching
-          && (data?.affiliations?.length > 0
-            || data?.datasets?.results?.length > 0
-            || data?.publications?.results?.length > 0)
-          && searchParams.get('view') === 'datasets' && (
+        {!isFetching && searchParams.get('view') === 'datasets' && (
           <Datasets
             allAffiliations={data?.affiliations ?? []}
             allDatasets={data?.datasets?.results ?? []}

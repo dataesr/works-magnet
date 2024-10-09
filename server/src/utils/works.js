@@ -177,6 +177,14 @@ const formatFosmResult = (result, options) => {
     type: result._source?.genre_raw ?? result._source.genre,
     year: result?._source?.year?.toString() ?? '',
   };
+  if (answer.allIds.filter((k) => k.id_type === 'doi').length === 0) {
+    const extraId = answer.allIds.filter((k) => ['datacite', 'crossref'].includes(k.id_type));
+    if (extraId.length >= 1) {
+      let eltToAdd = extraId[0];
+      eltToAdd = { id_type: 'doi', id_value: extraId[0].id_value };
+      answer.allIds.push(eltToAdd);
+    }
+  }
   answer.nbOrcid = answer.fr_authors_orcid.length;
   answer.nbAuthorsName = answer.fr_authors_name.length;
   answer.nbPublicationsLinked = answer.fr_publications_linked.length;

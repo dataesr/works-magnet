@@ -2,8 +2,10 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Row, Col,
-  SegmentedControl, SegmentedElement,
+  Row,
+  Col,
+  SegmentedControl,
+  SegmentedElement,
   Title,
 } from '@dataesr/dsfr-plus';
 import ActionsDatasets from '../actions/actionsDatasets';
@@ -23,7 +25,11 @@ export default function Datasets({
   tagAffiliations,
   tagDatasets,
 }) {
-  const [Tab, setTab] = useState('selectAffiliations');
+  const [tab, setTab] = useState('selectAffiliations');
+
+  if (allDatasets?.length === 0) {
+    return <div>No datasets detected</div>;
+  }
   return (
     <>
       <Row>
@@ -39,103 +45,119 @@ export default function Datasets({
             onChangeValue={(value) => setTab(value)}
           >
             <SegmentedElement
-              checked={Tab === 'selectAffiliations'}
+              checked={tab === 'selectAffiliations'}
               label="Select the raw affiliations for your institution"
               value="selectAffiliations"
             />
             <SegmentedElement
-              checked={Tab === 'listOfDatasets'}
+              checked={tab === 'listOfDatasets'}
               label="🗃 List of datasets"
               value="listOfDatasets"
             />
             <SegmentedElement
-              checked={Tab === 'insights'}
+              checked={tab === 'insights'}
               label="📊 Insights"
               value="insights"
             />
           </SegmentedControl>
         </Col>
       </Row>
-      {
-        (Tab === 'selectAffiliations') && (
-          <>
-            <Row>
-              <Col xs="12">
-                <div className="fr-callout  fr-callout--pink-tuile">
-                  <Title as="h3" look="h6">
-                    Select the raw affiliations corresponding to your institution
-                  </Title>
-                  <p className="fr-callout__text fr-text--sm">
-                    🔎 The array below summarizes the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query.
-                    <br />
-                    🤔 You can validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not. If an affiliation is validated, it will also validate all the works with that affiliation string.
-                    <br />
-                    🤖 The second column indicates the ROR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing. If any errors, please use the first tab to send feedback.
-                    <br />
-                    💾 You can save (export to a file) those decisions, and restore them later on.
-                  </p>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <ActionsAffiliations
-                  allAffiliations={allAffiliations}
-                  tagAffiliations={tagAffiliations}
-                />
-              </Col>
-            </Row>
-          </>
-        )
-      }
-      <Row>
-        <Col xs="12">
-          {
-            (Tab === 'selectAffiliations') && (
-              <AffiliationsTab
-                affiliations={allAffiliations}
-                selectedAffiliations={selectedAffiliations}
-                setSelectedAffiliations={setSelectedAffiliations}
+      {tab === 'selectAffiliations' && (
+        <>
+          <Row>
+            <Col xs="12">
+              <div className="fr-callout  fr-callout--pink-tuile">
+                <Title as="h3" look="h6">
+                  Select the raw affiliations corresponding to your institution
+                </Title>
+                <p className="fr-callout__text fr-text--sm">
+                  🔎 The array below summarizes the most frequent raw
+                  affiliation strings retrieved in the French Open Science
+                  Monitor data and in OpenAlex for your query.
+                  <br />
+                  🤔 You can validate ✅ or exclude ❌ each of them, whether it
+                  actually corresponds to your institution or not. If an
+                  affiliation is validated, it will also validate all the works
+                  with that affiliation string.
+                  <br />
+                  🤖 The second column indicates the ROR automatically computed
+                  by OpenAlex. Sometimes, they can be inaccurate or missing. If
+                  any errors, please use the first tab to send feedback.
+                  <br />
+                  💾 You can save (export to a file) those decisions, and
+                  restore them later on.
+                </p>
+              </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <ActionsAffiliations
+                allAffiliations={allAffiliations}
                 tagAffiliations={tagAffiliations}
               />
-            )
-          }
-          {
-            (Tab === 'listOfDatasets') && (
-              <>
-                <ActionsDatasets
-                  allDatasets={allDatasets}
-                />
-                <DatasetsTab
-                  datasets={allDatasets}
-                  publishers={data?.datasets?.publishers ?? {}}
-                  selectedDatasets={selectedDatasets}
-                  setSelectedDatasets={setSelectedDatasets}
-                  tagDatasets={tagDatasets}
-                  types={data?.datasets?.types ?? {}}
-                  years={data?.datasets?.years ?? {}}
-                />
-              </>
-            )
-          }
-          {
-            (Tab === 'insights') && (
-              (allDatasets.filter((dataset) => dataset.status === 'validated').length > 0) ? (
+            </Col>
+          </Row>
+        </>
+      )}
+      <Row>
+        <Col xs="12">
+          {tab === 'selectAffiliations' && (
+            <AffiliationsTab
+              affiliations={allAffiliations}
+              selectedAffiliations={selectedAffiliations}
+              setSelectedAffiliations={setSelectedAffiliations}
+              tagAffiliations={tagAffiliations}
+            />
+          )}
+          {tab === 'listOfDatasets' && (
+            <>
+              <ActionsDatasets allDatasets={allDatasets} />
+              <DatasetsTab
+                datasets={allDatasets}
+                publishers={data?.datasets?.publishers ?? {}}
+                selectedDatasets={selectedDatasets}
+                setSelectedDatasets={setSelectedDatasets}
+                tagDatasets={tagDatasets}
+                types={data?.datasets?.types ?? {}}
+                years={data?.datasets?.years ?? {}}
+              />
+            </>
+          )}
+          {tab === 'insights'
+            && (allDatasets.filter((dataset) => dataset.status === 'validated')
+              .length > 0 ? (
                 <Row>
                   <Col xs="6">
-                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="publisher" />
+                    <DatasetsYearlyDistribution
+                      allDatasets={allDatasets}
+                      field="publisher"
+                    />
                   </Col>
                   <Col xs="6">
-                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="type" />
+                    <DatasetsYearlyDistribution
+                      allDatasets={allDatasets}
+                      field="type"
+                    />
                   </Col>
                   <Col xs="6">
-                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="format" />
+                    <DatasetsYearlyDistribution
+                      allDatasets={allDatasets}
+                      field="format"
+                    />
                   </Col>
                   <Col xs="6">
-                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="client_id" />
+                    <DatasetsYearlyDistribution
+                      allDatasets={allDatasets}
+                      field="client_id"
+                    />
                   </Col>
                   <Col xs="6">
-                    <DatasetsYearlyDistribution allDatasets={allDatasets} field="affiliations" subfield="rawAffiliation" />
+                    <DatasetsYearlyDistribution
+                      allDatasets={allDatasets}
+                      field="affiliations"
+                      subfield="rawAffiliation"
+                    />
                   </Col>
                 </Row>
               ) : (
@@ -144,48 +166,50 @@ export default function Datasets({
                     You did not validate any datasets
                   </h3>
                   <p className="fr-callout__text">
-                    Please validate affiliations or datasets to see insights about it.
+                    Please validate affiliations or datasets to see insights about
+                    it.
                   </p>
                 </div>
-              )
-            )
-          }
+              ))}
         </Col>
       </Row>
     </>
-
   );
 }
 
 Datasets.propTypes = {
-  allAffiliations: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    nameHtml: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    works: PropTypes.arrayOf(PropTypes.string).isRequired,
-    worksNumber: PropTypes.number.isRequired,
-  })).isRequired,
-  setSelectedAffiliations: PropTypes.func.isRequired,
-  selectedAffiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
-  tagAffiliations: PropTypes.func.isRequired,
-  allDatasets: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    format: PropTypes.string.isRequired,
-    client_id: PropTypes.string.isRequired,
-    rawAffiliation: PropTypes.string.isRequired,
-    validatedAffiliation: PropTypes.string.isRequired,
-    validated: PropTypes.bool.isRequired,
-  })).isRequired,
+  allAffiliations: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      nameHtml: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+      works: PropTypes.arrayOf(PropTypes.string).isRequired,
+      worksNumber: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
+  allDatasets: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+      format: PropTypes.string.isRequired,
+      client_id: PropTypes.string.isRequired,
+      rawAffiliation: PropTypes.string.isRequired,
+      validatedAffiliation: PropTypes.string.isRequired,
+      validated: PropTypes.bool.isRequired,
+    }),
+  ).isRequired,
   data: PropTypes.shape({
     datasets: PropTypes.shape({
-      publishers: PropTypes.arrayOf(PropTypes.string),
-      types: PropTypes.arrayOf(PropTypes.string),
-      years: PropTypes.arrayOf(PropTypes.number),
+      publishers: PropTypes.object,
+      types: PropTypes.object,
+      years: PropTypes.object,
     }),
   }).isRequired,
+  selectedAffiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
   selectedDatasets: PropTypes.arrayOf(PropTypes.string).isRequired,
+  setSelectedAffiliations: PropTypes.func.isRequired,
   setSelectedDatasets: PropTypes.func.isRequired,
+  tagAffiliations: PropTypes.func.isRequired,
   tagDatasets: PropTypes.func.isRequired,
 };

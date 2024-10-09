@@ -26,8 +26,11 @@ export default function Publications({
   tagAffiliations,
   tagPublications,
 }) {
-  const [Tab, setTab] = useState('selectAffiliations');
+  const [tab, setTab] = useState('selectAffiliations');
 
+  if (allPublications?.length === 0) {
+    return <div>No publications detected</div>;
+  }
   return (
     <div>
       {options.datasets ? (
@@ -61,19 +64,19 @@ export default function Publications({
                 onChangeValue={(value) => setTab(value)}
               >
                 <SegmentedElement
-                  checked={Tab === 'selectAffiliations'}
+                  checked={tab === 'selectAffiliations'}
                   label="Select the raw affiliations for your institution"
                   value="selectAffiliations"
                 />
                 <SegmentedElement
-                  checked={Tab === 'listOfPublications'}
+                  checked={tab === 'listOfPublications'}
                   label="List of publications"
                   value="listOfPublications"
                 />
               </SegmentedControl>
             </Col>
           </Row>
-          {Tab === 'selectAffiliations' && (
+          {tab === 'selectAffiliations' && (
             <>
               <Row>
                 <Col xs="12">
@@ -115,7 +118,7 @@ export default function Publications({
           )}
           <Row>
             <Col xs="12">
-              {Tab === 'selectAffiliations' && (
+              {tab === 'selectAffiliations' && (
                 <AffiliationsTab
                   affiliations={allAffiliations}
                   selectedAffiliations={selectedAffiliations}
@@ -123,9 +126,12 @@ export default function Publications({
                   tagAffiliations={tagAffiliations}
                 />
               )}
-              {Tab === 'listOfPublications' && (
+              {tab === 'listOfPublications' && (
                 <>
-                  <ActionsPublications allPublications={allPublications} className="fr-pb-1w" />
+                  <ActionsPublications
+                    allPublications={allPublications}
+                    className="fr-pb-1w"
+                  />
                   <PublicationsTab
                     publishers={data.publications?.publishers || []}
                     publications={allPublications}
