@@ -39,14 +39,18 @@ const statusRowFilterTemplate = (options) => (
 const getIdsTemplate = (ids) => {
   let html = '<ul>';
   ids.forEach((id) => {
-    html += `<li key="${id.id_value}"> `;
-    const idLink = getIdLink(id.id_type, id.id_value);
-    let idValueDisplay = id.id_value;
-    if (idValueDisplay.length > 18) {
-      idValueDisplay = id.id_value.slice(0, 18).concat('..');
+    if (['datacite', 'crossref'].includes(id.id_type)) {
+      html += '';
+    } else {
+      html += `<li key="${id.id_value}"> `;
+      const idLink = getIdLink(id.id_type, id.id_value);
+      let idValueDisplay = id.id_value;
+      if (idValueDisplay.length > 18) {
+        idValueDisplay = id.id_value.slice(0, 18).concat('..');
+      }
+      html += idLink ? `<a target="_blank" href="${idLink}">${idValueDisplay}</a>` : `<span>${id.id_value}</span>`;
+      html += '</li>';
     }
-    html += idLink ? `<a target="_blank" href="${idLink}">${idValueDisplay}</a>` : `<span>${id.id_value}</span>`;
-    html += '</li>';
   });
   html += '</ul>';
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
