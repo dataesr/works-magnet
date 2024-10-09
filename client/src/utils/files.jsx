@@ -32,7 +32,7 @@ const export2FosmCsv = ({ data, label, searchParams }) => {
   let idsToExport = ['doi', 'hal_id', 'nnt_id', 'openalex'];
   // For datasets
   if (label === 'datasets') {
-    idsToExport = ['datacite', 'crossref'];
+    idsToExport = ['doi'];
   }
   const rows = data
     .filter((publication) => publication.status === status.validated.id)
