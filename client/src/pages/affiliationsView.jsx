@@ -103,6 +103,8 @@ export default function AffiliationsView({
         header="ROR computed by OpenAlex"
         body={rorTemplate}
         style={{ maxWidth: '150px' }}
+        sortable
+        sortField="rorsNumber"
       />
       <Column
         field="worksExamples"
