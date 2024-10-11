@@ -106,7 +106,7 @@ export default function DatasetsView({
         field="status"
         header="Status"
         body={statusTemplate}
-        style={{ minWidth: '180px', maxWidth: '180px' }}
+        style={{ minWidth: '140px', maxWidth: '140px' }}
         showFilterMenu={false}
         filter
         filterElement={statusRowFilterTemplate}
@@ -120,43 +120,58 @@ export default function DatasetsView({
       <Column
         field="type"
         header="Type"
+        sortable
         style={{ maxWidth: '90px' }}
         showFilterMenu={false}
       />
-      <Column field="year" header="Year" style={{ maxWidth: '70px' }} />
+      <Column
+        field="year"
+        header="Year"
+        style={{ maxWidth: '70px' }}
+        sortable
+      />
       <Column
         field="publisher"
-        filter
-        filterElement={publishersFilterTemplate}
-        filterField="publisher"
-        filterMenuStyle={{ width: '14rem' }}
+        // filter
+        // filterElement={publishersFilterTemplate}
+        // filterField="publisher"
+        // filterMenuStyle={{ width: '14rem' }}
+        // showFilterMenu={false}
         header="Publisher"
-        showFilterMenu={false}
-        style={{ maxWidth: '70px' }}
+        sortable
+        style={{ minWidth: '95px', maxWidth: '95px' }}
       />
       <Column
         field="affiliationsHtml"
         header="Affiliations"
         body={affiliationsTemplate}
         style={{ maxWidth: '220px' }}
+        sortable
+        sortField="nbAffiliations"
       />
       <Column
         field="fr_publications_linked"
         header="Linked Article"
         body={linkedDOITemplate}
-        style={{ maxWidth: '180px' }}
+        style={{ minWidth: '160px', maxWidth: '160px' }}
+        sortable
+        sortField="nbPublicationsLinked"
       />
       <Column
         field="fr_authors_orcid"
         header="My institution author ORCID"
         body={linkedORCIDTemplate}
         style={{ maxWidth: '150px' }}
+        sortable
+        sortField="nbOrcid"
       />
       <Column
         field="fr_authors_name"
         header="My institution author name"
         body={frAuthorsTemplate}
         style={{ maxWidth: '150px' }}
+        sortable
+        sortField="nbAuthorsName"
       />
     </DataTable>
   );
