@@ -57,7 +57,7 @@ const deduplicateWorks = (works) => {
 };
 
 const getFosmQuery = (options, pit, searchAfter) => {
-  const query = { size: process.env.FOSM_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
+  const query = { size: process.env.ES_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   options.affiliationStrings.forEach((affiliation) => {
     query.query.bool.should.push({ match: { 'affiliations.name': { query: `"${affiliation}"`, operator: 'and' } } });
   });
@@ -77,7 +77,7 @@ const getFosmQuery = (options, pit, searchAfter) => {
   ];
   query.sort = ['_shard_doc'];
   if (pit) {
-    query.pit = { id: pit, keep_alive: process.env.FOSM_PIT_KEEP_ALIVE };
+    query.pit = { id: pit, keep_alive: process.env.ES_PIT_KEEP_ALIVE };
   }
   if (searchAfter) {
     query.search_after = searchAfter;
@@ -207,8 +207,8 @@ const formatFosmResult = (result, options) => {
 const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, pit, searchAfter }) => {
   if (!pit) {
     const response = await fetch(
-      `${process.env.FOSM_URL}/${process.env.FOSM_INDEX}/_pit?keep_alive=${process.env.FOSM_PIT_KEEP_ALIVE}`,
-      { method: 'POST', headers: { Authorization: process.env.FOSM_AUTH } },
+      `${process.env.ES_URL}/${process.env.ES_INDEX}/_pit?keep_alive=${process.env.ES_PIT_KEEP_ALIVE}`,
+      { method: 'POST', headers: { Authorization: process.env.ES_AUTH } },
     );
     // eslint-disable-next-line no-param-reassign
     pit = (await response.json()).id;
@@ -219,10 +219,10 @@ const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, p
     body: JSON.stringify(body),
     headers: {
       'content-type': 'application/json',
-      Authorization: process.env.FOSM_AUTH,
+      Authorization: process.env.ES_AUTH,
     },
   };
-  const url = `${process.env.FOSM_URL}/_search`;
+  const url = `${process.env.ES_URL}/_search`;
   return fetch(url, params)
     .then((response) => {
       if (response.ok) return response.json();
@@ -234,17 +234,17 @@ const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, p
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
       results = results.concat(hits.map((result) => formatFosmResult(result, options))).filter((r) => r.levelCertainty !== '3.low');
-      if (hits.length > 0 && (Number(process.env.FOSM_MAX_SIZE) === 0 || results.length < Number(process.env.FOSM_MAX_SIZE))) {
+      if (hits.length > 0 && (Number(process.env.ES_MAX_SIZE) === 0 || results.length < Number(process.env.ES_MAX_SIZE))) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
         return getFosmWorksByYear({ results, options, pit, searchAfter });
       }
       if (pit) {
         fetch(
-          `${process.env.FOSM_URL}/_pit`,
+          `${process.env.ES_URL}/_pit`,
           {
             body: JSON.stringify({ id: pit }),
-            headers: { Authorization: process.env.FOSM_AUTH, 'Content-type': 'application/json' },
+            headers: { Authorization: process.env.ES_AUTH, 'Content-type': 'application/json' },
             method: 'DELETE',
           },
         );
