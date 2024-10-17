@@ -33,27 +33,10 @@ const decompressAll = async (chunks) => {
   return res.flat();
 };
 
-const Timeout = (time) => {
+const timeout = (time) => {
   const controller = new AbortController();
   setTimeout(() => controller.abort(), time * 1000);
   return controller;
-};
-
-const getData = async (options) => {
-  const response = await fetch(`${VITE_API}/works`, {
-    body: JSON.stringify(options),
-    headers: { 'Content-Type': 'application/json' },
-    method: 'POST',
-    signal: Timeout(1200).signal, // 20 minutes
-  });
-  if (!response.ok) {
-    throw new Error('Oops... FOSM API request did not work');
-  }
-  const { affiliations, datasets, publications } = await response.json();
-  const resAffiliations = await decompressAll(affiliations);
-  datasets.results = await decompressAll(datasets.results);
-  publications.results = await decompressAll(publications.results);
-  return { affiliations: resAffiliations, datasets, publications };
 };
 
 const getIdLink = (type, id) => {
@@ -80,6 +63,37 @@ const getIdLink = (type, id) => {
   default:
   }
   return (prefix !== null) ? `${prefix}${id}` : false;
+};
+
+const getMentions = async (options) => {
+  const response = await fetch(`${VITE_API}/mentions`, {
+    body: JSON.stringify(options),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    signal: timeout(1200).signal, // 20 minutes
+  });
+  if (!response.ok) {
+    throw new Error('Oops... FOSM API request did not work for mentions !');
+  }
+  const mentions = await response.json();
+  return mentions;
+};
+
+const getWorks = async (options) => {
+  const response = await fetch(`${VITE_API}/works`, {
+    body: JSON.stringify(options),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    signal: timeout(1200).signal, // 20 minutes
+  });
+  if (!response.ok) {
+    throw new Error('Oops... FOSM API request did not work for works !');
+  }
+  const { affiliations, datasets, publications } = await response.json();
+  const resAffiliations = await decompressAll(affiliations);
+  datasets.results = await decompressAll(datasets.results);
+  publications.results = await decompressAll(publications.results);
+  return { affiliations: resAffiliations, datasets, publications };
 };
 
 const normalizeName = (name) => name
@@ -124,8 +138,9 @@ const renderButtonDataset = (selected, fn, label, icon) => (
 
 export {
   capitalize,
-  getData,
   getIdLink,
+  getMentions,
+  getWorks,
   normalizeName,
   range,
   renderButtons,

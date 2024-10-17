@@ -41,7 +41,6 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
 
   const feedback = async () => {
     try {
-      console.log(readyState);
       sendJsonMessage({ data: allOpenalexCorrections, email: userEmail });
       toast({
         autoDismissAfter: 5000,

@@ -27,7 +27,7 @@ export default function Datasets({
 }) {
   const [tab, setTab] = useState('selectAffiliations');
 
-  if (allDatasets?.length === 0) {
+  if (!allDatasets || allDatasets?.length === 0) {
     return <div>No datasets detected</div>;
   }
   return (
