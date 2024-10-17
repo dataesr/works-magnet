@@ -1,0 +1,26 @@
+.mentions {
+  li {
+    border-left: 5px solid;
+    list-style: none;
+    padding-left: 5px;
+  
+    &.dataset-implicit {
+      border-color: #6a6af4; // blue-france-main-525
+    }
+    &.dataset-name {
+      border-color: #000091; // blue-france-sun-113
+    }
+    &.software {
+      border-color: #c9191e; // red-marianne-425
+    }
+  }
+  
+  .fr-quote {
+    background-image: none;
+
+    blockquote p {
+      font-size: 1rem;
+      font-weight: normal;
+    }
+  }
+}

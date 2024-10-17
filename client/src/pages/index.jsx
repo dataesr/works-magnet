@@ -8,7 +8,7 @@ import DatasetsTile from '../components/tiles/datasets';
 import OpenalexTile from '../components/tiles/openalex';
 import PublicationsTile from '../components/tiles/publications';
 import { status } from '../config';
-import { getData } from '../utils/works';
+import { getWorks } from '../utils/works';
 import Filters from './filters';
 import Datasets from './views/datasets';
 import Openalex from './views/openalex';
@@ -34,7 +34,7 @@ export default function Home({ isSticky, setIsSticky }) {
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['data', JSON.stringify(options)],
-    queryFn: () => getData(options),
+    queryFn: () => getWorks(options),
     enabled: false,
     cacheTime: 60 * (60 * 1000), // 1h
   });
