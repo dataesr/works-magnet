@@ -229,7 +229,12 @@ const getMentions = async ({ options }) => {
     { method: 'POST', headers: { Authorization: process.env.ES_AUTH } },
   );
   const data = await response.json();
-  return data?.hits?.hits ?? [];
+  const mentions = (data?.hits?.hits ?? []).map((mention) => ({
+    ...mention._source,
+    id: mention._id,
+    rawForm: mention._source?.['software-name']?.rawForm ?? mention._source?.['dataset-name']?.rawForm,
+  }));
+  return mentions;
 };
 
 router.route('/mentions').post(async (req, res) => {
