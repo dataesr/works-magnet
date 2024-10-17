@@ -14,13 +14,23 @@ import './index.scss';
 export default function Mentions() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [mentions, setMentions] = useState([]);
+  const [search, setSearch] = useState();
+  const [timer, setTimer] = useState();
 
-  const setSearch = (_search) => {
-    setSearchParams((params) => {
-      params.set('search', _search);
-      return params;
-    });
-  };
+  useEffect(() => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    const timerTmp = setTimeout(() => {
+      setSearchParams((params) => {
+        params.set('search', search);
+        return params;
+      });
+    }, 500);
+    setTimer(timerTmp);
+  // The timer should not be tracked
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   useEffect(() => {
     const getData = async () => {
@@ -42,7 +52,7 @@ export default function Mentions() {
         hint="Example: Coq"
         label="Search"
         onChange={(e) => setSearch(e.target.value)}
-        value={searchParams.get('search')}
+        value={search}
       />
       <ul>
         {mentions?.length > 0
