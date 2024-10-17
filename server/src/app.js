@@ -53,7 +53,6 @@ app.use('/api', router);
 
 app.use(handleErrors);
 
-// https://ui.dev/react-router-cannot-get-url-refresh
 app.get('/*', (_, res) => {
   res.sendFile(path.join(path.resolve(), 'dist', 'index.html'), (err) => {
     if (err) {

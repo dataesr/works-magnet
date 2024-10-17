@@ -11,7 +11,7 @@ export default function Openalex({
   options,
   setAllOpenalexCorrections,
 }) {
-  if (allAffiliations?.length === 0) {
+  if (!allAffiliations || allAffiliations?.length === 0) {
     return <div>No affiliations detected</div>;
   }
   return (
