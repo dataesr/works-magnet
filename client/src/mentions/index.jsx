@@ -1,4 +1,5 @@
 import { Container, Fieldset, Radio, TextInput } from '@dataesr/dsfr-plus';
+import { FilterMatchMode } from 'primereact/api';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { useEffect, useState } from 'react';
@@ -8,6 +9,9 @@ import { getMentions } from '../utils/works';
 
 export default function Mentions() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [filters] = useState({
+    doi: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  });
   const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
   const [search, setSearch] = useState('');
@@ -46,7 +50,10 @@ export default function Mentions() {
         searchParams.get('search')
         && searchParams.get('search')?.length > 0
       ) {
-        const m = await getMentions({ search: searchParams.get('search'), type: searchParams.get('type') });
+        const m = await getMentions({
+          search: searchParams.get('search'),
+          type: searchParams.get('type'),
+        });
         setMentions(m);
       }
       setTotalRecords(mentions?.length ?? 0);
@@ -82,6 +89,8 @@ export default function Mentions() {
       </Fieldset>
       <DataTable
         dataKey="id"
+        filterDisplay="row"
+        filters={filters}
         loading={loading}
         scrollable
         size="small"
@@ -91,7 +100,13 @@ export default function Mentions() {
         totalRecords={totalRecords}
         value={mentions}
       >
-        <Column body={doiTemplate} field="doi" header="DOI" />
+        <Column
+          body={doiTemplate}
+          field="doi"
+          filter
+          filterPlaceholder="Search by DOI"
+          header="DOI"
+        />
         <Column field="type" header="Type" />
         <Column field="rawForm" header="Raw Form" />
         <Column field="context" header="Context" />
@@ -99,16 +114,19 @@ export default function Mentions() {
           body={usedTemplate}
           field="mention.mention_context.used"
           header="Used"
+          sortable
         />
         <Column
           body={createdTemplate}
           field="mention.mention_context.created"
           header="Created"
+          sortable
         />
         <Column
           body={sharedTemplate}
           field="mention.mention_context.shared"
           header="Shared"
+          sortable
         />
       </DataTable>
     </Container>

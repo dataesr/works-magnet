@@ -249,7 +249,7 @@ const getMentions = async ({ options }) => {
         ],
       },
     },
-    _source: ['context', 'doi', 'mention_context', 'rawForm', 'type'],
+    _source: ['context', 'dataset-name', 'doi', 'mention_context', 'rawForm', 'software-name', 'type'],
   });
   const url = `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_search`;
   const params = { body, method: 'POST', headers: { Authorization: process.env.ES_AUTH, 'content-type': 'application/json' } };
@@ -258,6 +258,7 @@ const getMentions = async ({ options }) => {
   const mentions = (data?.hits?.hits ?? []).map((mention) => ({
     ...mention._source,
     id: mention._id,
+    rawForm: mention._source?.['software-name']?.rawForm ?? mention._source?.['dataset-name']?.rawForm,
   }));
   return mentions;
 };
