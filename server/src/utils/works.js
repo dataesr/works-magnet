@@ -215,12 +215,12 @@ const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, p
   }
   const body = getFosmQuery(options, pit, searchAfter);
   const params = {
-    method: 'POST',
     body: JSON.stringify(body),
     headers: {
-      'content-type': 'application/json',
       Authorization: process.env.ES_AUTH,
+      'content-type': 'application/json',
     },
+    method: 'POST',
   };
   const url = `${process.env.ES_URL}/_search`;
   return fetch(url, params)

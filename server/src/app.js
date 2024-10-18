@@ -54,11 +54,7 @@ app.use('/api', router);
 app.use(handleErrors);
 
 app.get('/*', (_, res) => {
-  res.sendFile(path.join(path.resolve(), 'dist', 'index.html'), (err) => {
-    if (err) {
-      res.status(500).send(err);
-    }
-  });
+  res.sendFile(path.join(path.resolve(), 'dist', 'index.html'));
 });
 
 export default app;

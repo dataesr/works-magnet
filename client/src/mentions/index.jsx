@@ -1,4 +1,4 @@
-import { Container, TextInput } from '@dataesr/dsfr-plus';
+import { Container, Fieldset, Radio, TextInput } from '@dataesr/dsfr-plus';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { useEffect, useState } from 'react';
@@ -10,9 +10,10 @@ export default function Mentions() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
-  const [search, setSearch] = useState();
+  const [search, setSearch] = useState('');
   const [timer, setTimer] = useState();
   const [totalRecords, setTotalRecords] = useState(0);
+  const [type, setType] = useState('software');
 
   const usedTemplate = (rowData) => (rowData.mention_context.used ? 'True' : 'False');
   const createdTemplate = (rowData) => (rowData.mention_context.created ? 'True' : 'False');
@@ -29,13 +30,14 @@ export default function Mentions() {
     const timerTmp = setTimeout(() => {
       setSearchParams((params) => {
         params.set('search', search);
+        params.set('type', type);
         return params;
       });
     }, 500);
     setTimer(timerTmp);
     // The timer should not be tracked
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  }, [search, type]);
 
   useEffect(() => {
     const getData = async () => {
@@ -44,7 +46,7 @@ export default function Mentions() {
         searchParams.get('search')
         && searchParams.get('search')?.length > 0
       ) {
-        const m = await getMentions({ search: searchParams.get('search') });
+        const m = await getMentions({ search: searchParams.get('search'), type: searchParams.get('type') });
         setMentions(m);
       }
       setTotalRecords(mentions?.length ?? 0);
@@ -62,6 +64,22 @@ export default function Mentions() {
         onChange={(e) => setSearch(e.target.value)}
         value={search}
       />
+      <Fieldset isInline legend="Type">
+        <Radio
+          checked={type === 'software'}
+          label="Software"
+          name="type"
+          onChange={() => setType('software')}
+          value="software"
+        />
+        <Radio
+          checked={type === 'datasets'}
+          label="Datasets"
+          name="type"
+          onChange={() => setType('datasets')}
+          value="datasets"
+        />
+      </Fieldset>
       <DataTable
         dataKey="id"
         loading={loading}
@@ -75,8 +93,8 @@ export default function Mentions() {
       >
         <Column body={doiTemplate} field="doi" header="DOI" />
         <Column field="type" header="Type" />
-        <Column field="rawForm" header="rawForm" />
-        <Column field="context" header="context" />
+        <Column field="rawForm" header="Raw Form" />
+        <Column field="context" header="Context" />
         <Column
           body={usedTemplate}
           field="mention.mention_context.used"
