@@ -30,12 +30,39 @@ export default function Mentions() {
   const contextTemplate = (rowData) => (
     <span dangerouslySetInnerHTML={{ __html: rowData.context }} />
   );
-  const createdTemplate = (rowData) => (rowData.mention_context.created ? 'True' : 'False');
+  const createdTemplate = (rowData) => (
+    <i
+      className={`fr-mr-1w ${
+        rowData.mention_context.created
+          ? 'fr-icon-thumb-up-line'
+          : 'fr-icon-thumb-down-line'
+      }`}
+      style={{ color: rowData.mention_context.created ? 'green' : 'red' }}
+    />
+  );
   const doiTemplate = (rowData) => (
     <a href={`https://doi.org/${rowData.doi}`}>{rowData.doi}</a>
   );
-  const sharedTemplate = (rowData) => (rowData.mention_context.shared ? 'True' : 'False');
-  const usedTemplate = (rowData) => (rowData.mention_context.used ? 'True' : 'False');
+  const sharedTemplate = (rowData) => (
+    <i
+      className={`fr-mr-1w ${
+        rowData.mention_context.shared
+          ? 'fr-icon-thumb-up-line'
+          : 'fr-icon-thumb-down-line'
+      }`}
+      style={{ color: rowData.mention_context.shared ? 'green' : 'red' }}
+    />
+  );
+  const usedTemplate = (rowData) => (
+    <i
+      className={`fr-mr-1w ${
+        rowData.mention_context.used
+          ? 'fr-icon-thumb-up-line'
+          : 'fr-icon-thumb-down-line'
+      }`}
+      style={{ color: rowData.mention_context.used ? 'green' : 'red' }}
+    />
+  );
 
   // Events
   const onFilter = (event) => setDoi(event?.filters?.doi?.value ?? '');
