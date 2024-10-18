@@ -27,6 +27,9 @@ export default function Mentions() {
   });
 
   // Templates
+  const contextTemplate = (rowData) => (
+    <span dangerouslySetInnerHTML={{ __html: rowData.context }} />
+  );
   const createdTemplate = (rowData) => (rowData.mention_context.created ? 'True' : 'False');
   const doiTemplate = (rowData) => (
     <a href={`https://doi.org/${rowData.doi}`}>{rowData.doi}</a>
@@ -155,7 +158,7 @@ export default function Mentions() {
         />
         <Column field="type" header="Type" />
         <Column field="rawForm" header="Raw Form" />
-        <Column field="context" header="Context" />
+        <Column body={contextTemplate} field="context" header="Context" />
         <Column
           body={usedTemplate}
           field="mention.mention_context.used"

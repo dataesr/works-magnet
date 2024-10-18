@@ -208,11 +208,9 @@ router.route('/works').post(async (req, res) => {
   try {
     const options = req?.body ?? {};
     if (!options?.affiliationStrings && !options?.rors) {
-      res
-        .status(400)
-        .json({
-          message: 'You must provide at least one affiliation string or RoR.',
-        });
+      res.status(400).json({
+        message: 'You must provide at least one affiliation string or RoR.',
+      });
     } else {
       const compressedResult = await getWorks({ options });
       res.status(200).json(compressedResult);
@@ -250,21 +248,49 @@ const getMentions = async ({ options }) => {
         ],
       },
     },
-    _source: ['context', 'dataset-name', 'doi', 'mention_context', 'rawForm', 'software-name', 'type'],
+    _source: [
+      'context',
+      'dataset-name',
+      'doi',
+      'mention_context',
+      'rawForm',
+      'software-name',
+      'type',
+    ],
+    highlight: {
+      number_of_fragments: 0,
+      fragment_size: 100,
+      require_field_match: 'true',
+      fields: [
+        {
+          context: { pre_tags: ['<b>'], post_tags: ['</b>'] },
+        },
+      ],
+    },
   };
   if (doi?.length > 0) {
     body.query.bool.must.push({ term: { 'doi.keyword': doi } });
   }
   body = JSON.stringify(body);
   const url = `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_search`;
-  const params = { body, method: 'POST', headers: { Authorization: process.env.ES_AUTH, 'content-type': 'application/json' } };
+  const params = {
+    body,
+    method: 'POST',
+    headers: {
+      Authorization: process.env.ES_AUTH,
+      'content-type': 'application/json',
+    },
+  };
   const response = await fetch(url, params);
   const data = await response.json();
   const count = data?.hits?.total?.value ?? 0;
   const mentions = (data?.hits?.hits ?? []).map((mention) => ({
     ...mention._source,
     id: mention._id,
-    rawForm: mention._source?.['software-name']?.rawForm ?? mention._source?.['dataset-name']?.rawForm,
+    rawForm:
+      mention._source?.['software-name']?.rawForm
+      ?? mention._source?.['dataset-name']?.rawForm,
+    context: mention.highlight.context,
   }));
 
   return { count, mentions };
@@ -276,7 +302,9 @@ router.route('/mentions').post(async (req, res) => {
     if (!options?.search) {
       res.status(400).json({ message: 'You must provide a search string.' });
     } else if (!['datasets', 'software'].includes(options?.type)) {
-      res.status(400).json({ message: 'Type should be either "datasets" or "software".' });
+      res
+        .status(400)
+        .json({ message: 'Type should be either "datasets" or "software".' });
     } else {
       const mentions = await getMentions({ options });
       res.status(200).json(mentions);
