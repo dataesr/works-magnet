@@ -1,5 +1,4 @@
 import { Container, Fieldset, Radio, TextInput } from '@dataesr/dsfr-plus';
-import { FilterMatchMode } from 'primereact/api';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { useEffect, useState } from 'react';
@@ -7,48 +6,49 @@ import { useSearchParams } from 'react-router-dom';
 
 import { getMentions } from '../utils/works';
 
+const DEFAULT_ROWS = 50;
+
 export default function Mentions() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [doi, setDoi] = useState('');
   const [from, setFrom] = useState(0);
-  const [filters] = useState({
-    doi: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  });
   const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
   const [search, setSearch] = useState('');
-  const [size, setSize] = useState(20);
+  const [rows, setRows] = useState(DEFAULT_ROWS);
   const [timer, setTimer] = useState();
   const [totalRecords, setTotalRecords] = useState(0);
   const [type, setType] = useState('software');
   const [lazyState, setlazyState] = useState({
+    filters: { doi: { value: '', matchMode: 'contains' } },
     first: 0,
-    rows: 20,
     page: 1,
+    rows: DEFAULT_ROWS,
     sortField: null,
     sortOrder: null,
-    filters: {
-      doi: { value: '', matchMode: 'contains' },
-    },
   });
 
-  const usedTemplate = (rowData) => (rowData.mention_context.used ? 'True' : 'False');
+  // Templates
   const createdTemplate = (rowData) => (rowData.mention_context.created ? 'True' : 'False');
-  const sharedTemplate = (rowData) => (rowData.mention_context.shared ? 'True' : 'False');
-
   const doiTemplate = (rowData) => (
     <a href={`https://doi.org/${rowData.doi}`}>{rowData.doi}</a>
   );
+  const sharedTemplate = (rowData) => (rowData.mention_context.shared ? 'True' : 'False');
+  const usedTemplate = (rowData) => (rowData.mention_context.used ? 'True' : 'False');
 
-  const onPage = (event) => setFrom(event.first);
+  // Events
+  const onFilter = (event) => setDoi(event?.filters?.doi?.value ?? '');
+  const onPage = (event) => {
+    setFrom(event.first);
+    setRows(event.rows);
+  };
+  const onSort = (event) => setlazyState(event);
 
   const loadLazyData = async () => {
     setLoading(true);
-    // imitate delay of a backend call
-    if (
-      searchParams.get('search')
-      && searchParams.get('search')?.length > 0
-    ) {
+    if (searchParams.get('search') && searchParams.get('search')?.length > 0) {
       const data = await getMentions({
+        doi: searchParams.get('doi'),
         from: searchParams.get('from'),
         search: searchParams.get('search'),
         size: searchParams.get('size'),
@@ -60,40 +60,39 @@ export default function Mentions() {
     setLoading(false);
   };
 
+  // Effects
   useEffect(() => {
     if (timer) {
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
       setSearchParams((params) => {
+        params.set('doi', doi);
         params.set('from', from);
         params.set('search', search);
-        params.set('size', size);
+        params.set('size', rows);
         params.set('type', type);
         return params;
       });
-    }, 500);
+    }, 800);
     setTimer(timerTmp);
     // The timer should not be tracked
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [from, search, size, type]);
+  }, [doi, from, search, rows, type]);
 
   useEffect(() => {
     setlazyState({
       ...lazyState,
-      first: searchParams.get('from'),
-      // search: searchParams.get('search'),
+      first: parseInt(searchParams.get('from'), 10),
       rows: searchParams.get('size'),
-      // type: searchParams.get('type'),
       filters: {
         ...lazyState.filters,
         doi: {
           ...lazyState.filters.doi,
-          value: searchParams.get('search'),
+          value: searchParams.get('doi'),
         },
       },
     });
-    // setType(searchParams.get('type'));
   }, [searchParams]);
 
   useEffect(() => {
@@ -126,18 +125,25 @@ export default function Mentions() {
         />
       </Fieldset>
       <DataTable
+        currentPageReportTemplate="{first} to {last} of {totalRecords}"
         dataKey="id"
         filterDisplay="row"
-        filters={filters}
+        filters={lazyState.filters}
         first={lazyState.first}
         lazy
         loading={loading}
+        onFilter={onFilter}
         onPage={onPage}
+        onSort={onSort}
         paginator
-        rows={size}
-        rowsPerPageOptions={[size, 50, 100]}
+        paginatorPosition="top bottom"
+        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+        rows={rows}
+        rowsPerPageOptions={[20, 50, 100]}
         scrollable
         size="small"
+        sortField={lazyState.sortField}
+        sortOrder={lazyState.sortOrder}
         stripedRows
         style={{ fontSize: '14px', lineHeight: '13px' }}
         tableStyle={{ minWidth: '50rem' }}

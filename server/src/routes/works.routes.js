@@ -224,14 +224,14 @@ router.route('/works').post(async (req, res) => {
 });
 
 const getMentions = async ({ options }) => {
-  const { from, search, size, type } = options;
+  const { doi, from, search, size, type } = options;
   let types = [];
   if (type === 'software') {
     types = ['software'];
   } else if (type === 'datasets') {
     types = ['dataset-implicit', 'dataset-name'];
   }
-  const body = JSON.stringify({
+  let body = {
     from,
     size,
     query: {
@@ -251,7 +251,11 @@ const getMentions = async ({ options }) => {
       },
     },
     _source: ['context', 'dataset-name', 'doi', 'mention_context', 'rawForm', 'software-name', 'type'],
-  });
+  };
+  if (doi?.length > 0) {
+    body.query.bool.must.push({ term: { 'doi.keyword': doi } });
+  }
+  body = JSON.stringify(body);
   const url = `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_search`;
   const params = { body, method: 'POST', headers: { Authorization: process.env.ES_AUTH, 'content-type': 'application/json' } };
   const response = await fetch(url, params);
