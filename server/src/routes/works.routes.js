@@ -224,7 +224,7 @@ router.route('/works').post(async (req, res) => {
 });
 
 const getMentions = async ({ options }) => {
-  const { search, type } = options;
+  const { from, search, size, type } = options;
   let types = [];
   if (type === 'software') {
     types = ['software'];
@@ -232,7 +232,8 @@ const getMentions = async ({ options }) => {
     types = ['dataset-implicit', 'dataset-name'];
   }
   const body = JSON.stringify({
-    size: '50',
+    from,
+    size,
     query: {
       bool: {
         must: [
@@ -255,12 +256,14 @@ const getMentions = async ({ options }) => {
   const params = { body, method: 'POST', headers: { Authorization: process.env.ES_AUTH, 'content-type': 'application/json' } };
   const response = await fetch(url, params);
   const data = await response.json();
+  const count = data?.hits?.total?.value ?? 0;
   const mentions = (data?.hits?.hits ?? []).map((mention) => ({
     ...mention._source,
     id: mention._id,
     rawForm: mention._source?.['software-name']?.rawForm ?? mention._source?.['dataset-name']?.rawForm,
   }));
-  return mentions;
+
+  return { count, mentions };
 };
 
 router.route('/mentions').post(async (req, res) => {
