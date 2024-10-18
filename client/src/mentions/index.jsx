@@ -24,8 +24,6 @@ export default function Mentions() {
     first: 0,
     page: 1,
     rows: DEFAULT_ROWS,
-    sortField: null,
-    sortOrder: null,
   });
 
   // Templates
@@ -42,7 +40,6 @@ export default function Mentions() {
     setFrom(event.first);
     setRows(event.rows);
   };
-  const onSort = (event) => setlazyState(event);
 
   const loadLazyData = async () => {
     setLoading(true);
@@ -61,6 +58,8 @@ export default function Mentions() {
   };
 
   // Effects
+  useEffect(() => setFrom(0), [type]);
+
   useEffect(() => {
     if (timer) {
       clearTimeout(timer);
@@ -134,7 +133,6 @@ export default function Mentions() {
         loading={loading}
         onFilter={onFilter}
         onPage={onPage}
-        onSort={onSort}
         paginator
         paginatorPosition="top bottom"
         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
@@ -142,8 +140,6 @@ export default function Mentions() {
         rowsPerPageOptions={[20, 50, 100]}
         scrollable
         size="small"
-        sortField={lazyState.sortField}
-        sortOrder={lazyState.sortOrder}
         stripedRows
         style={{ fontSize: '14px', lineHeight: '13px' }}
         tableStyle={{ minWidth: '50rem' }}
@@ -164,19 +160,16 @@ export default function Mentions() {
           body={usedTemplate}
           field="mention.mention_context.used"
           header="Used"
-          sortable
         />
         <Column
           body={createdTemplate}
           field="mention.mention_context.created"
           header="Created"
-          sortable
         />
         <Column
           body={sharedTemplate}
           field="mention.mention_context.shared"
           header="Shared"
-          sortable
         />
       </DataTable>
     </Container>
