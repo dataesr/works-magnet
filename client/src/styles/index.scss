@@ -90,6 +90,7 @@ body {
   width: 200px;
 }
 
+// Reduce margin width
 @media (min-width: 100em) {
   .fr-container, .fr-container-sm, .fr-container-md, .fr-container-lg {
       max-width: 100rem;

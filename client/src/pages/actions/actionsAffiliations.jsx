@@ -1,17 +1,19 @@
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import {
   Button,
-  Container, Row, Col,
+  Col,
+  Container,
   Modal, ModalContent,
+  Row,
   Title,
 } from '@dataesr/dsfr-plus';
-import useToast from '../../hooks/useToast';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
+import File from '../../components/file';
 import { status } from '../../config';
+import useToast from '../../hooks/useToast';
 import { export2json, importJson } from '../../utils/files';
-import File from '../../components/File';
 
 export default function ActionsAffiliations({
   allAffiliations,

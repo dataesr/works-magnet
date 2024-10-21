@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import Layout from './layout';
-import Mentions from './mentions';
+import Mentions from './pages/mentions';
 import Home from './pages';
 
 export default function Router() {
