@@ -222,7 +222,6 @@ export default function Mentions() {
             lazy
             loading={loading}
             onPage={onPage}
-            onSort={onSort} sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
             paginator
             paginatorPosition="bottom"
             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
