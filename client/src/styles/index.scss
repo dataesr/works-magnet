@@ -123,3 +123,19 @@ body {
 .fr-toggle label[data-fr-unchecked-label][data-fr-checked-label]:before {
   margin: 0;
 }
+
+/* Pge Mentions */
+.mentions {
+  .label {
+    font-size: 1em;
+    font-weight: bold;
+    text-align: end;
+  }
+
+  .hint {
+    color: grey;
+    font-size: .8em;
+    font-style: italic;
+    text-align: end;
+  }
+}

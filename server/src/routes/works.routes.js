@@ -222,7 +222,9 @@ router.route('/works').post(async (req, res) => {
 });
 
 const getMentions = async ({ options }) => {
-  const { doi, from, search, size, type } = options;
+  const {
+    affiliation, author, doi, from, search, size, type,
+  } = options;
   let types = [];
   if (type === 'software') {
     types = ['software'];
@@ -236,11 +238,6 @@ const getMentions = async ({ options }) => {
       bool: {
         must: [
           {
-            term: {
-              context: search,
-            },
-          },
-          {
             terms: {
               'type.keyword': types,
             },
@@ -249,13 +246,13 @@ const getMentions = async ({ options }) => {
       },
     },
     _source: [
+      'authors',
       'context',
       'dataset-name',
       'doi',
       'mention_context',
       'rawForm',
       'software-name',
-      'type',
     ],
     highlight: {
       number_of_fragments: 0,
@@ -268,8 +265,19 @@ const getMentions = async ({ options }) => {
       ],
     },
   };
+  if (affiliation?.length > 0) {
+    body.query.bool.must.push({
+      term: { 'authors.affiliations.name': affiliation },
+    });
+  }
+  if (author?.length > 0) {
+    body.query.bool.must.push({ term: { 'authors.last_name': author } });
+  }
   if (doi?.length > 0) {
     body.query.bool.must.push({ term: { 'doi.keyword': doi } });
+  }
+  if (search?.length > 0) {
+    body.query.bool.must.push({ term: { context: search } });
   }
   body = JSON.stringify(body);
   const url = `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_search`;
@@ -286,11 +294,15 @@ const getMentions = async ({ options }) => {
   const count = data?.hits?.total?.value ?? 0;
   const mentions = (data?.hits?.hits ?? []).map((mention) => ({
     ...mention._source,
+    affiliations:
+      mention._source?.authors?.map((_author) => _author?.affiliations?.map((_affiliation) => _affiliation.name)).flat() ?? [],
+    authors:
+      mention._source?.authors?.map((_author) => _author.last_name) ?? [],
+    context: mention?.highlight?.context ?? mention._source.context,
     id: mention._id,
     rawForm:
       mention._source?.['software-name']?.rawForm
       ?? mention._source?.['dataset-name']?.rawForm,
-    context: mention.highlight.context,
   }));
 
   return { count, mentions };
@@ -299,15 +311,13 @@ const getMentions = async ({ options }) => {
 router.route('/mentions').post(async (req, res) => {
   try {
     const options = req?.body ?? {};
-    if (!options?.search) {
-      res.status(400).json({ message: 'You must provide a search string.' });
-    } else if (!['datasets', 'software'].includes(options?.type)) {
+    if (!['datasets', 'software'].includes(options?.type)) {
       res
         .status(400)
         .json({ message: 'Type should be either "datasets" or "software".' });
     } else {
-      const mentions = await getMentions({ options });
-      res.status(200).json(mentions);
+      const result = await getMentions({ options });
+      res.status(200).json(result);
     }
   } catch (err) {
     console.error(err);

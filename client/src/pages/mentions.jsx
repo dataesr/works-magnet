@@ -1,9 +1,18 @@
-import { Container, Tab, Tabs, TextInput } from '@dataesr/dsfr-plus';
+import {
+  Button,
+  Col,
+  Container,
+  Row,
+  Tab,
+  Tabs,
+  TextInput,
+} from '@dataesr/dsfr-plus';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import { authorsTemplate } from '../utils/templates';
 import { getMentions } from '../utils/works';
 
 const DEFAULT_ROWS = 50;
@@ -11,22 +20,29 @@ const DEFAULT_ROWS = 50;
 export default function Mentions() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentTab, setCurrentTab] = useState(0);
+  const [affiliation, setAffiliation] = useState('');
+  const [author, setAuthor] = useState('');
   const [doi, setDoi] = useState('');
   const [from, setFrom] = useState(0);
   const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
   const [rows, setRows] = useState(DEFAULT_ROWS);
   const [search, setSearch] = useState('');
-  const [timer, setTimer] = useState();
   const [totalRecords, setTotalRecords] = useState(0);
   const [lazyState, setlazyState] = useState({
-    filters: { doi: { value: '', matchMode: 'contains' } },
     first: 0,
     page: 1,
     rows: DEFAULT_ROWS,
   });
 
   // Templates
+  const affiliationsTemplate = (rowData) => (
+    <ul>
+      {rowData.affiliations.slice(0, 3).map((_affiliation) => (
+        <li>{_affiliation}</li>
+      ))}
+    </ul>
+  );
   const contextTemplate = (rowData) => (
     <span dangerouslySetInnerHTML={{ __html: rowData.context }} />
   );
@@ -62,88 +78,134 @@ export default function Mentions() {
   );
 
   // Events
-  const onFilter = (event) => setDoi(event?.filters?.doi?.value ?? '');
+  const loadLazyData = async () => {
+    setLoading(true);
+    const data = await getMentions({
+      affiliation: searchParams.get('affiliation'),
+      author: searchParams.get('author'),
+      doi: searchParams.get('doi'),
+      from: searchParams.get('from'),
+      search: searchParams.get('search'),
+      size: searchParams.get('size'),
+      type: currentTab === 0 ? 'software' : 'datasets',
+    });
+    setMentions(data?.mentions ?? []);
+    setTotalRecords(data?.count ?? 0);
+    setLoading(false);
+  };
   const onPage = (event) => {
     setFrom(event.first);
     setRows(event.rows);
   };
-
-  const loadLazyData = async () => {
-    setLoading(true);
-    if (searchParams.get('search') && searchParams.get('search')?.length > 0) {
-      const data = await getMentions({
-        doi: searchParams.get('doi'),
-        from: searchParams.get('from'),
-        search: searchParams.get('search'),
-        size: searchParams.get('size'),
-        type: currentTab === 0 ? 'software' : 'datasets',
-      });
-      setMentions(data?.mentions ?? []);
-      setTotalRecords(data?.count ?? 0);
-    }
-    setLoading(false);
+  const onSubmit = () => {
+    setSearchParams((params) => {
+      params.set('affiliation', affiliation);
+      params.set('author', author);
+      params.set('doi', doi);
+      params.set('from', from);
+      params.set('search', search);
+      params.set('size', rows);
+      return params;
+    });
   };
 
   // Effects
   useEffect(() => setFrom(0), [currentTab]);
-
-  useEffect(() => {
-    if (timer) {
-      clearTimeout(timer);
-    }
-    const timerTmp = setTimeout(() => {
-      setSearchParams((params) => {
-        params.set('doi', doi);
-        params.set('from', from);
-        params.set('search', search);
-        params.set('size', rows);
-        return params;
-      });
-    }, 800);
-    setTimer(timerTmp);
-    // The timer should not be tracked
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [doi, from, search, rows]);
-
   useEffect(() => {
     setlazyState({
       ...lazyState,
       first: parseInt(searchParams.get('from'), 10),
       rows: searchParams.get('size'),
-      filters: {
-        ...lazyState.filters,
-        doi: {
-          ...lazyState.filters.doi,
-          value: searchParams.get('doi'),
-        },
-      },
     });
   }, [currentTab, searchParams]);
-
   useEffect(() => {
     loadLazyData();
   }, [lazyState]);
 
   return (
     <Container as="section" className="fr-mt-4w mentions">
-      <TextInput
-        disableAutoValidation
-        hint="Example: Coq"
-        label="Search"
-        onChange={(e) => setSearch(e.target.value)}
-        value={search}
-      />
-      <Tabs defaultActiveIndex={currentTab} onTabChange={(i) => setCurrentTab(i)}>
+      <Row>
+        <Col md={10} xs={12}>
+          <Row>
+            <Col className="fr-pr-2w" md={3} xs={12}>
+              <div className="label">Search</div>
+              <div className="hint">Example "Coq"</div>
+            </Col>
+            <Col md={9} xs={12}>
+              <TextInput
+                disableAutoValidation
+                // hint="Example: Coq"
+                // label="Search"
+                onChange={(e) => setSearch(e.target.value)}
+                value={search}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col className="fr-pr-2w" md={3} xs={12}>
+              <div className="label">Affiliation</div>
+              <div className="hint">Example "Cern"</div>
+            </Col>
+            <Col md={9} xs={12}>
+              <TextInput
+                disableAutoValidation
+                // hint="Example: Coq"
+                // label="Search"
+                onChange={(e) => setAffiliation(e.target.value)}
+                value={affiliation}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col className="fr-pr-2w" md={3} xs={12}>
+              <div className="label">Author</div>
+              <div className="hint">Example "Bruno Latour"</div>
+            </Col>
+            <Col md={9} xs={12}>
+              <TextInput
+                disableAutoValidation
+                // hint="Example: Coq"
+                // label="Search"
+                onChange={(e) => setAuthor(e.target.value)}
+                value={author}
+              />
+            </Col>
+          </Row>
+          <Row className="fr-mb-2w">
+            <Col className="fr-pr-2w" md={3} xs={12}>
+              <div className="label">DOI</div>
+              <div className="hint">
+                Example "10.4000/proceedings.elpub.2019.20"
+              </div>
+            </Col>
+            <Col md={9} xs={12}>
+              <TextInput
+                disableAutoValidation
+                // hint="Example: Coq"
+                // label="Search"
+                onChange={(e) => setDoi(e.target.value)}
+                value={doi}
+              />
+            </Col>
+          </Row>
+        </Col>
+        <Col className="fr-pl-2w" md={2} xs={12}>
+          <Button onClick={onSubmit} style={{ verticalAlign: 'bottom' }}>
+            Search mentions
+          </Button>
+        </Col>
+      </Row>
+      <Tabs
+        defaultActiveIndex={currentTab}
+        onTabChange={(i) => setCurrentTab(i)}
+      >
         <Tab label="Software">
           <DataTable
             currentPageReportTemplate="{first} to {last} of {totalRecords}"
             dataKey="id"
-            filterDisplay="row"
-            filters={lazyState.filters}
             first={lazyState.first}
             lazy
             loading={loading}
-            onFilter={onFilter}
             onPage={onPage}
             paginator
             paginatorPosition="bottom"
@@ -158,14 +220,7 @@ export default function Mentions() {
             totalRecords={totalRecords}
             value={mentions}
           >
-            <Column
-              body={doiTemplate}
-              field="doi"
-              filter
-              filterPlaceholder="Search DOI"
-              header="DOI"
-            />
-            <Column field="type" header="Type" />
+            <Column body={doiTemplate} field="doi" header="DOI" />
             <Column field="rawForm" header="Raw Form" />
             <Column body={contextTemplate} field="context" header="Context" />
             <Column
@@ -183,18 +238,21 @@ export default function Mentions() {
               field="mention.mention_context.shared"
               header="Shared"
             />
+            <Column
+              body={affiliationsTemplate}
+              field="affiliations"
+              header="Affiliations"
+            />
+            <Column body={authorsTemplate} field="authors" header="Authors" />
           </DataTable>
         </Tab>
         <Tab label="Datasets">
           <DataTable
             currentPageReportTemplate="{first} to {last} of {totalRecords}"
             dataKey="id"
-            filterDisplay="row"
-            filters={lazyState.filters}
             first={lazyState.first}
             lazy
             loading={loading}
-            onFilter={onFilter}
             onPage={onPage}
             paginator
             paginatorPosition="bottom"
@@ -209,14 +267,7 @@ export default function Mentions() {
             totalRecords={totalRecords}
             value={mentions}
           >
-            <Column
-              body={doiTemplate}
-              field="doi"
-              filter
-              filterPlaceholder="Search DOI"
-              header="DOI"
-            />
-            <Column field="type" header="Type" />
+            <Column body={doiTemplate} field="doi" header="DOI" />
             <Column field="rawForm" header="Raw Form" />
             <Column body={contextTemplate} field="context" header="Context" />
             <Column
@@ -234,6 +285,12 @@ export default function Mentions() {
               field="mention.mention_context.shared"
               header="Shared"
             />
+            <Column
+              body={affiliationsTemplate}
+              field="affiliations"
+              header="Affiliations"
+            />
+            <Column body={authorsTemplate} field="authors" header="Authors" />
           </DataTable>
         </Tab>
       </Tabs>
