@@ -53,6 +53,11 @@ export default function Mentions() {
           ? 'fr-icon-check-line'
           : 'fr-icon-close-line'
       }`}
+      style={{ color:
+          rowData.mention_context.created
+            ? '#8dc572'
+            : '#be6464',
+      }}
     />
   );
   const doiTemplate = (rowData) => (
@@ -65,6 +70,11 @@ export default function Mentions() {
           ? 'fr-icon-check-line'
           : 'fr-icon-close-line'
       }`}
+      style={{ color:
+          rowData.mention_context.shared
+            ? '#8dc572'
+            : '#be6464',
+      }}
     />
   );
   const usedTemplate = (rowData) => (
@@ -74,6 +84,11 @@ export default function Mentions() {
           ? 'fr-icon-check-line'
           : 'fr-icon-close-line'
       }`}
+      style={{ color:
+          rowData.mention_context.used
+            ? '#8dc572'
+            : '#be6464',
+      }}
     />
   );
 
@@ -127,7 +142,7 @@ export default function Mentions() {
       <Row>
         <Col md={10} xs={12}>
           <Row>
-            <Col className="fr-pr-2w" md={3} xs={12}>
+            <Col className="fr-pr-2w fr-mb-2w" md={3} xs={12}>
               <div className="label">Search</div>
               <div className="hint">Example "Coq"</div>
             </Col>
@@ -141,7 +156,7 @@ export default function Mentions() {
               />
             </Col>
           </Row>
-          <Row>
+          <Row style={{ display: 'none' }}>
             <Col className="fr-pr-2w" md={3} xs={12}>
               <div className="label">Affiliation</div>
               <div className="hint">Example "Cern"</div>
@@ -156,7 +171,7 @@ export default function Mentions() {
               />
             </Col>
           </Row>
-          <Row>
+          <Row style={{ display: 'none' }}>
             <Col className="fr-pr-2w" md={3} xs={12}>
               <div className="label">Author</div>
               <div className="hint">Example "Bruno Latour"</div>
@@ -171,7 +186,7 @@ export default function Mentions() {
               />
             </Col>
           </Row>
-          <Row className="fr-mb-2w">
+          <Row className="fr-mb-2w" style={{ display: 'none' }}>
             <Col className="fr-pr-2w" md={3} xs={12}>
               <div className="label">DOI</div>
               <div className="hint">
@@ -207,6 +222,7 @@ export default function Mentions() {
             lazy
             loading={loading}
             onPage={onPage}
+            onSort={onSort} sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
             paginator
             paginatorPosition="bottom"
             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"

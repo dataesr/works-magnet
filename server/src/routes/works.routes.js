@@ -277,7 +277,8 @@ const getMentions = async ({ options }) => {
     body.query.bool.must.push({ term: { 'doi.keyword': doi } });
   }
   if (search?.length > 0) {
-    body.query.bool.must.push({ term: { context: search } });
+    // body.query.bool.should.push({ term: { context: search } });
+    body.query.bool.must.push({ simple_query_string: { query: search } });
   }
   body = JSON.stringify(body);
   const url = `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_search`;
