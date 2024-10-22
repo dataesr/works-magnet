@@ -100,12 +100,14 @@ const getWorks = async (options, toast) => {
   if (warnings?.isMaxOpenalexReached) {
     warningMessage = warningMessage.concat(`More than ${warnings.maxOpenalexValue} publications found in OpenAlex, only the first ${warnings.maxOpenalexValue} were retrieved.\n`);
   }
-  toast({
-    description: warningMessage,
-    id: 'tooManyPublications',
-    title: 'Too Many publications found',
-    toastType: 'error',
-  });
+  if (warningMessage) {
+    toast({
+      description: warningMessage,
+      id: 'tooManyPublications',
+      title: 'Too Many publications found',
+      toastType: 'error',
+    });
+  }
   return { affiliations: resAffiliations, datasets, publications, warnings };
 };
 
