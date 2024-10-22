@@ -101,6 +101,17 @@ const getWorks = async ({ options, resetCache = false }) => {
     );
   });
   const responses = await Promise.all(queries);
+  const warnings = {};
+  const MAX_FOSM = Number(process.env.ES_MAX_SIZE);
+  if (MAX_FOSM > 0 && responses.length > 0 && responses[0].length >= MAX_FOSM) {
+    warnings.isMaxFosmReached = true;
+    warnings.maxFosmValue = MAX_FOSM;
+  }
+  const MAX_OPENALEX = Number(process.env.OPENALEX_MAX_SIZE);
+  if (MAX_OPENALEX > 0 && responses.length > 1 && responses[1].length >= MAX_OPENALEX) {
+    warnings.isMaxOpenalexReached = true;
+    warnings.maxOpenalexValue = MAX_OPENALEX;
+  }
   console.timeEnd(
     `1. Query ${queryId} | Requests ${options.affiliationStrings}`,
   );
@@ -191,6 +202,7 @@ const getWorks = async ({ options, resetCache = false }) => {
       years: publicationsYears,
     },
     extractionDate: Date.now(),
+    warnings,
   };
   console.timeEnd(
     `6. Query ${queryId} | Serialization ${options.affiliationStrings}`,
