@@ -53,7 +53,8 @@ const getWorks = async ({ options, resetCache = false }) => {
   const shasum = crypto.createHash('sha1');
   shasum.update(JSON.stringify(options));
   const searchId = shasum.digest('hex');
-  const queryId = Math.floor(Math.random() * SEED_MAX);
+  const start = new Date();
+  const queryId = start.toISOString().concat(' - ', Math.floor(Math.random() * SEED_MAX).toString());
   let cache = false;
   if (USE_CACHE) {
     console.time(
@@ -197,7 +198,7 @@ const getWorks = async ({ options, resetCache = false }) => {
   console.time(
     `7. Query ${queryId} | Save cache ${options.affiliationStrings}`,
   );
-  await saveCache({ result, searchId });
+  await saveCache({ result, searchId, queryId });
   console.timeEnd(
     `7. Query ${queryId} | Save cache ${options.affiliationStrings}`,
   );
