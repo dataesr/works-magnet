@@ -223,9 +223,7 @@ router.route('/works').post(async (req, res) => {
 });
 
 const getMentions = async ({ options }) => {
-  const {
-    affiliation, author, doi, from, search, size, type,
-  } = options;
+  const { from, search, size, type } = options;
   let types = [];
   if (type === 'software') {
     types = ['software'];
@@ -266,19 +264,7 @@ const getMentions = async ({ options }) => {
       ],
     },
   };
-  if (affiliation?.length > 0) {
-    body.query.bool.must.push({
-      term: { 'authors.affiliations.name': affiliation },
-    });
-  }
-  if (author?.length > 0) {
-    body.query.bool.must.push({ term: { 'authors.last_name': author } });
-  }
-  if (doi?.length > 0) {
-    body.query.bool.must.push({ term: { 'doi.keyword': doi } });
-  }
   if (search?.length > 0) {
-    // body.query.bool.should.push({ term: { context: search } });
     body.query.bool.must.push({ simple_query_string: { query: search } });
   }
   body = JSON.stringify(body);
@@ -296,8 +282,13 @@ const getMentions = async ({ options }) => {
   const count = data?.hits?.total?.value ?? 0;
   const mentions = (data?.hits?.hits ?? []).map((mention) => ({
     ...mention._source,
-    affiliations:
-      mention._source?.authors?.map((_author) => _author?.affiliations?.map((_affiliation) => _affiliation.name)).flat() ?? [],
+    affiliations: [
+      ...new Set(
+        mention._source?.authors
+          ?.map((_author) => _author?.affiliations?.map((_affiliation) => _affiliation.name))
+          .flat().filter((item) => !!item) ?? [],
+      ),
+    ],
     authors:
       mention._source?.authors?.map((_author) => _author.last_name) ?? [],
     context: mention?.highlight?.context ?? mention._source.context,

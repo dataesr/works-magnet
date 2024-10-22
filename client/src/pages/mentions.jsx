@@ -12,37 +12,26 @@ import { DataTable } from 'primereact/datatable';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { authorsTemplate } from '../utils/templates';
+import { affiliations2Template, authorsTemplate } from '../utils/templates';
 import { getMentions } from '../utils/works';
 
-const DEFAULT_ROWS = 50;
+const DEFAULT_SEARCH = '';
+const DEFAULT_SIZE = 50;
 
 export default function Mentions() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [currentTab, setCurrentTab] = useState(0);
-  const [affiliation, setAffiliation] = useState('');
-  const [author, setAuthor] = useState('');
-  const [doi, setDoi] = useState('');
-  const [from, setFrom] = useState(0);
   const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
-  const [rows, setRows] = useState(DEFAULT_ROWS);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(DEFAULT_SEARCH);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [lazyState, setlazyState] = useState({
-    first: 0,
-    page: 1,
-    rows: DEFAULT_ROWS,
+  const [urlSearchParams, setUrlSearchParams] = useState({
+    from: 0,
+    search: DEFAULT_SEARCH,
+    size: DEFAULT_SIZE,
+    type: 'software',
   });
 
   // Templates
-  const affiliationsTemplate = (rowData) => (
-    <ul>
-      {rowData.affiliations.slice(0, 3).map((_affiliation) => (
-        <li>{_affiliation}</li>
-      ))}
-    </ul>
-  );
   const contextTemplate = (rowData) => (
     <span dangerouslySetInnerHTML={{ __html: rowData.context }} />
   );
@@ -53,11 +42,7 @@ export default function Mentions() {
           ? 'fr-icon-check-line'
           : 'fr-icon-close-line'
       }`}
-      style={{ color:
-          rowData.mention_context.created
-            ? '#8dc572'
-            : '#be6464',
-      }}
+      style={{ color: rowData.mention_context.created ? '#8dc572' : '#be6464' }}
     />
   );
   const doiTemplate = (rowData) => (
@@ -70,11 +55,7 @@ export default function Mentions() {
           ? 'fr-icon-check-line'
           : 'fr-icon-close-line'
       }`}
-      style={{ color:
-          rowData.mention_context.shared
-            ? '#8dc572'
-            : '#be6464',
-      }}
+      style={{ color: rowData.mention_context.shared ? '#8dc572' : '#be6464' }}
     />
   );
   const usedTemplate = (rowData) => (
@@ -84,69 +65,60 @@ export default function Mentions() {
           ? 'fr-icon-check-line'
           : 'fr-icon-close-line'
       }`}
-      style={{ color:
-          rowData.mention_context.used
-            ? '#8dc572'
-            : '#be6464',
-      }}
+      style={{ color: rowData.mention_context.used ? '#8dc572' : '#be6464' }}
     />
   );
 
   // Events
-  const loadLazyData = async () => {
-    setLoading(true);
-    const data = await getMentions({
-      affiliation: searchParams.get('affiliation'),
-      author: searchParams.get('author'),
-      doi: searchParams.get('doi'),
-      from: searchParams.get('from'),
-      search: searchParams.get('search'),
-      size: searchParams.get('size'),
-      type: currentTab === 0 ? 'software' : 'datasets',
-    });
-    setMentions(data?.mentions ?? []);
-    setTotalRecords(data?.count ?? 0);
-    setLoading(false);
-  };
   const onPage = (event) => {
-    setFrom(event.first);
-    setRows(event.rows);
+    searchParams.set('from', parseInt(event.first, 10));
+    setSearchParams(searchParams);
   };
   const onSubmit = () => {
-    setSearchParams((params) => {
-      params.set('affiliation', affiliation);
-      params.set('author', author);
-      params.set('doi', doi);
-      params.set('from', from);
-      params.set('search', search);
-      params.set('size', rows);
-      return params;
-    });
+    searchParams.set('search', search);
+    setSearchParams(searchParams);
   };
 
   // Effects
-  useEffect(() => setFrom(0), [currentTab]);
   useEffect(() => {
-    setlazyState({
-      ...lazyState,
-      first: parseInt(searchParams.get('from'), 10),
-      rows: searchParams.get('size'),
-    });
-  }, [currentTab, searchParams]);
+    console.log('searchParams changed');
+    if (searchParams.size === 0) {
+      setSearchParams({
+        from: 0,
+        search: DEFAULT_SEARCH,
+        size: DEFAULT_SIZE,
+        type: 'software',
+      });
+    } else {
+      setUrlSearchParams({
+        from: searchParams.get('from'),
+        search: searchParams.get('search'),
+        size: searchParams.get('size'),
+        type: searchParams.get('type'),
+      });
+    }
+  }, [searchParams]);
   useEffect(() => {
-    loadLazyData();
-  }, [lazyState]);
+    const getData = async () => {
+      setLoading(true);
+      const data = await getMentions(urlSearchParams);
+      setMentions(data?.mentions ?? []);
+      setTotalRecords(data?.count ?? 0);
+      setLoading(false);
+    };
+    getData();
+  }, [urlSearchParams]);
 
   return (
     <Container as="section" className="fr-mt-4w mentions">
       <Row>
         <Col md={10} xs={12}>
           <Row>
-            <Col className="fr-pr-2w fr-mb-2w" md={3} xs={12}>
+            <Col className="fr-pr-2w fr-mb-2w" md={2} xs={12}>
               <div className="label">Search</div>
-              <div className="hint">Example "Coq"</div>
+              <div className="hint">Example "Coq" or "Cern"</div>
             </Col>
-            <Col md={9} xs={12}>
+            <Col md={10} xs={12}>
               <TextInput
                 disableAutoValidation
                 // hint="Example: Coq"
@@ -156,76 +128,29 @@ export default function Mentions() {
               />
             </Col>
           </Row>
-          <Row style={{ display: 'none' }}>
-            <Col className="fr-pr-2w" md={3} xs={12}>
-              <div className="label">Affiliation</div>
-              <div className="hint">Example "Cern"</div>
-            </Col>
-            <Col md={9} xs={12}>
-              <TextInput
-                disableAutoValidation
-                // hint="Example: Coq"
-                // label="Search"
-                onChange={(e) => setAffiliation(e.target.value)}
-                value={affiliation}
-              />
-            </Col>
-          </Row>
-          <Row style={{ display: 'none' }}>
-            <Col className="fr-pr-2w" md={3} xs={12}>
-              <div className="label">Author</div>
-              <div className="hint">Example "Bruno Latour"</div>
-            </Col>
-            <Col md={9} xs={12}>
-              <TextInput
-                disableAutoValidation
-                // hint="Example: Coq"
-                // label="Search"
-                onChange={(e) => setAuthor(e.target.value)}
-                value={author}
-              />
-            </Col>
-          </Row>
-          <Row className="fr-mb-2w" style={{ display: 'none' }}>
-            <Col className="fr-pr-2w" md={3} xs={12}>
-              <div className="label">DOI</div>
-              <div className="hint">
-                Example "10.4000/proceedings.elpub.2019.20"
-              </div>
-            </Col>
-            <Col md={9} xs={12}>
-              <TextInput
-                disableAutoValidation
-                // hint="Example: Coq"
-                // label="Search"
-                onChange={(e) => setDoi(e.target.value)}
-                value={doi}
-              />
-            </Col>
-          </Row>
         </Col>
-        <Col className="fr-pl-2w" md={2} xs={12}>
+        <Col className="fr-pl-2w fr-mt-1w" md={2} xs={12}>
           <Button onClick={onSubmit} style={{ verticalAlign: 'bottom' }}>
             Search mentions
           </Button>
         </Col>
       </Row>
       <Tabs
-        defaultActiveIndex={currentTab}
-        onTabChange={(i) => setCurrentTab(i)}
+        defaultActiveIndex={0}
+        onTabChange={(i) => setUrlSearchParams({ ...urlSearchParams, type: i === 0 ? 'software' : 'datasets' })}
       >
         <Tab label="Software">
           <DataTable
             currentPageReportTemplate="{first} to {last} of {totalRecords}"
             dataKey="id"
-            first={lazyState.first}
+            first={parseInt(urlSearchParams.from, 10)}
             lazy
             loading={loading}
             onPage={onPage}
             paginator
             paginatorPosition="bottom"
             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-            rows={rows}
+            rows={parseInt(urlSearchParams.size, 10)}
             rowsPerPageOptions={[20, 50, 100]}
             scrollable
             size="small"
@@ -254,7 +179,7 @@ export default function Mentions() {
               header="Shared"
             />
             <Column
-              body={affiliationsTemplate}
+              body={affiliations2Template}
               field="affiliations"
               header="Affiliations"
             />
@@ -265,14 +190,14 @@ export default function Mentions() {
           <DataTable
             currentPageReportTemplate="{first} to {last} of {totalRecords}"
             dataKey="id"
-            first={lazyState.first}
+            first={parseInt(urlSearchParams.from, 10)}
             lazy
             loading={loading}
             onPage={onPage}
             paginator
             paginatorPosition="bottom"
             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-            rows={rows}
+            rows={parseInt(urlSearchParams.size, 10)}
             rowsPerPageOptions={[20, 50, 100]}
             scrollable
             size="small"
@@ -301,7 +226,7 @@ export default function Mentions() {
               header="Shared"
             />
             <Column
-              body={affiliationsTemplate}
+              body={affiliations2Template}
               field="affiliations"
               header="Affiliations"
             />

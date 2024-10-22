@@ -16,6 +16,26 @@ const affiliationsTemplate = (rowData) => (
   </>
 );
 
+const affiliations2Template = (rowData) => {
+  let affiliationsHtml = `<ul data-tooltip-id="tooltip-affiliation-${rowData.id}">`;
+  affiliationsHtml += rowData.affiliations.slice(0, 3).map((affiliation, index) => `<li key="affiliation-${rowData.id}-${index}">${affiliation}</li>`).join('');
+  if (rowData.affiliations.length > 3) {
+    affiliationsHtml += `<li>others (${rowData.affiliations.length - 3})</li>`;
+  }
+  affiliationsHtml += '</ul>';
+  let affiliationsTooltip = '<ul>';
+  affiliationsTooltip += rowData.affiliations.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation}</li>`).join('');
+  affiliationsTooltip += '</ul>';
+  return (
+    <>
+      <span dangerouslySetInnerHTML={{ __html: affiliationsHtml }} />
+      <Tooltip id={`tooltip-affiliation-${rowData.id}`}>
+        <span dangerouslySetInnerHTML={{ __html: affiliationsTooltip }} />
+      </Tooltip>
+    </>
+  );
+};
+
 const statusesItemTemplate = (option) => (
   <div className="flex align-items-center gap-2">
     <span>{option.name}</span>
@@ -153,6 +173,7 @@ const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection
 
 export {
   affiliationsTemplate,
+  affiliations2Template,
   allIdsTemplate,
   authorsTemplate,
   correctionTemplate,

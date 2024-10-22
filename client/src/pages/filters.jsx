@@ -62,7 +62,7 @@ export default function Filters({
   useEffect(() => {
     const getData = async () => {
       if (searchParams.size === 0) {
-        // default values
+        // Set default params values
         setSearchParams({
           affiliations: [],
           datasets: false,
