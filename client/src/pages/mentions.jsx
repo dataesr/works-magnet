@@ -24,9 +24,15 @@ const DEFAULT_TYPE = 'software';
 
 export default function Mentions() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [correctionsUsed, setCorrectionsUsed] = useState(true);
+  const [correctionsCreated, setCorrectionsCreated] = useState(true);
+  const [correctionsShared, setCorrectionsShared] = useState(true);
+  const [fixedMenu, setFixedMenu] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
   const [search, setSearch] = useState(DEFAULT_SEARCH);
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedMentions, setSelectedMentions] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [urlSearchParams, setUrlSearchParams] = useState({
     from: DEFAULT_FROM,
@@ -80,6 +86,15 @@ export default function Mentions() {
     searchParams.set('from', parseInt(event.first, 10));
     setSearchParams(searchParams);
   };
+  const onSelectAllChange = (event) => {
+    if (event.checked) {
+      setSelectAll(true);
+      setSelectedMentions(mentions);
+    } else {
+      setSelectAll(false);
+      setSelectedMentions([]);
+    }
+  };
   const onSort = (event) => {
     searchParams.set('sort-by', event.sortField);
     searchParams.set('sort-order', event.sortOrder === 1 ? 'asc' : 'desc');
@@ -126,6 +141,103 @@ export default function Mentions() {
 
   return (
     <Container as="section" className="fr-mt-4w mentions">
+      <div
+        className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`}
+        title="actions"
+      >
+        <div
+          className={`selected-item ${selectedMentions.length && 'selected'}`}
+        >
+          <span className="number">{selectedMentions.length}</span>
+          {`selected mention${selectedMentions.length === 1 ? '' : 's'}`}
+        </div>
+        <Button
+          className="fr-mb-1w fr-pl-1w button"
+          color="blue-ecume"
+          disabled={!selectedMentions.length}
+          key="mention-used"
+          onClick={() => setCorrectionsUsed(!correctionsUsed)}
+          size="lg"
+          style={{ display: 'block', width: '100%', textAlign: 'left' }}
+          title="Used"
+        >
+          <i
+            className={`${
+              correctionsUsed ? 'fr-icon-check-line' : 'fr-icon-close-line'
+            }`}
+            style={{ color: correctionsUsed ? '#8dc572' : '#be6464' }}
+          />
+          {' '}
+          Used
+        </Button>
+        <Button
+          className="fr-mb-1w fr-pl-1w button"
+          color="blue-ecume"
+          disabled={!selectedMentions.length}
+          key="mention-created"
+          onClick={() => setCorrectionsCreated(!correctionsCreated)}
+          size="lg"
+          style={{ display: 'block', width: '100%', textAlign: 'left' }}
+          title="Created"
+        >
+          <i
+            className={`${
+              correctionsCreated ? 'fr-icon-check-line' : 'fr-icon-close-line'
+            }`}
+            style={{ color: correctionsCreated ? '#8dc572' : '#be6464' }}
+          />
+          {' '}
+          Created
+        </Button>
+        <Button
+          className="fr-mb-1w fr-pl-1w button"
+          color="blue-ecume"
+          disabled={!selectedMentions.length}
+          key="mention-shared"
+          onClick={() => setCorrectionsShared(!correctionsShared)}
+          size="lg"
+          style={{ display: 'block', width: '100%', textAlign: 'left' }}
+          title="Shared"
+        >
+          <i
+            className={`${
+              correctionsShared ? 'fr-icon-check-line' : 'fr-icon-close-line'
+            }`}
+            style={{ color: correctionsShared ? '#8dc572' : '#be6464' }}
+          />
+          {' '}
+          Shared
+        </Button>
+        <Button
+          className="fr-mb-1w fr-pl-1w button"
+          color="blue-ecume"
+          disabled={!selectedMentions.length}
+          key="add-ror"
+          onClick={() => {}}
+          size="lg"
+          style={{ display: 'block', width: '100%', textAlign: 'left' }}
+          title="Add ROR"
+        >
+          <i
+            className="fr-icon-send-plane-line fr-mr-2w"
+            style={{ color: '#000091' }}
+          />
+          Send feedbacks
+        </Button>
+        <div className="text-right">
+          <Button
+            onClick={() => setFixedMenu(!fixedMenu)}
+            size="sm"
+            variant="tertiary"
+          >
+            {fixedMenu ? (
+              <i className="ri-pushpin-fill" />
+            ) : (
+              <i className="ri-pushpin-line" />
+            )}
+          </Button>
+        </div>
+      </div>
       <Row>
         <Col md={10} xs={12}>
           <Row>
@@ -137,6 +249,11 @@ export default function Mentions() {
               <TextInput
                 disableAutoValidation
                 onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    onSubmit();
+                  }
+                }}
                 value={search}
               />
             </Col>
@@ -163,6 +280,8 @@ export default function Mentions() {
             lazy
             loading={loading}
             onPage={onPage}
+            onSelectAllChange={onSelectAllChange}
+            onSelectionChange={(e) => setSelectedMentions(e.value)}
             onSort={onSort}
             paginator
             paginatorPosition="bottom"
@@ -170,6 +289,8 @@ export default function Mentions() {
             rows={parseInt(urlSearchParams.size, 10)}
             rowsPerPageOptions={[20, 50, 100]}
             scrollable
+            selectAll={selectAll}
+            selection={selectedMentions}
             size="small"
             sortField={urlSearchParams.sortBy}
             sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
@@ -179,6 +300,7 @@ export default function Mentions() {
             totalRecords={totalRecords}
             value={mentions}
           >
+            <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
             <Column body={doiTemplate} field="doi" header="DOI" sortable />
             <Column field="rawForm" header="Raw Form" sortable />
             <Column body={contextTemplate} field="context" header="Context" />
@@ -216,19 +338,27 @@ export default function Mentions() {
             lazy
             loading={loading}
             onPage={onPage}
+            onSelectAllChange={onSelectAllChange}
+            onSelectionChange={(e) => setSelectedMentions(e.value)}
+            onSort={onSort}
             paginator
             paginatorPosition="bottom"
             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
             rows={parseInt(urlSearchParams.size, 10)}
             rowsPerPageOptions={[20, 50, 100]}
             scrollable
+            selectAll={selectAll}
+            selection={selectedMentions}
             size="small"
+            sortField={urlSearchParams.sortBy}
+            sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
             stripedRows
             style={{ fontSize: '14px', lineHeight: '13px' }}
             tableStyle={{ minWidth: '50rem' }}
             totalRecords={totalRecords}
             value={mentions}
           >
+            <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
             <Column body={doiTemplate} field="doi" header="DOI" sortable />
             <Column field="rawForm" header="Raw Form" sortable />
             <Column body={contextTemplate} field="context" header="Context" />
