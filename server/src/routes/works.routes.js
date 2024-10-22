@@ -223,7 +223,9 @@ router.route('/works').post(async (req, res) => {
 });
 
 const getMentions = async ({ options }) => {
-  const { from, search, size, type } = options;
+  const {
+    from, search, size, sortBy, sortOrder, type,
+  } = options;
   let types = [];
   if (type === 'software') {
     types = ['software'];
@@ -267,6 +269,32 @@ const getMentions = async ({ options }) => {
   if (search?.length > 0) {
     body.query.bool.must.push({ simple_query_string: { query: search } });
   }
+  if (sortBy && sortOrder) {
+    let sortFields = sortBy;
+    switch (sortBy) {
+      case 'doi':
+        sortFields = ['doi.keyword'];
+        break;
+      case 'rawForm':
+        sortFields = [
+          'dataset-name.rawForm.keyword',
+          'software-name.rawForm.keyword',
+        ];
+        break;
+      case 'mention.mention_context.used':
+        sortFields = ['mention_context.used'];
+        break;
+      case 'mention.mention_context.created':
+        sortFields = ['mention_context.created'];
+        break;
+      case 'mention.mention_context.shared':
+        sortFields = ['mention_context.shared'];
+        break;
+      default:
+    }
+    body.sort = [];
+    sortFields.map((sortField) => body.sort.push({ [sortField]: sortOrder }));
+  }
   body = JSON.stringify(body);
   const url = `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_search`;
   const params = {
@@ -286,7 +314,8 @@ const getMentions = async ({ options }) => {
       ...new Set(
         mention._source?.authors
           ?.map((_author) => _author?.affiliations?.map((_affiliation) => _affiliation.name))
-          .flat().filter((item) => !!item) ?? [],
+          .flat()
+          .filter((item) => !!item) ?? [],
       ),
     ],
     authors:
