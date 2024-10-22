@@ -338,7 +338,7 @@ const getOpenAlexAffiliation = (author) => {
 };
 
 const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = [], remainingTries = 3) => {
-  console.log('getOpenAlexPublicationsByYear', `MAX_OPENALEX = ${MAX_OPENALEX}`);
+  console.log('getOpenAlexPublicationsByYear', `MAX_OPENALEX = ${MAX_OPENALEX}, currentResponseLength = ${previousResponse.length}`);
   let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
@@ -365,6 +365,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     .then((response) => {
       if (response.ok) return response.json();
       if (response.status === 429) {
+        console.log('Error 429', 'Getting error 429 from OpenAlex');
         return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
       }
       console.error(`Error while fetching ${url} :`);
