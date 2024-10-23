@@ -20,7 +20,7 @@ webSocketServer.on('connection', (webSocket) => {
       toast = {
         description: `${Math.min(data.length, (i + 1) * perChunk)} / ${
           data.length
-        } issue(s) submitted`,
+        } issue${data.length > 1 ? 's' : ''} submitted`,
         id: `processCorrections${i}`,
         title: `${type.replace('-', ' ')} corrections are being processed`,
       };
@@ -42,10 +42,10 @@ webSocketServer.on('connection', (webSocket) => {
       webSocket.send(JSON.stringify(toast));
     } else {
       toast = {
-        description: `${data.length} corrections to ${type.replace('-', '')} have been saved -
-          see <a href="https://github.com/dataesr/${type}/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
+        description: `${data.length} correction${data.length > 1 ? 's' : ''} to ${type.replace('-', ' ')} have been saved -
+          see <a href="https://github.com/dataesr/${type}/issues" target="_blank">https://github.com/dataesr/${type}/issues</a>`,
         id: 'successCorrections',
-        title: 'OpenAlex corrections sent',
+        title: `${type.replace('-', ' ')} correction${data.length > 1 ? 's' : ''} sent`,
         toastType: 'success',
       };
       webSocket.send(JSON.stringify(toast));
