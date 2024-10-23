@@ -12,12 +12,12 @@ const octokit = new MyOctokit({
   auth,
   request: { retryAfter: 10 },
   throttle: {
-    onRateLimit: (retryAfter, options) => {
+    onRateLimit: (_, options) => {
       octokit.log.warn(
         `Request quota exhausted for request ${options.method} ${options.url}`,
       );
     },
-    onSecondaryRateLimit: (retryAfter, options) => {
+    onSecondaryRateLimit: (_, options) => {
       // Retry 5 times after hitting a rate limit error after 5 seconds
       if (options.request.retryCount <= 5) {
         return true;
@@ -43,7 +43,7 @@ const encrypt = (text) => {
   return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
 };
 
-const createIssue = (issue, email) => {
+const createIssueOpenAlexAffiliations = ({ email, issue }) => {
   let title = `Correction for raw affiliation ${issue.rawAffiliationString}`;
   if (title.length > 1000) {
     title = `${title.slice(0, 1000)}...`;
@@ -71,6 +71,36 @@ const createIssue = (issue, email) => {
     repo: 'openalex-affiliations',
     title,
   });
+};
+
+const createIssueMentionsCharacterizations = ({ email, issue }) => {
+  const title = `Correction for mention ${issue.id}`;
+  const user = `${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}`;
+  // eslint-disable-next-line no-param-reassign
+  issue.texts[0].class_attributes.classification.used.user = user;
+  // eslint-disable-next-line no-param-reassign
+  issue.texts[0].class_attributes.classification.created.user = user;
+  // eslint-disable-next-line no-param-reassign
+  issue.texts[0].class_attributes.classification.shared.user = user;
+  const body = JSON.stringify(issue, null, 4);
+  return octokit.rest.issues.create({
+    body,
+    owner: 'dataesr',
+    repo: 'mentions-characterizations',
+    title,
+  });
+};
+
+const createIssue = ({ email, issue, type }) => {
+  switch (type) {
+    case 'mentions-characterizations':
+      return createIssueMentionsCharacterizations({ email, issue });
+    case 'openalex-affiliations':
+      return createIssueOpenAlexAffiliations({ email, issue });
+    default:
+      console.error(`Error wile creating Github issue as "type" should be one of ["mentions-characterizations", "openalex-affiliations"] instead of "${type}".`);
+      return false;
+  }
 };
 
 export {

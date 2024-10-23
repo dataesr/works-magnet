@@ -2,6 +2,10 @@ import {
   Button,
   Col,
   Container,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalTitle,
   Row,
   Tab,
   Tabs,
@@ -11,9 +15,13 @@ import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import useWebSocket from 'react-use-websocket';
 
-import { affiliations2Template, authorsTemplate } from '../utils/templates';
+import { affiliations2Template, authorsTemplate, hasCorrectionTemplate } from '../utils/templates';
+import useToast from '../hooks/useToast';
 import { getMentions } from '../utils/works';
+
+const { VITE_WS_HOST } = import.meta.env;
 
 const DEFAULT_FROM = 0;
 const DEFAULT_SEARCH = '';
@@ -23,11 +31,12 @@ const DEFAULT_SORTORDER = '';
 const DEFAULT_TYPE = 'software';
 
 export default function Mentions() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [corrections, setCorrections] = useState('');
   const [correctionsUsed, setCorrectionsUsed] = useState(true);
   const [correctionsCreated, setCorrectionsCreated] = useState(true);
   const [correctionsShared, setCorrectionsShared] = useState(true);
   const [fixedMenu, setFixedMenu] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
   const [search, setSearch] = useState(DEFAULT_SEARCH);
@@ -42,6 +51,96 @@ export default function Mentions() {
     sortOrder: DEFAULT_SORTORDER,
     type: DEFAULT_TYPE,
   });
+  const [userEmail, setUserEmail] = useState(null);
+  const [validEmail, setValidEmail] = useState(null);
+
+  // Hooks
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { toast } = useToast();
+  const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
+    onError: (event) => console.error(event),
+    onMessage: (event) => {
+      const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
+      return toast({
+        autoDismissAfter: autoDismissAfter ?? 10000,
+        description: description ?? '',
+        id: 'websocket',
+        title: title ?? 'Message renvoyé par le WebSocket',
+        toastType: toastType ?? 'info',
+      });
+    },
+    onOpen: () => console.log('Websocket opened'),
+    onClose: () => console.log('Websocket closed'),
+    shouldReconnect: () => true,
+  });
+
+  // Methods
+  const addCorrections = () => {
+    const correctedMentions = selectedMentions.map((selectedMention) => ({
+      id: selectedMention.id,
+      doi: selectedMention.doi,
+      texts: [
+        {
+          text: selectedMention.context,
+          class_attributes: {
+            classification: {
+              used: {
+                value: correctionsUsed,
+                score: 1.0,
+                previousValue: selectedMention.mention_context.used,
+              },
+              created: {
+                value: correctionsCreated,
+                score: 1.0,
+                previousValue: selectedMention.mention_context.created,
+              },
+              shared: {
+                value: correctionsShared,
+                score: 1.0,
+                previousValue: selectedMention.mention_context.shared,
+              },
+            },
+          },
+        },
+      ],
+    }));
+    const correctedIds = correctedMentions.map((correctedMention) => correctedMention.id);
+    setMentions(mentions.map((mention) => {
+      if (correctedIds.includes(mention.id)) {
+        mention.hasCorrection = true;
+        mention.mention_context.used = correctionsUsed;
+        mention.mention_context.created = correctionsCreated;
+        mention.mention_context.shared = correctionsShared;
+      }
+      return mention;
+    }));
+    setCorrections([...corrections, ...correctedMentions]);
+    setSelectedMentions([]);
+    setCorrectionsUsed(true);
+    setCorrectionsCreated(true);
+    setCorrectionsShared(true);
+  };
+  const switchModal = () => setIsModalOpen((prev) => !prev);
+  const feedback = async () => {
+    try {
+      sendJsonMessage({ data: corrections, email: userEmail, type: 'mentions-characterizations' });
+      toast({
+        autoDismissAfter: 5000,
+        description: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/mentions-characterizations/issues" target="_blank">Github repository</a>',
+        id: 'initMentions',
+        title: 'Mentions characterizations submitted',
+      });
+    } catch (error) {
+      toast({
+        description: error.message,
+        id: 'errorMentions',
+        title: 'Error while sending mentions characterizations',
+        toastType: 'error',
+      });
+    } finally {
+      switchModal();
+    }
+  };
 
   // Templates
   const contextTemplate = (rowData) => (
@@ -138,6 +237,12 @@ export default function Mentions() {
     };
     getData();
   }, [urlSearchParams]);
+  useEffect(() => {
+    const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+    const testEmail = (email) => setValidEmail(emailRegex.test(email) ? email : null);
+    const timeOutId = setTimeout(() => testEmail(userEmail), 500);
+    return () => clearTimeout(timeOutId);
+  }, [userEmail]);
 
   return (
     <Container as="section" className="fr-mt-4w mentions">
@@ -149,7 +254,7 @@ export default function Mentions() {
           className={`selected-item ${selectedMentions.length && 'selected'}`}
         >
           <span className="number">{selectedMentions.length}</span>
-          {`selected mention${selectedMentions.length === 1 ? '' : 's'}`}
+          {`selected mention${selectedMentions.length > 1 ? 's' : ''}`}
         </div>
         <Button
           className="fr-mb-1w fr-pl-1w button"
@@ -213,7 +318,7 @@ export default function Mentions() {
           color="blue-ecume"
           disabled={!selectedMentions.length}
           key="add-ror"
-          onClick={() => {}}
+          onClick={() => addCorrections()}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
           title="Add ROR"
@@ -222,7 +327,7 @@ export default function Mentions() {
             className="fr-icon-send-plane-line fr-mr-2w"
             style={{ color: '#000091' }}
           />
-          Send feedbacks
+          Add corrections
         </Button>
         <div className="text-right">
           <Button
@@ -265,6 +370,34 @@ export default function Mentions() {
           </Button>
         </Col>
       </Row>
+      <Button
+        disabled={!corrections.length > 0}
+        onClick={switchModal}
+        size="sm"
+      >
+        {`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''}`}
+      </Button>
+      <Modal isOpen={isModalOpen} hide={switchModal}>
+        <ModalTitle>Improve mentions characterizations</ModalTitle>
+        <ModalContent>
+          {`You corrected characterizations for ${corrections.length} mention${corrections.length > 1 ? 's' : ''}.`}
+          <TextInput
+            label="Please indicate your email. Only an encrypted version of your email will be public."
+            onChange={(e) => setUserEmail(e.target.value)}
+            required
+            type="email"
+          />
+        </ModalContent>
+        <ModalFooter>
+          <Button
+            disabled={!corrections.length > 0 || !validEmail}
+            onClick={feedback}
+            title={`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''}`}
+          >
+            {`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''}`}
+          </Button>
+        </ModalFooter>
+      </Modal>
       <Tabs
         defaultActiveIndex={0}
         onTabChange={(i) => setUrlSearchParams({
@@ -323,12 +456,24 @@ export default function Mentions() {
               sortable
             />
             <Column
+              body={hasCorrectionTemplate}
+              field="hasCorrection"
+              header="Modified by user?"
+              sortable
+              style={{ maxWidth: '110px' }}
+            />
+            <Column
               body={affiliations2Template}
               field="affiliations"
               header="Affiliations"
             />
             <Column body={authorsTemplate} field="authors" header="Authors" />
           </DataTable>
+          {corrections && corrections.length > 0 && (
+            <code>
+              <pre>{JSON.stringify(corrections, null, 4)}</pre>
+            </code>
+          )}
         </Tab>
         <Tab label="Datasets">
           <DataTable
@@ -381,12 +526,24 @@ export default function Mentions() {
               sortable
             />
             <Column
+              body={hasCorrectionTemplate}
+              field="hasCorrection"
+              header="Modified by user?"
+              sortable
+              style={{ maxWidth: '110px' }}
+            />
+            <Column
               body={affiliations2Template}
               field="affiliations"
               header="Affiliations"
             />
             <Column body={authorsTemplate} field="authors" header="Authors" />
           </DataTable>
+          {corrections && corrections.length > 0 && (
+            <code>
+              <pre>{JSON.stringify(corrections, null, 4)}</pre>
+            </code>
+          )}
         </Tab>
       </Tabs>
     </Container>

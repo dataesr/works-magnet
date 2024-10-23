@@ -9,20 +9,20 @@ webSocketServer.on('connection', (webSocket) => {
   webSocket.on('error', console.error);
   webSocket.on('open', () => console.log('Opening websocket connexion'));
   webSocket.on('message', async (json) => {
-    const { data, email } = JSON.parse(json);
+    const { data, email, type } = JSON.parse(json);
     const perChunk = 30;
     const results = [];
     let toast = {};
     for (const [i, d] of chunkArray({ array: data, perChunk }).entries()) {
-      const promises = d.map((item) => createIssue(item, email).catch((error) => error));
+      const promises = d.map((issue) => createIssue({ email, issue, type }).catch((error) => error));
       const r = await Promise.all(promises);
       results.push(...r);
       toast = {
         description: `${Math.min(data.length, (i + 1) * perChunk)} / ${
           data.length
-        } issue(s) submitted`,
-        id: `processOpenAlex${i}`,
-        title: 'OpenAlex corrections are being processed',
+        } issue${data.length > 1 ? 's' : ''} submitted`,
+        id: `processCorrections${i}`,
+        title: `${type.replace('-', ' ')} corrections are being processed`,
       };
       if (data.length > perChunk) {
         webSocket.send(JSON.stringify(toast));
@@ -35,17 +35,17 @@ webSocketServer.on('connection', (webSocket) => {
     if (firstError?.status) {
       toast = {
         description: `Error while submitting Github issues : ${firstError?.message}`,
-        id: 'errorOpenAlex',
+        id: 'errorCorrections',
         title: `Error ${firstError.status}`,
         toastType: 'error',
       };
       webSocket.send(JSON.stringify(toast));
     } else {
       toast = {
-        description: `${data.length} correction(s) to OpenAlex have been saved -
-          see <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">https://github.com/dataesr/openalex-affiliations/issues</a>`,
-        id: 'successOpenAlex',
-        title: 'OpenAlex corrections sent',
+        description: `${data.length} correction${data.length > 1 ? 's' : ''} to ${type.replace('-', ' ')} have been saved -
+          see <a href="https://github.com/dataesr/${type}/issues" target="_blank">https://github.com/dataesr/${type}/issues</a>`,
+        id: 'successCorrections',
+        title: `${type.replace('-', ' ')} correction${data.length > 1 ? 's' : ''} sent`,
         toastType: 'success',
       };
       webSocket.send(JSON.stringify(toast));

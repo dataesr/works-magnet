@@ -22,7 +22,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
 
   const switchModal = () => setIsModalOpen((prev) => !prev);
 
-  const { readyState, sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
+  const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
     onError: (event) => console.error(event),
     onMessage: (event) => {
       const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
@@ -41,10 +41,10 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
 
   const feedback = async () => {
     try {
-      sendJsonMessage({ data: allOpenalexCorrections, email: userEmail });
+      sendJsonMessage({ data: allOpenalexCorrections, email: userEmail, type: 'openalex-affiliations' });
       toast({
         autoDismissAfter: 5000,
-        description: 'Your correction(s) are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
+        description: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
         id: 'initOpenAlex',
         title: 'OpenAlex corrections submitted',
       });
@@ -61,9 +61,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   };
 
   useEffect(() => {
-    const emailRegex = new RegExp(
-      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
-    );
+    const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
     const testEmail = (email) => setValidEmail(emailRegex.test(email) ? email : null);
     const timeOutId = setTimeout(() => testEmail(userEmail), 500);
     return () => clearTimeout(timeOutId);
