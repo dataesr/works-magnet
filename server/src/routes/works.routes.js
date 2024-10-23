@@ -53,7 +53,8 @@ const getWorks = async ({ options, resetCache = false }) => {
   const shasum = crypto.createHash('sha1');
   shasum.update(JSON.stringify(options));
   const searchId = shasum.digest('hex');
-  const queryId = Math.floor(Math.random() * SEED_MAX);
+  const start = new Date();
+  const queryId = start.toISOString().concat(' - ', Math.floor(Math.random() * SEED_MAX).toString());
   let cache = false;
   if (USE_CACHE) {
     console.time(
@@ -100,6 +101,17 @@ const getWorks = async ({ options, resetCache = false }) => {
     );
   });
   const responses = await Promise.all(queries);
+  const warnings = {};
+  const MAX_FOSM = Number(process.env.ES_MAX_SIZE);
+  if (MAX_FOSM > 0 && responses.length > 0 && responses[0].length >= MAX_FOSM) {
+    warnings.isMaxFosmReached = true;
+    warnings.maxFosmValue = MAX_FOSM;
+  }
+  const MAX_OPENALEX = Number(process.env.OPENALEX_MAX_SIZE);
+  if (MAX_OPENALEX > 0 && responses.length > 1 && responses[1].length >= MAX_OPENALEX) {
+    warnings.isMaxOpenalexReached = true;
+    warnings.maxOpenalexValue = MAX_OPENALEX;
+  }
   console.timeEnd(
     `1. Query ${queryId} | Requests ${options.affiliationStrings}`,
   );
@@ -190,6 +202,7 @@ const getWorks = async ({ options, resetCache = false }) => {
       years: publicationsYears,
     },
     extractionDate: Date.now(),
+    warnings,
   };
   console.timeEnd(
     `6. Query ${queryId} | Serialization ${options.affiliationStrings}`,
@@ -197,7 +210,7 @@ const getWorks = async ({ options, resetCache = false }) => {
   console.time(
     `7. Query ${queryId} | Save cache ${options.affiliationStrings}`,
   );
-  await saveCache({ result, searchId });
+  await saveCache({ result, searchId, queryId });
   console.timeEnd(
     `7. Query ${queryId} | Save cache ${options.affiliationStrings}`,
   );
@@ -208,11 +221,9 @@ router.route('/works').post(async (req, res) => {
   try {
     const options = req?.body ?? {};
     if (!options?.affiliationStrings && !options?.rors) {
-      res
-        .status(400)
-        .json({
-          message: 'You must provide at least one affiliation string or RoR.',
-        });
+      res.status(400).json({
+        message: 'You must provide at least one affiliation string or RoR.',
+      });
     } else {
       const compressedResult = await getWorks({ options });
       res.status(200).json(compressedResult);
@@ -224,22 +235,123 @@ router.route('/works').post(async (req, res) => {
 });
 
 const getMentions = async ({ options }) => {
-  const response = await fetch(
-    `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_search?q=context:${options.search}&size=50`,
-    { method: 'POST', headers: { Authorization: process.env.ES_AUTH } },
-  );
+  const {
+    from, search, size, sortBy, sortOrder, type,
+  } = options;
+  let types = [];
+  if (type === 'software') {
+    types = ['software'];
+  } else if (type === 'datasets') {
+    types = ['dataset-implicit', 'dataset-name'];
+  }
+  let body = {
+    from,
+    size,
+    query: {
+      bool: {
+        must: [
+          {
+            terms: {
+              'type.keyword': types,
+            },
+          },
+        ],
+      },
+    },
+    _source: [
+      'authors',
+      'context',
+      'dataset-name',
+      'doi',
+      'mention_context',
+      'rawForm',
+      'software-name',
+    ],
+    highlight: {
+      number_of_fragments: 0,
+      fragment_size: 100,
+      require_field_match: 'true',
+      fields: [
+        {
+          context: { pre_tags: ['<b>'], post_tags: ['</b>'] },
+        },
+      ],
+    },
+  };
+  if (search?.length > 0) {
+    body.query.bool.must.push({ simple_query_string: { query: search } });
+  }
+  if (sortBy && sortOrder) {
+    let sortFields = sortBy;
+    switch (sortBy) {
+      case 'doi':
+        sortFields = ['doi.keyword'];
+        break;
+      case 'rawForm':
+        sortFields = [
+          'dataset-name.rawForm.keyword',
+          'software-name.rawForm.keyword',
+        ];
+        break;
+      case 'mention.mention_context.used':
+        sortFields = ['mention_context.used'];
+        break;
+      case 'mention.mention_context.created':
+        sortFields = ['mention_context.created'];
+        break;
+      case 'mention.mention_context.shared':
+        sortFields = ['mention_context.shared'];
+        break;
+      default:
+    }
+    body.sort = [];
+    sortFields.map((sortField) => body.sort.push({ [sortField]: sortOrder }));
+  }
+  body = JSON.stringify(body);
+  const url = `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_search`;
+  const params = {
+    body,
+    method: 'POST',
+    headers: {
+      Authorization: process.env.ES_AUTH,
+      'content-type': 'application/json',
+    },
+  };
+  const response = await fetch(url, params);
   const data = await response.json();
-  return data?.hits?.hits ?? [];
+  const count = data?.hits?.total?.value ?? 0;
+  const mentions = (data?.hits?.hits ?? []).map((mention) => ({
+    ...mention._source,
+    affiliations: [
+      ...new Set(
+        mention._source?.authors
+          ?.map((_author) => _author?.affiliations?.map((_affiliation) => _affiliation.name))
+          .flat()
+          .filter((item) => !!item) ?? [],
+      ),
+    ],
+    authors:
+      mention._source?.authors?.map((_author) => _author.last_name) ?? [],
+    context: mention?.highlight?.context ?? mention._source.context,
+    id: mention._id,
+    rawForm:
+      mention._source?.['software-name']?.rawForm
+      ?? mention._source?.['dataset-name']?.rawForm,
+  }));
+
+  return { count, mentions };
 };
 
 router.route('/mentions').post(async (req, res) => {
   try {
     const options = req?.body ?? {};
-    if (!options?.search) {
-      res.status(400).json({ message: 'You must provide a search string.' });
+    if (!['datasets', 'software'].includes(options?.type)) {
+      res
+        .status(400)
+        .json({ message: 'Type should be either "datasets" or "software".' });
     } else {
-      const mentions = await getMentions({ options });
-      res.status(200).json(mentions);
+      const result = await getMentions({ options });
+      res.status(200).json(result);
     }
   } catch (err) {
     console.error(err);

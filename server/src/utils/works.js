@@ -1,5 +1,8 @@
 import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics } from './utils';
 
+const MAX_FOSM = Number(process.env.ES_MAX_SIZE);
+const MAX_OPENALEX = Number(process.env.OPENALEX_MAX_SIZE);
+
 const datasetsType = ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
   'software', 'computationalnotebook', 'film', 'image'];
 
@@ -205,6 +208,7 @@ const formatFosmResult = (result, options) => {
 };
 
 const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, pit, searchAfter }) => {
+  console.log('getFosmWorksByYear', `MAX_FOSM = ${MAX_FOSM}`); 
   if (!pit) {
     const response = await fetch(
       `${process.env.ES_URL}/${process.env.ES_INDEX}/_pit?keep_alive=${process.env.ES_PIT_KEEP_ALIVE}`,
@@ -215,12 +219,12 @@ const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, p
   }
   const body = getFosmQuery(options, pit, searchAfter);
   const params = {
-    method: 'POST',
     body: JSON.stringify(body),
     headers: {
-      'content-type': 'application/json',
       Authorization: process.env.ES_AUTH,
+      'content-type': 'application/json',
     },
+    method: 'POST',
   };
   const url = `${process.env.ES_URL}/_search`;
   return fetch(url, params)
@@ -234,7 +238,7 @@ const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, p
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
       results = results.concat(hits.map((result) => formatFosmResult(result, options))).filter((r) => r.levelCertainty !== '3.low');
-      if (hits.length > 0 && (Number(process.env.ES_MAX_SIZE) === 0 || results.length < Number(process.env.ES_MAX_SIZE))) {
+      if (hits.length > 0 && (MAX_FOSM === 0 || results.length < MAX_FOSM)) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
         return getFosmWorksByYear({ results, options, pit, searchAfter });
@@ -334,6 +338,7 @@ const getOpenAlexAffiliation = (author) => {
 };
 
 const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = [], remainingTries = 3) => {
+  console.log('getOpenAlexPublicationsByYear', `MAX_OPENALEX = ${MAX_OPENALEX}, currentResponseLength = ${previousResponse.length}`);
   let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
@@ -360,6 +365,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     .then((response) => {
       if (response.ok) return response.json();
       if (response.status === 429) {
+        console.log('Error 429', 'Getting error 429 from OpenAlex');
         return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
       }
       console.error(`Error while fetching ${url} :`);
@@ -392,7 +398,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
         return answer;
       }));
       const nextCursor = response?.meta?.next_cursor;
-      if (nextCursor && hits.length > 0 && (Number(process.env.OPENALEX_MAX_SIZE) === 0 || results.length < Number(process.env.OPENALEX_MAX_SIZE))) {
+      if (nextCursor && hits.length > 0 && (MAX_OPENALEX === 0 || results.length < MAX_OPENALEX)) {
         return getOpenAlexPublicationsByYear(options, nextCursor, results);
       }
       return results;

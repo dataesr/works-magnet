@@ -35,7 +35,8 @@ const getCache = async ({ searchId }) => {
   return false;
 };
 
-const saveCache = async ({ result, searchId }) => {
+const saveCache = async ({ result, searchId, queryId }) => {
+  console.log(queryId, 'start saving cache');
   const fileName = getFileName(searchId);
   const remotePath = `${OS_CONTAINER}/${fileName}`;
 
@@ -64,13 +65,20 @@ const saveCache = async ({ result, searchId }) => {
   });
   const token = response?.headers?.get('x-subject-token');
   if (token) {
+    const resultJson = JSON.stringify(result);
+    console.time(
+      `7b. Query ${queryId} | Uploading data to cloud`,
+    );
     await fetch(
       `https://storage.gra.cloud.ovh.net/v1/AUTH_${OS_TENANT_ID}/${remotePath}`,
       {
-        body: JSON.stringify(result),
+        body: resultJson,
         headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token, 'X-Delete-After': '604800' }, // 7 days
         method: 'PUT',
       },
+    );
+    console.timeEnd(
+      `7b. Query ${queryId} | Uploading data to cloud`,
     );
   }
 };

@@ -4,6 +4,10 @@
   cursor: pointer;
 }
 
+.list-none {
+  list-style: none;
+}
+
 .text-center {
   text-align: center;
 }
@@ -20,23 +24,11 @@
   vertical-align: middle;
 }
 
-.list-none {
-  list-style: none;
-}
-
 
 /* General */
 
 body {
   height: auto;
-}
-
-.fr-tags-group > li {
-  line-height: 0rem;
-}
-
-.text-right {
-  text-align: right;
 }
 
 .filters {
@@ -47,8 +39,8 @@ body {
 
 .actions-menu {
   background-color: #eee;
-  border-bottom: 2px solid #000;
   border-bottom-right-radius: 5px;
+  border-bottom: 2px solid #000;
   border-top-right-radius: 5px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
   left: 0;
@@ -90,6 +82,13 @@ body {
   width: 200px;
 }
 
+// Reduce margin width
+@media (min-width: 100em) {
+  .fr-container, .fr-container-sm, .fr-container-md, .fr-container-lg {
+      max-width: 100rem;
+  }
+}
+
 
 /* DataTable - PaginatorLeft */
 
@@ -112,6 +111,25 @@ body {
   content: "";
   margin-right: 5px;
 }
+
 .fr-toggle label[data-fr-unchecked-label][data-fr-checked-label]:before {
   margin: 0;
+}
+
+
+/* Pge Mentions */
+
+.mentions {
+  .hint {
+    color: grey;
+    font-size: .8em;
+    font-style: italic;
+    text-align: end;
+  }
+
+  .label {
+    font-size: 1em;
+    font-weight: bold;
+    text-align: end;
+  }
 }

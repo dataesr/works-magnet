@@ -66,7 +66,7 @@ export default function OpenalexTab({
           affiliation.key.replace('[ source: ', '').replace(' ]', ''),
         );
       });
-      // recompute corrections only when the array has changed
+      // Recompute corrections only when the array has changed
       if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
         const newCorrections = getCorrections(filteredAffiliationsTmp);
         setAllOpenalexCorrections(newCorrections);

@@ -10,6 +10,7 @@ import PublicationsTile from '../components/tiles/publications';
 import { status } from '../config';
 import { getWorks } from '../utils/works';
 import Filters from './filters';
+import useToast from '../hooks/useToast';
 import Datasets from './views/datasets';
 import Openalex from './views/openalex';
 import Publications from './views/publications';
@@ -24,6 +25,7 @@ export default function Home({ isSticky, setIsSticky }) {
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [selectedPublications, setSelectedPublications] = useState([]);
+  const { toast } = useToast();
 
   const setView = (_view) => {
     setSearchParams((params) => {
@@ -34,7 +36,7 @@ export default function Home({ isSticky, setIsSticky }) {
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['data', JSON.stringify(options)],
-    queryFn: () => getWorks(options),
+    queryFn: () => getWorks(options, toast),
     enabled: false,
     cacheTime: 60 * (60 * 1000), // 1h
   });
@@ -78,7 +80,6 @@ export default function Home({ isSticky, setIsSticky }) {
       .map((affiliation) => (affiliation.status = action));
     setSelectedAffiliations([]);
   };
-
   return (
     // TODO:do a cleaner way to display the spinner and views
     <>
