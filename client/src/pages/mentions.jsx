@@ -203,6 +203,10 @@ export default function Mentions() {
     searchParams.set('search', search);
     setSearchParams(searchParams);
   };
+  const onTabChange = (i) => {
+    searchParams.set('type', i === 0 ? 'software' : 'datasets');
+    setSearchParams(searchParams);
+  };
 
   // Effects
   useEffect(() => {
@@ -400,10 +404,7 @@ export default function Mentions() {
       </Modal>
       <Tabs
         defaultActiveIndex={0}
-        onTabChange={(i) => setUrlSearchParams({
-          ...urlSearchParams,
-          type: i === 0 ? 'software' : 'datasets',
-        })}
+        onTabChange={(i) => onTabChange(i)}
       >
         <Tab label="Software">
           <DataTable
