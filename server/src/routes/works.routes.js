@@ -260,6 +260,7 @@ const getMentions = async ({ options }) => {
     },
     _source: [
       'authors',
+      'affiliations',
       'context',
       'dataset-name',
       'doi',
@@ -324,21 +325,20 @@ const getMentions = async ({ options }) => {
     ...mention._source,
     affiliations: [
       ...new Set(
-        mention._source?.authors
-          ?.map((_author) => _author?.affiliations?.map((_affiliation) => _affiliation.name))
+        mention._source?.affiliations
+          ?.map((_affiliation) => _affiliation.name)
           .flat()
           .filter((item) => !!item) ?? [],
       ),
     ],
     authors:
-      mention._source?.authors?.map((_author) => _author.last_name) ?? [],
+      mention._source?.authors?.map((_author) => _author.full_name) ?? [],
     context: mention?.highlight?.context ?? mention._source.context,
     id: mention._id,
     rawForm:
       mention._source?.['software-name']?.rawForm
       ?? mention._source?.['dataset-name']?.rawForm,
   }));
-
   return { count, mentions };
 };
 
