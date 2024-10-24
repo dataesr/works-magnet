@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
-import { affiliations2Template, authorsTemplate, hasCorrectionTemplate } from '../utils/templates';
+import { affiliations2Template, authorsTemplate, doiTemplate, hasCorrectionTemplate } from '../utils/templates';
 import useToast from '../hooks/useToast';
 import { getMentions } from '../utils/works';
 
@@ -155,9 +155,6 @@ export default function Mentions() {
       }`}
       style={{ color: rowData.mention_context.created ? '#8dc572' : '#be6464' }}
     />
-  );
-  const doiTemplate = (rowData) => (
-    <a href={`https://doi.org/${rowData.doi}`}>{rowData.doi}</a>
   );
   const sharedTemplate = (rowData) => (
     <i
@@ -374,13 +371,15 @@ export default function Mentions() {
           </Button>
         </Col>
       </Row>
-      <Button
-        disabled={!corrections.length > 0}
-        onClick={switchModal}
-        size="sm"
-      >
-        {`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''}`}
-      </Button>
+      <Row className="fr-mb-2w">
+        <Button
+          disabled={!corrections.length > 0}
+          onClick={switchModal}
+          size="sm"
+        >
+          {`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''}`}
+        </Button>
+      </Row>
       <Modal isOpen={isModalOpen} hide={switchModal}>
         <ModalTitle>Improve mentions characterizations</ModalTitle>
         <ModalContent>
@@ -435,25 +434,44 @@ export default function Mentions() {
             value={mentions}
           >
             <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-            <Column body={doiTemplate} field="doi" header="DOI" sortable />
-            <Column field="rawForm" header="Raw Form" sortable />
-            <Column body={contextTemplate} field="context" header="Context" />
+            <Column
+              body={doiTemplate}
+              field="doi"
+              header="DOI"
+              sortable
+              style={{ minWidth: '130px', maxWidth: '130px' }}
+            />
+            <Column
+              field="rawForm"
+              header="Raw Form"
+              sortable
+              style={{ minWidth: '100px', maxWidth: '100px' }}
+            />
+            <Column
+              body={contextTemplate}
+              field="context"
+              header="Context"
+              style={{ minWidth: '380px', maxWidth: '380px' }}
+            />
             <Column
               body={usedTemplate}
               field="mention.mention_context.used"
               header="Used"
+              style={{ minWidth: '70px', maxWidth: '70px' }}
               sortable
             />
             <Column
               body={createdTemplate}
               field="mention.mention_context.created"
               header="Created"
+              style={{ minWidth: '80px', maxWidth: '80px' }}
               sortable
             />
             <Column
               body={sharedTemplate}
               field="mention.mention_context.shared"
               header="Shared"
+              style={{ minWidth: '80px', maxWidth: '80px' }}
               sortable
             />
             <Column

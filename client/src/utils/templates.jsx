@@ -16,9 +16,17 @@ const affiliationsTemplate = (rowData) => (
   </>
 );
 
+const getEllipse = (x, len) => {
+  let idValueDisplay = x;
+  if (idValueDisplay.length > len) {
+    idValueDisplay = x.slice(0, len).concat('..');
+  }
+  return idValueDisplay;
+};
+
 const affiliations2Template = (rowData) => {
   let affiliationsHtml = `<ul data-tooltip-id="tooltip-affiliation-${rowData.id}">`;
-  affiliationsHtml += rowData.affiliations.slice(0, 3).map((affiliation, index) => `<li key="affiliation-${rowData.id}-${index}">${affiliation}</li>`).join('');
+  affiliationsHtml += rowData.affiliations.slice(0, 3).map((affiliation, index) => `<li key="affiliation-${rowData.id}-${index}">${getEllipse(affiliation, 50)}</li>`).join('');
   if (rowData.affiliations.length > 3) {
     affiliationsHtml += `<li>others (${rowData.affiliations.length - 3})</li>`;
   }
@@ -56,6 +64,13 @@ const statusRowFilterTemplate = (options) => (
   />
 );
 
+const getIdLinkDisplay = (idType, idValue) => {
+  const idLink = getIdLink(idType, idValue);
+  const idValueDisplay = getEllipse(idValue, 18);
+  const html = idLink ? `<a target="_blank" href="${idLink}">${idValueDisplay}</a>` : `<span>${idValue}</span>`;
+  return html;
+};
+
 const getIdsTemplate = (ids) => {
   let html = '<ul>';
   ids.forEach((id) => {
@@ -63,16 +78,16 @@ const getIdsTemplate = (ids) => {
       html += '';
     } else {
       html += `<li key="${id.id_value}"> `;
-      const idLink = getIdLink(id.id_type, id.id_value);
-      let idValueDisplay = id.id_value;
-      if (idValueDisplay.length > 18) {
-        idValueDisplay = id.id_value.slice(0, 18).concat('..');
-      }
-      html += idLink ? `<a target="_blank" href="${idLink}">${idValueDisplay}</a>` : `<span>${id.id_value}</span>`;
+      html += getIdLinkDisplay(id.id_type, id.id_value);
       html += '</li>';
     }
   });
   html += '</ul>';
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
+const doiTemplate = (data) => {
+  const html = getIdLinkDisplay('doi', data.doi);
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
@@ -178,6 +193,7 @@ export {
   authorsTemplate,
   correctionTemplate,
   datasourceTemplate,
+  doiTemplate,
   frAuthorsTemplate,
   hasCorrectionTemplate,
   linkedDOITemplate,
