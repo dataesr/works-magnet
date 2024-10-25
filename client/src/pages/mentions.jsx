@@ -37,9 +37,9 @@ const DEFAULT_TYPE = 'software';
 
 export default function Mentions() {
   const [corrections, setCorrections] = useState('');
-  const [correctionsUsed, setCorrectionsUsed] = useState(true);
-  const [correctionsCreated, setCorrectionsCreated] = useState(true);
-  const [correctionsShared, setCorrectionsShared] = useState(true);
+  const [correctionsUsed, setCorrectionsUsed] = useState(false);
+  const [correctionsCreated, setCorrectionsCreated] = useState(false);
+  const [correctionsShared, setCorrectionsShared] = useState(false);
   const [fixedMenu, setFixedMenu] = useState(false);
   const [isModalCharacterizationsOpen, setIsModalCharacterizationsOpen] = useState(false);
   const [isModalSendOpen, setIsModalSendOpen] = useState(false);
@@ -315,10 +315,10 @@ export default function Mentions() {
           title="Correct characterizations"
         >
           <i
-            className="fr-icon-send-plane-line fr-mr-2w"
-            style={{ color: '#000091' }}
+            className="fr-icon-feedback-line fr-mr-2w"
+            style={{ color: '#c78006' }}
           />
-          Correct characterizations
+          Modify used/created/shared
         </Button>
         <Button
           className="fr-mb-1w fr-pl-1w button"
@@ -333,12 +333,10 @@ export default function Mentions() {
           }`}
         >
           <i
-            className="fr-icon-send-plane-line fr-mr-2w"
-            style={{ color: '#000091' }}
+            className="fr-icon-file-line fr-mr-2w"
+            style={{ color: '#be6464' }}
           />
-          {`Switch type from ${capitalize(urlSearchParams.type)} to ${
-            urlSearchParams.type === 'software' ? 'Datasets' : 'Software'
-          }`}
+          Modify type dataset/software
         </Button>
         <div className="text-right">
           <Button
@@ -426,7 +424,8 @@ export default function Mentions() {
         <ModalTitle>Correct mentions characterizations</ModalTitle>
         <ModalContent>
           <Button
-            className="fr-mb-1w fr-pl-1w button"
+            className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
+            variant="tertiary"
             key="mention-used"
             onClick={() => setCorrectionsUsed(!correctionsUsed)}
             size="lg"
@@ -442,7 +441,8 @@ export default function Mentions() {
             Used
           </Button>
           <Button
-            className="fr-mb-1w fr-pl-1w button"
+            className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
+            variant="tertiary"
             key="mention-created"
             onClick={() => setCorrectionsCreated(!correctionsCreated)}
             size="lg"
@@ -458,7 +458,8 @@ export default function Mentions() {
             Created
           </Button>
           <Button
-            className="fr-mb-1w fr-pl-1w button"
+            className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
+            variant="tertiary"
             key="mention-shared"
             onClick={() => setCorrectionsShared(!correctionsShared)}
             size="lg"
