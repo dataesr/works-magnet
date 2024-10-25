@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import {
   Button,
   Col,
@@ -28,6 +29,9 @@ import { capitalize, getMentions } from '../utils/works';
 
 const { VITE_WS_HOST } = import.meta.env;
 
+const DEFAULT_CORRECTION_USED = false;
+const DEFAULT_CORRECTION_CREATED = false;
+const DEFAULT_CORRECTION_SHARED = false;
 const DEFAULT_FROM = 0;
 const DEFAULT_SEARCH = '';
 const DEFAULT_SIZE = 50;
@@ -37,9 +41,15 @@ const DEFAULT_TYPE = 'software';
 
 export default function Mentions() {
   const [corrections, setCorrections] = useState('');
-  const [correctionsUsed, setCorrectionsUsed] = useState(false);
-  const [correctionsCreated, setCorrectionsCreated] = useState(false);
-  const [correctionsShared, setCorrectionsShared] = useState(false);
+  const [correctionsUsed, setCorrectionsUsed] = useState(
+    DEFAULT_CORRECTION_USED,
+  );
+  const [correctionsCreated, setCorrectionsCreated] = useState(
+    DEFAULT_CORRECTION_CREATED,
+  );
+  const [correctionsShared, setCorrectionsShared] = useState(
+    DEFAULT_CORRECTION_SHARED,
+  );
   const [fixedMenu, setFixedMenu] = useState(false);
   const [isModalCharacterizationsOpen, setIsModalCharacterizationsOpen] = useState(false);
   const [isModalSendOpen, setIsModalSendOpen] = useState(false);
@@ -87,34 +97,40 @@ export default function Mentions() {
 
   // Methods
   const addCorrections = () => {
-    const correctedMentions = selectedMentions.map((selectedMention) => ({
-      id: selectedMention.id,
-      doi: selectedMention.doi,
-      texts: [
-        {
-          text: selectedMention.context,
-          class_attributes: {
-            classification: {
-              used: {
-                value: correctionsUsed,
-                score: 1.0,
-                previousValue: selectedMention.mention_context.used,
-              },
-              created: {
-                value: correctionsCreated,
-                score: 1.0,
-                previousValue: selectedMention.mention_context.created,
-              },
-              shared: {
-                value: correctionsShared,
-                score: 1.0,
-                previousValue: selectedMention.mention_context.shared,
+    const correctedMentions = selectedMentions
+      .filter(
+        (selectedMention) => selectedMention.mention_context.used !== correctionsUsed
+          || selectedMention.mention_context.created !== correctionsCreated
+          || selectedMention.mention_context.shared !== correctionsShared,
+      )
+      .map((selectedMention) => ({
+        id: selectedMention.id,
+        doi: selectedMention.doi,
+        texts: [
+          {
+            text: selectedMention.context,
+            class_attributes: {
+              classification: {
+                used: {
+                  value: correctionsUsed,
+                  score: 1.0,
+                  previousValue: selectedMention.mention_context.used,
+                },
+                created: {
+                  value: correctionsCreated,
+                  score: 1.0,
+                  previousValue: selectedMention.mention_context.created,
+                },
+                shared: {
+                  value: correctionsShared,
+                  score: 1.0,
+                  previousValue: selectedMention.mention_context.shared,
+                },
               },
             },
           },
-        },
-      ],
-    }));
+        ],
+      }));
     const correctedIds = correctedMentions.map(
       (correctedMention) => correctedMention.id,
     );
@@ -131,11 +147,10 @@ export default function Mentions() {
     );
     setCorrections([...corrections, ...correctedMentions]);
     setSelectedMentions([]);
-    setCorrectionsUsed(true);
-    setCorrectionsCreated(true);
-    setCorrectionsShared(true);
+    setCorrectionsUsed(DEFAULT_CORRECTION_USED);
+    setCorrectionsCreated(DEFAULT_CORRECTION_CREATED);
+    setCorrectionsShared(DEFAULT_CORRECTION_SHARED);
     switchCharacterizationsModal();
-    console.log('ttt', corrections);
   };
   const feedback = async () => {
     try {
@@ -424,7 +439,7 @@ export default function Mentions() {
         isOpen={isModalCharacterizationsOpen}
         hide={switchCharacterizationsModal}
       >
-        <ModalTitle>Correct mentions characterizations</ModalTitle>
+        <ModalTitle>Modify used/created/shared</ModalTitle>
         <ModalContent>
           <Button
             className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
@@ -479,8 +494,8 @@ export default function Mentions() {
           </Button>
         </ModalContent>
         <ModalFooter>
-          <Button onClick={addCorrections} title="Validate corrections">
-            Validate corrections
+          <Button onClick={addCorrections} title="Validate modifications">
+            Validate modifications
           </Button>
         </ModalFooter>
       </Modal>

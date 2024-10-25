@@ -54,7 +54,9 @@ const getWorks = async ({ options, resetCache = false }) => {
   shasum.update(JSON.stringify(options));
   const searchId = shasum.digest('hex');
   const start = new Date();
-  const queryId = start.toISOString().concat(' - ', Math.floor(Math.random() * SEED_MAX).toString());
+  const queryId = start
+    .toISOString()
+    .concat(' - ', Math.floor(Math.random() * SEED_MAX).toString());
   let cache = false;
   if (USE_CACHE) {
     console.time(
@@ -108,7 +110,11 @@ const getWorks = async ({ options, resetCache = false }) => {
     warnings.maxFosmValue = MAX_FOSM;
   }
   const MAX_OPENALEX = Number(process.env.OPENALEX_MAX_SIZE);
-  if (MAX_OPENALEX > 0 && responses.length > 1 && responses[1].length >= MAX_OPENALEX) {
+  if (
+    MAX_OPENALEX > 0
+    && responses.length > 1
+    && responses[1].length >= MAX_OPENALEX
+  ) {
     warnings.isMaxOpenalexReached = true;
     warnings.maxOpenalexValue = MAX_OPENALEX;
   }
@@ -305,6 +311,7 @@ const getMentions = async ({ options }) => {
         sortFields = ['mention_context.shared'];
         break;
       default:
+        console.error(`This "sortBy" field is not mapped : ${sortBy}`);
     }
     body.sort = [];
     sortFields.map((sortField) => body.sort.push({ [sortField]: sortOrder }));
@@ -333,7 +340,9 @@ const getMentions = async ({ options }) => {
       ),
     ],
     authors:
-      mention._source?.authors?.map((_author) => _author.full_name) ?? [],
+      mention._source?.authors
+        ?.map((_author) => _author.full_name)
+        .filter((_author) => !!_author) ?? [],
     context: mention?.highlight?.context ?? mention._source.context,
     id: mention._id,
     rawForm:
