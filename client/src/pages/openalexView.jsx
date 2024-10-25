@@ -172,7 +172,7 @@ export default function OpenalexView({
         field="hasCorrection"
         header="Modified by user?"
         sortable
-        style={{ maxWidth: '110px' }}
+        style={{ maxWidth: '115px' }}
       />
       <Column
         body={worksExampleTemplate}

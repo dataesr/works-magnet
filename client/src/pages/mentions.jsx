@@ -135,6 +135,7 @@ export default function Mentions() {
     setCorrectionsCreated(true);
     setCorrectionsShared(true);
     switchCharacterizationsModal();
+    console.log('ttt', corrections);
   };
   const feedback = async () => {
     try {
@@ -570,7 +571,7 @@ export default function Mentions() {
                 field="hasCorrection"
                 header="Modified by user?"
                 sortable
-                style={{ maxWidth: '110px' }}
+                style={{ maxWidth: '115px' }}
               />
               <Column
                 body={affiliations2Template}
