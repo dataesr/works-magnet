@@ -4,8 +4,6 @@ import { status } from '../config';
 
 const { VITE_API } = import.meta.env;
 
-const capitalize = (str) => (str && str.length > 0 ? str.charAt(0).toUpperCase() + str.slice(1) : '');
-
 const b64decode = (str) => {
   const binaryString = window.atob(str);
   const len = binaryString.length;
@@ -15,6 +13,8 @@ const b64decode = (str) => {
   }
   return bytes;
 };
+
+const capitalize = (str) => (str && str.length > 0 ? str.charAt(0).toUpperCase() + str.slice(1) : '');
 
 const unzipData = async (compressedBase64) => {
   const stream = new Blob([b64decode(compressedBase64)], {
@@ -62,7 +62,7 @@ const getIdLink = (type, id) => {
     break;
   default:
   }
-  return (prefix !== null) ? `${prefix}${id}` : false;
+  return prefix !== null ? `${prefix}${id}` : false;
 };
 
 const getMentions = async (options) => {
@@ -95,10 +95,14 @@ const getWorks = async (options, toast) => {
   publications.results = await decompressAll(publications.results);
   let warningMessage = '';
   if (warnings?.isMaxFosmReached) {
-    warningMessage = warningMessage.concat(`More than ${warnings.maxFosmValue} publications found in French OSM, only the first ${warnings.maxFosmValue} were retrieved.\n`);
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxFosmValue} publications found in French OSM, only the first ${warnings.maxFosmValue} were retrieved.\n`,
+    );
   }
   if (warnings?.isMaxOpenalexReached) {
-    warningMessage = warningMessage.concat(`More than ${warnings.maxOpenalexValue} publications found in OpenAlex, only the first ${warnings.maxOpenalexValue} were retrieved.\n`);
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxOpenalexValue} publications found in OpenAlex, only the first ${warnings.maxOpenalexValue} were retrieved.\n`,
+    );
   }
   if (warningMessage) {
     toast({
@@ -121,7 +125,7 @@ const normalizeName = (name) => name
 const range = (startYear, endYear = new Date().getFullYear()) => {
   const start = Number(startYear);
   const end = Number(endYear);
-  return (start === end) ? [start] : [start, ...range(start + 1, end)];
+  return start === end ? [start] : [start, ...range(start + 1, end)];
 };
 
 const renderButtons = (selected, fn) => Object.values(status).map((st) => (
@@ -134,7 +138,10 @@ const renderButtons = (selected, fn) => Object.values(status).map((st) => (
     style={{ display: 'block', width: '100%', textAlign: 'left' }}
     color="blue-ecume"
   >
-    <i className={`${st.buttonIcon} fr-mr-2w`} style={{ color: st.iconColor }} />
+    <i
+      className={`${st.buttonIcon} fr-mr-2w`}
+      style={{ color: st.iconColor }}
+    />
     {st.buttonLabel}
   </Button>
 ));
@@ -147,7 +154,9 @@ const renderButtonDataset = (selected, fn, label, icon) => (
     size="sm"
   >
     <i className={`${icon} fr-mr-1w`} />
-    {`Validate ${selected.length} dataset${selected.length === 1 ? '' : 's'} ${label}`}
+    {`Validate ${selected.length} dataset${
+      selected.length === 1 ? '' : 's'
+    } ${label}`}
   </Button>
 );
 

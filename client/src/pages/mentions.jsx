@@ -17,8 +17,13 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
-import { affiliations2Template, authorsTemplate, doiTemplate, hasCorrectionTemplate } from '../utils/templates';
 import useToast from '../hooks/useToast';
+import {
+  affiliations2Template,
+  authorsTemplate,
+  doiTemplate,
+  hasCorrectionTemplate,
+} from '../utils/templates';
 import { getMentions } from '../utils/works';
 
 const { VITE_WS_HOST } = import.meta.env;
@@ -60,7 +65,9 @@ export default function Mentions() {
   const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
     onError: (event) => console.error(event),
     onMessage: (event) => {
-      const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
+      const { autoDismissAfter, description, title, toastType } = JSON.parse(
+        event.data,
+      );
       return toast({
         autoDismissAfter: autoDismissAfter ?? 10000,
         description: description ?? '',
@@ -104,16 +111,20 @@ export default function Mentions() {
         },
       ],
     }));
-    const correctedIds = correctedMentions.map((correctedMention) => correctedMention.id);
-    setMentions(mentions.map((mention) => {
-      if (correctedIds.includes(mention.id)) {
-        mention.hasCorrection = true;
-        mention.mention_context.used = correctionsUsed;
-        mention.mention_context.created = correctionsCreated;
-        mention.mention_context.shared = correctionsShared;
-      }
-      return mention;
-    }));
+    const correctedIds = correctedMentions.map(
+      (correctedMention) => correctedMention.id,
+    );
+    setMentions(
+      mentions.map((mention) => {
+        if (correctedIds.includes(mention.id)) {
+          mention.hasCorrection = true;
+          mention.mention_context.used = correctionsUsed;
+          mention.mention_context.created = correctionsCreated;
+          mention.mention_context.shared = correctionsShared;
+        }
+        return mention;
+      }),
+    );
     setCorrections([...corrections, ...correctedMentions]);
     setSelectedMentions([]);
     setCorrectionsUsed(true);
@@ -123,10 +134,15 @@ export default function Mentions() {
   const switchModal = () => setIsModalOpen((prev) => !prev);
   const feedback = async () => {
     try {
-      sendJsonMessage({ data: corrections, email: userEmail, type: 'mentions-characterizations' });
+      sendJsonMessage({
+        data: corrections,
+        email: userEmail,
+        type: 'mentions-characterizations',
+      });
       toast({
         autoDismissAfter: 5000,
-        description: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/mentions-characterizations/issues" target="_blank">Github repository</a>',
+        description:
+          'Your corrections are currently submitted to the <a href="https://github.com/dataesr/mentions-characterizations/issues" target="_blank">Github repository</a>',
         id: 'initMentions',
         title: 'Mentions characterizations submitted',
       });
@@ -218,7 +234,6 @@ export default function Mentions() {
         type: DEFAULT_TYPE,
       });
     } else {
-      setLoading(true);
       setUrlSearchParams({
         from: searchParams.get('from'),
         search: searchParams.get('search'),
@@ -227,13 +242,25 @@ export default function Mentions() {
         sortOrder: searchParams.get('sort-order'),
         type: searchParams.get('type'),
       });
+      setSearch(searchParams.get('search'));
     }
   }, [searchParams, setSearchParams]);
   useEffect(() => {
+    console.log('useeffect');
     const getData = async () => {
-      const data = await getMentions(urlSearchParams);
-      setMentions(data?.mentions ?? []);
-      setTotalRecords(data?.count ?? 0);
+      console.log('getData');
+      console.log(urlSearchParams?.search);
+      setLoading(true);
+      if (urlSearchParams?.search?.length > 0) {
+        console.log('in if');
+        const data = await getMentions(urlSearchParams);
+        setMentions(data?.mentions ?? []);
+        setTotalRecords(data?.count ?? 0);
+      } else {
+        console.log('in else');
+        setMentions([]);
+        setTotalRecords(0);
+      }
       setLoading(false);
     };
     getData();
@@ -377,13 +404,17 @@ export default function Mentions() {
           onClick={switchModal}
           size="sm"
         >
-          {`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''}`}
+          {`Send ${corrections.length} correction${
+            corrections.length > 1 ? 's' : ''
+          }`}
         </Button>
       </Row>
       <Modal isOpen={isModalOpen} hide={switchModal}>
         <ModalTitle>Improve mentions characterizations</ModalTitle>
         <ModalContent>
-          {`You corrected characterizations for ${corrections.length} mention${corrections.length > 1 ? 's' : ''}.`}
+          {`You corrected characterizations for ${corrections.length} mention${
+            corrections.length > 1 ? 's' : ''
+          }.`}
           <TextInput
             label="Please indicate your email. Only an encrypted version of your email will be public."
             onChange={(e) => setUserEmail(e.target.value)}
@@ -395,99 +426,108 @@ export default function Mentions() {
           <Button
             disabled={!corrections.length > 0 || !validEmail}
             onClick={feedback}
-            title={`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''}`}
+            title={`Send ${corrections.length} correction${
+              corrections.length > 1 ? 's' : ''
+            }`}
           >
-            {`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''}`}
+            {`Send ${corrections.length} correction${
+              corrections.length > 1 ? 's' : ''
+            }`}
           </Button>
         </ModalFooter>
       </Modal>
       <Tabs
-        defaultActiveIndex={0}
+        defaultActiveIndex={urlSearchParams.type === 'software' ? 0 : 1}
         onTabChange={(i) => onTabChange(i)}
       >
         <Tab label="Software">
-          <DataTable
-            currentPageReportTemplate="{first} to {last} of {totalRecords}"
-            dataKey="id"
-            first={parseInt(urlSearchParams.from, 10)}
-            lazy
-            loading={loading}
-            onPage={onPage}
-            onSelectAllChange={onSelectAllChange}
-            onSelectionChange={(e) => setSelectedMentions(e.value)}
-            onSort={onSort}
-            paginator
-            paginatorPosition="bottom"
-            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-            rows={parseInt(urlSearchParams.size, 10)}
-            rowsPerPageOptions={[20, 50, 100]}
-            scrollable
-            selectAll={selectAll}
-            selection={selectedMentions}
-            size="small"
-            sortField={urlSearchParams.sortBy}
-            sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
-            stripedRows
-            style={{ fontSize: '14px', lineHeight: '13px' }}
-            tableStyle={{ minWidth: '50rem' }}
-            totalRecords={totalRecords}
-            value={mentions}
-          >
-            <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-            <Column
-              body={doiTemplate}
-              field="doi"
-              header="DOI"
-              sortable
-              style={{ minWidth: '130px', maxWidth: '130px' }}
-            />
-            <Column
-              field="rawForm"
-              header="Raw Form"
-              sortable
-              style={{ minWidth: '100px', maxWidth: '100px' }}
-            />
-            <Column
-              body={contextTemplate}
-              field="context"
-              header="Context"
-              style={{ minWidth: '380px', maxWidth: '380px' }}
-            />
-            <Column
-              body={usedTemplate}
-              field="mention.mention_context.used"
-              header="Used"
-              style={{ minWidth: '70px', maxWidth: '70px' }}
-              sortable
-            />
-            <Column
-              body={createdTemplate}
-              field="mention.mention_context.created"
-              header="Created"
-              style={{ minWidth: '80px', maxWidth: '80px' }}
-              sortable
-            />
-            <Column
-              body={sharedTemplate}
-              field="mention.mention_context.shared"
-              header="Shared"
-              style={{ minWidth: '80px', maxWidth: '80px' }}
-              sortable
-            />
-            <Column
-              body={hasCorrectionTemplate}
-              field="hasCorrection"
-              header="Modified by user?"
-              sortable
-              style={{ maxWidth: '110px' }}
-            />
-            <Column
-              body={affiliations2Template}
-              field="affiliations"
-              header="Affiliations"
-            />
-            <Column body={authorsTemplate} field="authors" header="Authors" />
-          </DataTable>
+          {urlSearchParams.type === 'software' && (
+            <DataTable
+              currentPageReportTemplate="{first} to {last} of {totalRecords}"
+              dataKey="id"
+              first={parseInt(urlSearchParams.from, 10)}
+              lazy
+              loading={loading}
+              onPage={onPage}
+              onSelectAllChange={onSelectAllChange}
+              onSelectionChange={(e) => setSelectedMentions(e.value)}
+              onSort={onSort}
+              paginator
+              paginatorPosition="bottom"
+              paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+              rows={parseInt(urlSearchParams.size, 10)}
+              rowsPerPageOptions={[20, 50, 100]}
+              scrollable
+              selectAll={selectAll}
+              selection={selectedMentions}
+              size="small"
+              sortField={urlSearchParams.sortBy}
+              sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
+              stripedRows
+              style={{ fontSize: '14px', lineHeight: '13px' }}
+              tableStyle={{ minWidth: '50rem' }}
+              totalRecords={totalRecords}
+              value={mentions}
+            >
+              <Column
+                selectionMode="multiple"
+                headerStyle={{ width: '3rem' }}
+              />
+              <Column
+                body={doiTemplate}
+                field="doi"
+                header="DOI"
+                sortable
+                style={{ minWidth: '130px', maxWidth: '130px' }}
+              />
+              <Column
+                field="rawForm"
+                header="Raw Form"
+                sortable
+                style={{ minWidth: '100px', maxWidth: '100px' }}
+              />
+              <Column
+                body={contextTemplate}
+                field="context"
+                header="Context"
+                style={{ minWidth: '380px', maxWidth: '380px' }}
+              />
+              <Column
+                body={usedTemplate}
+                field="mention.mention_context.used"
+                header="Used"
+                style={{ minWidth: '70px', maxWidth: '70px' }}
+                sortable
+              />
+              <Column
+                body={createdTemplate}
+                field="mention.mention_context.created"
+                header="Created"
+                style={{ minWidth: '80px', maxWidth: '80px' }}
+                sortable
+              />
+              <Column
+                body={sharedTemplate}
+                field="mention.mention_context.shared"
+                header="Shared"
+                style={{ minWidth: '80px', maxWidth: '80px' }}
+                sortable
+              />
+              <Column
+                body={hasCorrectionTemplate}
+                field="hasCorrection"
+                header="Modified by user?"
+                sortable
+                style={{ maxWidth: '110px' }}
+              />
+              <Column
+                body={affiliations2Template}
+                field="affiliations"
+                header="Affiliations"
+              />
+              <Column body={authorsTemplate} field="authors" header="Authors" />
+            </DataTable>
+          )}
           {corrections && corrections.length > 0 && (
             <code>
               <pre>{JSON.stringify(corrections, null, 4)}</pre>
@@ -495,69 +535,74 @@ export default function Mentions() {
           )}
         </Tab>
         <Tab label="Datasets">
-          <DataTable
-            currentPageReportTemplate="{first} to {last} of {totalRecords}"
-            dataKey="id"
-            first={parseInt(urlSearchParams.from, 10)}
-            lazy
-            loading={loading}
-            onPage={onPage}
-            onSelectAllChange={onSelectAllChange}
-            onSelectionChange={(e) => setSelectedMentions(e.value)}
-            onSort={onSort}
-            paginator
-            paginatorPosition="bottom"
-            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-            rows={parseInt(urlSearchParams.size, 10)}
-            rowsPerPageOptions={[20, 50, 100]}
-            scrollable
-            selectAll={selectAll}
-            selection={selectedMentions}
-            size="small"
-            sortField={urlSearchParams.sortBy}
-            sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
-            stripedRows
-            style={{ fontSize: '14px', lineHeight: '13px' }}
-            tableStyle={{ minWidth: '50rem' }}
-            totalRecords={totalRecords}
-            value={mentions}
-          >
-            <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-            <Column body={doiTemplate} field="doi" header="DOI" sortable />
-            <Column field="rawForm" header="Raw Form" sortable />
-            <Column body={contextTemplate} field="context" header="Context" />
-            <Column
-              body={usedTemplate}
-              field="mention.mention_context.used"
-              header="Used"
-              sortable
-            />
-            <Column
-              body={createdTemplate}
-              field="mention.mention_context.created"
-              header="Created"
-              sortable
-            />
-            <Column
-              body={sharedTemplate}
-              field="mention.mention_context.shared"
-              header="Shared"
-              sortable
-            />
-            <Column
-              body={hasCorrectionTemplate}
-              field="hasCorrection"
-              header="Modified by user?"
-              sortable
-              style={{ maxWidth: '110px' }}
-            />
-            <Column
-              body={affiliations2Template}
-              field="affiliations"
-              header="Affiliations"
-            />
-            <Column body={authorsTemplate} field="authors" header="Authors" />
-          </DataTable>
+          {urlSearchParams.type === 'datasets' && (
+            <DataTable
+              currentPageReportTemplate="{first} to {last} of {totalRecords}"
+              dataKey="id"
+              first={parseInt(urlSearchParams.from, 10)}
+              lazy
+              loading={loading}
+              onPage={onPage}
+              onSelectAllChange={onSelectAllChange}
+              onSelectionChange={(e) => setSelectedMentions(e.value)}
+              onSort={onSort}
+              paginator
+              paginatorPosition="bottom"
+              paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+              rows={parseInt(urlSearchParams.size, 10)}
+              rowsPerPageOptions={[20, 50, 100]}
+              scrollable
+              selectAll={selectAll}
+              selection={selectedMentions}
+              size="small"
+              sortField={urlSearchParams.sortBy}
+              sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
+              stripedRows
+              style={{ fontSize: '14px', lineHeight: '13px' }}
+              tableStyle={{ minWidth: '50rem' }}
+              totalRecords={totalRecords}
+              value={mentions}
+            >
+              <Column
+                selectionMode="multiple"
+                headerStyle={{ width: '3rem' }}
+              />
+              <Column body={doiTemplate} field="doi" header="DOI" sortable />
+              <Column field="rawForm" header="Raw Form" sortable />
+              <Column body={contextTemplate} field="context" header="Context" />
+              <Column
+                body={usedTemplate}
+                field="mention.mention_context.used"
+                header="Used"
+                sortable
+              />
+              <Column
+                body={createdTemplate}
+                field="mention.mention_context.created"
+                header="Created"
+                sortable
+              />
+              <Column
+                body={sharedTemplate}
+                field="mention.mention_context.shared"
+                header="Shared"
+                sortable
+              />
+              <Column
+                body={hasCorrectionTemplate}
+                field="hasCorrection"
+                header="Modified by user?"
+                sortable
+                style={{ maxWidth: '110px' }}
+              />
+              <Column
+                body={affiliations2Template}
+                field="affiliations"
+                header="Affiliations"
+              />
+              <Column body={authorsTemplate} field="authors" header="Authors" />
+            </DataTable>
+          )}
           {corrections && corrections.length > 0 && (
             <code>
               <pre>{JSON.stringify(corrections, null, 4)}</pre>
