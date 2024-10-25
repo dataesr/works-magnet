@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dataesr/dsfr-plus": "^0.3.2",
+    "@dataesr/dsfr-plus": "^0.5.1",
     "@m4tt72/matomo-tracker-react": "^0.6.2",
     "@tanstack/react-query": "^4.29.5",
     "@tanstack/react-query-devtools": "^4.29.6",

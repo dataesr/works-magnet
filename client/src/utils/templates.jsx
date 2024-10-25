@@ -19,7 +19,7 @@ const affiliationsTemplate = (rowData) => (
 const getEllipse = (x, len) => {
   let idValueDisplay = x;
   if (idValueDisplay.length > len) {
-    idValueDisplay = x.slice(0, len).concat('..');
+    idValueDisplay = x.slice(0, len).concat('...');
   }
   return idValueDisplay;
 };

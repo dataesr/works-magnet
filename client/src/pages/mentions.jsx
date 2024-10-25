@@ -246,18 +246,13 @@ export default function Mentions() {
     }
   }, [searchParams, setSearchParams]);
   useEffect(() => {
-    console.log('useeffect');
     const getData = async () => {
-      console.log('getData');
-      console.log(urlSearchParams?.search);
       setLoading(true);
       if (urlSearchParams?.search?.length > 0) {
-        console.log('in if');
         const data = await getMentions(urlSearchParams);
         setMentions(data?.mentions ?? []);
         setTotalRecords(data?.count ?? 0);
       } else {
-        console.log('in else');
         setMentions([]);
         setTotalRecords(0);
       }
