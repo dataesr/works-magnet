@@ -181,6 +181,7 @@ export default function Mentions() {
       }),
     );
     setCorrections([...corrections, ...correctedMentions]);
+    setSelectedMentions([]);
   };
 
   // Templates
@@ -220,7 +221,8 @@ export default function Mentions() {
 
   // Events
   const onPage = (event) => {
-    searchParams.set('from', parseInt(event.first, 10));
+    searchParams.set('from', event.first);
+    searchParams.set('size', event.rows);
     setSearchParams(searchParams);
   };
   const onSelectAllChange = (event) => {
