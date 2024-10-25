@@ -267,6 +267,7 @@ const getMentions = async ({ options }) => {
       'mention_context',
       'rawForm',
       'software-name',
+      'type',
     ],
     highlight: {
       number_of_fragments: 0,
@@ -338,6 +339,7 @@ const getMentions = async ({ options }) => {
     rawForm:
       mention._source?.['software-name']?.rawForm
       ?? mention._source?.['dataset-name']?.rawForm,
+    type: mention._source?.type === 'software' ? 'software' : 'dataset',
   }));
   return { count, mentions };
 };

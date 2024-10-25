@@ -82,6 +82,16 @@ body {
   width: 200px;
 }
 
+.mentions .actions-menu {
+  &:hover {
+    width: 420px !important;
+  }
+
+  &.action-menu-fixed {
+    width: 420px;
+  }
+}
+
 // Reduce margin width
 @media (min-width: 100em) {
   .fr-container, .fr-container-sm, .fr-container-md, .fr-container-lg {

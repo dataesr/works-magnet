@@ -24,7 +24,7 @@ import {
   doiTemplate,
   hasCorrectionTemplate,
 } from '../utils/templates';
-import { getMentions } from '../utils/works';
+import { capitalize, getMentions } from '../utils/works';
 
 const { VITE_WS_HOST } = import.meta.env;
 
@@ -41,7 +41,8 @@ export default function Mentions() {
   const [correctionsCreated, setCorrectionsCreated] = useState(true);
   const [correctionsShared, setCorrectionsShared] = useState(true);
   const [fixedMenu, setFixedMenu] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalCharacterizationsOpen, setIsModalCharacterizationsOpen] = useState(false);
+  const [isModalSendOpen, setIsModalSendOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
   const [search, setSearch] = useState(DEFAULT_SEARCH);
@@ -58,6 +59,9 @@ export default function Mentions() {
   });
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
+
+  const switchCharacterizationsModal = () => setIsModalCharacterizationsOpen((prev) => !prev);
+  const switchSendModal = () => setIsModalSendOpen((prev) => !prev);
 
   // Hooks
   const [searchParams, setSearchParams] = useSearchParams();
@@ -130,8 +134,8 @@ export default function Mentions() {
     setCorrectionsUsed(true);
     setCorrectionsCreated(true);
     setCorrectionsShared(true);
+    switchCharacterizationsModal();
   };
-  const switchModal = () => setIsModalOpen((prev) => !prev);
   const feedback = async () => {
     try {
       sendJsonMessage({
@@ -154,8 +158,29 @@ export default function Mentions() {
         toastType: 'error',
       });
     } finally {
-      switchModal();
+      switchSendModal();
     }
+  };
+  const switchType = () => {
+    const correctedMentions = selectedMentions.map((selectedMention) => ({
+      id: selectedMention.id,
+      doi: selectedMention.doi,
+      type: selectedMention.type === 'software' ? 'dataset' : 'software',
+      previousType: selectedMention.type,
+    }));
+    const correctedIds = correctedMentions.map(
+      (correctedMention) => correctedMention.id,
+    );
+    setMentions(
+      mentions.map((mention) => {
+        if (correctedIds.includes(mention.id)) {
+          mention.hasCorrection = true;
+          mention.type = mention.type === 'software' ? 'dataset' : 'software';
+        }
+        return mention;
+      }),
+    );
+    setCorrections([...corrections, ...correctedMentions]);
   };
 
   // Templates
@@ -216,8 +241,8 @@ export default function Mentions() {
     searchParams.set('search', search);
     setSearchParams(searchParams);
   };
-  const onTabChange = (i) => {
-    searchParams.set('type', i === 0 ? 'software' : 'datasets');
+  const onTabChange = (index) => {
+    searchParams.set('type', index === 0 ? 'software' : 'datasets');
     setSearchParams(searchParams);
   };
 
@@ -283,74 +308,37 @@ export default function Mentions() {
           className="fr-mb-1w fr-pl-1w button"
           color="blue-ecume"
           disabled={!selectedMentions.length}
-          key="mention-used"
-          onClick={() => setCorrectionsUsed(!correctionsUsed)}
+          key="correct-characterizations"
+          onClick={() => switchCharacterizationsModal()}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Used"
-        >
-          <i
-            className={`${
-              correctionsUsed ? 'fr-icon-check-line' : 'fr-icon-close-line'
-            }`}
-            style={{ color: correctionsUsed ? '#8dc572' : '#be6464' }}
-          />
-          {' '}
-          Used
-        </Button>
-        <Button
-          className="fr-mb-1w fr-pl-1w button"
-          color="blue-ecume"
-          disabled={!selectedMentions.length}
-          key="mention-created"
-          onClick={() => setCorrectionsCreated(!correctionsCreated)}
-          size="lg"
-          style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Created"
-        >
-          <i
-            className={`${
-              correctionsCreated ? 'fr-icon-check-line' : 'fr-icon-close-line'
-            }`}
-            style={{ color: correctionsCreated ? '#8dc572' : '#be6464' }}
-          />
-          {' '}
-          Created
-        </Button>
-        <Button
-          className="fr-mb-1w fr-pl-1w button"
-          color="blue-ecume"
-          disabled={!selectedMentions.length}
-          key="mention-shared"
-          onClick={() => setCorrectionsShared(!correctionsShared)}
-          size="lg"
-          style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Shared"
-        >
-          <i
-            className={`${
-              correctionsShared ? 'fr-icon-check-line' : 'fr-icon-close-line'
-            }`}
-            style={{ color: correctionsShared ? '#8dc572' : '#be6464' }}
-          />
-          {' '}
-          Shared
-        </Button>
-        <Button
-          className="fr-mb-1w fr-pl-1w button"
-          color="blue-ecume"
-          disabled={!selectedMentions.length}
-          key="add-ror"
-          onClick={() => addCorrections()}
-          size="lg"
-          style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Add ROR"
+          title="Correct characterizations"
         >
           <i
             className="fr-icon-send-plane-line fr-mr-2w"
             style={{ color: '#000091' }}
           />
-          Add corrections
+          Correct characterizations
+        </Button>
+        <Button
+          className="fr-mb-1w fr-pl-1w button"
+          color="blue-ecume"
+          disabled={!selectedMentions.length}
+          key="switch-type"
+          onClick={() => switchType()}
+          size="lg"
+          style={{ display: 'block', width: '100%', textAlign: 'left' }}
+          title={`Switch type from ${capitalize(urlSearchParams.type)} to ${
+            urlSearchParams.type === 'software' ? 'Datasets' : 'Software'
+          }`}
+        >
+          <i
+            className="fr-icon-send-plane-line fr-mr-2w"
+            style={{ color: '#000091' }}
+          />
+          {`Switch type from ${capitalize(urlSearchParams.type)} to ${
+            urlSearchParams.type === 'software' ? 'Datasets' : 'Software'
+          }`}
         </Button>
         <div className="text-right">
           <Button
@@ -396,7 +384,7 @@ export default function Mentions() {
       <Row className="fr-mb-2w">
         <Button
           disabled={!corrections.length > 0}
-          onClick={switchModal}
+          onClick={switchSendModal}
           size="sm"
         >
           {`Send ${corrections.length} correction${
@@ -404,7 +392,7 @@ export default function Mentions() {
           }`}
         </Button>
       </Row>
-      <Modal isOpen={isModalOpen} hide={switchModal}>
+      <Modal isOpen={isModalSendOpen} hide={switchSendModal}>
         <ModalTitle>Improve mentions characterizations</ModalTitle>
         <ModalContent>
           {`You corrected characterizations for ${corrections.length} mention${
@@ -431,9 +419,70 @@ export default function Mentions() {
           </Button>
         </ModalFooter>
       </Modal>
+      <Modal
+        isOpen={isModalCharacterizationsOpen}
+        hide={switchCharacterizationsModal}
+      >
+        <ModalTitle>Correct mentions characterizations</ModalTitle>
+        <ModalContent>
+          <Button
+            className="fr-mb-1w fr-pl-1w button"
+            key="mention-used"
+            onClick={() => setCorrectionsUsed(!correctionsUsed)}
+            size="lg"
+            title="Used"
+          >
+            <i
+              className={`${
+                correctionsUsed ? 'fr-icon-check-line' : 'fr-icon-close-line'
+              }`}
+              style={{ color: correctionsUsed ? '#8dc572' : '#be6464' }}
+            />
+            {' '}
+            Used
+          </Button>
+          <Button
+            className="fr-mb-1w fr-pl-1w button"
+            key="mention-created"
+            onClick={() => setCorrectionsCreated(!correctionsCreated)}
+            size="lg"
+            title="Created"
+          >
+            <i
+              className={`${
+                correctionsCreated ? 'fr-icon-check-line' : 'fr-icon-close-line'
+              }`}
+              style={{ color: correctionsCreated ? '#8dc572' : '#be6464' }}
+            />
+            {' '}
+            Created
+          </Button>
+          <Button
+            className="fr-mb-1w fr-pl-1w button"
+            key="mention-shared"
+            onClick={() => setCorrectionsShared(!correctionsShared)}
+            size="lg"
+            title="Shared"
+          >
+            <i
+              className={`${
+                correctionsShared ? 'fr-icon-check-line' : 'fr-icon-close-line'
+              }`}
+              style={{ color: correctionsShared ? '#8dc572' : '#be6464' }}
+            />
+            {' '}
+            Shared
+          </Button>
+        </ModalContent>
+        <ModalFooter>
+          <Button onClick={addCorrections} title="Validate corrections">
+            Validate corrections
+          </Button>
+        </ModalFooter>
+      </Modal>
       <Tabs
         defaultActiveIndex={urlSearchParams.type === 'software' ? 0 : 1}
-        onTabChange={(i) => onTabChange(i)}
+        onTabChange={(index) => onTabChange(index)}
       >
         <Tab label="Software">
           {urlSearchParams.type === 'software' && (
@@ -474,6 +523,11 @@ export default function Mentions() {
                 header="DOI"
                 sortable
                 style={{ minWidth: '145px', maxWidth: '145px' }}
+              />
+              <Column
+                field="type"
+                header="Type"
+                style={{ minWidth: '100px', maxWidth: '100px' }}
               />
               <Column
                 field="rawForm"
@@ -568,6 +622,11 @@ export default function Mentions() {
                 header="DOI"
                 sortable
                 style={{ minWidth: '145px', maxWidth: '145px' }}
+              />
+              <Column
+                field="type"
+                header="Type"
+                style={{ minWidth: '100px', maxWidth: '100px' }}
               />
               <Column
                 field="rawForm"
