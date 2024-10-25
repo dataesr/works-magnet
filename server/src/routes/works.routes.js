@@ -345,10 +345,12 @@ const getMentions = async ({ options }) => {
         .filter((_author) => !!_author) ?? [],
     context: mention?.highlight?.context ?? mention._source.context,
     id: mention._id,
+    mention_context_original: mention._source.mention_context,
     rawForm:
       mention._source?.['software-name']?.rawForm
       ?? mention._source?.['dataset-name']?.rawForm,
     type: mention._source?.type === 'software' ? 'software' : 'dataset',
+    type_original: mention._source?.type === 'software' ? 'software' : 'dataset',
   }));
   return { count, mentions };
 };

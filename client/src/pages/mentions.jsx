@@ -10,6 +10,7 @@ import {
   Row,
   Tab,
   Tabs,
+  Text,
   TextInput,
 } from '@dataesr/dsfr-plus';
 import { Column } from 'primereact/column';
@@ -97,55 +98,59 @@ export default function Mentions() {
 
   // Methods
   const addCorrections = () => {
-    const correctedMentions = selectedMentions
-      .filter(
-        (selectedMention) => selectedMention.mention_context.used !== correctionsUsed
-          || selectedMention.mention_context.created !== correctionsCreated
-          || selectedMention.mention_context.shared !== correctionsShared,
-      )
-      .map((selectedMention) => ({
-        id: selectedMention.id,
-        doi: selectedMention.doi,
+    const selectedMentionsIds = selectedMentions.map(
+      (selectedMention) => selectedMention.id,
+    );
+    setMentions(
+      mentions.map((mention) => {
+        if (selectedMentionsIds.includes(mention.id)) {
+          mention.mention_context.used = correctionsUsed;
+          mention.mention_context.created = correctionsCreated;
+          mention.mention_context.shared = correctionsShared;
+        }
+        mention.hasCorrection = mention.mention_context.used
+            !== mention.mention_context_original.used
+          || mention.mention_context.created
+            !== mention.mention_context_original.created
+          || mention.mention_context.shared
+            !== mention.mention_context_original.shared
+          || mention.type !== mention.type_original;
+        return mention;
+      }),
+    );
+    const correctedMentions = mentions
+      .filter((correctedMention) => correctedMention.hasCorrection)
+      .map((correctedMention) => ({
+        id: correctedMention.id,
+        doi: correctedMention.doi,
         texts: [
           {
-            text: selectedMention.context,
+            text: correctedMention.context,
             class_attributes: {
               classification: {
                 used: {
-                  value: correctionsUsed,
+                  value: correctedMention.mention_context.used,
                   score: 1.0,
-                  previousValue: selectedMention.mention_context.used,
+                  previousValue: correctedMention.mention_context_original.used,
                 },
                 created: {
-                  value: correctionsCreated,
+                  value: correctedMention.mention_context.created,
                   score: 1.0,
-                  previousValue: selectedMention.mention_context.created,
+                  previousValue:
+                    correctedMention.mention_context_original.created,
                 },
                 shared: {
-                  value: correctionsShared,
+                  value: correctedMention.mention_context.shared,
                   score: 1.0,
-                  previousValue: selectedMention.mention_context.shared,
+                  previousValue:
+                    correctedMention.mention_context_original.shared,
                 },
               },
             },
           },
         ],
       }));
-    const correctedIds = correctedMentions.map(
-      (correctedMention) => correctedMention.id,
-    );
-    setMentions(
-      mentions.map((mention) => {
-        if (correctedIds.includes(mention.id)) {
-          mention.hasCorrection = true;
-          mention.mention_context.used = correctionsUsed;
-          mention.mention_context.created = correctionsCreated;
-          mention.mention_context.shared = correctionsShared;
-        }
-        return mention;
-      }),
-    );
-    setCorrections([...corrections, ...correctedMentions]);
+    setCorrections(correctedMentions);
     setSelectedMentions([]);
     setCorrectionsUsed(DEFAULT_CORRECTION_USED);
     setCorrectionsCreated(DEFAULT_CORRECTION_CREATED);
@@ -178,25 +183,34 @@ export default function Mentions() {
     }
   };
   const switchType = () => {
-    const correctedMentions = selectedMentions.map((selectedMention) => ({
-      id: selectedMention.id,
-      doi: selectedMention.doi,
-      type: selectedMention.type === 'software' ? 'dataset' : 'software',
-      previousType: selectedMention.type,
-    }));
-    const correctedIds = correctedMentions.map(
-      (correctedMention) => correctedMention.id,
+    const selectedMentionsIds = selectedMentions.map(
+      (selectedMention) => selectedMention.id,
     );
     setMentions(
       mentions.map((mention) => {
-        if (correctedIds.includes(mention.id)) {
-          mention.hasCorrection = true;
-          mention.type = mention.type === 'software' ? 'dataset' : 'software';
+        if (selectedMentionsIds.includes(mention.id)) {
+          mention.type = urlSearchParams.type === 'software' ? 'dataset' : 'software';
         }
+        mention.hasCorrection = mention.mention_context.used
+            !== mention.mention_context_original.used
+          || mention.mention_context.created
+            !== mention.mention_context_original.created
+          || mention.mention_context.shared
+            !== mention.mention_context_original.shared
+          || mention.type !== mention.type_original;
+        mention.hasCorrectionType = mention.type !== mention.type_original;
         return mention;
       }),
     );
-    setCorrections([...corrections, ...correctedMentions]);
+    const correctedMentions = mentions
+      .filter((correctedMention) => correctedMention.hasCorrection)
+      .map((correctedMention) => ({
+        id: correctedMention.id,
+        doi: correctedMention.doi,
+        type: correctedMention.type,
+        previousType: correctedMention.type_original,
+      }));
+    setCorrections(correctedMentions);
     setSelectedMentions([]);
   };
 
@@ -223,6 +237,11 @@ export default function Mentions() {
       }`}
       style={{ color: rowData.mention_context.shared ? '#8dc572' : '#be6464' }}
     />
+  );
+  const typeTemplate = (rowData) => (
+    <Text bold={rowData.hasCorrectionType} className="fr-mb-0">
+      {rowData.type}
+    </Text>
   );
   const usedTemplate = (rowData) => (
     <i
@@ -544,6 +563,7 @@ export default function Mentions() {
                 style={{ minWidth: '145px', maxWidth: '145px' }}
               />
               <Column
+                body={typeTemplate}
                 field="type"
                 header="Type"
                 style={{ minWidth: '100px', maxWidth: '100px' }}
@@ -643,6 +663,7 @@ export default function Mentions() {
                 style={{ minWidth: '145px', maxWidth: '145px' }}
               />
               <Column
+                body={typeTemplate}
                 field="type"
                 header="Type"
                 style={{ minWidth: '100px', maxWidth: '100px' }}

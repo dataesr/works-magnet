@@ -1,14 +1,14 @@
-const getCorrections = (affiliations) => {
+const getAffiliationsCorrections = (affiliations) => {
   const newCorrections = [];
   affiliations
-    .filter((aff) => aff.hasCorrection)
-    .forEach((aff) => {
+    .filter((affiliation) => affiliation.hasCorrection)
+    .forEach((affiliation) => {
       const correction = {
-        rawAffiliationString: aff.name,
-        rorsInOpenAlex: aff.rors,
-        correctedRors: aff.rorsToCorrect,
-        worksExample: aff.worksExample,
-        worksOpenAlex: aff.worksOpenAlex,
+        rawAffiliationString: affiliation.name,
+        rorsInOpenAlex: affiliation.rors,
+        correctedRors: affiliation.rorsToCorrect,
+        worksExample: affiliation.worksExample,
+        worksOpenAlex: affiliation.worksOpenAlex,
       };
       newCorrections.push(correction);
     });
@@ -16,5 +16,5 @@ const getCorrections = (affiliations) => {
 };
 
 export {
-  getCorrections,
+  getAffiliationsCorrections,
 };

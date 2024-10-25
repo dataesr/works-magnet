@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 
 import useToast from '../hooks/useToast';
-import { getCorrections } from '../utils/openalex';
+import { getAffiliationsCorrections } from '../utils/openalex';
 import { isRor } from '../utils/ror';
 import {
   correctionTemplate,
@@ -30,7 +30,7 @@ export default function OpenalexView({
     <Row gutters>
       <Col>
         <InputTextarea
-          id="mytext"
+          id="editor-ror"
           onChange={(e) => options.editorCallback(e.target.value)}
           type="text"
           value={options.value}
@@ -71,13 +71,8 @@ export default function OpenalexView({
       if (isValid) {
         const rorsToCorrect = [...new Set(newValue.split(';'))].join(';');
         data.rorsToCorrect = rorsToCorrect;
-        if (data.rors.map((r) => r.rorId).join(';') !== rorsToCorrect) {
-          data.hasCorrection = true;
-        } else {
-          data.hasCorrection = false;
-        }
-        const newCorrections = getCorrections(allAffiliations);
-        setAllOpenalexCorrections(newCorrections);
+        data.hasCorrection = data.rors.map((r) => r.rorId).join(';') !== rorsToCorrect;
+        setAllOpenalexCorrections(getAffiliationsCorrections(allAffiliations));
       }
     }
   };

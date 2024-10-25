@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 
 import { status } from '../config';
 import OpenalexView from './openalexView';
-import { getCorrections } from '../utils/openalex';
+import { getAffiliationsCorrections } from '../utils/openalex';
 import { isRor } from '../utils/ror';
 import { removeDiacritics } from '../utils/strings';
 import { capitalize } from '../utils/works';
@@ -51,8 +51,7 @@ export default function OpenalexTab({
       item.hasCorrection = item.rors.map((r) => r.rorId).join(';') !== item.rorsToCorrect;
       return item;
     });
-    const newCorrections = getCorrections(_selectedOpenAlex);
-    setAllOpenalexCorrections(newCorrections);
+    setAllOpenalexCorrections(getAffiliationsCorrections(_selectedOpenAlex));
   };
 
   useEffect(() => {
@@ -68,8 +67,7 @@ export default function OpenalexTab({
       });
       // Recompute corrections only when the array has changed
       if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
-        const newCorrections = getCorrections(filteredAffiliationsTmp);
-        setAllOpenalexCorrections(newCorrections);
+        setAllOpenalexCorrections(getAffiliationsCorrections(filteredAffiliationsTmp));
       }
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
