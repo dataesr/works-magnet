@@ -8,6 +8,8 @@ import {
   ModalFooter,
   ModalTitle,
   Row,
+  Select,
+  SelectOption,
   Tab,
   Tabs,
   Text,
@@ -30,9 +32,7 @@ import { capitalize, getMentions } from '../utils/works';
 
 const { VITE_WS_HOST } = import.meta.env;
 
-const DEFAULT_CORRECTION_USED = false;
-const DEFAULT_CORRECTION_CREATED = false;
-const DEFAULT_CORRECTION_SHARED = false;
+const DEFAULT_CORRECTION = false;
 const DEFAULT_FROM = 0;
 const DEFAULT_SEARCH = '';
 const DEFAULT_SIZE = 50;
@@ -42,18 +42,14 @@ const DEFAULT_TYPE = 'software';
 
 export default function Mentions() {
   const [corrections, setCorrections] = useState('');
-  const [correctionsUsed, setCorrectionsUsed] = useState(
-    DEFAULT_CORRECTION_USED,
-  );
-  const [correctionsCreated, setCorrectionsCreated] = useState(
-    DEFAULT_CORRECTION_CREATED,
-  );
-  const [correctionsShared, setCorrectionsShared] = useState(
-    DEFAULT_CORRECTION_SHARED,
-  );
+  const [correctionsUsed, setCorrectionsUsed] = useState(DEFAULT_CORRECTION);
+  const [correctionsCreated, setCorrectionsCreated] = useState(DEFAULT_CORRECTION);
+  const [correctionsShared, setCorrectionsShared] = useState(DEFAULT_CORRECTION);
+  const [correctionsType, setCorrectionsType] = useState('dataset');
   const [fixedMenu, setFixedMenu] = useState(false);
   const [isModalCharacterizationsOpen, setIsModalCharacterizationsOpen] = useState(false);
   const [isModalSendOpen, setIsModalSendOpen] = useState(false);
+  const [isModalTypesOpen, setIsModalTypesOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
   const [search, setSearch] = useState(DEFAULT_SEARCH);
@@ -71,8 +67,9 @@ export default function Mentions() {
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
 
-  const switchCharacterizationsModal = () => setIsModalCharacterizationsOpen((prev) => !prev);
-  const switchSendModal = () => setIsModalSendOpen((prev) => !prev);
+  const switchCharacterizationsModal = () => setIsModalCharacterizationsOpen((previousState) => !previousState);
+  const switchSendModal = () => setIsModalSendOpen((previousState) => !previousState);
+  const switchTypesModal = () => setIsModalTypesOpen((previousState) => !previousState);
 
   // Hooks
   const [searchParams, setSearchParams] = useSearchParams();
@@ -91,8 +88,6 @@ export default function Mentions() {
         toastType: toastType ?? 'info',
       });
     },
-    onOpen: () => console.log('Websocket opened'),
-    onClose: () => console.log('Websocket closed'),
     shouldReconnect: () => true,
   });
 
@@ -152,9 +147,9 @@ export default function Mentions() {
       }));
     setCorrections(correctedMentions);
     setSelectedMentions([]);
-    setCorrectionsUsed(DEFAULT_CORRECTION_USED);
-    setCorrectionsCreated(DEFAULT_CORRECTION_CREATED);
-    setCorrectionsShared(DEFAULT_CORRECTION_SHARED);
+    setCorrectionsUsed(DEFAULT_CORRECTION);
+    setCorrectionsCreated(DEFAULT_CORRECTION);
+    setCorrectionsShared(DEFAULT_CORRECTION);
     switchCharacterizationsModal();
   };
   const feedback = async () => {
@@ -189,7 +184,7 @@ export default function Mentions() {
     setMentions(
       mentions.map((mention) => {
         if (selectedMentionsIds.includes(mention.id)) {
-          mention.type = urlSearchParams.type === 'software' ? 'dataset' : 'software';
+          mention.type = correctionsType;
         }
         mention.hasCorrection = mention.mention_context.used
             !== mention.mention_context_original.used
@@ -212,6 +207,7 @@ export default function Mentions() {
       }));
     setCorrections(correctedMentions);
     setSelectedMentions([]);
+    switchTypesModal();
   };
 
   // Templates
@@ -346,7 +342,7 @@ export default function Mentions() {
           color="blue-ecume"
           disabled={!selectedMentions.length}
           key="correct-characterizations"
-          onClick={() => switchCharacterizationsModal()}
+          onClick={switchCharacterizationsModal}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
           title="Correct characterizations"
@@ -362,7 +358,8 @@ export default function Mentions() {
           color="blue-ecume"
           disabled={!selectedMentions.length}
           key="switch-type"
-          onClick={() => switchType()}
+          // onClick={() => switchType()}
+          onClick={switchTypesModal}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
           title={`Switch type from ${capitalize(urlSearchParams.type)} to ${
@@ -427,33 +424,6 @@ export default function Mentions() {
           }`}
         </Button>
       </Row>
-      <Modal isOpen={isModalSendOpen} hide={switchSendModal}>
-        <ModalTitle>Improve mentions characterizations</ModalTitle>
-        <ModalContent>
-          {`You corrected characterizations for ${corrections.length} mention${
-            corrections.length > 1 ? 's' : ''
-          }.`}
-          <TextInput
-            label="Please indicate your email. Only an encrypted version of your email will be public."
-            onChange={(e) => setUserEmail(e.target.value)}
-            required
-            type="email"
-          />
-        </ModalContent>
-        <ModalFooter>
-          <Button
-            disabled={!corrections.length > 0 || !validEmail}
-            onClick={feedback}
-            title={`Send ${corrections.length} correction${
-              corrections.length > 1 ? 's' : ''
-            }`}
-          >
-            {`Send ${corrections.length} correction${
-              corrections.length > 1 ? 's' : ''
-            }`}
-          </Button>
-        </ModalFooter>
-      </Modal>
       <Modal
         isOpen={isModalCharacterizationsOpen}
         hide={switchCharacterizationsModal}
@@ -514,6 +484,49 @@ export default function Mentions() {
         </ModalContent>
         <ModalFooter>
           <Button onClick={addCorrections} title="Validate modifications">
+            Validate modifications
+          </Button>
+        </ModalFooter>
+      </Modal>
+      <Modal isOpen={isModalSendOpen} hide={switchSendModal}>
+        <ModalTitle>Send mentions corrections</ModalTitle>
+        <ModalContent>
+          {`You corrected ${corrections.length} mention${
+            corrections.length > 1 ? 's' : ''
+          }.`}
+          <TextInput
+            className="fr-mt-1w"
+            label="Please indicate your email. Only an encrypted version of your email will be public."
+            onChange={(e) => setUserEmail(e.target.value)}
+            required
+            type="email"
+          />
+        </ModalContent>
+        <ModalFooter>
+          <Button
+            disabled={!corrections.length > 0 || !validEmail}
+            onClick={feedback}
+            title={`Send ${corrections.length} correction${
+              corrections.length > 1 ? 's' : ''
+            }`}
+          >
+            {`Send ${corrections.length} correction${
+              corrections.length > 1 ? 's' : ''
+            }`}
+          </Button>
+        </ModalFooter>
+      </Modal>
+      <Modal isOpen={isModalTypesOpen} hide={switchTypesModal}>
+        <ModalTitle>Modify type dataset/software</ModalTitle>
+        <ModalContent>
+          <Select aria-label="Select a type" onSelectionChange={(type) => setCorrectionsType(type)} selectedKey={correctionsType}>
+            <SelectOption key="dataset">Dataset</SelectOption>
+            <SelectOption key="software">Software</SelectOption>
+            <SelectOption key="">None</SelectOption>
+          </Select>
+        </ModalContent>
+        <ModalFooter>
+          <Button onClick={switchType} title="Validate modifications">
             Validate modifications
           </Button>
         </ModalFooter>
