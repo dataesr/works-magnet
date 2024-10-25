@@ -181,6 +181,7 @@ export default function Mentions() {
       }),
     );
     setCorrections([...corrections, ...correctedMentions]);
+    setSelectedMentions([]);
   };
 
   // Templates
