@@ -177,6 +177,19 @@ export default function Mentions() {
       switchSendModal();
     }
   };
+  const undo = (mentionsTmp, resetMention) => {
+    setMentions(mentionsTmp.map((mention) => {
+      if (mention.id === resetMention.id) {
+        return {
+          ...mention,
+          hasCorrection: false,
+          mention_context: resetMention.mention_context_original,
+          type: resetMention.type_original,
+        };
+      }
+      return mention;
+    }));
+  };
   const switchType = () => {
     const selectedMentionsIds = selectedMentions.map(
       (selectedMention) => selectedMention.id,
@@ -308,7 +321,11 @@ export default function Mentions() {
       setLoading(true);
       if (urlSearchParams?.search?.length > 0) {
         const data = await getMentions(urlSearchParams);
-        setMentions(data?.mentions ?? []);
+        const mentionsTmp = data?.mentions ?? [];
+        setMentions(mentionsTmp.map((mention) => {
+          mention.undo = () => undo(mentionsTmp, mention);
+          return mention;
+        }));
         setTotalRecords(data?.count ?? 0);
       } else {
         setMentions([]);
@@ -519,7 +536,11 @@ export default function Mentions() {
       <Modal isOpen={isModalTypesOpen} hide={switchTypesModal}>
         <ModalTitle>Modify type dataset/software</ModalTitle>
         <ModalContent>
-          <Select aria-label="Select a type" onSelectionChange={(type) => setCorrectionsType(type)} selectedKey={correctionsType}>
+          <Select
+            aria-label="Select a type"
+            onSelectionChange={(type) => setCorrectionsType(type)}
+            selectedKey={correctionsType}
+          >
             <SelectOption key="dataset">Dataset</SelectOption>
             <SelectOption key="software">Software</SelectOption>
             <SelectOption key="">None</SelectOption>

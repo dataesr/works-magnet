@@ -1,11 +1,11 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
-import { Badge } from '@dataesr/dsfr-plus';
-import { Tooltip } from 'react-tooltip';
+import { Badge, Button } from '@dataesr/dsfr-plus';
 import { MultiSelect } from 'primereact/multiselect';
+import { Tooltip } from 'react-tooltip';
 
-import { getIdLink } from './works';
 import { correction, status } from '../config';
+import { getIdLink } from './works';
 
 const affiliationsTemplate = (rowData) => (
   <>
@@ -26,13 +26,25 @@ const getEllipse = (x, len) => {
 
 const affiliations2Template = (rowData) => {
   let affiliationsHtml = `<ul data-tooltip-id="tooltip-affiliation-${rowData.id}">`;
-  affiliationsHtml += rowData.affiliations.slice(0, 3).map((affiliation, index) => `<li key="affiliation-${rowData.id}-${index}">${getEllipse(affiliation, 50)}</li>`).join('');
+  affiliationsHtml += rowData.affiliations
+    .slice(0, 3)
+    .map(
+      (affiliation, index) => `<li key="affiliation-${rowData.id}-${index}">${getEllipse(
+        affiliation,
+        50,
+      )}</li>`,
+    )
+    .join('');
   if (rowData.affiliations.length > 3) {
     affiliationsHtml += `<li>others (${rowData.affiliations.length - 3})</li>`;
   }
   affiliationsHtml += '</ul>';
   let affiliationsTooltip = '<ul>';
-  affiliationsTooltip += rowData.affiliations.map((affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation}</li>`).join('');
+  affiliationsTooltip += rowData.affiliations
+    .map(
+      (affiliation, index) => `<li key="tooltip-affiliation-${rowData.id}-${index}">${affiliation}</li>`,
+    )
+    .join('');
   affiliationsTooltip += '</ul>';
   return (
     <>
@@ -57,7 +69,10 @@ const statusRowFilterTemplate = (options) => (
     maxSelectedLabels={1}
     onChange={(e) => options.filterApplyCallback(e.value)}
     optionLabel="name"
-    options={Object.values(status).map((item) => ({ name: item.label, value: item.id }))}
+    options={Object.values(status).map((item) => ({
+      name: item.label,
+      value: item.id,
+    }))}
     placeholder="Any"
     style={{ maxWidth: '9rem', minWidth: '9rem' }}
     value={options.value}
@@ -67,7 +82,9 @@ const statusRowFilterTemplate = (options) => (
 const getIdLinkDisplay = (idType, idValue) => {
   const idLink = getIdLink(idType, idValue);
   const idValueDisplay = getEllipse(idValue, 18);
-  const html = idLink ? `<a target="_blank" href="${idLink}">${idValueDisplay}</a>` : `<span>${idValue}</span>`;
+  const html = idLink
+    ? `<a target="_blank" href="${idLink}">${idValueDisplay}</a>`
+    : `<span>${idValue}</span>`;
   return html;
 };
 
@@ -95,7 +112,13 @@ const allIdsTemplate = (rowData) => getIdsTemplate(rowData?.allIds ?? []);
 
 const linkedDOITemplate = (rowData) => getIdsTemplate(rowData?.fr_publications_linked ?? []);
 
-const worksExampleTemplate = (rowData) => getIdsTemplate(rowData?.worksExample?.filter((e) => ['crossref', 'datacite', 'doi', 'hal_id', 'openalex']?.includes(e.id_type))?.slice(0, 5) ?? []);
+const worksExampleTemplate = (rowData) => getIdsTemplate(
+  rowData?.worksExample
+    ?.filter((e) => ['crossref', 'datacite', 'doi', 'hal_id', 'openalex']?.includes(
+      e.id_type,
+    ))
+    ?.slice(0, 5) ?? [],
+);
 
 const linkedORCIDTemplate = (rowData) => {
   let html = '<ul>';
@@ -103,7 +126,9 @@ const linkedORCIDTemplate = (rowData) => {
   frOrcid.forEach((id) => {
     html += `<li key="${id.orcid}">`;
     const idLink = getIdLink('orcid', id.orcid);
-    html += idLink ? `<a target="_blank" href="${idLink}">${id.name}</a>` : `<span>${id.name}</span>`;
+    html += idLink
+      ? `<a target="_blank" href="${idLink}">${id.name}</a>`
+      : `<span>${id.name}</span>`;
     html += '</li>';
   });
   html += '</ul>';
@@ -126,7 +151,8 @@ const rorTemplate = (rowData) => {
   let html = '<ul>';
   rowData.rors.forEach((id) => {
     html += `<li key="${id.rorId}" class="fr-pb-2w list-none">`;
-    html += '<img alt="ROR logo" class="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />';
+    html
+      += '<img alt="ROR logo" class="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />';
     html += ` <a target="_blank" href="https://ror.org/${id.rorId}">https://ror.org/${id.rorId}</a>`;
     html += ` (${id.rorName} - ${id.rorCountry})`;
     html += '</li>';
@@ -137,13 +163,22 @@ const rorTemplate = (rowData) => {
 
 const authorsTemplate = (rowData) => {
   let authorsHtml = `<ul data-tooltip-id="tooltip-author-${rowData.id}">`;
-  authorsHtml += rowData.authors.slice(0, 3).map((author, index) => `<li key="author-${rowData.id}-${index}">${author}</li>`).join('');
+  authorsHtml += rowData.authors
+    .slice(0, 3)
+    .map(
+      (author, index) => `<li key="author-${rowData.id}-${index}">${author}</li>`,
+    )
+    .join('');
   if (rowData.authors.length > 3) {
     authorsHtml += `<li>et al. (${rowData.authors.length - 3})</li>`;
   }
   authorsHtml += '</ul>';
   let authorsTooltip = '<ul>';
-  authorsTooltip += rowData.authors.map((author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author}</li>`).join('');
+  authorsTooltip += rowData.authors
+    .map(
+      (author, index) => `<li key="tooltip-author-${rowData.id}-${index}">${author}</li>`,
+    )
+    .join('');
   authorsTooltip += '</ul>';
   return (
     <>
@@ -156,14 +191,19 @@ const authorsTemplate = (rowData) => {
 };
 
 const datasourceTemplate = (rowData) => {
-  const html = `<ul>${rowData.datasource.map((source) => `<li key="source-${source}">${source}</li>`).join('')}</ul>`;
+  const html = `<ul>${rowData.datasource
+    .map((source) => `<li key="source-${source}">${source}</li>`)
+    .join('')}</ul>`;
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
 const correctionTemplate = (rowData) => {
   let html = '';
   html = html.concat('<ul>');
-  const rorsToCorrect = rowData.rorsToCorrect.split(';').map((item) => item.trim()).filter((item) => item.length > 0);
+  const rorsToCorrect = rowData.rorsToCorrect
+    .split(';')
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
   if (rorsToCorrect.length > 0) {
     rorsToCorrect.forEach((ror) => {
       html = html.concat(`<li key="ror-${ror}">${ror}</li>`);
@@ -171,24 +211,39 @@ const correctionTemplate = (rowData) => {
   }
   html = html.concat('</ul>');
   if (rowData.hasCorrection) {
-    html = `<strong>${ html }</strong>`;
+    html = `<strong>${html}</strong>`;
   }
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-const nameTemplate = (rowData) => <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />;
+const nameTemplate = (rowData) => (
+  <span dangerouslySetInnerHTML={{ __html: rowData.nameHtml }} />
+);
 
-const statusTemplate = (rowData) => <Badge variant={status[rowData?.status ?? rowData]?.badgeType}>{status[rowData?.status ?? rowData]?.label}</Badge>;
+const statusTemplate = (rowData) => (
+  <Badge variant={status[rowData?.status ?? rowData]?.badgeType}>
+    {status[rowData?.status ?? rowData]?.label}
+  </Badge>
+);
 
-const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection
-  ? (
-    <Badge variant={correction.corrected.badgeType}>{correction.corrected.label}</Badge>
-  )
-  : '');
+const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection ? (
+  <>
+    <Badge variant={correction.corrected.badgeType}>
+      {correction.corrected.label}
+    </Badge>
+    <Button
+      onClick={() => rowData.undo()}
+    >
+      Undo
+    </Button>
+  </>
+) : (
+  ''
+));
 
 export {
-  affiliationsTemplate,
   affiliations2Template,
+  affiliationsTemplate,
   allIdsTemplate,
   authorsTemplate,
   correctionTemplate,
