@@ -178,17 +178,19 @@ export default function Mentions() {
     }
   };
   const undo = (mentionsTmp, resetMention) => {
-    setMentions(mentionsTmp.map((mention) => {
-      if (mention.id === resetMention.id) {
-        return {
-          ...mention,
-          hasCorrection: false,
-          mention_context: resetMention.mention_context_original,
-          type: resetMention.type_original,
-        };
-      }
-      return mention;
-    }));
+    setMentions(
+      mentionsTmp.map((mention) => {
+        if (mention.id === resetMention.id) {
+          return {
+            ...mention,
+            hasCorrection: false,
+            mention_context: resetMention.mention_context_original,
+            type: resetMention.type_original,
+          };
+        }
+        return mention;
+      }),
+    );
   };
   const switchType = () => {
     const selectedMentionsIds = selectedMentions.map(
@@ -322,10 +324,12 @@ export default function Mentions() {
       if (urlSearchParams?.search?.length > 0) {
         const data = await getMentions(urlSearchParams);
         const mentionsTmp = data?.mentions ?? [];
-        setMentions(mentionsTmp.map((mention) => {
-          mention.undo = () => undo(mentionsTmp, mention);
-          return mention;
-        }));
+        setMentions(
+          mentionsTmp.map((mention) => {
+            mention.undo = () => undo(mentionsTmp, mention);
+            return mention;
+          }),
+        );
         setTotalRecords(data?.count ?? 0);
       } else {
         setMentions([]);
@@ -375,7 +379,6 @@ export default function Mentions() {
           color="blue-ecume"
           disabled={!selectedMentions.length}
           key="switch-type"
-          // onClick={() => switchType()}
           onClick={switchTypesModal}
           size="lg"
           style={{ display: 'block', width: '100%', textAlign: 'left' }}

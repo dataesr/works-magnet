@@ -232,10 +232,12 @@ const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection ? (
       {correction.corrected.label}
     </Badge>
     <Button
+      icon="arrow-go-back-line"
       onClick={() => rowData.undo()}
-    >
-      Undo
-    </Button>
+      size="sm"
+      title="Undo changes"
+      variant="info"
+    />
   </>
 ) : (
   ''

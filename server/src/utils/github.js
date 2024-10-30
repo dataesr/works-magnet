@@ -75,20 +75,9 @@ const createIssueOpenAlexAffiliations = ({ email, issue }) => {
 
 const createIssueMentionsCharacterizations = ({ email, issue }) => {
   const title = `Correction for mention ${issue.id}`;
-  const user = `${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}`;
-  if (issue?.texts) {
-    // eslint-disable-next-line no-param-reassign
-    issue.texts[0].class_attributes.classification.used.user = user;
-    // eslint-disable-next-line no-param-reassign
-    issue.texts[0].class_attributes.classification.created.user = user;
-    // eslint-disable-next-line no-param-reassign
-    issue.texts[0].class_attributes.classification.shared.user = user;
-  }
-  if (issue?.type) {
-    // eslint-disable-next-line no-param-reassign
-    issue.user = user;
-  }
-  const body = JSON.stringify(issue, null, 4);
+  // eslint-disable-next-line no-param-reassign
+  issue.user = `${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}`;
+  const body = `\`\`\`\n${JSON.stringify(issue, null, 4)}\n\`\`\``;
   return octokit.rest.issues.create({
     body,
     owner: 'dataesr',

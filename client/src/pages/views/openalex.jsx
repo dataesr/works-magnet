@@ -51,7 +51,7 @@ export default function Openalex({
       </Row>
       <OpenalexTab
         affiliations={allAffiliations.filter(
-          (aff) => aff.source === 'OpenAlex',
+          (affiliation) => affiliation.source === 'OpenAlex',
         )}
         setAllOpenalexCorrections={setAllOpenalexCorrections}
       />

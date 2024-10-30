@@ -1,16 +1,17 @@
 import { Col, Container, Row, Spinner } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import DatasetsTile from '../components/tiles/datasets';
 import OpenalexTile from '../components/tiles/openalex';
 import PublicationsTile from '../components/tiles/publications';
 import { status } from '../config';
+import useToast from '../hooks/useToast';
+import { getAffiliationsCorrections } from '../utils/openalex';
 import { getWorks } from '../utils/works';
 import Filters from './filters';
-import useToast from '../hooks/useToast';
 import Datasets from './views/datasets';
 import Openalex from './views/openalex';
 import Publications from './views/publications';
@@ -20,6 +21,8 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 export default function Home({ isSticky, setIsSticky }) {
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const [affiliations, setAffiliations] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [options, setOptions] = useState({});
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
@@ -75,13 +78,42 @@ export default function Home({ isSticky, setIsSticky }) {
         .map((dataset) => (dataset.status = action));
     }
     const affiliationIds = affiliations.map((affiliation) => affiliation.id);
-    data?.affiliations
-      ?.filter((affiliation) => affiliationIds.includes(affiliation.id))
-      .map((affiliation) => (affiliation.status = action));
+    setAffiliations(
+      affiliations
+        ?.filter((affiliation) => affiliationIds.includes(affiliation.id))
+        .map((affiliation) => (affiliation.status = action)),
+    );
     setSelectedAffiliations([]);
   };
+
+  const undo = (_affiliations, _affiliation) => {
+    const newAffiliations = _affiliations.map((affiliation) => {
+      if (affiliation.id === _affiliation.id) {
+        return {
+          ...affiliation,
+          hasCorrection: false,
+          rorsToCorrect: affiliation.rors.map((r) => r.rorId).join(';'),
+        };
+      }
+      return affiliation;
+    });
+    setAffiliations(newAffiliations);
+    setAllOpenalexCorrections(getAffiliationsCorrections(newAffiliations));
+  };
+
+  useEffect(() => {
+    setAffiliations(
+      (data?.affiliations ?? []).map((affiliation) => {
+        // eslint-disable-next-line no-param-reassign
+        affiliation.undo = () => undo(data?.affiliations ?? [], affiliation);
+        return affiliation;
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
   return (
-    // TODO:do a cleaner way to display the spinner and views
+    // TODO: Find a cleaner way to display the spinner and views
     <>
       <Filters
         isFetched
@@ -134,7 +166,7 @@ export default function Home({ isSticky, setIsSticky }) {
 
         {!isFetching && searchParams.get('view') === 'openalex' && (
           <Openalex
-            allAffiliations={data?.affiliations}
+            allAffiliations={affiliations}
             allOpenalexCorrections={allOpenalexCorrections}
             options={options}
             setAllOpenalexCorrections={setAllOpenalexCorrections}
@@ -143,7 +175,7 @@ export default function Home({ isSticky, setIsSticky }) {
 
         {!isFetching && searchParams.get('view') === 'publications' && (
           <Publications
-            allAffiliations={data?.affiliations ?? []}
+            allAffiliations={affiliations}
             allPublications={data?.publications?.results ?? []}
             data={data}
             options={options}
@@ -158,7 +190,7 @@ export default function Home({ isSticky, setIsSticky }) {
 
         {!isFetching && searchParams.get('view') === 'datasets' && (
           <Datasets
-            allAffiliations={data?.affiliations ?? []}
+            allAffiliations={affiliations}
             allDatasets={data?.datasets?.results ?? []}
             data={data}
             options={options}

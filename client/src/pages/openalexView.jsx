@@ -1,4 +1,4 @@
-import { Button, Col, Row, Toggle } from '@dataesr/dsfr-plus';
+import { Col, Row, Toggle } from '@dataesr/dsfr-plus';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -27,28 +27,12 @@ export default function OpenalexView({
   const [selectionPageOnly, setSelectionPageOnly] = useState(true);
 
   const cellEditor = (options) => (
-    <Row gutters>
-      <Col>
-        <InputTextarea
-          id="editor-ror"
-          onChange={(e) => options.editorCallback(e.target.value)}
-          type="text"
-          value={options.value}
-        />
-      </Col>
-      <Col>
-        <Button
-          disabled={options.rowData.rors.map((r) => r.rorId).join(';') === options.value}
-          icon="delete-line"
-          onClick={() => { options.editorCallback(options.rowData.rors.map((r) => r.rorId).join(';')); }}
-          size="sm"
-          title="Undo changes"
-          variant="info"
-        >
-          UNDO
-        </Button>
-      </Col>
-    </Row>
+    <InputTextarea
+      id="editor-ror"
+      onChange={(e) => options.editorCallback(e.target.value)}
+      type="text"
+      value={options.value}
+    />
   );
   const { toast } = useToast();
 
@@ -61,7 +45,7 @@ export default function OpenalexView({
         if (!isRor(x) && x.length > 0) {
           isValid = false;
           toast({
-            description: `${x} is not a valid ROR`,
+            description: `"${x}" is not a valid ROR`,
             id: 'rorError',
             title: 'Invalid ROR identifier',
             toastType: 'error',

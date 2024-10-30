@@ -19,10 +19,17 @@ export default function ActionsOpenalex({
 
 ActionsOpenalex.propTypes = {
   allOpenalexCorrections: PropTypes.arrayOf(PropTypes.shape({
-    affiliations: PropTypes.arrayOf(PropTypes.object),
-    datasource: PropTypes.arrayOf(PropTypes.string).isRequired,
-    id: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    correctedRors: PropTypes.string.isRequired,
+    rawAffiliationString: PropTypes.string.isRequired,
+    rorsInOpenAlex: PropTypes.arrayOf(PropTypes.shape({
+      rorCountry: PropTypes.string.isRequired,
+      rorId: PropTypes.string.isRequired,
+      rorName: PropTypes.string.isRequired,
+    })).isRequired,
+    worksExample: PropTypes.arrayOf(PropTypes.shape({
+      id_type: PropTypes.string.isRequired,
+      id_value: PropTypes.string.isRequired,
+    })).isRequired,
+    worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,
 };

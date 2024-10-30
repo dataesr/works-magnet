@@ -13,11 +13,11 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
 import { status } from '../config';
-import OpenalexView from './openalexView';
 import { getAffiliationsCorrections } from '../utils/openalex';
 import { isRor } from '../utils/ror';
 import { removeDiacritics } from '../utils/strings';
 import { capitalize } from '../utils/works';
+import OpenalexView from './openalexView';
 
 export default function OpenalexTab({
   affiliations,
@@ -67,7 +67,9 @@ export default function OpenalexTab({
       });
       // Recompute corrections only when the array has changed
       if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
-        setAllOpenalexCorrections(getAffiliationsCorrections(filteredAffiliationsTmp));
+        setAllOpenalexCorrections(
+          getAffiliationsCorrections(filteredAffiliationsTmp),
+        );
       }
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
@@ -79,7 +81,11 @@ export default function OpenalexTab({
   return (
     <Container fluid>
       <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)}>
-        <ModalTitle>{`${capitalize(action)} ROR to ${selectedOpenAlex.length} OpenAlex affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}</ModalTitle>
+        <ModalTitle>
+          {`${capitalize(action)} ROR to ${
+            selectedOpenAlex.length
+          } OpenAlex affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
+        </ModalTitle>
         <ModalContent>
           <TextInput
             label={`Which ROR do you want to ${action} ?`}
