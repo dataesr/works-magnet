@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 
 import useToast from '../hooks/useToast';
-import { getAffiliationsCorrections } from '../utils/openalex';
+import { getAffiliationsCorrections } from '../utils/curations';
 import { isRor } from '../utils/ror';
 import {
   correctionTemplate,

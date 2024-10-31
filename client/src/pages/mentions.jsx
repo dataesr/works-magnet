@@ -22,6 +22,7 @@ import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
 import useToast from '../hooks/useToast';
+import { getMentionsCorrections } from '../utils/curations';
 import {
   affiliations2Template,
   authorsTemplate,
@@ -124,21 +125,21 @@ export default function Mentions() {
             class_attributes: {
               classification: {
                 used: {
-                  value: correctedMention.mention_context.used,
-                  score: 1.0,
                   previousValue: correctedMention.mention_context_original.used,
+                  score: 1.0,
+                  value: correctedMention.mention_context.used,
                 },
                 created: {
-                  value: correctedMention.mention_context.created,
-                  score: 1.0,
                   previousValue:
                     correctedMention.mention_context_original.created,
+                  score: 1.0,
+                  value: correctedMention.mention_context.created,
                 },
                 shared: {
-                  value: correctedMention.mention_context.shared,
-                  score: 1.0,
                   previousValue:
                     correctedMention.mention_context_original.shared,
+                  score: 1.0,
+                  value: correctedMention.mention_context.shared,
                 },
               },
             },
@@ -177,20 +178,23 @@ export default function Mentions() {
       switchSendModal();
     }
   };
-  const undo = (mentionsTmp, resetMention) => {
-    setMentions(
-      mentionsTmp.map((mention) => {
-        if (mention.id === resetMention.id) {
-          return {
-            ...mention,
-            hasCorrection: false,
-            mention_context: resetMention.mention_context_original,
-            type: resetMention.type_original,
-          };
-        }
-        return mention;
-      }),
-    );
+  const undo = (_mentions, _mention) => {
+    const mentionTmp = mentions.map((mention) => {
+      if (mention.id === _mention.id) {
+        return {
+          ...mention,
+          hasCorrection: false,
+          hasCorrectionType: false,
+          mention_context: JSON.parse(
+            JSON.stringify(_mention.mention_context_original),
+          ),
+          type: _mention.type_original,
+        };
+      }
+      return mention;
+    });
+    setMentions(mentionTmp);
+    setCorrections(getMentionsCorrections(mentionTmp));
   };
   const switchType = () => {
     const selectedMentionsIds = selectedMentions.map(
@@ -212,15 +216,7 @@ export default function Mentions() {
         return mention;
       }),
     );
-    const correctedMentions = mentions
-      .filter((correctedMention) => correctedMention.hasCorrection)
-      .map((correctedMention) => ({
-        id: correctedMention.id,
-        doi: correctedMention.doi,
-        type: correctedMention.type,
-        previousType: correctedMention.type_original,
-      }));
-    setCorrections(correctedMentions);
+    setCorrections(getMentionsCorrections(mentions));
     setSelectedMentions([]);
     switchTypesModal();
   };
@@ -235,6 +231,11 @@ export default function Mentions() {
         rowData.mention_context.created
           ? 'fr-icon-check-line'
           : 'fr-icon-close-line'
+      } ${
+        rowData.mention_context.created
+        !== rowData.mention_context_original.created
+          ? 'fr-icon--lg'
+          : 'fr-icon'
       }`}
       style={{ color: rowData.mention_context.created ? '#8dc572' : '#be6464' }}
     />
@@ -245,6 +246,11 @@ export default function Mentions() {
         rowData.mention_context.shared
           ? 'fr-icon-check-line'
           : 'fr-icon-close-line'
+      } ${
+        rowData.mention_context.shared
+        !== rowData.mention_context_original.shared
+          ? 'fr-icon--lg'
+          : 'fr-icon'
       }`}
       style={{ color: rowData.mention_context.shared ? '#8dc572' : '#be6464' }}
     />
@@ -256,10 +262,14 @@ export default function Mentions() {
   );
   const usedTemplate = (rowData) => (
     <i
-      className={`fr-mr-1w ${
+      className={`fr-mr-1w fr-icon ${
         rowData.mention_context.used
           ? 'fr-icon-check-line'
           : 'fr-icon-close-line'
+      } ${
+        rowData.mention_context.used !== rowData.mention_context_original.used
+          ? 'fr-icon--lg'
+          : 'fr-icon'
       }`}
       style={{ color: rowData.mention_context.used ? '#8dc572' : '#be6464' }}
     />
@@ -504,7 +514,7 @@ export default function Mentions() {
         </ModalContent>
         <ModalFooter>
           <Button onClick={addCorrections} title="Validate modifications">
-            Validate modifications
+            {`Validate modification${corrections.length > 1 ? 's' : ''}`}
           </Button>
         </ModalFooter>
       </Modal>
