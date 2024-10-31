@@ -93,11 +93,11 @@ const createIssue = ({ email, issue, type }) => {
     case 'openalex-affiliations':
       return createIssueOpenAlexAffiliations({ email, issue });
     default:
-      console.error(`Error wile creating Github issue as "type" should be one of ["mentions-characterizations", "openalex-affiliations"] instead of "${type}".`);
+      console.error(
+        `Error wile creating Github issue as "type" should be one of ["mentions-characterizations", "openalex-affiliations"] instead of "${type}".`,
+      );
       return false;
   }
 };
 
-export {
-  createIssue,
-};
+export { createIssue };

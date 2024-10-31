@@ -114,43 +114,11 @@ export default function Mentions() {
         return mention;
       }),
     );
-    const correctedMentions = mentions
-      .filter((correctedMention) => correctedMention.hasCorrection)
-      .map((correctedMention) => ({
-        id: correctedMention.id,
-        doi: correctedMention.doi,
-        texts: [
-          {
-            text: correctedMention.context,
-            class_attributes: {
-              classification: {
-                used: {
-                  previousValue: correctedMention.mention_context_original.used,
-                  score: 1.0,
-                  value: correctedMention.mention_context.used,
-                },
-                created: {
-                  previousValue:
-                    correctedMention.mention_context_original.created,
-                  score: 1.0,
-                  value: correctedMention.mention_context.created,
-                },
-                shared: {
-                  previousValue:
-                    correctedMention.mention_context_original.shared,
-                  score: 1.0,
-                  value: correctedMention.mention_context.shared,
-                },
-              },
-            },
-          },
-        ],
-      }));
-    setCorrections(correctedMentions);
-    setSelectedMentions([]);
+    setCorrections(getMentionsCorrections(mentions));
     setCorrectionsUsed(DEFAULT_CORRECTION);
     setCorrectionsCreated(DEFAULT_CORRECTION);
     setCorrectionsShared(DEFAULT_CORRECTION);
+    setSelectedMentions([]);
     switchCharacterizationsModal();
   };
   const feedback = async () => {
@@ -179,7 +147,7 @@ export default function Mentions() {
     }
   };
   const undo = (_mentions, _mention) => {
-    const mentionTmp = mentions.map((mention) => {
+    const mentionTmp = _mentions.map((mention) => {
       if (mention.id === _mention.id) {
         return {
           ...mention,
@@ -513,7 +481,10 @@ export default function Mentions() {
           </Button>
         </ModalContent>
         <ModalFooter>
-          <Button onClick={addCorrections} title="Validate modifications">
+          <Button
+            onClick={addCorrections}
+            title={`Validate modification${corrections.length > 1 ? 's' : ''}`}
+          >
             {`Validate modification${corrections.length > 1 ? 's' : ''}`}
           </Button>
         </ModalFooter>
@@ -560,8 +531,11 @@ export default function Mentions() {
           </Select>
         </ModalContent>
         <ModalFooter>
-          <Button onClick={switchType} title="Validate modifications">
-            Validate modifications
+          <Button
+            onClick={switchType}
+            title={`Validate modification${corrections.length > 1 ? 's' : ''}`}
+          >
+            {`Validate modification${corrections.length > 1 ? 's' : ''}`}
           </Button>
         </ModalFooter>
       </Modal>
