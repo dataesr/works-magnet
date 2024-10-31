@@ -16,27 +16,16 @@ const affiliationsTemplate = (rowData) => (
   </>
 );
 
-const getEllipse = (x, len) => {
-  let idValueDisplay = x;
-  if (idValueDisplay.length > len) {
-    idValueDisplay = x.slice(0, len).concat('...');
-  }
-  return idValueDisplay;
-};
-
 const affiliations2Template = (rowData) => {
   let affiliationsHtml = `<ul data-tooltip-id="tooltip-affiliation-${rowData.id}">`;
   affiliationsHtml += rowData.affiliations
     .slice(0, 3)
     .map(
-      (affiliation, index) => `<li key="affiliation-${rowData.id}-${index}">${getEllipse(
-        affiliation,
-        50,
-      )}</li>`,
+      (affiliation, index) => `<li class="ellipsis" key="affiliation-${rowData.id}-${index}">${affiliation}</li>`,
     )
     .join('');
   if (rowData.affiliations.length > 3) {
-    affiliationsHtml += `<li>others (${rowData.affiliations.length - 3})</li>`;
+    affiliationsHtml += `<li class="ellipsis">and others (${rowData.affiliations.length - 3})</li>`;
   }
   affiliationsHtml += '</ul>';
   let affiliationsTooltip = '<ul>';
@@ -81,9 +70,8 @@ const statusRowFilterTemplate = (options) => (
 
 const getIdLinkDisplay = (idType, idValue) => {
   const idLink = getIdLink(idType, idValue);
-  const idValueDisplay = getEllipse(idValue, 18);
   const html = idLink
-    ? `<a target="_blank" href="${idLink}">${idValueDisplay}</a>`
+    ? `<a href="${idLink}" target="_blank">${idValue}</a>`
     : `<span>${idValue}</span>`;
   return html;
 };
@@ -105,7 +93,12 @@ const getIdsTemplate = (ids) => {
 
 const doiTemplate = (data) => {
   const html = getIdLinkDisplay('doi', data.doi);
-  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+  return (
+    <span
+      className="d-block ellipsis"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 };
 
 const allIdsTemplate = (rowData) => getIdsTemplate(rowData?.allIds ?? []);

@@ -4,6 +4,17 @@
   cursor: pointer;
 }
 
+.d-block {
+  display: block;
+}
+
+.ellipsis {
+  list-style-position: inside;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .list-none {
   list-style: none;
 }

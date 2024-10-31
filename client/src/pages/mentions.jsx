@@ -659,6 +659,7 @@ export default function Mentions() {
                 body={affiliations2Template}
                 field="affiliations"
                 header="Affiliations"
+                style={{ minWidth: '150px', maxWidth: '150px' }}
               />
               <Column body={authorsTemplate} field="authors" header="Authors" />
             </DataTable>
@@ -759,6 +760,7 @@ export default function Mentions() {
                 body={affiliations2Template}
                 field="affiliations"
                 header="Affiliations"
+                style={{ minWidth: '150px', maxWidth: '150px' }}
               />
               <Column body={authorsTemplate} field="authors" header="Authors" />
             </DataTable>
