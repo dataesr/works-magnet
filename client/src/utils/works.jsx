@@ -124,20 +124,48 @@ const range = (startYear, endYear = new Date().getFullYear()) => {
   return (start === end) ? [start] : [start, ...range(start + 1, end)];
 };
 
-const renderButtons = (selected, fn) => Object.values(status).map((st) => (
+const undoCorrections = (selected, fn) => {
+  selected.forEach((item) => {
+    if (item.previousStatus) {
+      fn([item], item.previousStatus);
+      delete item.previousStatus;
+    }
+  });
+};
+
+const renderButtons = (selected, fn) => [
+  ...Object.values(status).map((st) => (
+    <Button
+      className="fr-mb-1w fr-pl-1w button"
+      disabled={!selected.length}
+      key={st.id}
+      onClick={() => {
+        selected.forEach((item) => {
+          item.previousStatus = item.status;
+        });
+        fn(selected, st.id);
+      }}
+      size="lg"
+      style={{ display: 'block', width: '100%', textAlign: 'left' }}
+      color="blue-ecume"
+    >
+      <i className={`${st.buttonIcon} fr-mr-2w`} style={{ color: st.iconColor }} />
+      {st.buttonLabel}
+    </Button>
+  )),
   <Button
     className="fr-mb-1w fr-pl-1w button"
-    disabled={!selected.length}
-    key={st.id}
-    onClick={() => fn(selected, st.id)}
+    disabled={!selected.some((item) => item.previousStatus)}
+    key="undo"
+    onClick={() => undoCorrections(selected, fn)}
     size="lg"
     style={{ display: 'block', width: '100%', textAlign: 'left' }}
     color="blue-ecume"
   >
-    <i className={`${st.buttonIcon} fr-mr-2w`} style={{ color: st.iconColor }} />
-    {st.buttonLabel}
+    <i className="ri-arrow-go-back-line fr-mr-2w" style={{ color: '#000091' }} />
+    Undo
   </Button>
-));
+];
 
 const renderButtonDataset = (selected, fn, label, icon) => (
   <Button
