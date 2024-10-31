@@ -299,6 +299,8 @@ export default function Mentions() {
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
+      setMentions([]);
+      setTotalRecords(0);
       if (urlSearchParams?.search?.length > 0) {
         const data = await getMentions(urlSearchParams);
         const mentionsTmp = data?.mentions ?? [];
@@ -309,9 +311,6 @@ export default function Mentions() {
           }),
         );
         setTotalRecords(data?.count ?? 0);
-      } else {
-        setMentions([]);
-        setTotalRecords(0);
       }
       setLoading(false);
     };

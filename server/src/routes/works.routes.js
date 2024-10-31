@@ -240,7 +240,7 @@ router.route('/works').post(async (req, res) => {
   }
 });
 
-const getMentions = async ({ options }) => {
+const getMentionsQuery = ({ options }) => {
   const {
     from, search, size, sortBy, sortOrder, type,
   } = options;
@@ -250,7 +250,7 @@ const getMentions = async ({ options }) => {
   } else if (type === 'datasets') {
     types = ['dataset-implicit', 'dataset-name'];
   }
-  let body = {
+  const body = {
     from,
     size,
     query: {
@@ -316,10 +316,13 @@ const getMentions = async ({ options }) => {
     body.sort = [];
     sortFields.map((sortField) => body.sort.push({ [sortField]: sortOrder }));
   }
-  body = JSON.stringify(body);
+  return body;
+};
+
+const getMentions = async ({ query }) => {
   const url = `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_search`;
   const params = {
-    body,
+    body: JSON.stringify(query),
     method: 'POST',
     headers: {
       Authorization: process.env.ES_AUTH,
@@ -328,7 +331,6 @@ const getMentions = async ({ options }) => {
   };
   const response = await fetch(url, params);
   const data = await response.json();
-  const count = data?.hits?.total?.value ?? 0;
   const mentions = (data?.hits?.hits ?? []).map((mention) => ({
     ...mention._source,
     affiliations: [
@@ -350,9 +352,29 @@ const getMentions = async ({ options }) => {
       mention._source?.['software-name']?.rawForm
       ?? mention._source?.['dataset-name']?.rawForm,
     type: mention._source?.type === 'software' ? 'software' : 'dataset',
-    type_original: mention._source?.type === 'software' ? 'software' : 'dataset',
+    type_original:
+      mention._source?.type === 'software' ? 'software' : 'dataset',
   }));
-  return { count, mentions };
+  return mentions;
+};
+
+const getMentionsCount = async ({ query }) => {
+  ['_source', 'from', 'highlight', 'size'].forEach((item) => {
+    // eslint-disable-next-line no-param-reassign
+    delete query?.[item];
+  });
+  const url = `${process.env.ES_URL}/${process.env.ES_INDEX_MENTIONS}/_count`;
+  const params = {
+    body: JSON.stringify(query),
+    method: 'POST',
+    headers: {
+      Authorization: process.env.ES_AUTH,
+      'content-type': 'application/json',
+    },
+  };
+  const response = await fetch(url, params);
+  const data = await response.json();
+  return data?.count ?? 0;
 };
 
 router.route('/mentions').post(async (req, res) => {
@@ -363,8 +385,10 @@ router.route('/mentions').post(async (req, res) => {
         .status(400)
         .json({ message: 'Type should be either "datasets" or "software".' });
     } else {
-      const result = await getMentions({ options });
-      res.status(200).json(result);
+      const query = getMentionsQuery({ options });
+      const mentions = await getMentions({ query });
+      const count = await getMentionsCount({ query });
+      res.status(200).json({ count, mentions });
     }
   } catch (err) {
     console.error(err);
