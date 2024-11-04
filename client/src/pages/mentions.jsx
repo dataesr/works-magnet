@@ -245,7 +245,7 @@ export default function Mentions() {
       </Badge>
       <Button
         icon="arrow-go-back-line"
-        onClick={() => undo2(rowData.id)}
+        onClick={() => undo(rowData.id)}
         size="sm"
         title="Undo changes"
         variant="info"
