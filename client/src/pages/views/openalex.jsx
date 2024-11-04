@@ -10,6 +10,7 @@ export default function Openalex({
   allOpenalexCorrections,
   options,
   setAllOpenalexCorrections,
+  undo,
 }) {
   if (!allAffiliations || allAffiliations?.length === 0) {
     return <div>No affiliations detected</div>;
@@ -54,6 +55,7 @@ export default function Openalex({
           (affiliation) => affiliation.source === 'OpenAlex',
         )}
         setAllOpenalexCorrections={setAllOpenalexCorrections}
+        undo={undo}
       />
     </>
   );
@@ -80,4 +82,5 @@ Openalex.propTypes = {
   ).isRequired,
   options: PropTypes.object.isRequired,
   setAllOpenalexCorrections: PropTypes.func.isRequired,
+  undo: PropTypes.func.isRequired,
 };

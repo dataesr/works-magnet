@@ -22,6 +22,7 @@ import OpenalexView from './openalexView';
 export default function OpenalexTab({
   affiliations,
   setAllOpenalexCorrections,
+  undo,
 }) {
   const [action, setAction] = useState();
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -179,6 +180,7 @@ export default function OpenalexTab({
             setAllOpenalexCorrections={setAllOpenalexCorrections}
             setFilteredAffiliationName={setFilteredAffiliationName}
             setSelectedOpenAlex={setSelectedOpenAlex}
+            undo={undo}
           />
         </Col>
       </Row>
@@ -197,4 +199,5 @@ OpenalexTab.propTypes = {
     }),
   ).isRequired,
   setAllOpenalexCorrections: PropTypes.func.isRequired,
+  undo: PropTypes.func.isRequired,
 };

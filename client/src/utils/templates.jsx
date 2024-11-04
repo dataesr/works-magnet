@@ -4,7 +4,6 @@ import { Badge, Button } from '@dataesr/dsfr-plus';
 import { MultiSelect } from 'primereact/multiselect';
 import { Tooltip } from 'react-tooltip';
 
-import { correction, status } from '../config';
 import { getIdLink } from './works';
 
 const affiliationsTemplate = (rowData) => (
@@ -25,7 +24,9 @@ const affiliations2Template = (rowData) => {
     )
     .join('');
   if (rowData.affiliations.length > 3) {
-    affiliationsHtml += `<li class="ellipsis">and others (${rowData.affiliations.length - 3})</li>`;
+    affiliationsHtml += `<li class="ellipsis">and others (${
+      rowData.affiliations.length - 3
+    })</li>`;
   }
   affiliationsHtml += '</ul>';
   let affiliationsTooltip = '<ul>';
@@ -219,19 +220,14 @@ const statusTemplate = (rowData) => (
   </Badge>
 );
 
-const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection ? (
-  <>
-    <Badge variant={correction.corrected.badgeType}>
-      {correction.corrected.label}
-    </Badge>
-    <Button
-      icon="arrow-go-back-line"
-      onClick={() => rowData.undo()}
-      size="sm"
-      title="Undo changes"
-      variant="info"
-    />
-  </>
+const hasCorrectionTemplate = (rowData, undo) => (rowData?.hasCorrection ? (
+  <Button
+    icon="arrow-go-back-line"
+    onClick={() => undo(rowData.id)}
+    size="sm"
+    title="Undo changes"
+    variant="info"
+  />
 ) : (
   ''
 ));

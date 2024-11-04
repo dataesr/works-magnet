@@ -86,14 +86,13 @@ export default function Home({ isSticky, setIsSticky }) {
     setSelectedAffiliations([]);
   };
 
-  const undo = (_affiliations, _affiliation) => {
-    const newAffiliations = _affiliations.map((affiliation) => {
-      if (affiliation.id === _affiliation.id) {
-        return {
-          ...affiliation,
-          hasCorrection: false,
-          rorsToCorrect: affiliation.rors.map((r) => r.rorId).join(';'),
-        };
+  const undo = (id) => {
+    const newAffiliations = affiliations.map((affiliation) => {
+      if (affiliation.id === id) {
+        // eslint-disable-next-line no-param-reassign
+        affiliation.hasCorrection = false;
+        // eslint-disable-next-line no-param-reassign
+        affiliation.rorsToCorrect = affiliation.rors.map((r) => r.rorId).join(';');
       }
       return affiliation;
     });
@@ -102,13 +101,7 @@ export default function Home({ isSticky, setIsSticky }) {
   };
 
   useEffect(() => {
-    setAffiliations(
-      (data?.affiliations ?? []).map((affiliation) => {
-        // eslint-disable-next-line no-param-reassign
-        affiliation.undo = () => undo(data?.affiliations ?? [], affiliation);
-        return affiliation;
-      }),
-    );
+    setAffiliations(data?.affiliations ?? []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
@@ -170,6 +163,7 @@ export default function Home({ isSticky, setIsSticky }) {
             allOpenalexCorrections={allOpenalexCorrections}
             options={options}
             setAllOpenalexCorrections={setAllOpenalexCorrections}
+            undo={undo}
           />
         )}
 

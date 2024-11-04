@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import {
-  Badge,
   Button,
   Col,
   Container,
@@ -22,13 +21,13 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
-import { correction } from '../config';
 import useToast from '../hooks/useToast';
 import { getMentionsCorrections } from '../utils/curations';
 import {
   affiliations2Template,
   authorsTemplate,
   doiTemplate,
+  hasCorrectionTemplate,
 } from '../utils/templates';
 import { capitalize, getMentions } from '../utils/works';
 
@@ -238,22 +237,6 @@ export default function Mentions() {
       style={{ color: rowData.mention_context.used ? '#8dc572' : '#be6464' }}
     />
   );
-  const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection ? (
-    <>
-      <Badge variant={correction.corrected.badgeType}>
-        {correction.corrected.label}
-      </Badge>
-      <Button
-        icon="arrow-go-back-line"
-        onClick={() => undo(rowData.id)}
-        size="sm"
-        title="Undo changes"
-        variant="info"
-      />
-    </>
-  ) : (
-    ''
-  ));
 
   // Events
   const onPage = (event) => {
@@ -315,13 +298,7 @@ export default function Mentions() {
       setTotalRecords(0);
       if (urlSearchParams?.search?.length > 0) {
         const data = await getMentions(urlSearchParams);
-        const mentionsTmp = data?.mentions ?? [];
-        setMentions(
-          mentionsTmp.map((mention) => {
-            mention.undo = () => undo(mentionsTmp, mention);
-            return mention;
-          }),
-        );
+        setMentions(data?.mentions ?? []);
         setTotalRecords(data?.count ?? 0);
       }
       setLoading(false);
@@ -634,7 +611,7 @@ export default function Mentions() {
                 sortable
               />
               <Column
-                body={hasCorrectionTemplate}
+                body={(rowData) => hasCorrectionTemplate(rowData, undo)}
                 field="hasCorrection"
                 header="Modified by user?"
                 sortable

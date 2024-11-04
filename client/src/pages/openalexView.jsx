@@ -23,6 +23,7 @@ export default function OpenalexView({
   setAllOpenalexCorrections,
   setFilteredAffiliationName,
   setSelectedOpenAlex,
+  undo,
 }) {
   const [selectionPageOnly, setSelectionPageOnly] = useState(true);
 
@@ -147,7 +148,7 @@ export default function OpenalexView({
         style={{ maxWidth: '80px' }}
       />
       <Column
-        body={hasCorrectionTemplate}
+        body={(rowData) => hasCorrectionTemplate(rowData, undo)}
         field="hasCorrection"
         header="Modified by user?"
         sortable
@@ -190,4 +191,5 @@ OpenalexView.propTypes = {
     }),
   ).isRequired,
   setSelectedOpenAlex: PropTypes.func.isRequired,
+  undo: PropTypes.func.isRequired,
 };
