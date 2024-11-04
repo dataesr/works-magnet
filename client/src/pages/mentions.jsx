@@ -152,7 +152,7 @@ export default function Mentions() {
       if (mention.id === id) {
         mention.hasCorrection = false;
         mention.hasCorrectionType = false;
-        mention.mention_context = JSON.parse(JSON.stringify(mention.mention_context_original)),
+        mention.mention_context = JSON.parse(JSON.stringify(mention.mention_context_original));
         mention.type = mention.type_original;
       }
       return mention;
