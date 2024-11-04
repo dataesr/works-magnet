@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import {
+  Badge,
   Button,
   Col,
   Container,
@@ -21,13 +22,13 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
+import { correction } from '../config';
 import useToast from '../hooks/useToast';
 import { getMentionsCorrections } from '../utils/curations';
 import {
   affiliations2Template,
   authorsTemplate,
   doiTemplate,
-  hasCorrectionTemplate,
 } from '../utils/templates';
 import { capitalize, getMentions } from '../utils/works';
 
@@ -146,23 +147,18 @@ export default function Mentions() {
       switchSendModal();
     }
   };
-  const undo = (_mentions, _mention) => {
-    const mentionTmp = _mentions.map((mention) => {
-      if (mention.id === _mention.id) {
-        return {
-          ...mention,
-          hasCorrection: false,
-          hasCorrectionType: false,
-          mention_context: JSON.parse(
-            JSON.stringify(_mention.mention_context_original),
-          ),
-          type: _mention.type_original,
-        };
+  const undo = (id) => {
+    const mentionsTmp = mentions.map((mention) => {
+      if (mention.id === id) {
+        mention.hasCorrection = false;
+        mention.hasCorrectionType = false;
+        mention.mention_context = JSON.parse(JSON.stringify(mention.mention_context_original)),
+        mention.type = mention.type_original;
       }
       return mention;
     });
-    setMentions(mentionTmp);
-    setCorrections(getMentionsCorrections(mentionTmp));
+    setMentions(mentionsTmp);
+    setCorrections(getMentionsCorrections(mentionsTmp));
   };
   const switchType = () => {
     const selectedMentionsIds = selectedMentions.map(
@@ -242,6 +238,22 @@ export default function Mentions() {
       style={{ color: rowData.mention_context.used ? '#8dc572' : '#be6464' }}
     />
   );
+  const hasCorrectionTemplate = (rowData) => (rowData?.hasCorrection ? (
+    <>
+      <Badge variant={correction.corrected.badgeType}>
+        {correction.corrected.label}
+      </Badge>
+      <Button
+        icon="arrow-go-back-line"
+        onClick={() => undo2(rowData.id)}
+        size="sm"
+        title="Undo changes"
+        variant="info"
+      />
+    </>
+  ) : (
+    ''
+  ));
 
   // Events
   const onPage = (event) => {
