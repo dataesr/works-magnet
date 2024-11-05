@@ -30,6 +30,7 @@ import {
   hasCorrectionTemplate,
 } from '../utils/templates';
 import { capitalize, getMentions } from '../utils/works';
+import MentionListItem from '../components/mention-list/item';
 
 const { VITE_WS_HOST } = import.meta.env;
 
@@ -405,7 +406,8 @@ export default function Mentions() {
           </Button>
         </Col>
       </Row>
-      <Row className="fr-mb-2w">
+
+      {/* <Row className="fr-mb-2w">
         <Button
           disabled={!corrections.length > 0}
           onClick={switchSendModal}
@@ -415,7 +417,7 @@ export default function Mentions() {
             corrections.length > 1 ? 's' : ''
           }`}
         </Button>
-      </Row>
+      </Row> */}
       <Modal
         isOpen={isModalCharacterizationsOpen}
         hide={switchCharacterizationsModal}
@@ -491,7 +493,7 @@ export default function Mentions() {
           }.`}
           <TextInput
             className="fr-mt-1w"
-            label="Please indicate your email. Only an encrypted version of your email will be public."
+            label="Please indicate your email. Only an encrypted version of your email </Modal>will be public."
             onChange={(e) => setUserEmail(e.target.value)}
             required
             type="email"
@@ -533,7 +535,7 @@ export default function Mentions() {
           </Button>
         </ModalFooter>
       </Modal>
-      <span style={{ display: 'block', textAlign: 'right' }}>
+      {/* <span style={{ display: 'block', textAlign: 'right' }}>
         <Button
           onClick={() => {
             searchParams.set('view', 'table');
@@ -550,7 +552,7 @@ export default function Mentions() {
         >
           <i className="fr-icon fr-icon-layout-grid-fill" />
         </Button>
-      </span>
+      </span> */}
       {searchParams.get('view') === 'table' && (
         <Tabs
           defaultActiveIndex={urlSearchParams.type === 'software' ? 0 : 1}
@@ -769,23 +771,30 @@ export default function Mentions() {
         </Tabs>
       )}
       {searchParams.get('view') === 'grid' && (
-        <ul>
-          {mentions.map(
-            (mention) => (
-              <li key={mention.id}>
-                {mention.type}
-                {' '}
-                |
-                {' '}
-                {mention.rawForm}
-                {' '}
-                |
-                {' '}
-                {mention.context}
-              </li>
-            ),
-          )}
-        </ul>
+        <>
+          <div style={{ display: 'flex', backgroundColor: '#eee', borderBottom: '2px solid #000' }} className="fr-py-1w">
+            <div className="fr-pl-2w">
+              <input type="checkbox" />
+            </div>
+            <Button
+              disabled={!corrections.length > 0}
+              onClick={switchSendModal}
+              size="sm"
+            >
+              {`Send ${corrections.length} correction${
+            corrections.length > 1 ? 's' : ''
+          }`}
+            </Button>
+          </div>
+          <ul style={{ listStyle: 'none' }}>
+            {mentions.map(
+              (mention, index) => (
+                <MentionListItem key={mention.id} mention={mention} index={index} /> // eslint-disable-line
+              ),
+            )}
+          </ul>
+        </>
+
       )}
     </Container>
   );
