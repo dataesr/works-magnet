@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Badge, Button, Link, Text } from '@dataesr/dsfr-plus';
+import { Badge, Button, Col, Link, Row, Text } from '@dataesr/dsfr-plus';
 import { getIdLink } from '../../utils/works';
 
 export default function MentionListItem({ mention, index, selected, toggleToSelected }) {
@@ -15,57 +15,27 @@ export default function MentionListItem({ mention, index, selected, toggleToSele
 
   return (
     <li key={mention.id}>
-      <div style={{ display: 'flex' }} className="fr-mb-1w">
-        <div className="fr-pr-1w">
+
+      <Row>
+        <Col>
           <input type="checkbox" selected={selected} />
-        </div>
-        <div>
+        </Col>
+        <Col md={8}>
           <strong>
             <span title="raw form">{mention.rawForm}</span>
           </strong>
           <Badge size="sm" color="blue-cumulus">{mention.type}</Badge>
-          <div style={{ maxWidth: '75%' }} className="fr-mt-1w">
+          <div style={{ maxWidth: '90%' }} className="fr-mt-1w">
             <span className="fr-icon-quote-fill fr-icon--sm fr-mr-1w" aria-hidden="true" title="context" />
             <span dangerouslySetInnerHTML={{ __html: mention.context }} />
           </div>
-          <div className="fr-mt-1w">
-            {(mention.mention_context.created) ? (
-              <Badge className="fr-mr-1w" size="sm" color="green-bourgeon">
-                created
-              </Badge>
-            ) : (
-              <Badge className="fr-mr-1w" size="sm">
-                not created
-              </Badge>
-            )}
-            {(mention.mention_context.used) ? (
-              <Badge className="fr-mr-1w" size="sm" color="green-bourgeon">
-                used
-              </Badge>
-            ) : (
-              <Badge className="fr-mr-1w" size="sm">
-                not used
-              </Badge>
-            )}
-            {(mention.mention_context.shared) ? (
-              <Badge className="fr-mr-1w" size="sm" color="green-bourgeon">
-                shared
-              </Badge>
-            ) : (
-              <Badge className="fr-mr-1w" size="sm">
-                not shared
-              </Badge>
-            )}
-
-            {
-              !expanded && (
-                <Button onClick={() => setExpanded(!expanded)} variant="text">
-                  view details
-                </Button>
-              )
-            }
-          </div>
-
+          {
+            !expanded && (
+              <Button onClick={() => setExpanded(!expanded)} variant="text">
+                view details
+              </Button>
+            )
+          }
           {expanded && (
             <div style={{ borderLeft: '2px solid #000', paddingLeft: '8px' }}>
               <div className="fr-mt-1w">
@@ -100,8 +70,43 @@ export default function MentionListItem({ mention, index, selected, toggleToSele
               </Button>
             </div>
           )}
-        </div>
-      </div>
+        </Col>
+        <Col className="text-center">
+          {(mention.mention_context.created) ? (
+            <Badge className="fr-mr-1w" size="" color="green-bourgeon">
+              created
+            </Badge>
+          ) : (
+            <Badge className="fr-mr-1w" size="">
+              not created
+            </Badge>
+          )}
+        </Col>
+        <Col className="text-center">
+          {(mention.mention_context.used) ? (
+            <Badge className="fr-mr-1w" size="" color="green-bourgeon">
+              used
+            </Badge>
+          ) : (
+            <Badge className="fr-mr-1w" size="">
+              not used
+            </Badge>
+          )}
+        </Col>
+        <Col className="text-center">
+          {(mention.mention_context.shared) ? (
+            <Badge className="fr-mr-1w" size="" color="green-bourgeon">
+              shared
+            </Badge>
+          ) : (
+            <Badge className="fr-mr-1w" size="">
+              not shared
+            </Badge>
+          )}
+        </Col>
+        <Col />
+      </Row>
+
     </li>
   );
 }
