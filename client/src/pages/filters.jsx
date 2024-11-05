@@ -61,16 +61,17 @@ export default function Filters({
 
   useEffect(() => {
     const getData = async () => {
-      if (searchParams.size === 1) {
+      if (searchParams.size < 4) {
         // Set default params values
-        setSearchParams({
-          affiliations: [],
-          datasets: false,
-          deletedAffiliations: [],
-          endYear: '2023',
-          startYear: '2023',
-          view: searchParams.get('view'),
-        });
+        const searchParamsTmp = {
+          affiliations: searchParams.get('affiliations') ?? [],
+          datasets: searchParams.get('datasets') ?? false,
+          deletedAffiliations: searchParams.get('deletedAffiliations') ?? [],
+          endYear: searchParams.get('endYear') ?? '2023',
+          startYear: searchParams.get('startYear') ?? '2023',
+          view: searchParams.get('view') ?? 'openalex',
+        };
+        setSearchParams(searchParamsTmp);
         setTags([]);
       } else {
         setIsLoading(true);

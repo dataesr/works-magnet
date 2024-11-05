@@ -129,7 +129,7 @@ export default function Affiliations({ isSticky, setIsSticky }) {
           </Row>
         )}
 
-        {!isFetching && !searchParams.get('view') && isFetched && (
+        {!isFetching && isFetched && !searchParams.get('view') && (
           <Row gutters className="fr-mb-16w">
             <Col xs="12">
               <div>
@@ -152,7 +152,7 @@ export default function Affiliations({ isSticky, setIsSticky }) {
           </Row>
         )}
 
-        {!isFetching && searchParams.get('view') === 'openalex' && (
+        {!isFetching && isFetched && searchParams.get('view') === 'openalex' && (
           <Openalex
             allAffiliations={affiliations}
             allOpenalexCorrections={allOpenalexCorrections}
@@ -162,7 +162,7 @@ export default function Affiliations({ isSticky, setIsSticky }) {
           />
         )}
 
-        {!isFetching && searchParams.get('view') === 'publications' && (
+        {!isFetching && isFetched && searchParams.get('view') === 'publications' && (
           <Publications
             allAffiliations={affiliations}
             allPublications={data?.publications?.results ?? []}
@@ -177,7 +177,7 @@ export default function Affiliations({ isSticky, setIsSticky }) {
           />
         )}
 
-        {!isFetching && searchParams.get('view') === 'datasets' && (
+        {!isFetching && isFetched && searchParams.get('view') === 'datasets' && (
           <Datasets
             allAffiliations={affiliations}
             allDatasets={data?.datasets?.results ?? []}

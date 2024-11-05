@@ -28,8 +28,8 @@ export default function Publications({
 }) {
   const [tab, setTab] = useState('selectAffiliations');
 
-  if (!allPublications || allPublications?.length === 0) {
-    return <div>No publications detected</div>;
+  if (allPublications?.length === 0) {
+    return <div>No publications detected.</div>;
   }
   return (
     <div>
