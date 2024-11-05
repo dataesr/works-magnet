@@ -61,7 +61,7 @@ export default function Filters({
 
   useEffect(() => {
     const getData = async () => {
-      if (searchParams.size === 0) {
+      if (searchParams.size === 1) {
         // Set default params values
         setSearchParams({
           affiliations: [],
@@ -69,7 +69,7 @@ export default function Filters({
           deletedAffiliations: [],
           endYear: '2023',
           startYear: '2023',
-          view: '',
+          view: searchParams.get('view'),
         });
         setTags([]);
       } else {
@@ -398,6 +398,8 @@ export default function Filters({
                       ))}
                     </Select>
                   </Col>
+                </Row>
+                <Row className="fr-mt-2w" gutters verticalAlign="bottom">
                   <Col>
                     <Checkbox
                       checked={currentSearchParams?.datasets ?? false}
