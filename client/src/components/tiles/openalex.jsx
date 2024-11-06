@@ -4,7 +4,7 @@ export default function OpenalexTile() {
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <a href="./affiliations?view=openalex">
+            <a href="./openalex-ror/search">
               ✏️ Improve ROR matching in OpenAlex - Provide your feedback!
             </a>
           </h3>

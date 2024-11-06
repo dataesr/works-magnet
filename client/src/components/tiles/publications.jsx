@@ -4,7 +4,7 @@ export default function PublicationsTile() {
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <a href="./affiliations?view=publications">
+            <a href="./publications/search">
               📑 Find the publications affiliated to your institution
             </a>
           </h3>

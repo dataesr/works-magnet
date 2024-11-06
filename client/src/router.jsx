@@ -13,7 +13,24 @@ export default function Router() {
     <Routes>
       <Route element={<Layout isSticky={isSticky} />}>
         <Route path="/" element={<Home />} />
-        <Route path="/affiliations" element={<Affiliations isSticky={isSticky} setIsSticky={setIsSticky} />} />
+        <Route
+          path="/openalex-ror/search"
+          element={
+            <Affiliations isSticky={isSticky} setIsSticky={setIsSticky} />
+          }
+        />
+        <Route
+          path="/publications/search"
+          element={
+            <Affiliations isSticky={isSticky} setIsSticky={setIsSticky} />
+          }
+        />
+        <Route
+          path="/datasets/search"
+          element={
+            <Affiliations isSticky={isSticky} setIsSticky={setIsSticky} />
+          }
+        />
         <Route path="/mentions" element={<Mentions />} />
       </Route>
     </Routes>

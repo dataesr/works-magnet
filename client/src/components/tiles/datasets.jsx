@@ -4,7 +4,7 @@ export default function DatasetsTile() {
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <a href="./affiliations?view=datasets">
+            <a href="./datasets/search">
               🗃 Find the datasets affiliated to your institution
             </a>
           </h3>
