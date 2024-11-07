@@ -12,7 +12,7 @@ import { useState } from 'react';
 import ActionsAffiliations from '../actions/actionsAffiliations';
 import ActionsPublications from '../actions/actionsPublications';
 import AffiliationsTab from '../affiliationsTab';
-import PublicationsTab from '../publicationsTab';
+import PublicationsTab from '../publications/publicationsTab';
 
 export default function Publications({
   allAffiliations,

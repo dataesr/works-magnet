@@ -13,7 +13,7 @@ import {
   linkedORCIDTemplate,
   statusRowFilterTemplate,
   statusTemplate,
-} from '../utils/templates';
+} from '../../utils/templates';
 
 export default function DatasetsView({
   filteredAffiliationName,

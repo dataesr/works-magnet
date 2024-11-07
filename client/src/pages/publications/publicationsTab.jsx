@@ -6,9 +6,9 @@ import {
 } from '@dataesr/dsfr-plus';
 
 import PublicationsView from './publicationsView';
-import Gauge from '../components/gauge';
-import { datasources, status } from '../config';
-import { normalizeName, renderButtons } from '../utils/works';
+import Gauge from '../../components/gauge';
+import { datasources, status } from '../../config';
+import { normalizeName, renderButtons } from '../../utils/works';
 
 export default function PublicationsTab({ publications, publishers, selectedPublications, setSelectedPublications, tagPublications, types, years }) {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');

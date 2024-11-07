@@ -13,8 +13,8 @@ import {
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import TagInput from '../components/tag-input';
-import { getRorData, isRor } from '../utils/ror';
+import TagInput from '../../components/tag-input';
+import { getRorData, isRor } from '../../utils/ror';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
@@ -24,7 +24,7 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
   .map((year) => (year + START_YEAR).toString())
   .map((year) => ({ label: year, value: year }));
 
-export default function Filters() {
+export default function Search() {
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();

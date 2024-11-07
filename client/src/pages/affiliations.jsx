@@ -21,11 +21,11 @@ import PublicationsTile from '../components/tiles/publications';
 import { status } from '../config';
 import useToast from '../hooks/useToast';
 import { getAffiliationsCorrections } from '../utils/curations';
-import { normalize } from '../utils/strings';
 import { isRor } from '../utils/ror';
+import { normalize } from '../utils/strings';
 import { getWorks } from '../utils/works';
+import Openalex from './openalex-ror/openalex';
 import Datasets from './views/datasets';
-import Openalex from './ror-openalex/openalex';
 import Publications from './views/publications';
 
 import 'primereact/resources/primereact.min.css';

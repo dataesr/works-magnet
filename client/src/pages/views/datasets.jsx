@@ -9,8 +9,8 @@ import {
   Title,
 } from '@dataesr/dsfr-plus';
 import ActionsDatasets from '../actions/actionsDatasets';
-import DatasetsTab from '../datasetsTab';
-import DatasetsYearlyDistribution from '../datasetsYearlyDistribution';
+import DatasetsTab from '../datasets/datasetsTab';
+import DatasetsYearlyDistribution from '../datasets/datasetsYearlyDistribution';
 import AffiliationsTab from '../affiliationsTab';
 import ActionsAffiliations from '../actions/actionsAffiliations';
 

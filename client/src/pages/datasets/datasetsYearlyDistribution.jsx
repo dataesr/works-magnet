@@ -7,7 +7,7 @@ import HighchartsReact from 'highcharts-react-official';
 import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
 
-import { range } from '../utils/works';
+import { range } from '../../utils/works';
 
 export default function DatasetsYearlyDistribution({ allDatasets, field, subfield = undefined }) {
   const [searchParams] = useSearchParams();

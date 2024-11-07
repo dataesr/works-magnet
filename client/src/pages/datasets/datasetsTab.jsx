@@ -2,13 +2,13 @@ import { Button, Col, Row } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-import Gauge from '../components/gauge';
-import { datasources, status } from '../config';
+import Gauge from '../../components/gauge';
+import { datasources, status } from '../../config';
 import {
   normalizeName,
   renderButtonDataset,
   renderButtons,
-} from '../utils/works';
+} from '../../utils/works';
 import DatasetsView from './datasetsView';
 
 export default function DatasetsTab({
