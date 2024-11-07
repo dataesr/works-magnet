@@ -1,9 +1,9 @@
 import { Col, Row, Title } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
-import ActionsOpenalex from '../actions/actionsOpenalex';
-import ActionsOpenalexFeedback from '../actions/actionsOpenalexFeedback';
-import OpenalexTab from '../openalexTab';
+import ActionsOpenalex from './actionsOpenalex';
+import ActionsOpenalexFeedback from './actionsOpenalexFeedback';
+import OpenalexTab from './openalexTab';
 
 export default function Openalex({
   allAffiliations,
