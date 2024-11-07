@@ -36,13 +36,15 @@ export default function ModalInfo() {
                     <span className="fr-stepper__state">Step 1 of 3</span>
                   </h2>
                   <div className="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3" />
-                  <Text className="fr-py-3w">
-                    🔎 The array below summarizes the most frequent raw affiliation
-                    strings retrieved in OpenAlex for your query.
-                    <br />
-                    🤖 The second column indicates the ROR automatically computed by
-                    OpenAlex. Sometimes, they can be inaccurate or missing.
-                  </Text>
+                  <div className="box-info">
+                    <Text className="fr-py-3w">
+                      🔎 The array below summarizes the most frequent raw affiliation
+                      strings retrieved in OpenAlex for your query.
+                      <br />
+                      🤖 The second column indicates the ROR automatically computed by
+                      OpenAlex. Sometimes, they can be inaccurate or missing.
+                    </Text>
+                  </div>
                 </>
               )
             }
@@ -54,10 +56,12 @@ export default function ModalInfo() {
                     <span className="fr-stepper__state">Step 2 of 3</span>
                   </h2>
                   <div className="fr-stepper__steps" data-fr-current-step="2" data-fr-steps="3" />
-                  <Text className="fr-py-3w">
-                    ✏️ Click the third column to edit and input the right RORs for
-                    this raw affiliation string. Use a ';' to input multiple RORs.
-                  </Text>
+                  <div className="box-info">
+                    <Text className="fr-py-3w">
+                      ✏️ Click the third column to edit and input the right RORs for
+                      this raw affiliation string. Use a ';' to input multiple RORs.
+                    </Text>
+                  </div>
                 </>
               )
             }
@@ -69,10 +73,12 @@ export default function ModalInfo() {
                     <span className="fr-stepper__state">Step 3 of 3</span>
                   </h2>
                   <div className="fr-stepper__steps" data-fr-current-step="3" data-fr-steps="3" />
-                  <Text className="fr-py-3w">
-                    🗣 Once finished, you can use the Export button on the right to
-                    send this feedback to OpenAlex.
-                  </Text>
+                  <div className="box-info">
+                    <Text className="fr-py-3w">
+                      🗣 Once finished, you can use the Export button on the right to
+                      send this feedback to OpenAlex.
+                    </Text>
+                  </div>
                 </>
               )
             }
