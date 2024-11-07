@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import Layout from './layout';
-import Home from './pages';
+import Home from './pages/home';
 import Affiliations from './pages/affiliations';
 import Mentions from './pages/mentions';
 
