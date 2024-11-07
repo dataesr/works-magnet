@@ -12,11 +12,11 @@ import {
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-import { status } from '../config';
-import { getAffiliationsCorrections } from '../utils/curations';
-import { isRor } from '../utils/ror';
-import { removeDiacritics } from '../utils/strings';
-import { capitalize } from '../utils/works';
+import { status } from '../../config';
+import { getAffiliationsCorrections } from '../../utils/curations';
+import { isRor } from '../../utils/ror';
+import { removeDiacritics } from '../../utils/strings';
+import { capitalize } from '../../utils/works';
 import OpenalexView from './openalexView';
 
 export default function OpenalexTab({
