@@ -13,7 +13,7 @@ import { getAffiliationsCorrections } from '../utils/curations';
 import { getWorks } from '../utils/works';
 import Filters from './filters';
 import Datasets from './views/datasets';
-import Openalex from './views/openalex';
+import Openalex from './ror-openalex/openalex';
 import Publications from './views/publications';
 
 import 'primereact/resources/primereact.min.css';
