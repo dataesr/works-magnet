@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import Layout from './layout';
-import Affiliations from './pages/affiliations';
+import DatasetsResults from './pages/datasets/results';
 import DatasetsSearch from './pages/datasets/search';
 import Home from './pages/home';
 import Mentions from './pages/mentions';
+import OpenalexRorResults from './pages/openalex-ror/results';
 import OpenalexRorSearch from './pages/openalex-ror/search';
+import PublicationsResults from './pages/publications/results';
 import PublicationsSearch from './pages/publications/search';
 
 export default function Router() {
@@ -24,7 +26,7 @@ export default function Router() {
         <Route
           path="/openalex-ror/results"
           element={
-            <Affiliations />
+            <OpenalexRorResults />
           }
         />
         <Route
@@ -35,7 +37,7 @@ export default function Router() {
         <Route
           path="/publications/results"
           element={
-            <Affiliations />
+            <PublicationsResults />
           }
         />
         <Route
@@ -46,7 +48,7 @@ export default function Router() {
         <Route
           path="/datasets/results"
           element={
-            <Affiliations />
+            <DatasetsResults />
           }
         />
         <Route path="mentions" element={<Mentions />} />
