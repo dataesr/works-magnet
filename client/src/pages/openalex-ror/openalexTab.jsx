@@ -111,51 +111,56 @@ export default function OpenalexTab({
       <Row className="wm-bg">
         <Col md={12} className="wm-content fr-mb-1w">
           <div className="wm-actions">
-            <span className="wm-text fr-mb-3w">
-              <span>{selectedOpenAlex.length}</span>
-              {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
-            </span>
+            <div className="wm-external-actions">
+              <span className="wm-text fr-mb-3w">
+                <span>{selectedOpenAlex.length}</span>
+                {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
+              </span>
 
-            <Button
-              className="fr-ml-5w fr-mr-1w"
-              color="beige-gris-galet"
-              disabled={!selectedOpenAlex.length}
-              icon="add-circle-line"
-              key="add-ror"
-              onClick={() => {
-                setAction('add');
-                setIsModalOpen((prev) => !prev);
-              }}
-              size="sm"
-              title="Add ROR"
-            >
-              Add ROR
-            </Button>
+              <Button
+                className="fr-ml-5w fr-mr-1w"
+                color="beige-gris-galet"
+                disabled={!selectedOpenAlex.length}
+                icon="add-circle-line"
+                key="add-ror"
+                onClick={() => {
+                  setAction('add');
+                  setIsModalOpen((prev) => !prev);
+                }}
+                size="sm"
+                title="Add ROR"
+              >
+                Add ROR
+              </Button>
 
-            <Button
-              className="fr-mr-1w"
-              color="beige-gris-galet"
-              disabled={!selectedOpenAlex.length}
-              icon="close-circle-line"
-              key="remove-ror"
-              onClick={() => {
-                setAction('remove');
-                setIsModalOpen((prev) => !prev);
-              }}
-              size="sm"
-              title="Remove ROR"
-            >
-              Remove ROR
-            </Button>
+              <Button
+                className="fr-mr-1w"
+                color="beige-gris-galet"
+                disabled={!selectedOpenAlex.length}
+                icon="close-circle-line"
+                key="remove-ror"
+                onClick={() => {
+                  setAction('remove');
+                  setIsModalOpen((prev) => !prev);
+                }}
+                size="sm"
+                title="Remove ROR"
+              >
+                Remove ROR
+              </Button>
 
-            <ExportErrorsButton
-              allOpenalexCorrections={allOpenalexCorrections}
-              options={options}
-            />
+              <ExportErrorsButton
+                allOpenalexCorrections={allOpenalexCorrections}
+                options={options}
+              />
 
-            <SendFeedbackButton
-              allOpenalexCorrections={allOpenalexCorrections}
-            />
+              <SendFeedbackButton
+                allOpenalexCorrections={allOpenalexCorrections}
+              />
+            </div>
+            <div className="wm-internal-actions">
+              actions relatives au tableau du dessous
+            </div>
           </div>
 
           <OpenalexView

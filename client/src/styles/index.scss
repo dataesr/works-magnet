@@ -151,5 +151,12 @@ body {
     padding: 10px;
     border-top-right-radius: 15px;
     border-top-left-radius: 15px;
+    .wm-external-actions{
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;;
+    }
+    .wm-internal-actions{
+      padding-top: 10px;
+    }
   }
 }
