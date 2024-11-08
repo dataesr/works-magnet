@@ -3,8 +3,6 @@ import {
   Col,
   Container,
   Row,
-  SegmentedControl,
-  SegmentedElement,
   Spinner,
   Tag,
   TagGroup,
@@ -15,18 +13,12 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import Ribbon from '../../components/ribbon';
-import DatasetsTile from '../../components/tiles/datasets';
-import OpenalexTile from '../../components/tiles/openalex';
-import PublicationsTile from '../../components/tiles/publications';
 import { status } from '../../config';
 import useToast from '../../hooks/useToast';
-import { getAffiliationsCorrections } from '../../utils/curations';
 import { isRor } from '../../utils/ror';
 import { normalize } from '../../utils/strings';
 import { getWorks } from '../../utils/works';
-import Openalex from '../openalex-ror/openalex';
 import Datasets from '../views/datasets';
-import Publications from '../views/publications';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -42,27 +34,17 @@ export default function Affiliations() {
   const [searchParams] = useSearchParams();
 
   const [affiliations, setAffiliations] = useState([]);
-  const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [options, setOptions] = useState({});
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
-  const [selectedPublications, setSelectedPublications] = useState([]);
   const { toast } = useToast();
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['data', JSON.stringify(options)],
+    queryKey: ['data', 'datasets', JSON.stringify(options)],
     queryFn: () => getWorks(options, toast),
     enabled: false,
     cacheTime: 60 * (60 * 1000), // 1h
   });
-
-  const tagPublications = (publications, action) => {
-    const publicationsIds = publications.map((publication) => publication.id);
-    data?.publications?.results
-      ?.filter((publication) => publicationsIds.includes(publication.id))
-      .map((publication) => (publication.status = action));
-    setSelectedPublications([]);
-  };
 
   const tagDatasets = (datasets, action) => {
     const datasetsIds = datasets.map((dataset) => dataset.id);
@@ -93,28 +75,10 @@ export default function Affiliations() {
     setSelectedAffiliations([]);
   };
 
-  const undo = (id) => {
-    const newAffiliations = affiliations.map((affiliation) => {
-      if (affiliation.id === id) {
-        // eslint-disable-next-line no-param-reassign
-        affiliation.hasCorrection = false;
-        // eslint-disable-next-line no-param-reassign
-        affiliation.rorsToCorrect = affiliation.rors
-          .map((r) => r.rorId)
-          .join(';');
-      }
-      return affiliation;
-    });
-    setAffiliations(newAffiliations);
-    setAllOpenalexCorrections(getAffiliationsCorrections(newAffiliations));
-  };
-
   useEffect(() => {
     const queryParams = {
-      datasets: searchParams.get('datasets') === 'true',
-      endYear: searchParams.get('endYear', '2023'),
-      startYear: searchParams.get('startYear', '2023'),
-      view: searchParams.get('view', ''),
+      endYear: searchParams.get('endYear') ?? '2023',
+      startYear: searchParams.get('startYear') ?? '2023',
     };
     queryParams.affiliationStrings = [];
     queryParams.deletedAffiliations = [];
@@ -223,61 +187,7 @@ export default function Affiliations() {
           </Row>
         )}
 
-        {!isFetching && isFetched && !searchParams.get('view') && (
-          <Row gutters className="fr-mb-16w">
-            <Col xs="12">
-              <div>
-                {' '}
-                The data has been fetched, please start with one of the use
-                cases described below. You will be able to switch from one to
-                another.
-                {' '}
-              </div>
-            </Col>
-            <Col>
-              <OpenalexTile />
-            </Col>
-            <Col>
-              <PublicationsTile />
-            </Col>
-            <Col>
-              <DatasetsTile />
-            </Col>
-          </Row>
-        )}
-
-        {!isFetching
-          && isFetched
-          && searchParams.get('view') === 'openalex' && (
-          <Openalex
-            allAffiliations={affiliations}
-            allOpenalexCorrections={allOpenalexCorrections}
-            options={options}
-            setAllOpenalexCorrections={setAllOpenalexCorrections}
-            undo={undo}
-          />
-        )}
-
-        {!isFetching
-          && isFetched
-          && searchParams.get('view') === 'publications' && (
-          <Publications
-            allAffiliations={affiliations}
-            allPublications={data?.publications?.results ?? []}
-            data={data}
-            options={options}
-            selectedAffiliations={selectedAffiliations}
-            selectedPublications={selectedPublications}
-            setSelectedAffiliations={setSelectedAffiliations}
-            setSelectedPublications={setSelectedPublications}
-            tagAffiliations={tagAffiliations}
-            tagPublications={tagPublications}
-          />
-        )}
-
-        {!isFetching
-          && isFetched
-          && searchParams.get('view') === 'datasets' && (
+        {!isFetching && isFetched && (
           <Datasets
             allAffiliations={affiliations}
             allDatasets={data?.datasets?.results ?? []}

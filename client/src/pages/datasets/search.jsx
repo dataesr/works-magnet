@@ -41,51 +41,43 @@ export default function Search() {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    const getData = async () => {
-      if (searchParams.size < 4) {
-        // Set default params values
-        const searchParamsTmp = {
-          affiliations: searchParams.getAll('affiliations') ?? [],
-          deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
-          endYear: searchParams.get('endYear') ?? '2023',
-          startYear: searchParams.get('startYear') ?? '2023',
-          view: searchParams.get('view') ?? 'openalex',
-        };
-        setSearchParams(searchParamsTmp);
-        setTags([]);
-      } else {
-        setIsLoading(true);
-        const affiliations = searchParams.getAll('affiliations') || [];
-        const deletedAffiliations1 = searchParams.getAll('deletedAffiliations') || [];
-
-        setCurrentSearchParams({
-          affiliations,
-          deletedAffiliations: deletedAffiliations1,
-          endYear: searchParams.get('endYear', '2023'),
-          startYear: searchParams.get('startYear', '2023'),
-          view: searchParams.get('view', ''),
-        });
-
-        const newSearchedAffiliations = affiliations.filter(
-          (affiliation) => !searchedAffiliations.includes(affiliation),
-        );
-        if (newSearchedAffiliations.length > 0) {
-          setSearchedAffiliations(affiliations);
-        }
-        const newDeletedAffiliations = deletedAffiliations1.filter(
-          (affiliation) => !deletedAffiliations.includes(affiliation),
-        )
-          + deletedAffiliations.filter(
-            (affiliation) => !deletedAffiliations1.includes(affiliation),
-          );
-        if (newDeletedAffiliations.length > 0) {
-          setDeletedAffiliations(deletedAffiliations1);
-        }
-
-        setIsLoading(false);
+    if (searchParams.size < 2) {
+      // Set default params values
+      const searchParamsTmp = {
+        affiliations: searchParams.getAll('affiliations') ?? [],
+        deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
+        endYear: searchParams.get('endYear') ?? '2023',
+        startYear: searchParams.get('startYear') ?? '2023',
+      };
+      setSearchParams(searchParamsTmp);
+      setTags([]);
+    } else {
+      setIsLoading(true);
+      const affiliations = searchParams.getAll('affiliations') || [];
+      const deletedAffiliations1 = searchParams.getAll('deletedAffiliations') || [];
+      setCurrentSearchParams({
+        affiliations,
+        deletedAffiliations: deletedAffiliations1,
+        endYear: searchParams.get('endYear', '2023'),
+        startYear: searchParams.get('startYear', '2023'),
+      });
+      const newSearchedAffiliations = affiliations.filter(
+        (affiliation) => !searchedAffiliations.includes(affiliation),
+      );
+      if (newSearchedAffiliations.length > 0) {
+        setSearchedAffiliations(affiliations);
       }
-    };
-    getData();
+      const newDeletedAffiliations = deletedAffiliations1.filter(
+        (affiliation) => !deletedAffiliations.includes(affiliation),
+      )
+        + deletedAffiliations.filter(
+          (affiliation) => !deletedAffiliations1.includes(affiliation),
+        );
+      if (newDeletedAffiliations.length > 0) {
+        setDeletedAffiliations(deletedAffiliations1);
+      }
+      setIsLoading(false);
+    }
   }, [
     deletedAffiliations,
     getRorChildren,

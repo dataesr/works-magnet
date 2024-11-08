@@ -3,8 +3,6 @@ import {
   Col,
   Container,
   Row,
-  SegmentedControl,
-  SegmentedElement,
   Spinner,
   Tag,
   TagGroup,
@@ -15,17 +13,11 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import Ribbon from '../../components/ribbon';
-import DatasetsTile from '../../components/tiles/datasets';
-import OpenalexTile from '../../components/tiles/openalex';
-import PublicationsTile from '../../components/tiles/publications';
-import { status } from '../../config';
 import useToast from '../../hooks/useToast';
 import { getAffiliationsCorrections } from '../../utils/curations';
 import { isRor } from '../../utils/ror';
 import { normalize } from '../../utils/strings';
 import { getWorks } from '../../utils/works';
-import Datasets from '../views/datasets';
-import Publications from '../views/publications';
 import Openalex from './openalex';
 
 import 'primereact/resources/primereact.min.css';
@@ -44,54 +36,14 @@ export default function Affiliations() {
   const [affiliations, setAffiliations] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [options, setOptions] = useState({});
-  const [selectedAffiliations, setSelectedAffiliations] = useState([]);
-  const [selectedDatasets, setSelectedDatasets] = useState([]);
-  const [selectedPublications, setSelectedPublications] = useState([]);
   const { toast } = useToast();
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['data', JSON.stringify(options)],
+    queryKey: ['data', 'openalex-ror', JSON.stringify(options)],
     queryFn: () => getWorks(options, toast),
     enabled: false,
     cacheTime: 60 * (60 * 1000), // 1h
   });
-
-  const tagPublications = (publications, action) => {
-    const publicationsIds = publications.map((publication) => publication.id);
-    data?.publications?.results
-      ?.filter((publication) => publicationsIds.includes(publication.id))
-      .map((publication) => (publication.status = action));
-    setSelectedPublications([]);
-  };
-
-  const tagDatasets = (datasets, action) => {
-    const datasetsIds = datasets.map((dataset) => dataset.id);
-    data?.datasets?.results
-      ?.filter((dataset) => datasetsIds.includes(dataset.id))
-      .map((dataset) => (dataset.status = action));
-    setSelectedDatasets([]);
-  };
-
-  const tagAffiliations = (_affiliations, action) => {
-    if (action !== status.excluded.id) {
-      const worksIds = _affiliations
-        .map((affiliation) => affiliation.works)
-        .flat();
-      data?.publications?.results
-        ?.filter((publication) => worksIds.includes(publication.id))
-        .map((publication) => (publication.status = action));
-      data?.datasets?.results
-        ?.filter((dataset) => worksIds.includes(dataset.id))
-        .map((dataset) => (dataset.status = action));
-    }
-    const affiliationIds = _affiliations.map((affiliation) => affiliation.id);
-    setAffiliations(
-      _affiliations
-        ?.filter((affiliation) => affiliationIds.includes(affiliation.id))
-        .map((affiliation) => (affiliation.status = action)),
-    );
-    setSelectedAffiliations([]);
-  };
 
   const undo = (id) => {
     const newAffiliations = affiliations.map((affiliation) => {
@@ -111,10 +63,8 @@ export default function Affiliations() {
 
   useEffect(() => {
     const queryParams = {
-      datasets: searchParams.get('datasets') === 'true',
-      endYear: searchParams.get('endYear', '2023'),
-      startYear: searchParams.get('startYear', '2023'),
-      view: searchParams.get('view', ''),
+      endYear: searchParams.get('endYear') ?? '2023',
+      startYear: searchParams.get('startYear') ?? '2023',
     };
     queryParams.affiliationStrings = [];
     queryParams.deletedAffiliations = [];
@@ -156,7 +106,7 @@ export default function Affiliations() {
   }, [data]);
 
   return (
-    // TODO: Find a cleaner way to display the spinner and views
+    // TODO: Find a cleaner way to display the spinner
     <>
       <Container fluid as="section" className="filters sticky">
         <Row verticalAlign="top" className="fr-p-1w">
@@ -223,72 +173,13 @@ export default function Affiliations() {
           </Row>
         )}
 
-        {!isFetching && isFetched && !searchParams.get('view') && (
-          <Row gutters className="fr-mb-16w">
-            <Col xs="12">
-              <div>
-                {' '}
-                The data has been fetched, please start with one of the use
-                cases described below. You will be able to switch from one to
-                another.
-                {' '}
-              </div>
-            </Col>
-            <Col>
-              <OpenalexTile />
-            </Col>
-            <Col>
-              <PublicationsTile />
-            </Col>
-            <Col>
-              <DatasetsTile />
-            </Col>
-          </Row>
-        )}
-
-        {!isFetching
-          && isFetched
-          && searchParams.get('view') === 'openalex' && (
+        {!isFetching && isFetched && (
           <Openalex
             allAffiliations={affiliations}
             allOpenalexCorrections={allOpenalexCorrections}
             options={options}
             setAllOpenalexCorrections={setAllOpenalexCorrections}
             undo={undo}
-          />
-        )}
-
-        {!isFetching
-          && isFetched
-          && searchParams.get('view') === 'publications' && (
-          <Publications
-            allAffiliations={affiliations}
-            allPublications={data?.publications?.results ?? []}
-            data={data}
-            options={options}
-            selectedAffiliations={selectedAffiliations}
-            selectedPublications={selectedPublications}
-            setSelectedAffiliations={setSelectedAffiliations}
-            setSelectedPublications={setSelectedPublications}
-            tagAffiliations={tagAffiliations}
-            tagPublications={tagPublications}
-          />
-        )}
-
-        {!isFetching
-          && isFetched
-          && searchParams.get('view') === 'datasets' && (
-          <Datasets
-            allAffiliations={affiliations}
-            allDatasets={data?.datasets?.results ?? []}
-            data={data}
-            options={options}
-            selectedAffiliations={selectedAffiliations}
-            selectedDatasets={selectedDatasets}
-            setSelectedAffiliations={setSelectedAffiliations}
-            setSelectedDatasets={setSelectedDatasets}
-            tagAffiliations={tagAffiliations}
-            tagDatasets={tagDatasets}
           />
         )}
       </Container>

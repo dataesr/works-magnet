@@ -14,6 +14,7 @@ import PublicationsSearch from './pages/publications/search';
 export default function Router() {
   const [isSticky] = useState(false);
 
+  // TODO: Merge nested routes
   return (
     <Routes>
       <Route element={<Layout isSticky={isSticky} />}>
