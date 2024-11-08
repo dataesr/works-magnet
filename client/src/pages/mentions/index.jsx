@@ -343,7 +343,6 @@ export default function Mentions() {
     <>
       <Header />
       <Container as="section" className="fr-mt-4w mentions">
-
         <div
           className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`}
           title="actions"
@@ -379,8 +378,8 @@ export default function Mentions() {
             size="lg"
             style={{ display: 'block', width: '100%', textAlign: 'left' }}
             title={`Switch type from ${capitalize(urlSearchParams.type)} to ${
-            urlSearchParams.type === 'software' ? 'Datasets' : 'Software'
-          }`}
+              urlSearchParams.type === 'software' ? 'Datasets' : 'Software'
+            }`}
           >
             <i
               className="fr-icon-file-line fr-mr-2w"
@@ -431,18 +430,18 @@ export default function Mentions() {
         </Row>
 
         {/*
-      <Row className="fr-mb-2w">
-        <Button
-          disabled={!corrections.length > 0}
-          onClick={switchSendModal}
-          size="sm"
-        >
-          {`Send ${corrections.length} correction${
-            corrections.length > 1 ? 's' : ''
-          }`}
-        </Button>
-      </Row>
-      */}
+        <Row className="fr-mb-2w">
+          <Button
+            disabled={!corrections.length > 0}
+            onClick={switchSendModal}
+            size="sm"
+          >
+            {`Send ${corrections.length} correction${
+              corrections.length > 1 ? 's' : ''
+            }`}
+          </Button>
+        </Row>
+        */}
 
         <Modal
           isOpen={isModalCharacterizationsOpen}
@@ -460,8 +459,8 @@ export default function Mentions() {
             >
               <i
                 className={`${
-                correctionsUsed ? 'fr-icon-check-line' : 'fr-icon-close-line'
-              }`}
+                  correctionsUsed ? 'fr-icon-check-line' : 'fr-icon-close-line'
+                }`}
                 style={{ color: correctionsUsed ? '#8dc572' : '#be6464' }}
               />
               {' '}
@@ -477,8 +476,10 @@ export default function Mentions() {
             >
               <i
                 className={`${
-                correctionsCreated ? 'fr-icon-check-line' : 'fr-icon-close-line'
-              }`}
+                  correctionsCreated
+                    ? 'fr-icon-check-line'
+                    : 'fr-icon-close-line'
+                }`}
                 style={{ color: correctionsCreated ? '#8dc572' : '#be6464' }}
               />
               {' '}
@@ -494,8 +495,10 @@ export default function Mentions() {
             >
               <i
                 className={`${
-                correctionsShared ? 'fr-icon-check-line' : 'fr-icon-close-line'
-              }`}
+                  correctionsShared
+                    ? 'fr-icon-check-line'
+                    : 'fr-icon-close-line'
+                }`}
                 style={{ color: correctionsShared ? '#8dc572' : '#be6464' }}
               />
               {' '}
@@ -505,7 +508,9 @@ export default function Mentions() {
           <ModalFooter>
             <Button
               onClick={addCorrections}
-              title={`Validate modification${corrections.length > 1 ? 's' : ''}`}
+              title={`Validate modification${
+                corrections.length > 1 ? 's' : ''
+              }`}
             >
               {`Validate modification${corrections.length > 1 ? 's' : ''}`}
             </Button>
@@ -515,8 +520,8 @@ export default function Mentions() {
           <ModalTitle>Send mentions corrections</ModalTitle>
           <ModalContent>
             {`You corrected ${corrections.length} mention${
-            corrections.length > 1 ? 's' : ''
-          }.`}
+              corrections.length > 1 ? 's' : ''
+            }.`}
             <TextInput
               className="fr-mt-1w"
               label="Please indicate your email. Only an encrypted version of your email </Modal>will be public."
@@ -530,12 +535,12 @@ export default function Mentions() {
               disabled={!corrections.length > 0 || !validEmail}
               onClick={feedback}
               title={`Send ${corrections.length} correction${
-              corrections.length > 1 ? 's' : ''
-            }`}
+                corrections.length > 1 ? 's' : ''
+              }`}
             >
               {`Send ${corrections.length} correction${
-              corrections.length > 1 ? 's' : ''
-            }`}
+                corrections.length > 1 ? 's' : ''
+              }`}
             </Button>
           </ModalFooter>
         </Modal>
@@ -555,7 +560,9 @@ export default function Mentions() {
           <ModalFooter>
             <Button
               onClick={switchType}
-              title={`Validate modification${corrections.length > 1 ? 's' : ''}`}
+              title={`Validate modification${
+                corrections.length > 1 ? 's' : ''
+              }`}
             >
               {`Validate modification${corrections.length > 1 ? 's' : ''}`}
             </Button>
@@ -563,25 +570,25 @@ export default function Mentions() {
         </Modal>
 
         {/*
-      <span style={{ display: 'block', textAlign: 'right' }}>
-        <Button
-          onClick={() => {
-            searchParams.set('view', 'table');
-            setSearchParams(searchParams);
-          }}
-        >
-          <i className="fr-icon fr-icon-table-fill" />
-        </Button>
-        <Button
-          onClick={() => {
-            searchParams.set('view', 'grid');
-            setSearchParams(searchParams);
-          }}
-        >
-          <i className="fr-icon fr-icon-layout-grid-fill" />
-        </Button>
-      </span>
-      */}
+        <span style={{ display: 'block', textAlign: 'right' }}>
+          <Button
+            onClick={() => {
+              searchParams.set('view', 'table');
+              setSearchParams(searchParams);
+            }}
+          >
+            <i className="fr-icon fr-icon-table-fill" />
+          </Button>
+          <Button
+            onClick={() => {
+              searchParams.set('view', 'grid');
+              setSearchParams(searchParams);
+            }}
+          >
+            <i className="fr-icon fr-icon-layout-grid-fill" />
+          </Button>
+        </span>
+        */}
 
         {error && (
           <Row gutters className="fr-mb-16w">
@@ -830,8 +837,8 @@ export default function Mentions() {
                 size="sm"
               >
                 {`Send ${corrections.length} correction${
-                corrections.length > 1 ? 's' : ''
-              }`}
+                  corrections.length > 1 ? 's' : ''
+                }`}
               </Button>
             </div>
             <ul style={{ listStyle: 'none' }}>

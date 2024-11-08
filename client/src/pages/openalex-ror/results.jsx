@@ -1,36 +1,22 @@
-import {
-  Badge,
-  Container, Row, Col,
-  Spinner,
-  Title,
-  TagGroup,
-  Tag,
-  Button,
-} from '@dataesr/dsfr-plus';
+import { Col, Container, Row, Spinner } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import Ribbon from '../../components/ribbon';
 import useToast from '../../hooks/useToast';
+import Header from '../../layout/header';
 import { getAffiliationsCorrections } from '../../utils/curations';
 import { isRor } from '../../utils/ror';
 import { normalize } from '../../utils/strings';
 import { getWorks } from '../../utils/works';
+import ExportErrorsButton from './export-errors-button';
+import OpenalexTab from './openalexTab';
+import SendFeedbackButton from './send-feedback-button';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
-import ModalInfo from './modal-info';
 
-import OpenalexTab from './openalexTab';
-import Header from '../../layout/header';
-
-const {
-  VITE_APP_NAME,
-  VITE_APP_TAG_LIMIT,
-  VITE_HEADER_TAG,
-  VITE_HEADER_TAG_COLOR,
-} = import.meta.env;
+const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
 export default function Affiliations() {
   const [searchParams] = useSearchParams();
@@ -108,46 +94,6 @@ export default function Affiliations() {
   return (
     <>
       <Header isSticky />
-      <Container fluid as="section" className="filters sticky">
-        <Row verticalAlign="top" className="fr-p-1w">
-          <Ribbon />
-          <Col xs="3" className="cursor-pointer" offsetXs="1">
-            <Title as="h1" look="h2" className="wm-font">
-              {VITE_APP_NAME}
-              {VITE_HEADER_TAG && (
-                <Badge
-                  className="fr-ml-1w"
-                  color={VITE_HEADER_TAG_COLOR}
-                  size="sm"
-                >
-                  {VITE_HEADER_TAG}
-                </Badge>
-              )}
-            </Title>
-          </Col>
-          <Col>
-            <Title as="h2" className=" wm-font">
-              Improve ROR matching in OpenAlex
-              <ModalInfo />
-            </Title>
-            {/* <Row>
-              <Col
-                className="cursor-pointer"
-                onClick={(e) => {
-                  // setIsOpen(true);
-                  e.preventDefault();
-                }}
-              >
-                <TagGroup>
-                  <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
-                    {`${options.startYear} - ${options.endYear}`}
-                  </Tag>
-                </TagGroup>
-              </Col>
-            </Row> */}
-          </Col>
-        </Row>
-      </Container>
       <Container fluid as="section" className="">
         {isFetching && (
           <Row>
@@ -169,42 +115,30 @@ export default function Affiliations() {
         )}
 
         {!isFetching && isFetched && (
-          <Row className="wm-bg">
-
-            <Col md={2} className="wm-menu">
-              <div className="wm-text">
-                Search parameters
-              </div>
-              <TagGroup className="fr-ml-1w">
-                <Tag color="green-emeraude" size="sm">
-                  {`Selected years: ${options.startYear} - ${options.endYear}`}
-                </Tag>
-                <Tag color="green-tilleul-verveine" size="sm">
-                  Affiliations: essec
-                </Tag>
-              </TagGroup>
-              <Button
-                icon="arrow-go-back-fill"
-                color="blue-ecume"
-                size="sm"
-                style={{ width: '100%' }}
-              >
-                Back to search
-              </Button>
-            </Col>
-            <Col md={9}>
-              <OpenalexTab
-                affiliations={affiliations.filter(
-                  (affiliation) => affiliation.source === 'OpenAlex',
-                )}
-                options={options}
-                setAllOpenalexCorrections={setAllOpenalexCorrections}
-                allOpenalexCorrections={allOpenalexCorrections}
-                undo={undo}
-              />
-            </Col>
-            <Col />
-          </Row>
+          <>
+            <Row className="wm-bg">
+              <Col md={9} offsetMd={2}>
+                <div className="wm-actions">
+                  <ExportErrorsButton
+                    allOpenalexCorrections={allOpenalexCorrections}
+                    options={options}
+                  />
+                  <SendFeedbackButton
+                    allOpenalexCorrections={allOpenalexCorrections}
+                  />
+                </div>
+              </Col>
+              <Col />
+            </Row>
+            <OpenalexTab
+              affiliations={affiliations.filter(
+                (affiliation) => affiliation.source === 'OpenAlex',
+              )}
+              options={options}
+              setAllOpenalexCorrections={setAllOpenalexCorrections}
+              undo={undo}
+            />
+          </>
         )}
       </Container>
     </>
