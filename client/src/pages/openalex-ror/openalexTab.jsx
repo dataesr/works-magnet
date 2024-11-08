@@ -8,6 +8,8 @@ import {
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
+import ExportErrorsButton from './export-errors-button';
+import SendFeedbackButton from './send-feedback-button';
 import { status } from '../../config';
 import { getAffiliationsCorrections } from '../../utils/curations';
 import { isRor } from '../../utils/ror';
@@ -18,6 +20,7 @@ export default function OpenalexTab({
   affiliations,
   options,
   setAllOpenalexCorrections,
+  allOpenalexCorrections,
   undo,
 }) {
   const [action, setAction] = useState();
@@ -106,65 +109,55 @@ export default function OpenalexTab({
         </ModalFooter>
       </Modal>
       <Row className="wm-bg">
-        <Col md={2} className="wm-menu">
-          <div className="wm-text">
-            Search parameters
-          </div>
-          <TagGroup className="fr-ml-1w">
-            <Tag color="green-emeraude" size="sm">
-              {`Selected years: ${options.startYear} - ${options.endYear}`}
-            </Tag>
-            <Tag color="green-tilleul-verveine" size="sm">
-              Affiliations: essec
-            </Tag>
-          </TagGroup>
-          <Button
-            icon="arrow-go-back-fill"
-            color="blue-ecume"
-            size="sm"
-            style={{ width: '100%' }}
-          >
-            Back to search
-          </Button>
+        <Col md={12} className="wm-content fr-mb-1w">
+          <div className="wm-actions">
+            <span className="wm-text fr-mb-3w">
+              <span>{selectedOpenAlex.length}</span>
+              {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
+            </span>
 
-          <hr />
-          <div className="wm-text fr-mb-3w">
-            <span>{selectedOpenAlex.length}</span>
-            {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
-          </div>
-          <Button
-            className="wm-button fr-mb-1w"
-            color="beige-gris-galet"
-            disabled={!selectedOpenAlex.length}
-            icon="add-circle-line"
-            key="add-ror"
-            onClick={() => {
-              setAction('add');
-              setIsModalOpen((prev) => !prev);
-            }}
-            size="sm"
-            title="Add ROR"
-          >
-            Add ROR
-          </Button>
-          <Button
-            className="wm-button"
-            color="beige-gris-galet"
-            disabled={!selectedOpenAlex.length}
-            icon="close-circle-line"
-            key="remove-ror"
-            onClick={() => {
-              setAction('remove');
-              setIsModalOpen((prev) => !prev);
-            }}
-            size="sm"
-            title="Remove ROR"
-          >
-            Remove ROR
-          </Button>
+            <Button
+              className="fr-ml-5w fr-mr-1w"
+              color="beige-gris-galet"
+              disabled={!selectedOpenAlex.length}
+              icon="add-circle-line"
+              key="add-ror"
+              onClick={() => {
+                setAction('add');
+                setIsModalOpen((prev) => !prev);
+              }}
+              size="sm"
+              title="Add ROR"
+            >
+              Add ROR
+            </Button>
 
-        </Col>
-        <Col md={9} className="wm-content fr-mb-1w">
+            <Button
+              className="fr-mr-1w"
+              color="beige-gris-galet"
+              disabled={!selectedOpenAlex.length}
+              icon="close-circle-line"
+              key="remove-ror"
+              onClick={() => {
+                setAction('remove');
+                setIsModalOpen((prev) => !prev);
+              }}
+              size="sm"
+              title="Remove ROR"
+            >
+              Remove ROR
+            </Button>
+
+            <ExportErrorsButton
+              allOpenalexCorrections={allOpenalexCorrections}
+              options={options}
+            />
+
+            <SendFeedbackButton
+              allOpenalexCorrections={allOpenalexCorrections}
+            />
+          </div>
+
           <OpenalexView
             allAffiliations={filteredAffiliations}
             filteredAffiliationName={filteredAffiliationName}

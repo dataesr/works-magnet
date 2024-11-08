@@ -140,17 +140,16 @@ body {
   }
 }
 
-.wm-actions {
-  background-color: #eee;
-  margin: 10px 0 0 0;
-  padding: 10px;
-  border-top-right-radius: 15px;
-  border-top-left-radius: 15px;
-}
 .wm-content {
-  background-color: #eee;
-  margin: 5px 0 0 0;
   padding: 10px;
   border-bottom-right-radius: 15px;
   border-bottom-left-radius: 15px;
+  
+  .wm-actions {
+    background-color: #eee;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+  }
 }

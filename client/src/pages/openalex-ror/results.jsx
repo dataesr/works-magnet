@@ -3,6 +3,9 @@ import {
   Container, Row, Col,
   Spinner,
   Title,
+  TagGroup,
+  Tag,
+  Button,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -18,8 +21,7 @@ import { getWorks } from '../../utils/works';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import ModalInfo from './modal-info';
-import ExportErrorsButton from './export-errors-button';
-import SendFeedbackButton from './send-feedback-button';
+
 import OpenalexTab from './openalexTab';
 import Header from '../../layout/header';
 
@@ -167,31 +169,42 @@ export default function Affiliations() {
         )}
 
         {!isFetching && isFetched && (
-          <>
-            <Row className="wm-bg">
-              <Col md={9} offsetMd={2}>
-                <div className="wm-actions">
-                  <ExportErrorsButton
-                    allOpenalexCorrections={allOpenalexCorrections}
-                    options={options}
-                  />
+          <Row className="wm-bg">
 
-                  <SendFeedbackButton
-                    allOpenalexCorrections={allOpenalexCorrections}
-                  />
-                </div>
-              </Col>
-              <Col />
-            </Row>
-            <OpenalexTab
-              affiliations={affiliations.filter(
-                (affiliation) => affiliation.source === 'OpenAlex',
-              )}
-              options={options}
-              setAllOpenalexCorrections={setAllOpenalexCorrections}
-              undo={undo}
-            />
-          </>
+            <Col md={2} className="wm-menu">
+              <div className="wm-text">
+                Search parameters
+              </div>
+              <TagGroup className="fr-ml-1w">
+                <Tag color="green-emeraude" size="sm">
+                  {`Selected years: ${options.startYear} - ${options.endYear}`}
+                </Tag>
+                <Tag color="green-tilleul-verveine" size="sm">
+                  Affiliations: essec
+                </Tag>
+              </TagGroup>
+              <Button
+                icon="arrow-go-back-fill"
+                color="blue-ecume"
+                size="sm"
+                style={{ width: '100%' }}
+              >
+                Back to search
+              </Button>
+            </Col>
+            <Col md={9}>
+              <OpenalexTab
+                affiliations={affiliations.filter(
+                  (affiliation) => affiliation.source === 'OpenAlex',
+                )}
+                options={options}
+                setAllOpenalexCorrections={setAllOpenalexCorrections}
+                allOpenalexCorrections={allOpenalexCorrections}
+                undo={undo}
+              />
+            </Col>
+            <Col />
+          </Row>
         )}
       </Container>
     </>
