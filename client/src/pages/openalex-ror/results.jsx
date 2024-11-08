@@ -113,7 +113,6 @@ export default function Affiliations() {
             </Col>
           </Row>
         )}
-
         {!isFetching && isFetched && (
           <>
             <Row className="wm-bg">
@@ -134,6 +133,7 @@ export default function Affiliations() {
               affiliations={affiliations.filter(
                 (affiliation) => affiliation.source === 'OpenAlex',
               )}
+              allOpenalexCorrections={allOpenalexCorrections}
               options={options}
               setAllOpenalexCorrections={setAllOpenalexCorrections}
               undo={undo}

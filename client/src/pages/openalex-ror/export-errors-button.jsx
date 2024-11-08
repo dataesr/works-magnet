@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import ButtonDropdown from '../../components/button-dropdown';
 
-export default function ActionsOpenalex({
+export default function ExportErrorsButton({
   allOpenalexCorrections,
 }) {
   const [searchParams] = useSearchParams();
@@ -18,7 +18,7 @@ export default function ActionsOpenalex({
   );
 }
 
-ActionsOpenalex.propTypes = {
+ExportErrorsButton.propTypes = {
   allOpenalexCorrections: PropTypes.arrayOf(PropTypes.shape({
     correctedRors: PropTypes.string.isRequired,
     rawAffiliationString: PropTypes.string.isRequired,

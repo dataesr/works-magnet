@@ -1,26 +1,27 @@
 import {
   Button,
-  Container, Row, Col,
+  Col,
+  Container,
   Modal, ModalContent, ModalFooter, ModalTitle,
-  TagGroup, Tag,
+  Row,
   TextInput,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-import ExportErrorsButton from './export-errors-button';
-import SendFeedbackButton from './send-feedback-button';
 import { status } from '../../config';
 import { getAffiliationsCorrections } from '../../utils/curations';
 import { isRor } from '../../utils/ror';
 import { capitalize, removeDiacritics } from '../../utils/strings';
+import ExportErrorsButton from './export-errors-button';
 import OpenalexView from './openalexView';
+import SendFeedbackButton from './send-feedback-button';
 
 export default function OpenalexTab({
   affiliations,
+  allOpenalexCorrections,
   options,
   setAllOpenalexCorrections,
-  allOpenalexCorrections,
   undo,
 }) {
   const [action, setAction] = useState();
@@ -88,10 +89,10 @@ export default function OpenalexTab({
         <ModalContent>
           <TextInput
             label={`Which ROR do you want to ${action} ?`}
-            onChange={(e) => setRor(e.target.value)}
-            required
             message={isRor(ror) ? 'ROR valid' : 'ROR invalid'}
             messageType={isRor(ror) ? 'valid' : 'error'}
+            onChange={(e) => setRor(e.target.value)}
+            required
           />
         </ModalContent>
         <ModalFooter>
@@ -116,7 +117,6 @@ export default function OpenalexTab({
                 <span>{selectedOpenAlex.length}</span>
                 {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
               </span>
-
               <Button
                 className="fr-ml-5w fr-mr-1w"
                 color="beige-gris-galet"
@@ -132,7 +132,6 @@ export default function OpenalexTab({
               >
                 Add ROR
               </Button>
-
               <Button
                 className="fr-mr-1w"
                 color="beige-gris-galet"
@@ -148,12 +147,10 @@ export default function OpenalexTab({
               >
                 Remove ROR
               </Button>
-
               <ExportErrorsButton
                 allOpenalexCorrections={allOpenalexCorrections}
                 options={options}
               />
-
               <SendFeedbackButton
                 allOpenalexCorrections={allOpenalexCorrections}
               />
@@ -162,7 +159,6 @@ export default function OpenalexTab({
               actions relatives au tableau du dessous
             </div>
           </div>
-
           <OpenalexView
             allAffiliations={filteredAffiliations}
             filteredAffiliationName={filteredAffiliationName}
@@ -189,6 +185,21 @@ OpenalexTab.propTypes = {
       worksNumber: PropTypes.number.isRequired,
     }),
   ).isRequired,
+  allOpenalexCorrections: PropTypes.arrayOf(PropTypes.shape({
+    correctedRors: PropTypes.string.isRequired,
+    rawAffiliationString: PropTypes.string.isRequired,
+    rorsInOpenAlex: PropTypes.arrayOf(PropTypes.shape({
+      rorCountry: PropTypes.string.isRequired,
+      rorId: PropTypes.string.isRequired,
+      rorName: PropTypes.string.isRequired,
+    })).isRequired,
+    worksExample: PropTypes.arrayOf(PropTypes.shape({
+      id_type: PropTypes.string.isRequired,
+      id_value: PropTypes.string.isRequired,
+    })).isRequired,
+    worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
+  })).isRequired,
+  options: PropTypes.object.isRequired,
   setAllOpenalexCorrections: PropTypes.func.isRequired,
   undo: PropTypes.func.isRequired,
 };

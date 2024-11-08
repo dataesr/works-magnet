@@ -170,8 +170,19 @@ OpenalexView.propTypes = {
   allAffiliations: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
-      source: PropTypes.string.isRequired,
       nameHtml: PropTypes.string.isRequired,
+      source: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+      works: PropTypes.arrayOf(PropTypes.string).isRequired,
+      worksNumber: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
+  filteredAffiliationName: PropTypes.string.isRequired,
+  selectedOpenAlex: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      nameHtml: PropTypes.string.isRequired,
+      source: PropTypes.string.isRequired,
       status: PropTypes.string.isRequired,
       works: PropTypes.arrayOf(PropTypes.string).isRequired,
       worksNumber: PropTypes.number.isRequired,
@@ -179,17 +190,6 @@ OpenalexView.propTypes = {
   ).isRequired,
   setAllOpenalexCorrections: PropTypes.func.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
-  filteredAffiliationName: PropTypes.string.isRequired,
-  selectedOpenAlex: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      source: PropTypes.string.isRequired,
-      nameHtml: PropTypes.string.isRequired,
-      status: PropTypes.string.isRequired,
-      works: PropTypes.arrayOf(PropTypes.string).isRequired,
-      worksNumber: PropTypes.number.isRequired,
-    }),
-  ).isRequired,
   setSelectedOpenAlex: PropTypes.func.isRequired,
   undo: PropTypes.func.isRequired,
 };
