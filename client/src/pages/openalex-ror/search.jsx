@@ -14,7 +14,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import TagInput from '../../components/tag-input';
 import Header from '../../layout/header';
-import { getRorData, isRor } from '../../utils/ror';
+import { cleanRor, getRorData, isRor } from '../../utils/ror';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
@@ -102,9 +102,7 @@ export default function Search() {
       const knownTags = {};
 
       filteredSearchedAffiliation.forEach((affiliation) => {
-        const label = affiliation
-          .replace('https://ror.org/', '')
-          .replace('ror.org/', '');
+        const label = cleanRor(affiliation);
         if (isRor(label)) {
           allTags.push({
             disable: label.length < VITE_APP_TAG_LIMIT,
