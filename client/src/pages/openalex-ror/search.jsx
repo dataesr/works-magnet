@@ -158,7 +158,6 @@ export default function Search() {
     };
 
     getData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deletedAffiliations, getRorChildren, searchedAffiliations]);
 
   const onTagsChange = async (_affiliations, _deletedAffiliations) => {

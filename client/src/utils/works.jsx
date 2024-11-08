@@ -14,8 +14,6 @@ const b64decode = (str) => {
   return bytes;
 };
 
-const capitalize = (str) => (str && str.length > 0 ? str.charAt(0).toUpperCase() + str.slice(1) : '');
-
 const unzipData = async (compressedBase64) => {
   const stream = new Blob([b64decode(compressedBase64)], {
     type: 'application/json',
@@ -28,7 +26,7 @@ const unzipData = async (compressedBase64) => {
   return JSON.parse(await blob.text());
 };
 
-const decompressAll = async (chunks) => {
+const unzipAll = async (chunks) => {
   const res = await Promise.all(chunks.map(async (c) => unzipData(c)));
   return res.flat();
 };
@@ -90,9 +88,9 @@ const getWorks = async (options, toast) => {
     throw new Error('Oops... FOSM API request did not work for works !');
   }
   const { affiliations, datasets, publications, warnings } = await response.json();
-  const resAffiliations = await decompressAll(affiliations);
-  datasets.results = await decompressAll(datasets.results);
-  publications.results = await decompressAll(publications.results);
+  const resAffiliations = await unzipAll(affiliations);
+  datasets.results = await unzipAll(datasets.results);
+  publications.results = await unzipAll(publications.results);
   let warningMessage = '';
   if (warnings?.isMaxFosmReached) {
     warningMessage = warningMessage.concat(
@@ -161,12 +159,11 @@ const renderButtonDataset = (selected, fn, label, icon) => (
 );
 
 export {
-  capitalize,
   getIdLink,
   getMentions,
   getWorks,
   normalizeName,
   range,
-  renderButtons,
   renderButtonDataset,
+  renderButtons,
 };

@@ -15,6 +15,7 @@ import {
   Text,
   TextInput,
 } from '@dataesr/dsfr-plus';
+import { useQuery } from '@tanstack/react-query';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { useEffect, useState } from 'react';
@@ -24,13 +25,14 @@ import useWebSocket from 'react-use-websocket';
 import MentionListItem from '../../components/mention-list/item';
 import useToast from '../../hooks/useToast';
 import { getMentionsCorrections } from '../../utils/curations';
+import { capitalize } from '../../utils/strings';
 import {
   affiliations2Template,
   authorsTemplate,
   doiTemplate,
   hasCorrectionTemplate,
 } from '../../utils/templates';
-import { capitalize, getMentions } from '../../utils/works';
+import { getMentions } from '../../utils/works';
 
 const { VITE_WS_HOST } = import.meta.env;
 
@@ -44,6 +46,7 @@ const DEFAULT_TYPE = 'software';
 const DEFAULT_VIEW = 'table';
 
 export default function Mentions() {
+  // State
   const [corrections, setCorrections] = useState('');
   const [correctionsUsed, setCorrectionsUsed] = useState(DEFAULT_CORRECTION);
   const [correctionsCreated, setCorrectionsCreated] = useState(DEFAULT_CORRECTION);
@@ -53,7 +56,6 @@ export default function Mentions() {
   const [isModalCharacterizationsOpen, setIsModalCharacterizationsOpen] = useState(false);
   const [isModalSendOpen, setIsModalSendOpen] = useState(false);
   const [isModalTypesOpen, setIsModalTypesOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [mentions, setMentions] = useState([]);
   const [search, setSearch] = useState(DEFAULT_SEARCH);
   const [selectAll, setSelectAll] = useState(false);
@@ -76,6 +78,16 @@ export default function Mentions() {
   const switchTypesModal = () => setIsModalTypesOpen((previousState) => !previousState);
 
   // Hooks
+  const { data, error, isFetching, refetch } = useQuery({
+    queryKey: ['mentions', JSON.stringify(urlSearchParams)],
+    queryFn: () => {
+      setMentions([]);
+      setTotalRecords(0);
+      if (urlSearchParams?.search?.length > 0) return getMentions(urlSearchParams);
+      return {};
+    },
+    enabled: false,
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
@@ -124,6 +136,7 @@ export default function Mentions() {
     setSelectedMentions([]);
     switchCharacterizationsModal();
   };
+
   const feedback = async () => {
     try {
       sendJsonMessage({
@@ -138,9 +151,9 @@ export default function Mentions() {
         id: 'initMentions',
         title: 'Mentions characterizations submitted',
       });
-    } catch (error) {
+    } catch (e) {
       toast({
-        description: error.message,
+        description: e.message,
         id: 'errorMentions',
         title: 'Error while sending mentions characterizations',
         toastType: 'error',
@@ -149,6 +162,7 @@ export default function Mentions() {
       switchSendModal();
     }
   };
+
   const undo = (id) => {
     const mentionsTmp = mentions.map((mention) => {
       if (mention.id === id) {
@@ -164,6 +178,7 @@ export default function Mentions() {
     setMentions(mentionsTmp);
     setCorrections(getMentionsCorrections(mentionsTmp));
   };
+
   const switchType = () => {
     const selectedMentionsIds = selectedMentions.map(
       (selectedMention) => selectedMention.id,
@@ -193,6 +208,7 @@ export default function Mentions() {
   const contextTemplate = (rowData) => (
     <span dangerouslySetInnerHTML={{ __html: rowData.context }} />
   );
+
   const createdTemplate = (rowData) => (
     <i
       className={`fr-mr-1w ${
@@ -208,6 +224,7 @@ export default function Mentions() {
       style={{ color: rowData.mention_context.created ? '#8dc572' : '#be6464' }}
     />
   );
+
   const sharedTemplate = (rowData) => (
     <i
       className={`fr-mr-1w ${
@@ -223,11 +240,13 @@ export default function Mentions() {
       style={{ color: rowData.mention_context.shared ? '#8dc572' : '#be6464' }}
     />
   );
+
   const typeTemplate = (rowData) => (
     <Text bold={rowData.hasCorrectionType} className="fr-mb-0">
       {rowData.type}
     </Text>
   );
+
   const usedTemplate = (rowData) => (
     <i
       className={`fr-mr-1w fr-icon ${
@@ -249,6 +268,7 @@ export default function Mentions() {
     searchParams.set('size', event.rows);
     setSearchParams(searchParams);
   };
+
   const onSelectAllChange = (event) => {
     if (event.checked) {
       setSelectAll(true);
@@ -258,15 +278,18 @@ export default function Mentions() {
       setSelectedMentions([]);
     }
   };
+
   const onSort = (event) => {
     searchParams.set('sort-by', event.sortField);
     searchParams.set('sort-order', event.sortOrder === 1 ? 'asc' : 'desc');
     setSearchParams(searchParams);
   };
+
   const onSubmit = () => {
     searchParams.set('search', search);
     setSearchParams(searchParams);
   };
+
   const onTabChange = (index) => {
     searchParams.set('type', index === 0 ? 'software' : 'datasets');
     setSearchParams(searchParams);
@@ -298,20 +321,16 @@ export default function Mentions() {
       setSearch(searchParams.get('search'));
     }
   }, [searchParams, setSearchParams]);
+
   useEffect(() => {
-    const getData = async () => {
-      setLoading(true);
-      setMentions([]);
-      setTotalRecords(0);
-      if (urlSearchParams?.search?.length > 0) {
-        const data = await getMentions(urlSearchParams);
-        setMentions(data?.mentions ?? []);
-        setTotalRecords(data?.count ?? 0);
-      }
-      setLoading(false);
-    };
-    getData();
-  }, [urlSearchParams]);
+    refetch();
+  }, [refetch, urlSearchParams]);
+
+  useEffect(() => {
+    setMentions(data?.mentions ?? []);
+    setTotalRecords(data?.count ?? 0);
+  }, [data]);
+
   useEffect(() => {
     const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
     const testEmail = (email) => setValidEmail(emailRegex.test(email) ? email : null);
@@ -407,7 +426,8 @@ export default function Mentions() {
         </Col>
       </Row>
 
-      {/* <Row className="fr-mb-2w">
+      {/*
+      <Row className="fr-mb-2w">
         <Button
           disabled={!corrections.length > 0}
           onClick={switchSendModal}
@@ -417,7 +437,9 @@ export default function Mentions() {
             corrections.length > 1 ? 's' : ''
           }`}
         </Button>
-      </Row> */}
+      </Row>
+      */}
+
       <Modal
         isOpen={isModalCharacterizationsOpen}
         hide={switchCharacterizationsModal}
@@ -535,7 +557,9 @@ export default function Mentions() {
           </Button>
         </ModalFooter>
       </Modal>
-      {/* <span style={{ display: 'block', textAlign: 'right' }}>
+
+      {/*
+      <span style={{ display: 'block', textAlign: 'right' }}>
         <Button
           onClick={() => {
             searchParams.set('view', 'table');
@@ -552,7 +576,20 @@ export default function Mentions() {
         >
           <i className="fr-icon fr-icon-layout-grid-fill" />
         </Button>
-      </span> */}
+      </span>
+      */}
+
+      {error && (
+        <Row gutters className="fr-mb-16w">
+          <Col xs="12">
+            <div>
+              Error while fetching data, please try again later or contact the
+              team (see footer).
+            </div>
+          </Col>
+        </Row>
+      )}
+
       {searchParams.get('view') === 'table' && (
         <Tabs
           defaultActiveIndex={urlSearchParams.type === 'software' ? 0 : 1}
@@ -565,7 +602,7 @@ export default function Mentions() {
                 dataKey="id"
                 first={parseInt(urlSearchParams.from, 10)}
                 lazy
-                loading={loading}
+                loading={isFetching}
                 onPage={onPage}
                 onSelectAllChange={onSelectAllChange}
                 onSelectionChange={(e) => setSelectedMentions(e.value)}
@@ -670,7 +707,7 @@ export default function Mentions() {
                 dataKey="id"
                 first={parseInt(urlSearchParams.from, 10)}
                 lazy
-                loading={loading}
+                loading={isFetching}
                 onPage={onPage}
                 onSelectAllChange={onSelectAllChange}
                 onSelectionChange={(e) => setSelectedMentions(e.value)}
@@ -772,7 +809,14 @@ export default function Mentions() {
       )}
       {searchParams.get('view') === 'grid' && (
         <>
-          <div style={{ display: 'flex', backgroundColor: '#eee', borderBottom: '2px solid #000' }} className="fr-py-1w">
+          <div
+            style={{
+              display: 'flex',
+              backgroundColor: '#eee',
+              borderBottom: '2px solid #000',
+            }}
+            className="fr-py-1w"
+          >
             <div className="fr-pl-2w">
               <input type="checkbox" />
             </div>
@@ -782,19 +826,20 @@ export default function Mentions() {
               size="sm"
             >
               {`Send ${corrections.length} correction${
-            corrections.length > 1 ? 's' : ''
-          }`}
+                corrections.length > 1 ? 's' : ''
+              }`}
             </Button>
           </div>
           <ul style={{ listStyle: 'none' }}>
-            {mentions.map(
-              (mention, index) => (
-                <MentionListItem key={mention.id} mention={mention} index={index} /> // eslint-disable-line
-              ),
-            )}
+            {mentions.map((mention, index) => (
+              <MentionListItem
+                index={index}
+                key={mention.id}
+                mention={mention}
+              />
+            ))}
           </ul>
         </>
-
       )}
     </Container>
   );

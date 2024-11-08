@@ -40,10 +40,9 @@ export default function Affiliations() {
   const { toast } = useToast();
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['data', 'datasets', JSON.stringify(options)],
+    queryKey: ['datasets', JSON.stringify(options)],
     queryFn: () => getWorks(options, toast),
     enabled: false,
-    cacheTime: 60 * (60 * 1000), // 1h
   });
 
   const tagDatasets = (datasets, action) => {
@@ -116,11 +115,9 @@ export default function Affiliations() {
 
   useEffect(() => {
     setAffiliations(data?.affiliations ?? []);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   return (
-    // TODO: Find a cleaner way to display the spinner and views
     <>
       <Container fluid as="section" className="filters sticky">
         <Row verticalAlign="top" className="fr-p-1w">

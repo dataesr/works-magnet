@@ -38,10 +38,9 @@ export default function Affiliations() {
   const { toast } = useToast();
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['data', 'openalex-ror', JSON.stringify(options)],
+    queryKey: ['openalex-ror', JSON.stringify(options)],
     queryFn: () => getWorks(options, toast),
     enabled: false,
-    cacheTime: 60 * (60 * 1000), // 1h
   });
 
   const undo = (id) => {
@@ -101,11 +100,9 @@ export default function Affiliations() {
 
   useEffect(() => {
     setAffiliations(data?.affiliations ?? []);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   return (
-    // TODO: Find a cleaner way to display the spinner
     <>
       <Container fluid as="section" className="filters sticky">
         <Row verticalAlign="top" className="fr-p-1w">

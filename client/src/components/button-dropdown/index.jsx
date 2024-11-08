@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import useToast from '../../hooks/useToast';
 import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/files';
-import { capitalize } from '../../utils/works';
+import { capitalize } from '../../utils/strings';
 
 import './index.scss';
 

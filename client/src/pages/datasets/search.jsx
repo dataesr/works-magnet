@@ -9,6 +9,7 @@ import {
   SelectOption,
   TextInput,
 } from '@dataesr/dsfr-plus';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -24,13 +25,9 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
   .map((year) => ({ label: year, value: year }));
 
 export default function Search() {
-  const { pathname, search } = useLocation();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
+  // State
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [deletedAffiliations, setDeletedAffiliations] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [getRorChildren, setGetRorChildren] = useState(false);
   const [message, setMessage] = useState('');
@@ -40,6 +37,22 @@ export default function Search() {
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
   const [tags, setTags] = useState([]);
 
+  // Hooks
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
+  const { data, error, isFetching, refetch } = useQuery({
+    queryKey: ['ror', deletedAffiliations.join(), searchedAffiliations.join(), getRorChildren],
+    queryFn: () => {
+      const queries = searchedAffiliations
+        .filter((affiliation) => !deletedAffiliations.includes(affiliation))
+        .map((affiliation) => getRorData(affiliation, getRorChildren));
+      return Promise.all(queries);
+    },
+    enabled: false,
+  });
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Effects
   useEffect(() => {
     if (searchParams.size < 2) {
       // Set default params values
@@ -52,7 +65,6 @@ export default function Search() {
       setSearchParams(searchParamsTmp);
       setTags([]);
     } else {
-      setIsLoading(true);
       const affiliations = searchParams.getAll('affiliations') || [];
       const deletedAffiliations1 = searchParams.getAll('deletedAffiliations') || [];
       setCurrentSearchParams({
@@ -76,7 +88,6 @@ export default function Search() {
       if (newDeletedAffiliations.length > 0) {
         setDeletedAffiliations(deletedAffiliations1);
       }
-      setIsLoading(false);
     }
   }, [
     deletedAffiliations,
@@ -87,42 +98,40 @@ export default function Search() {
   ]);
 
   useEffect(() => {
-    const getData = async () => {
-      setIsLoading(true);
-      const filteredSearchedAffiliation = searchedAffiliations.filter(
-        (affiliation) => !deletedAffiliations.includes(affiliation),
-      );
-      const queries = filteredSearchedAffiliation.map((affiliation) => getRorData(affiliation, getRorChildren));
-      let rorNames = await Promise.all(queries);
-      rorNames = rorNames.filter(
+    refetch();
+  }, [deletedAffiliations, refetch, searchedAffiliations]);
+
+  useEffect(() => {
+    if (data) {
+      const rorNames = data.filter(
         (rorName) => !deletedAffiliations.includes(rorName),
       );
-
       const allTags = [];
       const knownTags = {};
-
-      filteredSearchedAffiliation.forEach((affiliation) => {
-        const label = affiliation
-          .replace('https://ror.org/', '')
-          .replace('ror.org/', '');
-        if (isRor(label)) {
-          allTags.push({
-            disable: label.length < VITE_APP_TAG_LIMIT,
-            label,
-            source: 'user',
-            type: 'rorId',
-          });
-        } else {
-          allTags.push({
-            disable: affiliation.length < VITE_APP_TAG_LIMIT,
-            label: affiliation,
-            source: 'user',
-            type: 'affiliationString',
-          });
-        }
-        knownTags[label.toLowerCase()] = 1;
-      });
-
+      searchedAffiliations
+        .filter((affiliation) => !deletedAffiliations.includes(affiliation))
+        .forEach((affiliation) => {
+          // TODO: Refactor in utils/ror
+          const label = affiliation
+            .replace('https://ror.org/', '')
+            .replace('ror.org/', '');
+          if (isRor(label)) {
+            allTags.push({
+              disable: label.length < VITE_APP_TAG_LIMIT,
+              label,
+              source: 'user',
+              type: 'rorId',
+            });
+          } else {
+            allTags.push({
+              disable: affiliation.length < VITE_APP_TAG_LIMIT,
+              label: affiliation,
+              source: 'user',
+              type: 'affiliationString',
+            });
+          }
+          knownTags[label.toLowerCase()] = 1;
+        });
       rorNames.flat().forEach((rorElt) => {
         if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
           if (!deletedAffiliations.includes(rorElt.rorId)) {
@@ -135,7 +144,6 @@ export default function Search() {
             knownTags[rorElt.rorId.toLowerCase()] = 1;
           }
         }
-
         rorElt.names.forEach((rorName) => {
           if (knownTags[rorName.toLowerCase()] === undefined) {
             if (!deletedAffiliations.includes(rorName)) {
@@ -153,14 +161,9 @@ export default function Search() {
           }
         });
       });
-
       setTags(allTags);
-      setIsLoading(false);
-    };
-
-    getData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deletedAffiliations, getRorChildren, searchedAffiliations]);
+    }
+  }, [data, deletedAffiliations, searchedAffiliations]);
 
   const onTagsChange = async (_affiliations, _deletedAffiliations) => {
     const affiliations = _affiliations
@@ -262,7 +265,7 @@ export default function Search() {
                 <TagInput
                   getRorChildren={getRorChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-                  isLoading={isLoading}
+                  isLoading={isFetching}
                   isRequired
                   label="Affiliation name, ROR of your institution"
                   message={message}
@@ -296,13 +299,25 @@ export default function Search() {
           </Container>
         </ModalContent>
       </Modal>
+
+      {error && (
+        <Row gutters className="fr-mb-16w">
+          <Col xs="12">
+            <div>
+              Error while fetching data, please try again later or contact the
+              team (see footer).
+            </div>
+          </Col>
+        </Row>
+      )}
+
       <Container as="section" className="filters fr-my-5w">
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput
               getRorChildren={getRorChildren}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-              isLoading={isLoading}
+              isLoading={isFetching}
               isRequired
               label="Affiliation name, ROR of your institution"
               message={message}

@@ -11,8 +11,7 @@ import { useEffect, useState } from 'react';
 import { status } from '../../config';
 import { getAffiliationsCorrections } from '../../utils/curations';
 import { isRor } from '../../utils/ror';
-import { removeDiacritics } from '../../utils/strings';
-import { capitalize } from '../../utils/works';
+import { capitalize, removeDiacritics } from '../../utils/strings';
 import OpenalexView from './openalexView';
 
 export default function OpenalexTab({
@@ -30,7 +29,7 @@ export default function OpenalexTab({
     status.excluded.id,
   ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [ror, setRor] = useState();
+  const [ror, setRor] = useState('');
   const [selectedOpenAlex, setSelectedOpenAlex] = useState([]);
   const [timer, setTimer] = useState();
 
@@ -97,6 +96,7 @@ export default function OpenalexTab({
             disabled={!isRor(ror)}
             onClick={() => {
               actionToOpenAlex(action, selectedOpenAlex, ror);
+              setRor('');
               setIsModalOpen((prev) => !prev);
             }}
             title="Send feedback to OpenAlex"

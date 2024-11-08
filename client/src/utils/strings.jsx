@@ -1,3 +1,5 @@
+const capitalize = (str) => (str && str.length > 0 ? str.charAt(0).toUpperCase() + str.slice(1) : '');
+
 const normalize = (str) => str.replaceAll(',', ' ').replaceAll('  ', ' ');
 
 // See https://stackoverflow.com/a/18391901
@@ -110,6 +112,7 @@ const removeDiacritics = (str) => str.replace(/[^\u0000-\u007E]/g, (a) => diacri
   .replaceAll(/  +/g, ' ');
 
 export {
+  capitalize,
   normalize,
   removeDiacritics,
 };
