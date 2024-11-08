@@ -199,29 +199,6 @@ export default function Affiliations() {
                   ))} */}
                 </TagGroup>
               </Col>
-              <Col className="text-right">
-                <SegmentedControl
-                  id="segSelector"
-                  name="segSelector"
-                  // onChangeValue={(view) => setSearchParams({ ...options, view })}
-                >
-                  <SegmentedElement
-                    checked={options.view === 'openalex'}
-                    label="Improve OpenAlex (RORs)"
-                    value="openalex"
-                  />
-                  <SegmentedElement
-                    checked={options.view === 'publications'}
-                    label="Publications corpus"
-                    value="publications"
-                  />
-                  <SegmentedElement
-                    checked={options.view === 'datasets'}
-                    label="Datasets corpus"
-                    value="datasets"
-                  />
-                </SegmentedControl>
-              </Col>
             </Row>
           </Col>
         </Row>

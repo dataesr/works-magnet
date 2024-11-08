@@ -1,6 +1,5 @@
 import {
   Button,
-  Checkbox,
   Col,
   Container,
   Modal,
@@ -47,7 +46,6 @@ export default function Search() {
         // Set default params values
         const searchParamsTmp = {
           affiliations: searchParams.getAll('affiliations') ?? [],
-          datasets: searchParams.get('datasets') ?? false,
           deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
           endYear: searchParams.get('endYear') ?? '2023',
           startYear: searchParams.get('startYear') ?? '2023',
@@ -62,7 +60,6 @@ export default function Search() {
 
         setCurrentSearchParams({
           affiliations,
-          datasets: searchParams.get('datasets') === 'true',
           deletedAffiliations: deletedAffiliations1,
           endYear: searchParams.get('endYear', '2023'),
           startYear: searchParams.get('startYear', '2023'),
@@ -208,7 +205,8 @@ export default function Search() {
     }
     setMessageType('');
     setMessage('');
-    navigate(`/${pathname.split('/')[1]}/results${search}`);
+    const queryParams = search.length === 0 ? '?datasets=true' : `${search}&datasets=true`;
+    navigate(`/${pathname.split('/')[1]}/results${queryParams}`);
   };
 
   const NB_TAGS_STICKY = 2;
@@ -265,16 +263,6 @@ export default function Search() {
                         </SelectOption>
                       ))}
                     </Select>
-                  </Col>
-                  <Col>
-                    <Checkbox
-                      checked={currentSearchParams?.datasets ?? false}
-                      label="Search for datasets only"
-                      onChange={(e) => setSearchParams({
-                        ...currentSearchParams,
-                        datasets: e.target.checked,
-                      })}
-                    />
                   </Col>
                 </Row>
               </Col>
@@ -374,18 +362,6 @@ export default function Search() {
                     </SelectOption>
                   ))}
                 </Select>
-              </Col>
-            </Row>
-            <Row className="fr-mt-2w" gutters verticalAlign="bottom">
-              <Col>
-                <Checkbox
-                  checked={currentSearchParams?.datasets ?? false}
-                  label="Search for datasets only"
-                  onChange={(e) => setSearchParams({
-                    ...currentSearchParams,
-                    datasets: e.target.checked,
-                  })}
-                />
               </Col>
             </Row>
           </Col>

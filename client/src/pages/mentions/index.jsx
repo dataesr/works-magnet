@@ -21,16 +21,16 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
-import useToast from '../hooks/useToast';
-import { getMentionsCorrections } from '../utils/curations';
+import MentionListItem from '../../components/mention-list/item';
+import useToast from '../../hooks/useToast';
+import { getMentionsCorrections } from '../../utils/curations';
 import {
   affiliations2Template,
   authorsTemplate,
   doiTemplate,
   hasCorrectionTemplate,
-} from '../utils/templates';
-import { capitalize, getMentions } from '../utils/works';
-import MentionListItem from '../components/mention-list/item';
+} from '../../utils/templates';
+import { capitalize, getMentions } from '../../utils/works';
 
 const { VITE_WS_HOST } = import.meta.env;
 
