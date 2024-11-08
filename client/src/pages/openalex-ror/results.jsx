@@ -1,11 +1,7 @@
 import {
   Badge,
-  Col,
-  Container,
-  Row,
+  Container, Row, Col,
   Spinner,
-  Tag,
-  TagGroup,
   Title,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
@@ -18,10 +14,13 @@ import { getAffiliationsCorrections } from '../../utils/curations';
 import { isRor } from '../../utils/ror';
 import { normalize } from '../../utils/strings';
 import { getWorks } from '../../utils/works';
-import Openalex from './openalex';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import ModalInfo from './modal-info';
+import ExportErrorsButton from './export-errors-button';
+import SendFeedbackButton from './send-feedback-button';
+import OpenalexTab from './openalexTab';
 
 const {
   VITE_APP_NAME,
@@ -111,8 +110,8 @@ export default function Affiliations() {
       <Container fluid as="section" className="filters sticky">
         <Row verticalAlign="top" className="fr-p-1w">
           <Ribbon />
-          <Col xs="2" className="cursor-pointer" offsetXs="1">
-            <Title as="h1" look="h6" className="fr-m-0">
+          <Col xs="3" className="cursor-pointer" offsetXs="1">
+            <Title as="h1" look="h2" className="wm-font">
               {VITE_APP_NAME}
               {VITE_HEADER_TAG && (
                 <Badge
@@ -126,7 +125,11 @@ export default function Affiliations() {
             </Title>
           </Col>
           <Col>
-            <Row>
+            <Title as="h2" className=" wm-font">
+              Improve ROR matching in OpenAlex
+              <ModalInfo />
+            </Title>
+            {/* <Row>
               <Col
                 className="cursor-pointer"
                 onClick={(e) => {
@@ -138,22 +141,13 @@ export default function Affiliations() {
                   <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
                     {`${options.startYear} - ${options.endYear}`}
                   </Tag>
-                  {/* {tagsDisplayed.map((tag) => (
-                    <Tag
-                      color="blue-ecume"
-                      key={`tag-sticky-${tag.label}`}
-                      size="sm"
-                    >
-                      {tag.label}
-                    </Tag>
-                  ))} */}
                 </TagGroup>
               </Col>
-            </Row>
+            </Row> */}
           </Col>
         </Row>
       </Container>
-      <Container as="section" className="fr-mt-4w">
+      <Container fluid as="section" className="">
         {isFetching && (
           <Row>
             <Col xs="2" offsetXs="6">
@@ -174,13 +168,30 @@ export default function Affiliations() {
         )}
 
         {!isFetching && isFetched && (
-          <Openalex
-            allAffiliations={affiliations}
-            allOpenalexCorrections={allOpenalexCorrections}
-            options={options}
-            setAllOpenalexCorrections={setAllOpenalexCorrections}
-            undo={undo}
-          />
+          <>
+            <Row className="wm-bg">
+              <Col md={9} offsetMd={2}>
+                <div className="wm-actions">
+                  <ExportErrorsButton
+                    allOpenalexCorrections={allOpenalexCorrections}
+                    options={options}
+                  />
+
+                  <SendFeedbackButton
+                    allOpenalexCorrections={allOpenalexCorrections}
+                  />
+                </div>
+              </Col>
+              <Col />
+            </Row>
+            <OpenalexTab
+              affiliations={affiliations.filter(
+                (affiliation) => affiliation.source === 'OpenAlex',
+              )}
+              setAllOpenalexCorrections={setAllOpenalexCorrections}
+              undo={undo}
+            />
+          </>
         )}
       </Container>
     </>

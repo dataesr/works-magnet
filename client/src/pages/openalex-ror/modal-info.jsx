@@ -12,15 +12,13 @@ export default function ModalInfo() {
 
   return (
     <>
-      <Title as="h2" className="fr-mb-3w">
-        Improve ROR matching in OpenAlex
-        <Button
-          className="fr-btn--icon fr-fi-info-line fr-ml-1w"
-          icon="fr-info-line"
-          onClick={() => setIsModalOpen(true)}
-          style={{ borderRadius: '25px' }}
-        />
-      </Title>
+      <Button
+        className="fr-btn--icon fr-fi-info-line fr-ml-1w"
+        color="error"
+        icon="fr-info-line"
+        onClick={() => setIsModalOpen(true)}
+        style={{ borderRadius: '25px' }}
+      />
 
       <Modal isOpen={isModalOpen} hide={() => setIsModalOpen(false)} size="xl">
         <ModalTitle>

@@ -40,57 +40,13 @@
 
 body {
   height: auto;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .filters {
   background-color: white;
   border-bottom: 2px solid #000;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
-}
-
-.actions-menu {
-  background-color: #eee;
-  border-bottom-right-radius: 5px;
-  border-bottom: 2px solid #000;
-  border-top-right-radius: 5px;
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
-  left: 0;
-  overflow: hidden;
-  position: fixed;
-  top: 200px;
-  transition: all 0.3s;
-  white-space: nowrap;
-  width: 40px;
-  z-index: 3;
-
-  &:hover {
-    width: 200px !important;
-  }
-
-  .button {
-    display: block;
-  }
-
-  .selected-item {
-    background-color: #eee;
-
-    .number {
-      color: #777;
-      display: inline-block;
-      font-weight: bolder;
-      padding: 4px;
-      padding-left: 11px;
-      width: 40px;
-    }
-  }
-
-  .selected {
-    background-color: #eee;
-  }
-}
-
-.action-menu-fixed {
-  width: 200px;
 }
 
 .mentions .actions-menu {
@@ -139,7 +95,6 @@ body {
 
 
 /* Pge Mentions */
-
 .mentions {
   .hint {
     color: grey;
@@ -162,4 +117,40 @@ body {
   box-shadow: 5px 5px 15px 0px rgba(50, 50, 50, 0.3);
   margin: 10px 0;
   padding: 10px;
+}
+
+.wm-font {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.wm-bg {
+  background-color: #222;
+}
+.wm-menu{
+  min-height: fit-content;
+.wm-text{
+  color: white;
+  padding: 5px;
+  & span{font-size: 1.5em; font-weight: bold;}
+}
+  .wm-button{
+    width: 90%;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+}
+
+.wm-actions {
+  background-color: #eee;
+  margin: 10px 0 0 0;
+  padding: 10px;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+}
+.wm-content {
+  background-color: #eee;
+  margin: 5px 0 0 0;
+  padding: 10px;
+  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 15px;
 }

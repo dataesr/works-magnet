@@ -109,70 +109,45 @@ export default function OpenalexTab({
           </Button>
         </ModalFooter>
       </Modal>
-      <div
-        className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`}
-        title="actions"
-      >
-        <div
-          className={`selected-item ${selectedOpenAlex.length && 'selected'}`}
-        >
-          <span className="number">{selectedOpenAlex.length}</span>
-          {`selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
-        </div>
-        <Button
-          className="fr-mb-1w fr-pl-1w button"
-          color="blue-ecume"
-          disabled={!selectedOpenAlex.length}
-          key="add-ror"
-          onClick={() => {
-            setAction('add');
-            setIsModalOpen((prev) => !prev);
-          }}
-          size="lg"
-          style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Add ROR"
-        >
-          <i
-            className="ri-add-circle-line fr-mr-2w"
-            style={{ color: '#8dc572' }}
-          />
-          Add ROR
-        </Button>
-        <Button
-          className="fr-mb-1w fr-pl-1w button"
-          color="blue-ecume"
-          disabled={!selectedOpenAlex.length}
-          key="remove-ror"
-          onClick={() => {
-            setAction('remove');
-            setIsModalOpen((prev) => !prev);
-          }}
-          size="lg"
-          style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Remove ROR"
-        >
-          <i
-            className="ri-close-circle-line fr-mr-2w"
-            style={{ color: '#be6464' }}
-          />
-          Remove ROR
-        </Button>
-        <div className="text-right">
+      <Row className="wm-bg">
+        <Col md={2} className="wm-menu">
+          <div className="wm-text fr-mb-3w">
+            <span>{selectedOpenAlex.length}</span>
+            {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
+          </div>
           <Button
-            onClick={() => setFixedMenu(!fixedMenu)}
+            className="wm-button fr-mb-1w"
+            color="beige-gris-galet"
+            disabled={!selectedOpenAlex.length}
+            icon="add-circle-line"
+            key="add-ror"
+            onClick={() => {
+              setAction('add');
+              setIsModalOpen((prev) => !prev);
+            }}
             size="sm"
-            variant="tertiary"
+            title="Add ROR"
           >
-            {fixedMenu ? (
-              <i className="ri-pushpin-fill" />
-            ) : (
-              <i className="ri-pushpin-line" />
-            )}
+            Add ROR
           </Button>
-        </div>
-      </div>
-      <Row gutters>
-        <Col n="12">
+          <Button
+            className="wm-button"
+            color="beige-gris-galet"
+            disabled={!selectedOpenAlex.length}
+            icon="close-circle-line"
+            key="remove-ror"
+            onClick={() => {
+              setAction('remove');
+              setIsModalOpen((prev) => !prev);
+            }}
+            size="sm"
+            title="Remove ROR"
+          >
+            Remove ROR
+          </Button>
+
+        </Col>
+        <Col md={9} className="wm-content fr-mb-1w">
           <OpenalexView
             allAffiliations={filteredAffiliations}
             filteredAffiliationName={filteredAffiliationName}
@@ -183,6 +158,7 @@ export default function OpenalexTab({
             undo={undo}
           />
         </Col>
+        <Col />
       </Row>
     </Container>
   );

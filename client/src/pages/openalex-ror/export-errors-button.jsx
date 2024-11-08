@@ -10,6 +10,7 @@ export default function ActionsOpenalex({
 
   return (
     <ButtonDropdown
+      className="fr-mr-1w"
       data={allOpenalexCorrections}
       label="OpenAlex errors"
       searchParams={searchParams}

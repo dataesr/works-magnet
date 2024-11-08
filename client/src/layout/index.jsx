@@ -8,7 +8,7 @@ import Header from './header';
 export default function Layout({ isSticky }) {
   return (
     <>
-      <Header isSticky={isSticky} />
+      {/* <Header isSticky={isSticky} /> */}
       <Container fluid as="main" role="main">
         <Outlet />
       </Container>

@@ -31,6 +31,7 @@ export default function ButtonDropdown({ className, data, label, searchParams })
   return (
     <div className={_className}>
       <Button
+        color="beige-gris-galet"
         disabled={!data.length}
         icon="save-line"
         size="sm"
@@ -39,12 +40,14 @@ export default function ButtonDropdown({ className, data, label, searchParams })
       </Button>
       <div className="dropdown-content">
         <Button
+          color="beige-gris-galet"
           onClick={() => { export2Csv({ data, label, searchParams }); toastExport(); }}
           size="sm"
         >
           Export in CSV (minimal data)
         </Button>
         <Button
+          color="beige-gris-galet"
           onClick={() => { export2jsonl({ data, label, searchParams }); toastExport(); }}
           size="sm"
         >
@@ -52,6 +55,7 @@ export default function ButtonDropdown({ className, data, label, searchParams })
         </Button>
         {['publications', 'datasets'].includes(label) && (
           <Button
+            color="beige-gris-galet"
             onClick={() => {
               const numberOfLines = export2FosmCsv({ data, label, searchParams });
               toastExport(numberOfLines);
