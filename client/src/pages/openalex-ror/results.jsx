@@ -188,6 +188,7 @@ export default function Affiliations() {
               affiliations={affiliations.filter(
                 (affiliation) => affiliation.source === 'OpenAlex',
               )}
+              options={options}
               setAllOpenalexCorrections={setAllOpenalexCorrections}
               undo={undo}
             />

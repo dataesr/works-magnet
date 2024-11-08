@@ -1,12 +1,8 @@
 import {
   Button,
-  Col,
-  Container,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalTitle,
-  Row,
+  Container, Row, Col,
+  Modal, ModalContent, ModalFooter, ModalTitle,
+  TagGroup, Tag,
   TextInput,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
@@ -21,6 +17,7 @@ import OpenalexView from './openalexView';
 
 export default function OpenalexTab({
   affiliations,
+  options,
   setAllOpenalexCorrections,
   undo,
 }) {
@@ -32,7 +29,6 @@ export default function OpenalexTab({
     status.validated.id,
     status.excluded.id,
   ]);
-  const [fixedMenu, setFixedMenu] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ror, setRor] = useState();
   const [selectedOpenAlex, setSelectedOpenAlex] = useState([]);
@@ -111,6 +107,27 @@ export default function OpenalexTab({
       </Modal>
       <Row className="wm-bg">
         <Col md={2} className="wm-menu">
+          <div className="wm-text">
+            Search parameters
+          </div>
+          <TagGroup className="fr-ml-1w">
+            <Tag color="green-emeraude" size="sm">
+              {`Selected years: ${options.startYear} - ${options.endYear}`}
+            </Tag>
+            <Tag color="green-tilleul-verveine" size="sm">
+              Affiliations: essec
+            </Tag>
+          </TagGroup>
+          <Button
+            icon="arrow-go-back-fill"
+            color="blue-ecume"
+            size="sm"
+            style={{ width: '100%' }}
+          >
+            Back to search
+          </Button>
+
+          <hr />
           <div className="wm-text fr-mb-3w">
             <span>{selectedOpenAlex.length}</span>
             {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
