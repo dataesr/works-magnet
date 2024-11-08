@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import TagInput from '../../components/tag-input';
+import Header from '../../layout/header';
 import { getRorData, isRor } from '../../utils/ror';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
@@ -219,6 +220,7 @@ export default function Search() {
 
   return (
     <>
+      <Header />
       <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
         <ModalContent>
           <Container as="section" className="filters fr-my-5w">

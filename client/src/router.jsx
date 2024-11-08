@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import Layout from './layout';
@@ -12,12 +11,10 @@ import PublicationsResults from './pages/publications/results';
 import PublicationsSearch from './pages/publications/search';
 
 export default function Router() {
-  const [isSticky] = useState(false);
-
   // TODO: Merge nested routes
   return (
     <Routes>
-      <Route element={<Layout isSticky={isSticky} />}>
+      <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route
           path="/openalex-ror"

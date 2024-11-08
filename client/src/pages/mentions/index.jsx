@@ -24,6 +24,7 @@ import useWebSocket from 'react-use-websocket';
 
 import MentionListItem from '../../components/mention-list/item';
 import useToast from '../../hooks/useToast';
+import Header from '../../layout/header';
 import { getMentionsCorrections } from '../../utils/curations';
 import { capitalize } from '../../utils/strings';
 import {
@@ -339,94 +340,97 @@ export default function Mentions() {
   }, [userEmail]);
 
   return (
-    <Container as="section" className="fr-mt-4w mentions">
-      <div
-        className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`}
-        title="actions"
-      >
+    <>
+      <Header />
+      <Container as="section" className="fr-mt-4w mentions">
+
         <div
-          className={`selected-item ${selectedMentions.length && 'selected'}`}
+          className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`}
+          title="actions"
         >
-          <span className="number">{selectedMentions.length}</span>
-          {`selected mention${selectedMentions.length > 1 ? 's' : ''}`}
-        </div>
-        <Button
-          className="fr-mb-1w fr-pl-1w button"
-          color="blue-ecume"
-          disabled={!selectedMentions.length}
-          key="correct-characterizations"
-          onClick={switchCharacterizationsModal}
-          size="lg"
-          style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title="Correct characterizations"
-        >
-          <i
-            className="fr-icon-feedback-line fr-mr-2w"
-            style={{ color: '#c78006' }}
-          />
-          Modify used/created/shared
-        </Button>
-        <Button
-          className="fr-mb-1w fr-pl-1w button"
-          color="blue-ecume"
-          disabled={!selectedMentions.length}
-          key="switch-type"
-          onClick={switchTypesModal}
-          size="lg"
-          style={{ display: 'block', width: '100%', textAlign: 'left' }}
-          title={`Switch type from ${capitalize(urlSearchParams.type)} to ${
+          <div
+            className={`selected-item ${selectedMentions.length && 'selected'}`}
+          >
+            <span className="number">{selectedMentions.length}</span>
+            {`selected mention${selectedMentions.length > 1 ? 's' : ''}`}
+          </div>
+          <Button
+            className="fr-mb-1w fr-pl-1w button"
+            color="blue-ecume"
+            disabled={!selectedMentions.length}
+            key="correct-characterizations"
+            onClick={switchCharacterizationsModal}
+            size="lg"
+            style={{ display: 'block', width: '100%', textAlign: 'left' }}
+            title="Correct characterizations"
+          >
+            <i
+              className="fr-icon-feedback-line fr-mr-2w"
+              style={{ color: '#c78006' }}
+            />
+            Modify used/created/shared
+          </Button>
+          <Button
+            className="fr-mb-1w fr-pl-1w button"
+            color="blue-ecume"
+            disabled={!selectedMentions.length}
+            key="switch-type"
+            onClick={switchTypesModal}
+            size="lg"
+            style={{ display: 'block', width: '100%', textAlign: 'left' }}
+            title={`Switch type from ${capitalize(urlSearchParams.type)} to ${
             urlSearchParams.type === 'software' ? 'Datasets' : 'Software'
           }`}
-        >
-          <i
-            className="fr-icon-file-line fr-mr-2w"
-            style={{ color: '#be6464' }}
-          />
-          Modify type dataset/software
-        </Button>
-        <div className="text-right">
-          <Button
-            onClick={() => setFixedMenu(!fixedMenu)}
-            size="sm"
-            variant="tertiary"
           >
-            {fixedMenu ? (
-              <i className="ri-pushpin-fill" />
-            ) : (
-              <i className="ri-pushpin-line" />
-            )}
+            <i
+              className="fr-icon-file-line fr-mr-2w"
+              style={{ color: '#be6464' }}
+            />
+            Modify type dataset/software
           </Button>
+          <div className="text-right">
+            <Button
+              onClick={() => setFixedMenu(!fixedMenu)}
+              size="sm"
+              variant="tertiary"
+            >
+              {fixedMenu ? (
+                <i className="ri-pushpin-fill" />
+              ) : (
+                <i className="ri-pushpin-line" />
+              )}
+            </Button>
+          </div>
         </div>
-      </div>
-      <Row>
-        <Col md={10} xs={12}>
-          <Row>
-            <Col className="fr-pr-2w fr-mb-2w" md={2} xs={12}>
-              <div className="label">Search</div>
-              <div className="hint">Example "Coq" or "Cern"</div>
-            </Col>
-            <Col md={10} xs={12}>
-              <TextInput
-                disableAutoValidation
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    onSubmit();
-                  }
-                }}
-                value={search}
-              />
-            </Col>
-          </Row>
-        </Col>
-        <Col className="fr-pl-2w fr-mt-1w" md={2} xs={12}>
-          <Button onClick={onSubmit} style={{ verticalAlign: 'bottom' }}>
-            Search mentions
-          </Button>
-        </Col>
-      </Row>
+        <Row>
+          <Col md={10} xs={12}>
+            <Row>
+              <Col className="fr-pr-2w fr-mb-2w" md={2} xs={12}>
+                <div className="label">Search</div>
+                <div className="hint">Example "Coq" or "Cern"</div>
+              </Col>
+              <Col md={10} xs={12}>
+                <TextInput
+                  disableAutoValidation
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      onSubmit();
+                    }
+                  }}
+                  value={search}
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col className="fr-pl-2w fr-mt-1w" md={2} xs={12}>
+            <Button onClick={onSubmit} style={{ verticalAlign: 'bottom' }}>
+              Search mentions
+            </Button>
+          </Col>
+        </Row>
 
-      {/*
+        {/*
       <Row className="fr-mb-2w">
         <Button
           disabled={!corrections.length > 0}
@@ -440,125 +444,125 @@ export default function Mentions() {
       </Row>
       */}
 
-      <Modal
-        isOpen={isModalCharacterizationsOpen}
-        hide={switchCharacterizationsModal}
-      >
-        <ModalTitle>Modify used/created/shared</ModalTitle>
-        <ModalContent>
-          <Button
-            className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
-            variant="tertiary"
-            key="mention-used"
-            onClick={() => setCorrectionsUsed(!correctionsUsed)}
-            size="lg"
-            title="Used"
-          >
-            <i
-              className={`${
+        <Modal
+          isOpen={isModalCharacterizationsOpen}
+          hide={switchCharacterizationsModal}
+        >
+          <ModalTitle>Modify used/created/shared</ModalTitle>
+          <ModalContent>
+            <Button
+              className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
+              variant="tertiary"
+              key="mention-used"
+              onClick={() => setCorrectionsUsed(!correctionsUsed)}
+              size="lg"
+              title="Used"
+            >
+              <i
+                className={`${
                 correctionsUsed ? 'fr-icon-check-line' : 'fr-icon-close-line'
               }`}
-              style={{ color: correctionsUsed ? '#8dc572' : '#be6464' }}
-            />
-            {' '}
-            Used
-          </Button>
-          <Button
-            className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
-            variant="tertiary"
-            key="mention-created"
-            onClick={() => setCorrectionsCreated(!correctionsCreated)}
-            size="lg"
-            title="Created"
-          >
-            <i
-              className={`${
+                style={{ color: correctionsUsed ? '#8dc572' : '#be6464' }}
+              />
+              {' '}
+              Used
+            </Button>
+            <Button
+              className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
+              variant="tertiary"
+              key="mention-created"
+              onClick={() => setCorrectionsCreated(!correctionsCreated)}
+              size="lg"
+              title="Created"
+            >
+              <i
+                className={`${
                 correctionsCreated ? 'fr-icon-check-line' : 'fr-icon-close-line'
               }`}
-              style={{ color: correctionsCreated ? '#8dc572' : '#be6464' }}
-            />
-            {' '}
-            Created
-          </Button>
-          <Button
-            className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
-            variant="tertiary"
-            key="mention-shared"
-            onClick={() => setCorrectionsShared(!correctionsShared)}
-            size="lg"
-            title="Shared"
-          >
-            <i
-              className={`${
+                style={{ color: correctionsCreated ? '#8dc572' : '#be6464' }}
+              />
+              {' '}
+              Created
+            </Button>
+            <Button
+              className="fr-mb-1w fr-mr-1w fr-ml-1w fr-pl-1w button"
+              variant="tertiary"
+              key="mention-shared"
+              onClick={() => setCorrectionsShared(!correctionsShared)}
+              size="lg"
+              title="Shared"
+            >
+              <i
+                className={`${
                 correctionsShared ? 'fr-icon-check-line' : 'fr-icon-close-line'
               }`}
-              style={{ color: correctionsShared ? '#8dc572' : '#be6464' }}
-            />
-            {' '}
-            Shared
-          </Button>
-        </ModalContent>
-        <ModalFooter>
-          <Button
-            onClick={addCorrections}
-            title={`Validate modification${corrections.length > 1 ? 's' : ''}`}
-          >
-            {`Validate modification${corrections.length > 1 ? 's' : ''}`}
-          </Button>
-        </ModalFooter>
-      </Modal>
-      <Modal isOpen={isModalSendOpen} hide={switchSendModal}>
-        <ModalTitle>Send mentions corrections</ModalTitle>
-        <ModalContent>
-          {`You corrected ${corrections.length} mention${
+                style={{ color: correctionsShared ? '#8dc572' : '#be6464' }}
+              />
+              {' '}
+              Shared
+            </Button>
+          </ModalContent>
+          <ModalFooter>
+            <Button
+              onClick={addCorrections}
+              title={`Validate modification${corrections.length > 1 ? 's' : ''}`}
+            >
+              {`Validate modification${corrections.length > 1 ? 's' : ''}`}
+            </Button>
+          </ModalFooter>
+        </Modal>
+        <Modal isOpen={isModalSendOpen} hide={switchSendModal}>
+          <ModalTitle>Send mentions corrections</ModalTitle>
+          <ModalContent>
+            {`You corrected ${corrections.length} mention${
             corrections.length > 1 ? 's' : ''
           }.`}
-          <TextInput
-            className="fr-mt-1w"
-            label="Please indicate your email. Only an encrypted version of your email </Modal>will be public."
-            onChange={(e) => setUserEmail(e.target.value)}
-            required
-            type="email"
-          />
-        </ModalContent>
-        <ModalFooter>
-          <Button
-            disabled={!corrections.length > 0 || !validEmail}
-            onClick={feedback}
-            title={`Send ${corrections.length} correction${
+            <TextInput
+              className="fr-mt-1w"
+              label="Please indicate your email. Only an encrypted version of your email </Modal>will be public."
+              onChange={(e) => setUserEmail(e.target.value)}
+              required
+              type="email"
+            />
+          </ModalContent>
+          <ModalFooter>
+            <Button
+              disabled={!corrections.length > 0 || !validEmail}
+              onClick={feedback}
+              title={`Send ${corrections.length} correction${
               corrections.length > 1 ? 's' : ''
             }`}
-          >
-            {`Send ${corrections.length} correction${
+            >
+              {`Send ${corrections.length} correction${
               corrections.length > 1 ? 's' : ''
             }`}
-          </Button>
-        </ModalFooter>
-      </Modal>
-      <Modal isOpen={isModalTypesOpen} hide={switchTypesModal}>
-        <ModalTitle>Modify type dataset/software</ModalTitle>
-        <ModalContent>
-          <Select
-            aria-label="Select a type"
-            onSelectionChange={(type) => setCorrectionsType(type)}
-            selectedKey={correctionsType}
-          >
-            <SelectOption key="dataset">Dataset</SelectOption>
-            <SelectOption key="software">Software</SelectOption>
-            <SelectOption key="">None</SelectOption>
-          </Select>
-        </ModalContent>
-        <ModalFooter>
-          <Button
-            onClick={switchType}
-            title={`Validate modification${corrections.length > 1 ? 's' : ''}`}
-          >
-            {`Validate modification${corrections.length > 1 ? 's' : ''}`}
-          </Button>
-        </ModalFooter>
-      </Modal>
+            </Button>
+          </ModalFooter>
+        </Modal>
+        <Modal isOpen={isModalTypesOpen} hide={switchTypesModal}>
+          <ModalTitle>Modify type dataset/software</ModalTitle>
+          <ModalContent>
+            <Select
+              aria-label="Select a type"
+              onSelectionChange={(type) => setCorrectionsType(type)}
+              selectedKey={correctionsType}
+            >
+              <SelectOption key="dataset">Dataset</SelectOption>
+              <SelectOption key="software">Software</SelectOption>
+              <SelectOption key="">None</SelectOption>
+            </Select>
+          </ModalContent>
+          <ModalFooter>
+            <Button
+              onClick={switchType}
+              title={`Validate modification${corrections.length > 1 ? 's' : ''}`}
+            >
+              {`Validate modification${corrections.length > 1 ? 's' : ''}`}
+            </Button>
+          </ModalFooter>
+        </Modal>
 
-      {/*
+        {/*
       <span style={{ display: 'block', textAlign: 'right' }}>
         <Button
           onClick={() => {
@@ -579,268 +583,269 @@ export default function Mentions() {
       </span>
       */}
 
-      {error && (
-        <Row gutters className="fr-mb-16w">
-          <Col xs="12">
-            <div>
-              Error while fetching data, please try again later or contact the
-              team (see footer).
-            </div>
-          </Col>
-        </Row>
-      )}
+        {error && (
+          <Row gutters className="fr-mb-16w">
+            <Col xs="12">
+              <div>
+                Error while fetching data, please try again later or contact the
+                team (see footer).
+              </div>
+            </Col>
+          </Row>
+        )}
 
-      {searchParams.get('view') === 'table' && (
-        <Tabs
-          defaultActiveIndex={urlSearchParams.type === 'software' ? 0 : 1}
-          onTabChange={(index) => onTabChange(index)}
-        >
-          <Tab label="Software">
-            {urlSearchParams.type === 'software' && (
-              <DataTable
-                currentPageReportTemplate="{first} to {last} of {totalRecords}"
-                dataKey="id"
-                first={parseInt(urlSearchParams.from, 10)}
-                lazy
-                loading={isFetching}
-                onPage={onPage}
-                onSelectAllChange={onSelectAllChange}
-                onSelectionChange={(e) => setSelectedMentions(e.value)}
-                onSort={onSort}
-                paginator
-                paginatorPosition="bottom"
-                paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-                rows={parseInt(urlSearchParams.size, 10)}
-                rowsPerPageOptions={[20, 50, 100]}
-                scrollable
-                selectAll={selectAll}
-                selection={selectedMentions}
-                size="small"
-                sortField={urlSearchParams.sortBy}
-                sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
-                stripedRows
-                style={{ fontSize: '14px', lineHeight: '13px' }}
-                tableStyle={{ minWidth: '50rem' }}
-                totalRecords={totalRecords}
-                value={mentions}
-              >
-                <Column
-                  selectionMode="multiple"
-                  headerStyle={{ width: '3rem' }}
-                />
-                <Column
-                  body={doiTemplate}
-                  field="doi"
-                  header="DOI"
-                  sortable
-                  style={{ minWidth: '145px', maxWidth: '145px' }}
-                />
-                <Column
-                  body={typeTemplate}
-                  field="type"
-                  header="Type"
-                  style={{ minWidth: '100px', maxWidth: '100px' }}
-                />
-                <Column
-                  field="rawForm"
-                  header="Raw Form"
-                  sortable
-                  style={{ minWidth: '100px', maxWidth: '100px' }}
-                />
-                <Column
-                  body={contextTemplate}
-                  field="context"
-                  header="Context"
-                  style={{ minWidth: '380px', maxWidth: '380px' }}
-                />
-                <Column
-                  body={usedTemplate}
-                  field="mention.mention_context.used"
-                  header="Used"
-                  style={{ minWidth: '70px', maxWidth: '70px' }}
-                  sortable
-                />
-                <Column
-                  body={createdTemplate}
-                  field="mention.mention_context.created"
-                  header="Created"
-                  style={{ minWidth: '80px', maxWidth: '80px' }}
-                  sortable
-                />
-                <Column
-                  body={sharedTemplate}
-                  field="mention.mention_context.shared"
-                  header="Shared"
-                  style={{ minWidth: '80px', maxWidth: '80px' }}
-                  sortable
-                />
-                <Column
-                  body={(rowData) => hasCorrectionTemplate(rowData, undo)}
-                  field="hasCorrection"
-                  header="Modified by user?"
-                  sortable
-                  style={{ maxWidth: '115px' }}
-                />
-                <Column
-                  body={affiliations2Template}
-                  field="affiliations"
-                  header="Affiliations"
-                  style={{ minWidth: '150px', maxWidth: '150px' }}
-                />
-                <Column
-                  body={authorsTemplate}
-                  field="authors"
-                  header="Authors"
-                />
-              </DataTable>
-            )}
-            {corrections && corrections.length > 0 && (
-              <code>
-                <pre>{JSON.stringify(corrections, null, 4)}</pre>
-              </code>
-            )}
-          </Tab>
-          <Tab label="Datasets">
-            {urlSearchParams.type === 'datasets' && (
-              <DataTable
-                currentPageReportTemplate="{first} to {last} of {totalRecords}"
-                dataKey="id"
-                first={parseInt(urlSearchParams.from, 10)}
-                lazy
-                loading={isFetching}
-                onPage={onPage}
-                onSelectAllChange={onSelectAllChange}
-                onSelectionChange={(e) => setSelectedMentions(e.value)}
-                onSort={onSort}
-                paginator
-                paginatorPosition="bottom"
-                paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-                rows={parseInt(urlSearchParams.size, 10)}
-                rowsPerPageOptions={[20, 50, 100]}
-                scrollable
-                selectAll={selectAll}
-                selection={selectedMentions}
-                size="small"
-                sortField={urlSearchParams.sortBy}
-                sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
-                stripedRows
-                style={{ fontSize: '14px', lineHeight: '13px' }}
-                tableStyle={{ minWidth: '50rem' }}
-                totalRecords={totalRecords}
-                value={mentions}
-              >
-                <Column
-                  selectionMode="multiple"
-                  headerStyle={{ width: '3rem' }}
-                />
-                <Column
-                  body={doiTemplate}
-                  field="doi"
-                  header="DOI"
-                  sortable
-                  style={{ minWidth: '145px', maxWidth: '145px' }}
-                />
-                <Column
-                  body={typeTemplate}
-                  field="type"
-                  header="Type"
-                  style={{ minWidth: '100px', maxWidth: '100px' }}
-                />
-                <Column
-                  field="rawForm"
-                  header="Raw Form"
-                  sortable
-                  style={{ minWidth: '100px', maxWidth: '100px' }}
-                />
-                <Column
-                  body={contextTemplate}
-                  field="context"
-                  header="Context"
-                  style={{ minWidth: '380px', maxWidth: '380px' }}
-                />
-                <Column
-                  body={usedTemplate}
-                  field="mention.mention_context.used"
-                  header="Used"
-                  style={{ minWidth: '70px', maxWidth: '70px' }}
-                  sortable
-                />
-                <Column
-                  body={createdTemplate}
-                  field="mention.mention_context.created"
-                  header="Created"
-                  style={{ minWidth: '80px', maxWidth: '80px' }}
-                  sortable
-                />
-                <Column
-                  body={sharedTemplate}
-                  field="mention.mention_context.shared"
-                  header="Shared"
-                  style={{ minWidth: '80px', maxWidth: '80px' }}
-                  sortable
-                />
-                <Column
-                  body={hasCorrectionTemplate}
-                  field="hasCorrection"
-                  header="Modified by user?"
-                  sortable
-                  style={{ maxWidth: '110px' }}
-                />
-                <Column
-                  body={affiliations2Template}
-                  field="affiliations"
-                  header="Affiliations"
-                  style={{ minWidth: '150px', maxWidth: '150px' }}
-                />
-                <Column
-                  body={authorsTemplate}
-                  field="authors"
-                  header="Authors"
-                />
-              </DataTable>
-            )}
-            {corrections && corrections.length > 0 && (
-              <code>
-                <pre>{JSON.stringify(corrections, null, 4)}</pre>
-              </code>
-            )}
-          </Tab>
-        </Tabs>
-      )}
-      {searchParams.get('view') === 'grid' && (
-        <>
-          <div
-            style={{
-              display: 'flex',
-              backgroundColor: '#eee',
-              borderBottom: '2px solid #000',
-            }}
-            className="fr-py-1w"
+        {searchParams.get('view') === 'table' && (
+          <Tabs
+            defaultActiveIndex={urlSearchParams.type === 'software' ? 0 : 1}
+            onTabChange={(index) => onTabChange(index)}
           >
-            <div className="fr-pl-2w">
-              <input type="checkbox" />
-            </div>
-            <Button
-              disabled={!corrections.length > 0}
-              onClick={switchSendModal}
-              size="sm"
+            <Tab label="Software">
+              {urlSearchParams.type === 'software' && (
+                <DataTable
+                  currentPageReportTemplate="{first} to {last} of {totalRecords}"
+                  dataKey="id"
+                  first={parseInt(urlSearchParams.from, 10)}
+                  lazy
+                  loading={isFetching}
+                  onPage={onPage}
+                  onSelectAllChange={onSelectAllChange}
+                  onSelectionChange={(e) => setSelectedMentions(e.value)}
+                  onSort={onSort}
+                  paginator
+                  paginatorPosition="bottom"
+                  paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                  rows={parseInt(urlSearchParams.size, 10)}
+                  rowsPerPageOptions={[20, 50, 100]}
+                  scrollable
+                  selectAll={selectAll}
+                  selection={selectedMentions}
+                  size="small"
+                  sortField={urlSearchParams.sortBy}
+                  sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
+                  stripedRows
+                  style={{ fontSize: '14px', lineHeight: '13px' }}
+                  tableStyle={{ minWidth: '50rem' }}
+                  totalRecords={totalRecords}
+                  value={mentions}
+                >
+                  <Column
+                    selectionMode="multiple"
+                    headerStyle={{ width: '3rem' }}
+                  />
+                  <Column
+                    body={doiTemplate}
+                    field="doi"
+                    header="DOI"
+                    sortable
+                    style={{ minWidth: '145px', maxWidth: '145px' }}
+                  />
+                  <Column
+                    body={typeTemplate}
+                    field="type"
+                    header="Type"
+                    style={{ minWidth: '100px', maxWidth: '100px' }}
+                  />
+                  <Column
+                    field="rawForm"
+                    header="Raw Form"
+                    sortable
+                    style={{ minWidth: '100px', maxWidth: '100px' }}
+                  />
+                  <Column
+                    body={contextTemplate}
+                    field="context"
+                    header="Context"
+                    style={{ minWidth: '380px', maxWidth: '380px' }}
+                  />
+                  <Column
+                    body={usedTemplate}
+                    field="mention.mention_context.used"
+                    header="Used"
+                    style={{ minWidth: '70px', maxWidth: '70px' }}
+                    sortable
+                  />
+                  <Column
+                    body={createdTemplate}
+                    field="mention.mention_context.created"
+                    header="Created"
+                    style={{ minWidth: '80px', maxWidth: '80px' }}
+                    sortable
+                  />
+                  <Column
+                    body={sharedTemplate}
+                    field="mention.mention_context.shared"
+                    header="Shared"
+                    style={{ minWidth: '80px', maxWidth: '80px' }}
+                    sortable
+                  />
+                  <Column
+                    body={(rowData) => hasCorrectionTemplate(rowData, undo)}
+                    field="hasCorrection"
+                    header="Modified by user?"
+                    sortable
+                    style={{ maxWidth: '115px' }}
+                  />
+                  <Column
+                    body={affiliations2Template}
+                    field="affiliations"
+                    header="Affiliations"
+                    style={{ minWidth: '150px', maxWidth: '150px' }}
+                  />
+                  <Column
+                    body={authorsTemplate}
+                    field="authors"
+                    header="Authors"
+                  />
+                </DataTable>
+              )}
+              {corrections && corrections.length > 0 && (
+                <code>
+                  <pre>{JSON.stringify(corrections, null, 4)}</pre>
+                </code>
+              )}
+            </Tab>
+            <Tab label="Datasets">
+              {urlSearchParams.type === 'datasets' && (
+                <DataTable
+                  currentPageReportTemplate="{first} to {last} of {totalRecords}"
+                  dataKey="id"
+                  first={parseInt(urlSearchParams.from, 10)}
+                  lazy
+                  loading={isFetching}
+                  onPage={onPage}
+                  onSelectAllChange={onSelectAllChange}
+                  onSelectionChange={(e) => setSelectedMentions(e.value)}
+                  onSort={onSort}
+                  paginator
+                  paginatorPosition="bottom"
+                  paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                  rows={parseInt(urlSearchParams.size, 10)}
+                  rowsPerPageOptions={[20, 50, 100]}
+                  scrollable
+                  selectAll={selectAll}
+                  selection={selectedMentions}
+                  size="small"
+                  sortField={urlSearchParams.sortBy}
+                  sortOrder={urlSearchParams.sortOrder === 'asc' ? 1 : -1}
+                  stripedRows
+                  style={{ fontSize: '14px', lineHeight: '13px' }}
+                  tableStyle={{ minWidth: '50rem' }}
+                  totalRecords={totalRecords}
+                  value={mentions}
+                >
+                  <Column
+                    selectionMode="multiple"
+                    headerStyle={{ width: '3rem' }}
+                  />
+                  <Column
+                    body={doiTemplate}
+                    field="doi"
+                    header="DOI"
+                    sortable
+                    style={{ minWidth: '145px', maxWidth: '145px' }}
+                  />
+                  <Column
+                    body={typeTemplate}
+                    field="type"
+                    header="Type"
+                    style={{ minWidth: '100px', maxWidth: '100px' }}
+                  />
+                  <Column
+                    field="rawForm"
+                    header="Raw Form"
+                    sortable
+                    style={{ minWidth: '100px', maxWidth: '100px' }}
+                  />
+                  <Column
+                    body={contextTemplate}
+                    field="context"
+                    header="Context"
+                    style={{ minWidth: '380px', maxWidth: '380px' }}
+                  />
+                  <Column
+                    body={usedTemplate}
+                    field="mention.mention_context.used"
+                    header="Used"
+                    style={{ minWidth: '70px', maxWidth: '70px' }}
+                    sortable
+                  />
+                  <Column
+                    body={createdTemplate}
+                    field="mention.mention_context.created"
+                    header="Created"
+                    style={{ minWidth: '80px', maxWidth: '80px' }}
+                    sortable
+                  />
+                  <Column
+                    body={sharedTemplate}
+                    field="mention.mention_context.shared"
+                    header="Shared"
+                    style={{ minWidth: '80px', maxWidth: '80px' }}
+                    sortable
+                  />
+                  <Column
+                    body={hasCorrectionTemplate}
+                    field="hasCorrection"
+                    header="Modified by user?"
+                    sortable
+                    style={{ maxWidth: '110px' }}
+                  />
+                  <Column
+                    body={affiliations2Template}
+                    field="affiliations"
+                    header="Affiliations"
+                    style={{ minWidth: '150px', maxWidth: '150px' }}
+                  />
+                  <Column
+                    body={authorsTemplate}
+                    field="authors"
+                    header="Authors"
+                  />
+                </DataTable>
+              )}
+              {corrections && corrections.length > 0 && (
+                <code>
+                  <pre>{JSON.stringify(corrections, null, 4)}</pre>
+                </code>
+              )}
+            </Tab>
+          </Tabs>
+        )}
+        {searchParams.get('view') === 'grid' && (
+          <>
+            <div
+              style={{
+                display: 'flex',
+                backgroundColor: '#eee',
+                borderBottom: '2px solid #000',
+              }}
+              className="fr-py-1w"
             >
-              {`Send ${corrections.length} correction${
+              <div className="fr-pl-2w">
+                <input type="checkbox" />
+              </div>
+              <Button
+                disabled={!corrections.length > 0}
+                onClick={switchSendModal}
+                size="sm"
+              >
+                {`Send ${corrections.length} correction${
                 corrections.length > 1 ? 's' : ''
               }`}
-            </Button>
-          </div>
-          <ul style={{ listStyle: 'none' }}>
-            {mentions.map((mention, index) => (
-              <MentionListItem
-                index={index}
-                key={mention.id}
-                mention={mention}
-              />
-            ))}
-          </ul>
-        </>
-      )}
-    </Container>
+              </Button>
+            </div>
+            <ul style={{ listStyle: 'none' }}>
+              {mentions.map((mention, index) => (
+                <MentionListItem
+                  index={index}
+                  key={mention.id}
+                  mention={mention}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+      </Container>
+    </>
   );
 }

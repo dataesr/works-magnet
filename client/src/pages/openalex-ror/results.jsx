@@ -21,6 +21,7 @@ import ModalInfo from './modal-info';
 import ExportErrorsButton from './export-errors-button';
 import SendFeedbackButton from './send-feedback-button';
 import OpenalexTab from './openalexTab';
+import Header from '../../layout/header';
 
 const {
   VITE_APP_NAME,
@@ -104,6 +105,7 @@ export default function Affiliations() {
 
   return (
     <>
+      <Header isSticky />
       <Container fluid as="section" className="filters sticky">
         <Row verticalAlign="top" className="fr-p-1w">
           <Ribbon />

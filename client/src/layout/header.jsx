@@ -64,6 +64,9 @@ export default function Header({ isSticky }) {
   );
 }
 
+Header.defaultProps = {
+  isSticky: false,
+};
 Header.propTypes = {
-  isSticky: PropTypes.bool.isRequired,
+  isSticky: PropTypes.bool,
 };
