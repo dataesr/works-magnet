@@ -208,7 +208,7 @@ const formatFosmResult = (result, options) => {
 };
 
 const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, pit, searchAfter }) => {
-  console.log('getFosmWorksByYear', `MAX_FOSM = ${MAX_FOSM}`); 
+  console.log('getFosmWorksByYear', `MAX_FOSM = ${MAX_FOSM}`);
   if (!pit) {
     const response = await fetch(
       `${process.env.ES_URL}/${process.env.ES_INDEX}/_pit?keep_alive=${process.env.ES_PIT_KEEP_ALIVE}`,

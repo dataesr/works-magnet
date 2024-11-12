@@ -216,7 +216,7 @@ const getWorks = async ({ options, resetCache = false }) => {
   console.time(
     `7. Query ${queryId} | Save cache ${options.affiliationStrings}`,
   );
-  await saveCache({ result, searchId, queryId });
+  await saveCache({ queryId, result, searchId });
   console.timeEnd(
     `7. Query ${queryId} | Save cache ${options.affiliationStrings}`,
   );

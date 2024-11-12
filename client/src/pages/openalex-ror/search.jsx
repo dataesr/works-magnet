@@ -24,7 +24,7 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
   .map((year) => (year + START_YEAR).toString())
   .map((year) => ({ label: year, value: year }));
 
-export default function Search() {
+export default function OpenalexRorSearch() {
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();

@@ -2,6 +2,8 @@ import {
   Badge,
   Col,
   Container,
+  Modal,
+  ModalContent,
   Row,
   Tag,
   TagGroup,
@@ -27,6 +29,7 @@ const {
 // TODO : all, Link from dsfr-plus
 export default function Header({ isSticky }) {
   const [searchParams] = useSearchParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [options, setOptions] = useState({});
 
   useEffect(() => {
@@ -66,30 +69,41 @@ export default function Header({ isSticky }) {
 
   return isSticky ? (
     <Container as="section" className="filters sticky" fluid>
+      <Modal hide={() => setIsModalOpen(!isModalOpen)} isOpen={isModalOpen}>
+        <ModalContent>
+          {/* TODO */}
+          <div>Search Modale</div>
+        </ModalContent>
+      </Modal>
       <Row className="fr-p-1w" verticalAlign="top">
         <Ribbon />
         <Col className="cursor-pointer" offsetXs="1" xs="2">
-          <Title as="h1" look="h6" className="fr-m-0">
-            {VITE_APP_NAME}
-            {VITE_HEADER_TAG && (
-              <Badge
-                className="fr-ml-1w"
-                color={VITE_HEADER_TAG_COLOR}
-                size="sm"
-              >
-                {VITE_HEADER_TAG}
-              </Badge>
-            )}
-          </Title>
+          <a
+            href="/"
+            title={`Accueil - ${VITE_MINISTER_NAME.replaceAll(
+              '<br>',
+              ' ',
+            )}`}
+          >
+            <Title as="h1" className="fr-m-0" look="h6">
+              {VITE_APP_NAME}
+              {VITE_HEADER_TAG && (
+                <Badge
+                  className="fr-ml-1w"
+                  color={VITE_HEADER_TAG_COLOR}
+                  size="sm"
+                >
+                  {VITE_HEADER_TAG}
+                </Badge>
+              )}
+            </Title>
+          </a>
         </Col>
         <Col>
           <Row>
             <Col
               className="cursor-pointer"
-              onClick={(e) => {
-                // setIsOpen(true);
-                e.preventDefault();
-              }}
+              onClick={() => setIsModalOpen(true)}
             >
               <TagGroup>
                 <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
