@@ -3,13 +3,13 @@ name: Production deployment
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 env:
   # Must match k8s deployment name
   DEPLOYMENT: works-magnet
   DEPLOYMENT_NAMESPACE: works-magnet
-  DEPLOYMENT_URL: https://works-magnet.dataesr.ovh
+  DEPLOYMENT_URL: https://works-magnet.esr.gouv.fr
   MM_NOTIFICATION_CHANNEL: bots
 
 jobs:
