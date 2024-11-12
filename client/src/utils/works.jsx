@@ -24,8 +24,7 @@ const unzipData = async (compressedBase64) => {
     new DecompressionStream('gzip'),
   );
   const resp = new Response(compressedReadableStream);
-  const blob = await resp.blob();
-  return JSON.parse(await blob.text());
+  return JSON.parse(await resp.text());
 };
 
 const decompressAll = async (chunks) => {

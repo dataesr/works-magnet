@@ -36,7 +36,7 @@ const compressData = async (result) => {
     new CompressionStream('gzip'),
   );
   // create Response
-  const compressedResponse = await new Response(compressedReadableStream);
+  const compressedResponse = new Response(compressedReadableStream);
   const blob = await compressedResponse.blob();
   // Get the ArrayBuffer
   const buffer = await blob.arrayBuffer();
