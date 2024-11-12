@@ -94,7 +94,7 @@ export default function Affiliations() {
   return (
     <>
       <Header isSticky />
-      <Container fluid as="section" className="">
+      <Container fluid as="section">
         {isFetching && (
           <Row>
             <Col xs="2" offsetXs="6">
@@ -113,6 +113,7 @@ export default function Affiliations() {
             </Col>
           </Row>
         )}
+
         {!isFetching && isFetched && (
           <>
             <Row className="wm-bg">

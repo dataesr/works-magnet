@@ -65,10 +65,10 @@ export default function Header({ isSticky }) {
   }, [searchParams]);
 
   return isSticky ? (
-    <Container fluid as="section" className="filters sticky">
-      <Row verticalAlign="top" className="fr-p-1w">
+    <Container as="section" className="filters sticky" fluid>
+      <Row className="fr-p-1w" verticalAlign="top">
         <Ribbon />
-        <Col xs="2" className="cursor-pointer" offsetXs="1">
+        <Col className="cursor-pointer" offsetXs="1" xs="2">
           <Title as="h1" look="h6" className="fr-m-0">
             {VITE_APP_NAME}
             {VITE_HEADER_TAG && (
@@ -95,15 +95,15 @@ export default function Header({ isSticky }) {
                 <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
                   {`${options.startYear} - ${options.endYear}`}
                 </Tag>
-                {/* {tagsDisplayed.map((tag) => (
-                    <Tag
-                      color="blue-ecume"
-                      key={`tag-sticky-${tag.label}`}
-                      size="sm"
-                    >
-                      {tag.label}
-                    </Tag>
-                  ))} */}
+                {options?.affiliationStrings?.map((tag) => (
+                  <Tag
+                    color="blue-ecume"
+                    key={`tag-sticky-${tag}`}
+                    size="sm"
+                  >
+                    {tag}
+                  </Tag>
+                ))}
               </TagGroup>
             </Col>
           </Row>
