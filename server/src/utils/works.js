@@ -320,21 +320,24 @@ const getTypeFromOpenAlex = (type) => {
 
 const getOpenAlexAffiliation = (author) => {
   const source = 'OpenAlex';
-  const rawAffiliation = author.raw_affiliation_strings.join('; ');
-  let key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
-  const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
-  const rors = [];
-  const rorsToCorrect = [];
-  author?.institutions?.forEach((institution) => {
-    if (institution.ror) {
-      const rorId = (institution.ror).replace('https://ror.org/', '').replace('ror.org/', '');
-      const rorElt = { rorCountry: institution.country_code, rorId, rorName: institution.display_name };
-      key = `${key}##${rorId}`;
-      rors.push(rorElt);
-      rorsToCorrect.push(rorId);
-    }
+  return author.affiliations.map((affiliation) => {
+    const rawAffiliation = affiliation.raw_affiliation_string;
+    let key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
+    const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
+    const rors = [];
+    const rorsToCorrect = [];
+    const affiliationIds = affiliation.institution_ids;
+    const matchedInstitutions = author.institutions.filter((institution) => affiliationIds.includes(institution.id));
+    return matchedInstitutions.map((matchedInstitution) => {
+      if (matchedInstitution?.ror) {
+        const rorId = (matchedInstitution.ror).replace('https://ror.org/', '').replace('ror.org/', '');
+        key = `${label}##${rorId}`;
+        rors.push({ rorCountry: matchedInstitution.country_code, rorId, rorName: matchedInstitution.display_name });
+        rorsToCorrect.push(rorId);
+      }
+      return { key, label, rawAffiliation, rors, rorsToCorrect, source };
+    });
   });
-  return { key, label, rawAffiliation, rors, rorsToCorrect, source };
 };
 
 const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = [], remainingTries = 3) => {
