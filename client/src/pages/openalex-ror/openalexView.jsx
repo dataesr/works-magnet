@@ -94,75 +94,80 @@ export default function OpenalexView({
   );
 
   return (
-    <DataTable
-      currentPageReportTemplate="{first} to {last} of {totalRecords}"
-      dataKey="key"
-      editMode="row"
-      filterDisplay="row"
-      metaKeySelection
-      onRowEditComplete={onRowEditComplete}
-      onSelectionChange={(e) => setSelectedOpenAlex(e.value)}
-      paginator
-      paginatorLeft={paginatorLeft}
-      paginatorPosition="top bottom"
-      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-      rows={50}
-      rowsPerPageOptions={[50, 100, 200, 500]}
-      scrollable
-      selection={selectedOpenAlex}
-      selectionPageOnly={selectionPageOnly}
-      size="small"
-      sortField="worksNumber"
-      sortOrder={-1}
-      stripedRows
-      style={{ fontSize: '14px', lineHeight: '13px' }}
-      tableStyle={{ minWidth: '50rem' }}
-      value={allAffiliations}
-    >
-      <Column selectionMode="multiple" />
-      <Column
-        body={nameTemplate}
-        field="nameHtml"
-        header="OpenAlex Raw affiliation"
-        style={{ maxWidth: '250px' }}
-      />
-      <Column
-        body={rorTemplate}
-        field="rorHtml"
-        header="ROR computed by OpenAlex"
-        sortable
-        sortField="rorsNumber"
-        style={{ maxWidth: '200px' }}
-      />
-      <Column
-        body={correctionTemplate}
-        editor={(options) => cellEditor(options)}
-        field="rorsToCorrect"
-        header="Click to improve / edit RORs"
-        style={{ maxWidth: '190px' }}
-      />
-      <Column
-        bodyStyle={{ textAlign: 'center' }}
-        headerStyle={{ width: '10%', minWidth: '8rem' }}
-        rowEditor
-        style={{ maxWidth: '80px' }}
-      />
-      <Column
-        body={(rowData) => hasCorrectionTemplate(rowData, undo)}
-        field="hasCorrection"
-        header="Modified by user?"
-        sortable
-        style={{ maxWidth: '115px' }}
-      />
-      <Column
-        body={worksExampleTemplate}
-        field="worksExamples"
-        header="Works"
-        sortable
+    <>
+      <div className="wm-internal-actions">
+        actions relatives au tableau du dessous
+      </div>
+      <DataTable
+        currentPageReportTemplate="{first} to {last} of {totalRecords}"
+        dataKey="key"
+        editMode="row"
+        filterDisplay="row"
+        metaKeySelection
+        onRowEditComplete={onRowEditComplete}
+        onSelectionChange={(e) => setSelectedOpenAlex(e.value)}
+        paginator
+        paginatorLeft={paginatorLeft}
+        paginatorPosition="top bottom"
+        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+        rows={50}
+        rowsPerPageOptions={[50, 100, 200, 500]}
+        scrollable
+        selection={selectedOpenAlex}
+        selectionPageOnly={selectionPageOnly}
+        size="small"
         sortField="worksNumber"
-        style={{ maxWidth: '150px' }}
-      />
-    </DataTable>
+        sortOrder={-1}
+        stripedRows
+        style={{ fontSize: '14px', lineHeight: '13px' }}
+        tableStyle={{ minWidth: '50rem' }}
+        value={allAffiliations}
+      >
+        <Column selectionMode="multiple" />
+        <Column
+          body={nameTemplate}
+          field="nameHtml"
+          header="OpenAlex Raw affiliation"
+          style={{ maxWidth: '250px' }}
+        />
+        <Column
+          body={rorTemplate}
+          field="rorHtml"
+          header="ROR computed by OpenAlex"
+          sortable
+          sortField="rorsNumber"
+          style={{ maxWidth: '200px' }}
+        />
+        <Column
+          body={correctionTemplate}
+          editor={(options) => cellEditor(options)}
+          field="rorsToCorrect"
+          header="Click to improve / edit RORs"
+          style={{ maxWidth: '190px' }}
+        />
+        <Column
+          bodyStyle={{ textAlign: 'center' }}
+          headerStyle={{ width: '10%', minWidth: '8rem' }}
+          rowEditor
+          style={{ maxWidth: '80px' }}
+        />
+        <Column
+          body={(rowData) => hasCorrectionTemplate(rowData, undo)}
+          field="hasCorrection"
+          header="Modified by user?"
+          sortable
+          style={{ maxWidth: '115px' }}
+        />
+        <Column
+          body={worksExampleTemplate}
+          field="worksExamples"
+          header="Works"
+          sortable
+          sortField="worksNumber"
+          style={{ maxWidth: '150px' }}
+        />
+      </DataTable>
+    </>
   );
 }
 

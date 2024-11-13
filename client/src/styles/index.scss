@@ -157,19 +157,17 @@ html, body {
   border-bottom-right-radius: 15px;
   border-bottom-left-radius: 15px;
   
-  .wm-actions {
+  .wm-external-actions{
     background-color: #eee;
-    margin-bottom: 5px;
-    padding: 10px;
+    padding: 10px 0 0  10px;
     border-top-right-radius: 15px;
     border-top-left-radius: 15px;
-    .wm-external-actions{
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 10px;;
-    }
-    .wm-internal-actions{
-      padding-top: 10px;
-    }
+    border-bottom: 1px solid #ddd;
+  }
+  .wm-internal-actions{
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #eee;
   }
 }
 
