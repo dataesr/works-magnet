@@ -94,7 +94,7 @@ export default function Affiliations() {
   return (
     <>
       <Header isSticky />
-      <Container fluid as="section">
+      <Container fluid as="section" className="wm-bg">
         {isFetching && (
           <Row>
             <Col xs="2" offsetXs="6">
@@ -115,8 +115,8 @@ export default function Affiliations() {
         )}
 
         {!isFetching && isFetched && (
-          <>
-            <Row className="wm-bg">
+          <Row>
+            {/* <Row className="wm-bg">
               <Col md={9} offsetMd={2}>
                 <div className="wm-actions">
                   <ExportErrorsButton
@@ -129,17 +129,23 @@ export default function Affiliations() {
                 </div>
               </Col>
               <Col />
-            </Row>
-            <OpenalexTab
-              affiliations={affiliations.filter(
-                (affiliation) => affiliation.source === 'OpenAlex',
-              )}
-              allOpenalexCorrections={allOpenalexCorrections}
-              options={options}
-              setAllOpenalexCorrections={setAllOpenalexCorrections}
-              undo={undo}
-            />
-          </>
+            </Row> */}
+            <Col md={2}>
+              params:
+
+            </Col>
+            <Col md={10}>
+              <OpenalexTab
+                affiliations={affiliations.filter(
+                  (affiliation) => affiliation.source === 'OpenAlex',
+                )}
+                allOpenalexCorrections={allOpenalexCorrections}
+                options={options}
+                setAllOpenalexCorrections={setAllOpenalexCorrections}
+                undo={undo}
+              />
+            </Col>
+          </Row>
         )}
       </Container>
     </>
