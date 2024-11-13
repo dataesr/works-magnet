@@ -2,32 +2,31 @@ import {
   Button,
   Container, Row, Col,
   Modal, ModalContent, ModalFooter, ModalTitle,
+  Tag, TagGroup,
   Text,
   TextInput,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { status } from '../../config';
 import useToast from '../../hooks/useToast';
 import Header from '../../layout/header';
 import { getAffiliationsCorrections } from '../../utils/curations';
-import { isRor } from '../../utils/ror';
-import { normalize, capitalize, removeDiacritics } from '../../utils/strings';
+import { getRorData, isRor } from '../../utils/ror';
+import { capitalize, normalize, removeDiacritics } from '../../utils/strings';
 import { getWorks } from '../../utils/works';
-
-import 'primereact/resources/primereact.min.css';
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
-
-import { status } from '../../config';
-
 import ExportErrorsButton from './export-errors-button';
 import OpenalexView from './openalexView';
 import SendFeedbackButton from './send-feedback-button';
 
-const { VITE_APP_TAG_LIMIT } = import.meta.env;
+import 'primereact/resources/primereact.min.css';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 export default function Affiliations() {
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [affiliations, setAffiliations] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
@@ -70,38 +69,39 @@ export default function Affiliations() {
   };
 
   useEffect(() => {
-    const queryParams = {
-      endYear: searchParams.get('endYear') ?? '2023',
-      startYear: searchParams.get('startYear') ?? '2023',
-    };
-    queryParams.affiliationStrings = [];
-    queryParams.deletedAffiliations = [];
-    queryParams.rors = [];
-    queryParams.rorExclusions = [];
-    searchParams.getAll('affiliations').forEach((item) => {
-      if (isRor(item)) {
-        queryParams.rors.push(item);
-      } else {
-        queryParams.affiliationStrings.push(normalize(item));
-      }
-    });
-    searchParams.getAll('deletedAffiliations').forEach((item) => {
-      if (isRor(item)) {
-        queryParams.rorExclusions.push(item);
-      } else {
-        queryParams.deletedAffiliations.push(normalize(item));
-      }
-    });
-    if (
-      queryParams.affiliationStrings.length === 0
-      && queryParams.rors.length === 0
-    ) {
-      console.error(
-        `You must provide at least one affiliation longer than ${VITE_APP_TAG_LIMIT} letters.`,
-      );
-      return;
+    const getData = async () => {
+      const queryParams = {
+        endYear: searchParams.get('endYear') ?? '2023',
+        startYear: searchParams.get('startYear') ?? '2023',
+      };
+      queryParams.affiliationStrings = [];
+      queryParams.deletedAffiliations = [];
+      queryParams.rors = [];
+      queryParams.rorExclusions = [];
+      searchParams.getAll('affiliations').forEach((item) => {
+        if (isRor(item)) {
+          queryParams.rors.push(item);
+        } else {
+          queryParams.affiliationStrings.push(normalize(item));
+        }
+      });
+
+      const queries = queryParams.rors.map((_ror) => getRorData(_ror));
+      const rorNames = await Promise.all(queries);
+      rorNames.forEach((level) => level.forEach((rorName) => rorName.names.forEach((name) => queryParams.affiliationStrings.push(name))));
+
+      searchParams.getAll('deletedAffiliations').forEach((item) => {
+        if (isRor(item)) {
+          queryParams.rorExclusions.push(item);
+        } else {
+          queryParams.deletedAffiliations.push(normalize(item));
+        }
+      });
+      searchParams.getAll('rors')
+      setOptions(queryParams);
     }
-    setOptions(queryParams);
+
+    getData();
   }, [searchParams]);
 
   useEffect(() => {
@@ -185,15 +185,39 @@ export default function Affiliations() {
         {!isFetching && isFetched && (
           <Row>
             <Col md={2}>
-              params:
+              <TagGroup className="cursor-pointer" onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}>
+                <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
+                  {`${options.startYear} - ${options.endYear}`}
+                </Tag>
+                <br />
+                {options?.affiliationStrings?.map((tag) => (
+                  <Tag
+                    color="blue-ecume"
+                    key={`tag-sticky-${tag}`}
+                    size="sm"
+                  >
+                    {tag}
+                  </Tag>
+                ))}
+                <br />
+                {options?.rors?.map((tag) => (
+                  <Tag
+                    color="blue-ecume"
+                    key={`tag-sticky-${tag}`}
+                    size="sm"
+                  >
+                    {tag}
+                  </Tag>
+                ))}
+              </TagGroup>
             </Col>
             <Col md={10}>
               <div className="wm-bg wm-content">
                 <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)}>
                   <ModalTitle>
                     {`${capitalize(action)} ROR to ${
-            selectedOpenAlex.length
-          } OpenAlex affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
+                      selectedOpenAlex.length
+                    } OpenAlex affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
                   </ModalTitle>
                   <ModalContent>
                     <TextInput

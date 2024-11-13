@@ -1,25 +1,14 @@
 import {
   Badge,
-  Col,
-  Container,
-  Modal,
-  ModalContent,
-  Row,
-  Tag,
-  TagGroup,
+  Container, Row, Col,
   Title,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 
 import Ribbon from '../components/ribbon';
-import { isRor } from '../utils/ror';
-import { normalize } from '../utils/strings';
 
 const {
   VITE_APP_NAME,
-  VITE_APP_TAG_LIMIT,
   VITE_DESCRIPTION,
   VITE_HEADER_TAG_COLOR,
   VITE_HEADER_TAG,
@@ -28,56 +17,11 @@ const {
 
 // TODO : all, Link from dsfr-plus
 export default function Header({ isSticky }) {
-  const [searchParams] = useSearchParams();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [options, setOptions] = useState({});
-
-  useEffect(() => {
-    const queryParams = {
-      endYear: searchParams.get('endYear') ?? '2023',
-      startYear: searchParams.get('startYear') ?? '2023',
-    };
-    queryParams.affiliationStrings = [];
-    queryParams.deletedAffiliations = [];
-    queryParams.rors = [];
-    queryParams.rorExclusions = [];
-    searchParams.getAll('affiliations').forEach((item) => {
-      if (isRor(item)) {
-        queryParams.rors.push(item);
-      } else {
-        queryParams.affiliationStrings.push(normalize(item));
-      }
-    });
-    searchParams.getAll('deletedAffiliations').forEach((item) => {
-      if (isRor(item)) {
-        queryParams.rorExclusions.push(item);
-      } else {
-        queryParams.deletedAffiliations.push(normalize(item));
-      }
-    });
-    if (
-      queryParams.affiliationStrings.length === 0
-      && queryParams.rors.length === 0
-    ) {
-      console.error(
-        `You must provide at least one affiliation longer than ${VITE_APP_TAG_LIMIT} letters.`,
-      );
-      return;
-    }
-    setOptions(queryParams);
-  }, [searchParams]);
-
   return isSticky ? (
     <Container as="section" className="filters sticky" fluid>
-      <Modal hide={() => setIsModalOpen(!isModalOpen)} isOpen={isModalOpen}>
-        <ModalContent>
-          {/* TODO */}
-          <div>Search Modale</div>
-        </ModalContent>
-      </Modal>
       <Row className="fr-p-1w" verticalAlign="top">
         <Ribbon />
-        <Col className="cursor-pointer" offsetXs="1" xs="2">
+        <Col offsetXs="1" xs="2">
           <a
             href="/"
             title={`Accueil - ${VITE_MINISTER_NAME.replaceAll(
@@ -98,29 +42,6 @@ export default function Header({ isSticky }) {
               )}
             </Title>
           </a>
-        </Col>
-        <Col>
-          <Row>
-            <Col
-              className="cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <TagGroup>
-                <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
-                  {`${options.startYear} - ${options.endYear}`}
-                </Tag>
-                {options?.affiliationStrings?.map((tag) => (
-                  <Tag
-                    color="blue-ecume"
-                    key={`tag-sticky-${tag}`}
-                    size="sm"
-                  >
-                    {tag}
-                  </Tag>
-                ))}
-              </TagGroup>
-            </Col>
-          </Row>
         </Col>
       </Row>
     </Container>

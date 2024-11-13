@@ -104,9 +104,7 @@ export default function MentionListItem({ mention, index, selected, toggleToSele
             </Badge>
           )}
         </Col>
-        <Col />
       </Row>
-
     </li>
   );
 }
