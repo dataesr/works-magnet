@@ -1,9 +1,6 @@
 import {
   Button,
-  Col,
-  Container,
   Modal, ModalContent, ModalFooter, ModalTitle,
-  Row,
   TextInput,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';

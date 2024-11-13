@@ -37,10 +37,8 @@
 
 
 /* General */
-
-body {
-  height: auto;
-  font-family: 'Courier New', Courier, monospace;
+html, body {
+  height: 100%;
 }
 
 .filters {
@@ -126,6 +124,20 @@ body {
 .wm-bg {
   background-color: #222;
 }
+.wm-message{
+  background-color: #eee;
+  padding: 15px;
+  border: 1px solid #000;
+  border-radius: 15px;
+  box-shadow: 5px 5px 15px 0px rgba(50, 50, 50, 0.3);
+}
+
+.wm-fit-content{
+  min-height: 100%; /* real browsers */
+  height: auto !important; /* real browsers */
+  height: 100%; 
+}
+
 .wm-menu{
   min-height: fit-content;
 .wm-text{
@@ -160,3 +172,47 @@ body {
     }
   }
 }
+
+.loader{
+        display: inline-block;
+        text-align: center;
+        line-height: 86px;
+        text-align: center;
+        position: relative;
+        padding: 0 48px;
+        font-size: 28px;
+        font-family: 'Courier New', Courier, monospace;
+        color: #222;
+        }
+        .loader:before, .loader:after {
+          content: "";
+          display: block;
+          width: 15px;
+          height: 15px;
+          background: currentColor;
+          position: absolute;
+          animation: load .7s infinite alternate ease-in-out;
+          top: 0;
+        }
+        .loader:after {
+          top: auto;
+          bottom: 0;
+        }
+      @keyframes load {
+        0% {
+          left: 0;
+          height: 43px;
+          width: 15px;
+          transform: translateX(0)
+        }
+        50% {
+          height: 10px;
+          width: 40px
+        }
+        100% {
+          left: 100%;
+          height: 43px;
+          width: 15px;
+          transform: translateX(-100%)
+        }
+      }

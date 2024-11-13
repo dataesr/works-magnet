@@ -1,4 +1,4 @@
-import { Col, Container, Row, Spinner } from '@dataesr/dsfr-plus';
+import { Col, Container, Row, Spinner, Text } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -9,9 +9,7 @@ import { getAffiliationsCorrections } from '../../utils/curations';
 import { isRor } from '../../utils/ror';
 import { normalize } from '../../utils/strings';
 import { getWorks } from '../../utils/works';
-import ExportErrorsButton from './export-errors-button';
 import OpenalexTab from './openalexTab';
-import SendFeedbackButton from './send-feedback-button';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -20,7 +18,6 @@ const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
 export default function Affiliations() {
   const [searchParams] = useSearchParams();
-
   const [affiliations, setAffiliations] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [options, setOptions] = useState({});
@@ -91,54 +88,47 @@ export default function Affiliations() {
     setAffiliations(data?.affiliations ?? []);
   }, [data]);
 
+  const openAlexAffiliations = affiliations.filter((affiliation) => affiliation.source === 'OpenAlex');
+
   return (
     <>
       <Header isSticky />
-      <Container fluid as="section" className="wm-bg">
+      <Container fluid as="main" className="wm-bg">
         {isFetching && (
-          <Row>
-            <Col xs="2" offsetXs="6">
-              <Spinner size={48} />
-            </Col>
-          </Row>
+          <>
+            <Header isSticky />
+            <Container style={{ textAlign: 'center', minHeight: '600px' }} className="fr-pt-5w wm-font">
+              <div className="fr-mb-5w wm-message fr-pt-10w">
+                Loading data from OpenAlex, please wait...
+                <br />
+                <br />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/OpenAlex_logo_2021.svg/320px-OpenAlex_logo_2021.svg.png" alt="OpenAlex" />
+                <br />
+                <span className="loader fr-my-5w">Loading</span>
+              </div>
+            </Container>
+          </>
         )}
 
         {error && (
           <Row gutters className="fr-mb-16w">
             <Col xs="12">
-              <div>
+              <Text>
                 Error while fetching data, please try again later or contact the
                 team (see footer).
-              </div>
+              </Text>
             </Col>
           </Row>
         )}
 
         {!isFetching && isFetched && (
           <Row>
-            {/* <Row className="wm-bg">
-              <Col md={9} offsetMd={2}>
-                <div className="wm-actions">
-                  <ExportErrorsButton
-                    allOpenalexCorrections={allOpenalexCorrections}
-                    options={options}
-                  />
-                  <SendFeedbackButton
-                    allOpenalexCorrections={allOpenalexCorrections}
-                  />
-                </div>
-              </Col>
-              <Col />
-            </Row> */}
             <Col md={2}>
               params:
-
             </Col>
             <Col md={10}>
               <OpenalexTab
-                affiliations={affiliations.filter(
-                  (affiliation) => affiliation.source === 'OpenAlex',
-                )}
+                affiliations={openAlexAffiliations}
                 allOpenalexCorrections={allOpenalexCorrections}
                 options={options}
                 setAllOpenalexCorrections={setAllOpenalexCorrections}
