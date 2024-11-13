@@ -156,7 +156,7 @@ export default function Affiliations() {
 
   return (
     <>
-      <Header isSticky />
+      <Header />
       <Container fluid as="main" className="wm-bg">
         {isFetching && (
           <Container style={{ textAlign: 'center', minHeight: '600px' }} className="fr-pt-5w wm-font">

@@ -10,7 +10,7 @@ import { isInProduction } from '../utils/helpers';
 export default function Home() {
   return (
     <>
-      <Header />
+      <Header isExpanded />
       <Container as="section" className="fr-mt-4w">
         <Row gutters className="fr-mb-16w">
           <Col sm={12} md={4}>

@@ -16,36 +16,8 @@ const {
 } = import.meta.env;
 
 // TODO : all, Link from dsfr-plus
-export default function Header({ isSticky }) {
-  return isSticky ? (
-    <Container as="section" className="filters sticky" fluid>
-      <Row className="fr-p-1w" verticalAlign="top">
-        <Ribbon />
-        <Col offsetXs="1" xs="2">
-          <a
-            href="/"
-            title={`Accueil - ${VITE_MINISTER_NAME.replaceAll(
-              '<br>',
-              ' ',
-            )}`}
-          >
-            <Title as="h1" className="fr-m-0" look="h6">
-              {VITE_APP_NAME}
-              {VITE_HEADER_TAG && (
-                <Badge
-                  className="fr-ml-1w"
-                  color={VITE_HEADER_TAG_COLOR}
-                  size="sm"
-                >
-                  {VITE_HEADER_TAG}
-                </Badge>
-              )}
-            </Title>
-          </a>
-        </Col>
-      </Row>
-    </Container>
-  ) : (
+export default function Header({ isExpanded }) {
+  return isExpanded ? (
     <header role="banner" className="fr-header">
       <Ribbon />
       <div className="fr-header__body">
@@ -85,12 +57,40 @@ export default function Header({ isSticky }) {
         </div>
       </div>
     </header>
+  ) : (
+    <Container as="section" className="filters sticky" fluid>
+      <Row className="fr-p-1w" verticalAlign="top">
+        <Ribbon />
+        <Col offsetXs="1" xs="2">
+          <a
+            href="/"
+            title={`Accueil - ${VITE_MINISTER_NAME.replaceAll(
+              '<br>',
+              ' ',
+            )}`}
+          >
+            <Title as="h1" className="fr-m-0" look="h6">
+              {VITE_APP_NAME}
+              {VITE_HEADER_TAG && (
+                <Badge
+                  className="fr-ml-1w"
+                  color={VITE_HEADER_TAG_COLOR}
+                  size="sm"
+                >
+                  {VITE_HEADER_TAG}
+                </Badge>
+              )}
+            </Title>
+          </a>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
 Header.defaultProps = {
-  isSticky: false,
+  isExpanded: false,
 };
 Header.propTypes = {
-  isSticky: PropTypes.bool,
+  isExpanded: PropTypes.bool,
 };

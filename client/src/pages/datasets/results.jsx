@@ -105,7 +105,7 @@ export default function Affiliations() {
 
   return (
     <>
-      <Header isSticky />
+      <Header />
       <Container as="section" className="fr-mt-4w">
         {isFetching && (
           <Row>
