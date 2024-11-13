@@ -318,9 +318,9 @@ const getTypeFromOpenAlex = (type) => {
   return newType;
 };
 
-const getOpenAlexAffiliation = (author) => {
+const getOpenAlexAffiliations = (work) => {
   const source = 'OpenAlex';
-  return author.affiliations.map((affiliation) => {
+  const affiliations = work.authorships.map((author) => author.affiliations.map((affiliation) => {
     const rawAffiliation = affiliation.raw_affiliation_string;
     let key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
     const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
@@ -337,7 +337,9 @@ const getOpenAlexAffiliation = (author) => {
       }
       return { key, label, rawAffiliation, rors, rorsToCorrect, source };
     });
-  });
+  }));
+  // TODO: recursive flat
+  return affiliations.flat().flat().flat().filter((affiliation) => !!affiliation.rawAffiliation);
 };
 
 const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = [], remainingTries = 3) => {
@@ -379,10 +381,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
       const hits = response?.results ?? [];
       const results = previousResponse.concat(hits.map((result) => {
         const answer = {
-          affiliations: result?.authorships
-            ?.map((author) => getOpenAlexAffiliation(author))
-            .flat()
-            .filter((affiliation) => !!affiliation.rawAffiliation),
+          affiliations: getOpenAlexAffiliations(result),
           allIds: Object.keys(result.ids).map((key) => ({ id_type: key, id_value: cleanId(result.ids[key]) })),
           authors: result?.authorships?.map((author) => author.author.display_name),
           datasource: ['openalex'],
