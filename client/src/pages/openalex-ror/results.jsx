@@ -5,6 +5,7 @@ import {
   Tag, TagGroup,
   Text,
   TextInput,
+  Badge,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -97,9 +98,9 @@ export default function Affiliations() {
           queryParams.deletedAffiliations.push(normalize(item));
         }
       });
-      searchParams.getAll('rors')
+      searchParams.getAll('rors');
       setOptions(queryParams);
-    }
+    };
 
     getData();
   }, [searchParams]);
@@ -244,12 +245,14 @@ export default function Affiliations() {
                 </Modal>
                 <div className="wm-external-actions">
                   <span className="wm-text fr-mb-3w">
-                    <span>{selectedOpenAlex.length}</span>
-                    {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
+                    <Badge color="brown-opera">{selectedOpenAlex.length}</Badge>
+                    <i>
+                      {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
+                    </i>
                   </span>
                   <Button
                     className="fr-ml-5w fr-mr-1w"
-                    color="beige-gris-galet"
+                    color="blue-ecume"
                     disabled={!selectedOpenAlex.length}
                     icon="add-circle-line"
                     key="add-ror"
@@ -264,7 +267,7 @@ export default function Affiliations() {
                   </Button>
                   <Button
                     className="fr-mr-1w"
-                    color="beige-gris-galet"
+                    color="blue-ecume"
                     disabled={!selectedOpenAlex.length}
                     icon="close-circle-line"
                     key="remove-ror"

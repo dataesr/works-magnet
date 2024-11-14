@@ -70,7 +70,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   return (
     <>
       <Button
-        color="beige-gris-galet"
+        color="blue-ecume"
         disabled={!allOpenalexCorrections.length > 0}
         icon="send-plane-fill"
         onClick={switchModal}
