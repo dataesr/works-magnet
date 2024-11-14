@@ -1,4 +1,4 @@
-import { Col, Row, Toggle } from '@dataesr/dsfr-plus';
+import { Button, Col, Row, Toggle } from '@dataesr/dsfr-plus';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -26,6 +26,8 @@ export default function OpenalexView({
   undo,
 }) {
   const [selectionPageOnly, setSelectionPageOnly] = useState(true);
+  const urlParams = new URLSearchParams(window.location.search);
+  const view = urlParams.get('view') || 'table';
 
   const cellEditor = (options) => (
     <InputTextarea
@@ -36,6 +38,12 @@ export default function OpenalexView({
     />
   );
   const { toast } = useToast();
+
+  const changeView = (_view) => {
+    const url = new URL(window.location);
+    url.searchParams.set('view', _view);
+    window.history.pushState({}, '', url);
+  };
 
   const onRowEditComplete = async (edit) => {
     const { data, newData } = edit;
@@ -96,7 +104,9 @@ export default function OpenalexView({
   return (
     <>
       <div className="wm-internal-actions">
-        actions relatives au tableau du dessous
+        <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
+        <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
+        {view}
       </div>
       <DataTable
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
