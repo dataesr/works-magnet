@@ -1,3 +1,5 @@
+import { FormattedMessage } from 'react-intl';
+
 export default function MentionsTile() {
   return (
     <div className="fr-enlarge-link fr-tile fr-tile--horizontal" size="sm">
@@ -5,15 +7,15 @@ export default function MentionsTile() {
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
             <a href="./mentions">
-              📑 Find the mentions of your software or datasets
+              <FormattedMessage id="mentions-tile-title" />
             </a>
           </h3>
           <p className="fr-tile__detail">
-            🔎 Explore the mentions of software and datasets found in the French publications full-text.
+            <FormattedMessage id="mentions-tile-detail-1" />
             <br />
-            ✏️ Correct the errors (type or characterizations)
+            <FormattedMessage id="mentions-tile-detail-2" />
             <br />
-            ✉️ submit corrections
+            <FormattedMessage id="mentions-tile-detail-3" />
           </p>
         </div>
       </div>

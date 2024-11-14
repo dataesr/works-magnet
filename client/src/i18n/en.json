@@ -1,3 +1,19 @@
 {
+  "datasets-tile-title": "🗃 Find the datasets affiliated to your institution",
+  "datasets-tile-detail-1": "🔎 Explore the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query (datasets only).",
+  "datasets-tile-detail-2": "🤔 Validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not.",
+  "datasets-tile-detail-3": "💾 Save (export to a file) those decisions and the datasets corpus you just built.",
+  "mentions-tile-title": "📑 Find the mentions of your software or datasets",
+  "mentions-tile-detail-1": "🔎 Explore the mentions of software and datasets found in the French publications full-text.",
+  "mentions-tile-detail-2": "✏️ Correct the errors (type or characterizations)",
+  "mentions-tile-detail-3": "✉️ Submit corrections",
+  "openalex-tile-title": "✏️ Improve ROR matching in OpenAlex - Provide your feedback!",
+  "openalex-tile-detail-1": "🔎 Analyze the most frequent raw affiliation strings retrieved in OpenAlex for your query.",
+  "openalex-tile-detail-2": "🤖 Check the ROR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.",
+  "openalex-tile-detail-3": "✏️ Correct the errors (inaccurate or missing RORs) and send feedback to OpenAlex.",
+  "publications-tile-title": "📑 Find the publications affiliated to your institution",
+  "publications-tile-detail-1": "🔎 Explore the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query.",
+  "publications-tile-detail-2": "🤔 Validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not.",
+  "publications-tile-detail-3": "💾 Save (export to a file) those decisions and the publications corpus you just built.",
   "tagline": "Retrieve the scholarly works of your institution"
 }

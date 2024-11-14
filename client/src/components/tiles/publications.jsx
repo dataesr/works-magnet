@@ -1,3 +1,5 @@
+import { FormattedMessage } from 'react-intl';
+
 export default function PublicationsTile() {
   return (
     <div className="fr-enlarge-link fr-tile fr-tile--horizontal" size="sm">
@@ -5,18 +7,15 @@ export default function PublicationsTile() {
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
             <a href="./publications/search?view=publications">
-              📑 Find the publications affiliated to your institution
+              <FormattedMessage id="publications-tile-title" />
             </a>
           </h3>
           <p className="fr-tile__detail">
-            🔎 Explore the most frequent raw affiliation strings retrieved in
-            the French Open Science Monitor data and in OpenAlex for your query.
+            <FormattedMessage id="publications-tile-detail-1" />
             <br />
-            🤔 Validate ✅ or exclude ❌ each of them, whether it actually
-            corresponds to your institution or not.
+            <FormattedMessage id="publications-tile-detail-2" />
             <br />
-            💾 Save (export to a file) those decisions and the publications
-            corpus you just built.
+            <FormattedMessage id="publications-tile-detail-3" />
           </p>
         </div>
       </div>

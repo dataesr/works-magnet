@@ -12,8 +12,8 @@ import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Link, useLocation } from 'react-router-dom';
 
 import { ToastContextProvider } from './hooks/useToast';
-import messagesEN from './i18n/en.json';
-import messagesFR from './i18n/fr.json';
+import messagesEn from './i18n/en.json';
+import messagesFr from './i18n/fr.json';
 import Router from './router';
 
 import 'react-tooltip/dist/react-tooltip.css';
@@ -61,8 +61,8 @@ function App() {
   const defaultLocale = 'en';
   let locale = navigator?.language?.slice(0, 2) ?? defaultLocale;
   const messages = {
-    en: messagesEN,
-    fr: messagesFR,
+    en: messagesEn,
+    fr: messagesFr,
   };
   // If browser language is not an existing translation, fallback to default language
   if (!Object.keys(messages).includes(locale)) locale = defaultLocale;

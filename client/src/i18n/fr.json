@@ -1,3 +1,19 @@
 {
-  "tagline": "Retrouvez les travaux scientifiques de votre institution"
+  "datasets-tile-title" : "🗃 Trouvez les jeux de données affiliés à votre institution",
+  "datasets-tile-detail-1" : "🔎 Explorez les chaînes d'affiliation brutes les plus fréquentes récupérées dans les données françaises de l'Open Science Monitor et dans OpenAlex pour votre requête (jeux de données uniquement)",
+  "datasets-tile-detail-2" : "🤔 Validez ✅ ou excluez ❌ chacun d'entre eux, qu'il corresponde effectivement à votre institution ou non.",
+  "datasets-tile-detail-3" : "💾 Sauvegarder (exporter vers un fichier) ces décisions et le corpus de datasets que vous venez de construire.",
+  "mentions-tile-title" : "📑 Trouvez les mentions de votre logiciel ou de vos jeux de données",
+  "mentions-tile-detail-1" : "🔎 Explorer les mentions de logiciels et jeux de données trouvés dans les publications françaises en texte intégral",
+  "mentions-tile-detail-2" : "✏️ Corriger les erreurs (type ou caractérisations)",
+  "mentions-tile-detail-3" : "✉️ Soumettre les corrections",
+  "openalex-tile-title" : "✏️ Améliorer la correspondance ROR dans OpenAlex - Donnez votre avis !",
+  "openalex-tile-detail-1" : "🔎 Analyser les chaînes d'affiliation brutes les plus fréquentes récupérées dans OpenAlex pour votre requête.",
+  "openalex-tile-detail-2" : "🤖 Vérifier les ROR calculés automatiquement par OpenAlex. Parfois, ils peuvent être inexacts ou manquants.",
+  "openalex-tile-detail-3" : "✏️ Corrigez les erreurs (ROR inexacts ou manquants) et envoyez un retour d'information à OpenAlex.",
+  "publications-tile-title" : "📑 Trouvez les publications affiliées à votre institution",
+  "publications-tile-detail-1" : "🔎 Explorez les chaînes d'affiliation brutes les plus fréquentes récupérées dans les données françaises de l'Open Science Monitor et dans OpenAlex pour votre requête.",
+  "publications-tile-detail-2" : "🤔 Validez ✅ ou excluez ❌ chacune d'entre elles, qu'elle corresponde effectivement à votre institution ou non",
+  "publications-tile-detail-3" : "💾 Enregistrer (exporter vers un fichier) ces décisions et le corpus de publications que vous venez de construire.",
+  "tagline" : "Retrouvez les travaux de votre institution"
 }
