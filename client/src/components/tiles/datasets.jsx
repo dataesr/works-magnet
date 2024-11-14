@@ -6,7 +6,7 @@ export default function DatasetsTile() {
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <a href="./datasets/search?view=datasets">
+            <a href="./datasets/search" label="Datasets search">
               <FormattedMessage id="datasets-tile-title" />
             </a>
           </h3>

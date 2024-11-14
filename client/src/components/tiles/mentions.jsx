@@ -6,7 +6,7 @@ export default function MentionsTile() {
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <a href="./mentions">
+            <a href="./mentions" label="Mentions search">
               <FormattedMessage id="mentions-tile-title" />
             </a>
           </h3>

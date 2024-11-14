@@ -7,7 +7,7 @@ export default function OpenalexTile() {
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <a href="./openalex-ror/search?view=openalex">
+            <a href="./openalex-ror/search" label="OpenAlex ROR search">
               <FormattedMessage id="openalex-tile-title" />
             </a>
           </h3>

@@ -98,7 +98,6 @@ export default function Affiliations() {
           queryParams.deletedAffiliations.push(normalize(item));
         }
       });
-      searchParams.getAll('rors');
       setOptions(queryParams);
     };
 

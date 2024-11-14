@@ -6,7 +6,7 @@ export default function PublicationsTile() {
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <a href="./publications/search?view=publications">
+            <a href="./publications/search" label="Publications search">
               <FormattedMessage id="publications-tile-title" />
             </a>
           </h3>

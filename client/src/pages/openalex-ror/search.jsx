@@ -49,6 +49,7 @@ export default function OpenalexRorSearch() {
         deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
         endYear: searchParams.get('endYear') ?? '2023',
         startYear: searchParams.get('startYear') ?? '2023',
+        view: searchParams.get('view') ?? 'table',
       });
       setTags([]);
     } else {
@@ -60,6 +61,7 @@ export default function OpenalexRorSearch() {
         deletedAffiliations: deletedAffiliations1,
         endYear: searchParams.get('endYear') ?? '2023',
         startYear: searchParams.get('startYear') ?? '2023',
+        view: searchParams.get('view') ?? 'table',
       });
       const newSearchedAffiliations = affiliations.filter(
         (affiliation) => !searchedAffiliations.includes(affiliation),
