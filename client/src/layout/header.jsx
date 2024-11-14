@@ -18,7 +18,7 @@ const {
 // TODO : all, Link from dsfr-plus
 export default function Header({ isExpanded }) {
   return isExpanded ? (
-    <header role="banner" className="fr-header">
+    <header role="banner" className="fr-header expanded">
       <Ribbon />
       <div className="fr-header__body">
         <div className="fr-container">
@@ -60,7 +60,7 @@ export default function Header({ isExpanded }) {
       </div>
     </header>
   ) : (
-    <Container as="section" className="filters sticky" fluid>
+    <Container as="section" className="filters" fluid>
       <Row className="fr-p-1w" verticalAlign="top">
         <Ribbon />
         <Col offsetXs="1" xs="2">

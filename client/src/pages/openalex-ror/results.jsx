@@ -190,7 +190,7 @@ export default function Affiliations() {
           <Row>
             <Col md={2}>
               <TagGroup className="cursor-pointer" onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}>
-                <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
+                <Tag color="blue-ecume" key="tag-years" size="sm">
                   {`${body.startYear} - ${body.endYear}`}
                 </Tag>
                 <br />
@@ -198,7 +198,7 @@ export default function Affiliations() {
                   <Tag
                     className={tag.length < VITE_APP_TAG_LIMIT ? 'scratched' : ''}
                     color="blue-ecume"
-                    key={`tag-sticky-${tag}`}
+                    key={`tag-${tag}`}
                     size="sm"
                   >
                     {tag}
@@ -208,7 +208,7 @@ export default function Affiliations() {
                 {body?.rors?.map((tag) => (
                   <Tag
                     color="blue-ecume"
-                    key={`tag-sticky-${tag}`}
+                    key={`tag-${tag}`}
                     size="sm"
                   >
                     {tag}
