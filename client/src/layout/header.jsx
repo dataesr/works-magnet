@@ -4,12 +4,12 @@ import {
   Title,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 
 import Ribbon from '../components/ribbon';
 
 const {
   VITE_APP_NAME,
-  VITE_DESCRIPTION,
   VITE_HEADER_TAG_COLOR,
   VITE_HEADER_TAG,
   VITE_MINISTER_NAME,
@@ -50,7 +50,9 @@ export default function Header({ isExpanded }) {
                     )}
                   </p>
                 </a>
-                <p className="fr-header__service-tagline">{VITE_DESCRIPTION}</p>
+                <p className="fr-header__service-tagline">
+                  <FormattedMessage id="tagline" />
+                </p>
               </div>
             </div>
           </div>
