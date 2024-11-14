@@ -69,37 +69,6 @@ export default function OpenalexView({
     }
   };
 
-  const paginatorLeft = () => (
-    <Row>
-      <Col xs="2">
-        <div className="before-toggle">Select all</div>
-      </Col>
-      <Col xs="3">
-        <Toggle
-          checked={selectionPageOnly}
-          label="Select page"
-          name="Select page only"
-          onChange={(e) => setSelectionPageOnly(e.target.checked)}
-        />
-      </Col>
-      <Col xs="7">
-        <i className="fr-icon-search-line fr-mr-1w" />
-        Search in affiliations name
-        <input
-          className="fr-ml-1w"
-          onChange={(e) => setFilteredAffiliationName(e.target.value)}
-          style={{
-            border: '1px solid #ced4da',
-            borderRadius: '4px',
-            padding: '0.375rem 0.75rem',
-            width: '100%',
-          }}
-          value={filteredAffiliationName}
-        />
-      </Col>
-    </Row>
-  );
-
   return (
     <>
       <div className="wm-internal-actions">
@@ -114,13 +83,8 @@ export default function OpenalexView({
         metaKeySelection
         onRowEditComplete={onRowEditComplete}
         onSelectionChange={(e) => setSelectedOpenAlex(e.value)}
-        paginator
-        paginatorLeft={paginatorLeft}
-        paginatorPosition="top bottom"
-        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-        rows={50}
-        rowsPerPageOptions={[50, 100, 200, 500]}
         scrollable
+        scrollHeight="800px"
         selection={selectedOpenAlex}
         selectionPageOnly={selectionPageOnly}
         size="small"
@@ -130,6 +94,7 @@ export default function OpenalexView({
         style={{ fontSize: '14px', lineHeight: '13px' }}
         tableStyle={{ minWidth: '50rem' }}
         value={allAffiliations}
+        virtualScrollerOptions={{ itemSize: 46 }}
       >
         <Column selectionMode="multiple" />
         <Column
