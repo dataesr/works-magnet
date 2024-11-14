@@ -4,6 +4,7 @@ import { DataTable } from 'primereact/datatable';
 import { InputTextarea } from 'primereact/inputtextarea';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import useToast from '../../hooks/useToast';
 import { getAffiliationsCorrections } from '../../utils/curations';
@@ -26,8 +27,7 @@ export default function OpenalexView({
   undo,
 }) {
   const [selectionPageOnly, setSelectionPageOnly] = useState(true);
-  const urlParams = new URLSearchParams(window.location.search);
-  const view = urlParams.get('view') || 'table';
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const cellEditor = (options) => (
     <InputTextarea
@@ -39,10 +39,9 @@ export default function OpenalexView({
   );
   const { toast } = useToast();
 
-  const changeView = (_view) => {
-    const url = new URL(window.location);
-    url.searchParams.set('view', _view);
-    window.history.pushState({}, '', url);
+  const changeView = (view) => {
+    searchParams.set('view', view);
+    setSearchParams(searchParams);
   };
 
   const onRowEditComplete = async (edit) => {
@@ -106,7 +105,6 @@ export default function OpenalexView({
       <div className="wm-internal-actions">
         <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
         <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
-        {view}
       </div>
       <DataTable
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
