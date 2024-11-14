@@ -1,9 +1,8 @@
-import { Button, Col, Row, Toggle } from '@dataesr/dsfr-plus';
+import { Button, Col, Row } from '@dataesr/dsfr-plus';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { InputTextarea } from 'primereact/inputtextarea';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import useToast from '../../hooks/useToast';
@@ -26,8 +25,8 @@ export default function OpenalexView({
   setSelectedOpenAlex,
   undo,
 }) {
-  const [selectionPageOnly, setSelectionPageOnly] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { toast } = useToast();
 
   const cellEditor = (options) => (
     <InputTextarea
@@ -37,7 +36,6 @@ export default function OpenalexView({
       value={options.value}
     />
   );
-  const { toast } = useToast();
 
   const changeView = (view) => {
     searchParams.set('view', view);
@@ -72,8 +70,27 @@ export default function OpenalexView({
   return (
     <>
       <div className="wm-internal-actions">
-        <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
-        <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
+        <Row>
+          <Col xs="1">
+            <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
+            <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
+          </Col>
+          <Col xs="5">
+            <i className="fr-icon-search-line fr-mr-1w" />
+            Search in affiliations name
+            <input
+              className="fr-ml-1w"
+              onChange={(e) => setFilteredAffiliationName(e.target.value)}
+              style={{
+                border: '1px solid #ced4da',
+                borderRadius: '4px',
+                padding: '0.375rem 0.75rem',
+                width: '100%',
+              }}
+              value={filteredAffiliationName}
+            />
+          </Col>
+        </Row>
       </div>
       <DataTable
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -86,7 +103,6 @@ export default function OpenalexView({
         scrollable
         scrollHeight="800px"
         selection={selectedOpenAlex}
-        selectionPageOnly={selectionPageOnly}
         size="small"
         sortField="worksNumber"
         sortOrder={-1}
