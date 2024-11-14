@@ -96,7 +96,6 @@ export default function OpenalexView({
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         dataKey="key"
         editMode="row"
-        filterDisplay="row"
         metaKeySelection
         onRowEditComplete={onRowEditComplete}
         onSelectionChange={(e) => setSelectedOpenAlex(e.value)}

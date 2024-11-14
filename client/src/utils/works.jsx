@@ -76,9 +76,9 @@ const getMentions = async (options) => {
   return mentions;
 };
 
-const getWorks = async (options, toast) => {
+const getWorks = async (body, toast) => {
   const response = await fetch(`${VITE_API}/works`, {
-    body: JSON.stringify(options),
+    body: JSON.stringify(body),
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
     signal: timeout(1200).signal, // 20 minutes

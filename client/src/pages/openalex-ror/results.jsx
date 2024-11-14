@@ -25,13 +25,15 @@ import SendFeedbackButton from './send-feedback-button';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
+const { VITE_APP_TAG_LIMIT } = import.meta.env;
+
 export default function Affiliations() {
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [affiliations, setAffiliations] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
-  const [options, setOptions] = useState({});
+  const [body, setBody] = useState({});
   const { toast } = useToast();
 
   const [action, setAction] = useState();
@@ -48,8 +50,9 @@ export default function Affiliations() {
   const [timer, setTimer] = useState();
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['openalex-ror', JSON.stringify(options)],
-    queryFn: () => getWorks(options, toast),
+    queryKey: ['openalex-ror', JSON.stringify(body)],
+    // Search for works from affiliations for each affiliation strictly longer than 2 letters
+    queryFn: () => getWorks({ ...body, affiliationStrings: body.affiliationStrings.filter((affiliation) => affiliation.length >= VITE_APP_TAG_LIMIT)}, toast),
     enabled: false,
   });
 
@@ -79,11 +82,12 @@ export default function Affiliations() {
       queryParams.deletedAffiliations = [];
       queryParams.rors = [];
       queryParams.rorExclusions = [];
-      searchParams.getAll('affiliations').forEach((item) => {
-        if (isRor(item)) {
-          queryParams.rors.push(item);
+      searchParams.getAll('affiliations').forEach((affiliation) => {
+        if (isRor(affiliation)) {
+          queryParams.rors.push(affiliation);
         } else {
-          queryParams.affiliationStrings.push(normalize(item));
+          const normalizedAffiliation = normalize(affiliation);
+          queryParams.affiliationStrings.push(normalizedAffiliation);
         }
       });
 
@@ -98,15 +102,15 @@ export default function Affiliations() {
           queryParams.deletedAffiliations.push(normalize(item));
         }
       });
-      setOptions(queryParams);
+      setBody(queryParams);
     };
 
     getData();
   }, [searchParams]);
 
   useEffect(() => {
-    if (Object.keys(options).length > 0) refetch();
-  }, [options, refetch]);
+    if (Object.keys(body).length > 0) refetch();
+  }, [body, refetch]);
 
   useEffect(() => {
     setAffiliations(data?.affiliations ?? []);
@@ -187,11 +191,12 @@ export default function Affiliations() {
             <Col md={2}>
               <TagGroup className="cursor-pointer" onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}>
                 <Tag color="blue-ecume" key="tag-sticky-years" size="sm">
-                  {`${options.startYear} - ${options.endYear}`}
+                  {`${body.startYear} - ${body.endYear}`}
                 </Tag>
                 <br />
-                {options?.affiliationStrings?.map((tag) => (
+                {body?.affiliationStrings?.map((tag) => (
                   <Tag
+                    className={tag.length < VITE_APP_TAG_LIMIT ? 'scratched' : ''}
                     color="blue-ecume"
                     key={`tag-sticky-${tag}`}
                     size="sm"
@@ -200,7 +205,7 @@ export default function Affiliations() {
                   </Tag>
                 ))}
                 <br />
-                {options?.rors?.map((tag) => (
+                {body?.rors?.map((tag) => (
                   <Tag
                     color="blue-ecume"
                     key={`tag-sticky-${tag}`}
@@ -281,7 +286,7 @@ export default function Affiliations() {
                   </Button>
                   <ExportErrorsButton
                     allOpenalexCorrections={allOpenalexCorrections}
-                    options={options}
+                    options={body}
                   />
                   <SendFeedbackButton
                     allOpenalexCorrections={allOpenalexCorrections}
