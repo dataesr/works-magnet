@@ -13,6 +13,10 @@ Retrieve the scholarly works of your institution.
 
 The react client app is served by the node server in production.
 
+## Requirements
+
+node >= 20
+
 ## Install and run app
 
 Run

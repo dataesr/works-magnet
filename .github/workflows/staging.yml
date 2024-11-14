@@ -26,7 +26,7 @@ jobs:
       - name: 🏗️ Build app
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - run: npm ci --silent && npm run build --mode=staging
 
       - name: 🐋 Build Docker image
