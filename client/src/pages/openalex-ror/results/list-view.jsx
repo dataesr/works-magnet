@@ -79,6 +79,8 @@ export default function ListView({
                       <br />
                       <Button
                         onClick={() => setFilteredAffiliationName(ror.rorId)}
+                        size="sm"
+                        variant="secondary"
                       >
                         Filter on this id
                       </Button>
