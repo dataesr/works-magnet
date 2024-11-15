@@ -107,14 +107,14 @@ export default function OpenalexRorSearch() {
         const label = cleanRor(affiliation);
         if (isRor(label)) {
           allTags.push({
-            disable: label.length < VITE_APP_TAG_LIMIT,
+            isDisabled: label.length < VITE_APP_TAG_LIMIT,
             label,
             source: 'user',
             type: 'rorId',
           });
         } else {
           allTags.push({
-            disable: affiliation.length < VITE_APP_TAG_LIMIT,
+            isDisabled: affiliation.length < VITE_APP_TAG_LIMIT,
             label: affiliation,
             source: 'user',
             type: 'affiliationString',
@@ -127,7 +127,7 @@ export default function OpenalexRorSearch() {
         if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
           if (!deletedAffiliations.includes(rorElt.rorId)) {
             allTags.push({
-              disable: rorElt.rorId.length < VITE_APP_TAG_LIMIT,
+              isDisabled: rorElt.rorId.length < VITE_APP_TAG_LIMIT,
               label: rorElt.rorId,
               source: 'ror',
               type: 'rorId',
@@ -141,7 +141,7 @@ export default function OpenalexRorSearch() {
             if (!deletedAffiliations.includes(rorName)) {
               const isDangerous = rorName.length < 4;
               allTags.push({
-                disable: rorName.length < VITE_APP_TAG_LIMIT,
+                isDisabled: rorName.length < VITE_APP_TAG_LIMIT,
                 isDangerous,
                 label: rorName,
                 rorId: rorElt.rorId,

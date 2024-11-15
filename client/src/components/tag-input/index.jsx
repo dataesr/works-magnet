@@ -8,6 +8,8 @@ import {
   TextInput,
 } from '@dataesr/dsfr-plus';
 
+import { getTagColor } from '../../utils/tags';
+
 import './index.scss';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
@@ -37,12 +39,6 @@ export default function TagInput({
   const [values, setValues] = useState(tags);
   const _seeMoreAction = seeMoreAction || (() => setSeeMore((prev) => !prev));
 
-  const getTagColor = (tag) => {
-    if (tag.disable) return 'beige-gris-galet';
-    if (tag.source === 'ror') return 'brown-caramel';
-    return 'brown-cafe-creme';
-  };
-
   const handleDeleteClick = (tag) => {
     const deletedValues = excludedValues;
     deletedValues.push(tag);
@@ -60,7 +56,7 @@ export default function TagInput({
         return;
       }
       const inputLabel = input.trim();
-      const newValues = [...values, { disable: inputLabel.length < VITE_APP_TAG_LIMIT, label: inputLabel, source: 'user' }];
+      const newValues = [...values, { isDisabled: inputLabel.length < VITE_APP_TAG_LIMIT, label: inputLabel, source: 'user' }];
       setValues(newValues);
       setInput('');
       onTagsChange(newValues, excludedValues);
@@ -137,12 +133,12 @@ export default function TagInput({
                   <TagGroup>
                     {currentTags.map((tag) => (
                       <DismissibleTag
-                        className={`fr-mr-1w ${tag.disable ? 'scratched' : ''}`}
+                        className={`fr-mr-1w ${tag.isDisabled ? 'scratched' : ''}`}
                         color={getTagColor(tag)}
                         key={tag.label}
                         onClick={() => handleDeleteClick(tag)}
                         size="sm"
-                        title={`${tag.label}${tag.disable ? ' (not searched)' : ''}`}
+                        title={`${tag.label}${tag.isDisabled ? ' (not searched)' : ''}`}
                       >
                         {tag.label}
                       </DismissibleTag>

@@ -3,7 +3,7 @@ import {
   Button,
   Container, Row, Col,
   Modal, ModalContent, ModalFooter, ModalTitle,
-  Tag, TagGroup,
+  Tag,
   Text,
   TextInput,
 } from '@dataesr/dsfr-plus';
@@ -18,6 +18,7 @@ import { getAffiliationsCorrections } from '../../../utils/curations';
 import { getRorData, isRor } from '../../../utils/ror';
 import { capitalize, normalize, removeDiacritics } from '../../../utils/strings';
 import { getWorks } from '../../../utils/works';
+import { getTagColor } from '../../../utils/tags';
 import ExportErrorsButton from '../components/export-errors-button';
 import ViewsSelector from './views-selector';
 import SendFeedbackButton from '../components/send-feedback-button';
@@ -52,7 +53,11 @@ export default function Affiliations() {
   const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['openalex-ror', JSON.stringify(body)],
     // Search for works from affiliations for each affiliation strictly longer than 2 letters
-    queryFn: () => getWorks({ ...body, affiliationStrings: body.affiliationStrings.filter((affiliation) => affiliation.length >= VITE_APP_TAG_LIMIT) }, toast),
+    queryFn: () => getWorks({
+      ...body,
+      affiliationStrings: body.affiliations.filter((affiliation) => !affiliation.isDisabled).map((affiliation) => affiliation.label),
+      rors: body.affiliations.filter((affiliation) => affiliation.isRor).map((affiliation) => affiliation.label),
+    }, toast),
     enabled: false,
   });
 
@@ -78,22 +83,29 @@ export default function Affiliations() {
         endYear: searchParams.get('endYear') ?? '2023',
         startYear: searchParams.get('startYear') ?? '2023',
       };
-      queryParams.affiliationStrings = [];
       queryParams.deletedAffiliations = [];
-      queryParams.rors = [];
       queryParams.rorExclusions = [];
-      searchParams.getAll('affiliations').forEach((affiliation) => {
-        if (isRor(affiliation)) {
-          queryParams.rors.push(affiliation);
-        } else {
-          const normalizedAffiliation = normalize(affiliation);
-          queryParams.affiliationStrings.push(normalizedAffiliation);
+      queryParams.affiliations = await Promise.all(searchParams.getAll('affiliations').map(async (affiliation) => {
+        const label = normalize(affiliation);
+        let children = [];
+        // Compute rorNames
+        if (isRor(label)) {
+          const rorNames = await getRorData(label);
+          children = rorNames.map((item) => item.names).flat().map((name) => ({
+            isDisabled: name.length < VITE_APP_TAG_LIMIT,
+            isRor: false,
+            label: name,
+            source: 'ror',
+          }));
         }
-      });
-
-      const queries = queryParams.rors.map((_ror) => getRorData(_ror));
-      const rorNames = await Promise.all(queries);
-      rorNames.forEach((level) => level.forEach((rorName) => rorName.names.forEach((name) => queryParams.affiliationStrings.push(name))));
+        return {
+          children,
+          isDisabled: label.length < VITE_APP_TAG_LIMIT,
+          isRor: isRor(label),
+          label,
+          source: 'user',
+        };
+      }));
 
       searchParams.getAll('deletedAffiliations').forEach((item) => {
         if (isRor(item)) {
@@ -192,7 +204,7 @@ export default function Affiliations() {
                 <Col>
                   Start year:
                   <Tag color="blue-ecume" key="tag-year-start" size="sm">
-                    {searchParams.get('startYear') ?? '2023'}
+                    {body.startYear}
                   </Tag>
                 </Col>
               </Row>
@@ -200,45 +212,40 @@ export default function Affiliations() {
                 <Col>
                   End year:
                   <Tag color="blue-ecume" key="tag-year-end" size="sm">
-                    {searchParams.get('endYear') ?? '2023'}
+                    {body.endYear}
                   </Tag>
                 </Col>
               </Row>
               <Row>
                 <Col>
                   Affiliations:
-                  {searchParams.getAll('affiliations').map((affiliation) => {
-                    if (isRor(affiliation)) {
-                      return (
-                        <Row>
-                          <Tag
-                            className={affiliation.length < VITE_APP_TAG_LIMIT ? 'scratched' : ''}
-                            color="brown-caramel"
-                            key={`tag-${affiliation}`}
-                            size="sm"
-                          >
-                            {affiliation}
-                          </Tag>
-                        </Row>
-                      );
-                    }
-                    return (
-                      <Row>
+                  {body.affiliations.map((affiliation) => (
+                    <Row key={`row-${affiliation.label}`}>
+                      <Tag
+                        className={`fr-mr-1w fr-mt-1w ${affiliation.isDisabled ? 'scratched' : ''}`}
+                        color={getTagColor(affiliation)}
+                        key={`tag-${affiliation.label}`}
+                        size="sm"
+                      >
+                        {affiliation.label}
+                      </Tag>
+                      {affiliation.children.map((child) => (
                         <Tag
-                          className={affiliation.length < VITE_APP_TAG_LIMIT ? 'scratched' : ''}
-                          color="brown-cafe-creme"
-                          key={`tag-${affiliation}`}
+                          className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''}`}
+                          color={getTagColor(child)}
+                          key={`tag-${child.label}`}
                           size="sm"
                         >
-                          {affiliation}
+                          {child.label}
                         </Tag>
-                      </Row>
-                    )
-                  })}
+                      ))}
+                    </Row>
+                  ))}
                 </Col>
               </Row>
               <Row>
                 <Button
+                  className="fr-mt-1w"
                   onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}
                 >
                   Modify search
