@@ -89,8 +89,21 @@ export default function OpenalexView({
               />
               <label className="fr-label" htmlFor="highlightRorCkb">
                 Highlight ROR
+                <i
+                  className="fr-icon-info-fill fr-ml-1w"
+                  aria-describedby="highlightInfo"
+                />
+                <div
+                  className="fr-tooltip fr-placement"
+                  id="highlightInfo"
+                  role="tooltip"
+                  aria-hidden="true"
+                >
+                  colours each ror id with a different color
+                </div>
               </label>
             </span>
+
           </Col>
         </Row>
       </div>
