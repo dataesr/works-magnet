@@ -11,7 +11,7 @@ export default function WorksList({ works }) {
         openAlex works:
       </span>
       {_works.map((work) => (
-        <Link className="fr-mr-1w" href="http://toto.com" target="_blank">
+        <Link className="fr-mr-1w" href={`https://openalex.org/${work}`} target="_blank">
           {work}
         </Link>
       ))}
