@@ -1,4 +1,6 @@
 import { Col, Link, Row, Tag, Text } from '@dataesr/dsfr-plus';
+import { useState } from 'react';
+
 import WorksList from '../components/works-list';
 
 export default function ListView({
@@ -6,7 +8,31 @@ export default function ListView({
   setSelectedOpenAlex,
   selectedOpenAlex,
   allAffiliations,
+  highlightRor,
 }) {
+  const defineRorColor = [];
+  const dsColors = ['green-tilleul-verveine', 'green-bourgeon', 'green-emeraude', 'green-menthe',
+    'green-archipel', 'blue-ecume', 'blue-cumulus', 'purple-glycine', 'pink-macaron',
+    'pink-tuile', 'yellow-tournesol', 'yellow-moutarde', 'orange-terre-battue',
+    'brown-cafe-creme', 'brown-caramel', 'brown-opera', 'beige-gris-galet'];
+  if (highlightRor) {
+    // tri des ror mar nombre
+    // creation d'un tableau de ror avec un index pour chaque ror et son nombre d'occurences
+    // ajout des couleurs pour chaque ror
+    const rorCount = {};
+    allAffiliations.forEach((affiliation) => {
+      affiliation.rors.forEach((ror) => {
+        if (rorCount[ror.rorId]) {
+          rorCount[ror.rorId] += 1;
+        } else {
+          rorCount[ror.rorId] = 1;
+        }
+      });
+    });
+    const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
+    defineRorColor.push(...sortedRor.map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
+    console.log('defineRorColor', defineRorColor);
+  }
   console.log(allAffiliations);
 
   return (
@@ -28,7 +54,7 @@ export default function ListView({
                 {affiliation.rors.map((ror) => (
                   <>
                     <Tag
-                      color="blue-cumulus"
+                      color={defineRorColor.find((r) => r.ror === ror.rorId)?.color || 'blue-cumulus'}
                       size="sm"
                       className="fr-mr-1w"
                       aria-describedby={`tooltip-${affiliation.key}-ror-${ror.rorId}`}

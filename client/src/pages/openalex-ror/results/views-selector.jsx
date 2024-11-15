@@ -3,6 +3,7 @@ import { Button, Col, Row } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
 
+import { useState } from 'react';
 import useToast from '../../../hooks/useToast';
 import { getAffiliationsCorrections } from '../../../utils/curations';
 import { isRor } from '../../../utils/ror';
@@ -20,6 +21,7 @@ export default function OpenalexView({
   undo,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [highlightRor, setHighlightRor] = useState(true);
   const { toast } = useToast();
 
   const changeView = (view) => {
@@ -60,11 +62,13 @@ export default function OpenalexView({
             <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
             <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
           </Col>
-          <Col xs="5">
-            <i className="fr-icon-search-line fr-mr-1w" />
-            Search in affiliations name
+          <Col xs="2">
+            <i className="fr-icon-search-line fr-mr-1w">
+              Filter results
+            </i>
+          </Col>
+          <Col xs="7" className="fr-pr-3w">
             <input
-              className="fr-ml-1w"
               onChange={(e) => setFilteredAffiliationName(e.target.value)}
               style={{
                 border: '1px solid #ced4da',
@@ -74,6 +78,19 @@ export default function OpenalexView({
               }}
               value={filteredAffiliationName}
             />
+          </Col>
+          <Col xs={2}>
+            <span className="fr-checkbox-group fr-mt-2w">
+              <input
+                type="checkbox"
+                id="highlightRorCkb"
+                checked={highlightRor}
+                onChange={(e) => setHighlightRor(e.target.checked)}
+              />
+              <label className="fr-label" htmlFor="highlightRorCkb">
+                Highlight ROR
+              </label>
+            </span>
           </Col>
         </Row>
       </div>
@@ -91,6 +108,7 @@ export default function OpenalexView({
           setSelectedOpenAlex={setSelectedOpenAlex}
           selectedOpenAlex={selectedOpenAlex}
           allAffiliations={allAffiliations}
+          highlightRor={highlightRor}
         />
       )}
     </>
