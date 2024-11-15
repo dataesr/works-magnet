@@ -62,19 +62,18 @@ export default function OpenalexView({
             <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
             <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
           </Col>
-          <Col xs="2">
-            <i className="fr-icon-search-line fr-mr-1w">
+          <Col xs="9">
+            <span className="fr-icon-search-line" />
+            <i className="fr-mx-1w">
               Filter results
             </i>
-          </Col>
-          <Col xs="7" className="fr-pr-3w">
             <input
               onChange={(e) => setFilteredAffiliationName(e.target.value)}
               style={{
                 border: '1px solid #ced4da',
                 borderRadius: '4px',
                 padding: '0.375rem 0.75rem',
-                width: '100%',
+                width: '600px',
               }}
               value={filteredAffiliationName}
             />
