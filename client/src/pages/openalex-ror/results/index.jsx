@@ -104,7 +104,6 @@ export default function Affiliations() {
       });
       setBody(queryParams);
     };
-
     getData();
   }, [searchParams]);
 
@@ -189,32 +188,62 @@ export default function Affiliations() {
         {!isFetching && isFetched && (
           <Row>
             <Col md={2}>
-              <TagGroup className="cursor-pointer" onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}>
-                <Tag color="blue-ecume" key="tag-years" size="sm">
-                  {`${body.startYear} - ${body.endYear}`}
-                </Tag>
-                <br />
-                {body?.affiliationStrings?.map((tag) => (
-                  <Tag
-                    className={tag.length < VITE_APP_TAG_LIMIT ? 'scratched' : ''}
-                    color="blue-ecume"
-                    key={`tag-${tag}`}
-                    size="sm"
-                  >
-                    {tag}
+              <Row>
+                <Col>
+                  Start year:
+                  <Tag color="blue-ecume" key="tag-year-start" size="sm">
+                    {searchParams.get('startYear') ?? '2023'}
                   </Tag>
-                ))}
-                <br />
-                {body?.rors?.map((tag) => (
-                  <Tag
-                    color="blue-ecume"
-                    key={`tag-${tag}`}
-                    size="sm"
-                  >
-                    {tag}
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  End year:
+                  <Tag color="blue-ecume" key="tag-year-end" size="sm">
+                    {searchParams.get('endYear') ?? '2023'}
                   </Tag>
-                ))}
-              </TagGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  Affiliations:
+                  {searchParams.getAll('affiliations').map((affiliation) => {
+                    if (isRor(affiliation)) {
+                      return (
+                        <Row>
+                          <Tag
+                            className={affiliation.length < VITE_APP_TAG_LIMIT ? 'scratched' : ''}
+                            color="brown-caramel"
+                            key={`tag-${affiliation}`}
+                            size="sm"
+                          >
+                            {affiliation}
+                          </Tag>
+                        </Row>
+                      );
+                    }
+                    return (
+                      <Row>
+                        <Tag
+                          className={affiliation.length < VITE_APP_TAG_LIMIT ? 'scratched' : ''}
+                          color="brown-cafe-creme"
+                          key={`tag-${affiliation}`}
+                          size="sm"
+                        >
+                          {affiliation}
+                        </Tag>
+                      </Row>
+                    )
+                  })}
+                </Col>
+              </Row>
+              <Row>
+                <Button
+                  onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}
+                >
+                  Modify search
+                </Button>
+              </Row>
             </Col>
             <Col md={10}>
               <div className="wm-bg wm-content">
@@ -292,7 +321,6 @@ export default function Affiliations() {
                     allOpenalexCorrections={allOpenalexCorrections}
                   />
                 </div>
-
                 <ViewsSelector
                   allAffiliations={filteredAffiliations}
                   filteredAffiliationName={filteredAffiliationName}
