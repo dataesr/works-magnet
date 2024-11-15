@@ -77,6 +77,14 @@ export default function OpenalexView({
               }}
               value={filteredAffiliationName}
             />
+            <Button
+              className=" fr-ml-1w "
+              icon="delete-line"
+              onClick={() => setFilteredAffiliationName('')}
+              size="sm"
+              variant="text"
+            />
+
           </Col>
           <Col xs={2}>
             <span className="fr-checkbox-group fr-mt-2w">
@@ -119,6 +127,7 @@ export default function OpenalexView({
           onRowEditComplete={onRowEditComplete}
           setSelectedOpenAlex={setSelectedOpenAlex}
           selectedOpenAlex={selectedOpenAlex}
+          setFilteredAffiliationName={setFilteredAffiliationName}
           allAffiliations={allAffiliations}
           highlightRor={highlightRor}
         />

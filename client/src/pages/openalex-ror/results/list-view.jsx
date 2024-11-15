@@ -1,4 +1,4 @@
-import { Col, Link, Row, Tag, Text } from '@dataesr/dsfr-plus';
+import { Button, Col, Link, Row, Tag, Text } from '@dataesr/dsfr-plus';
 import { useState } from 'react';
 
 import WorksList from '../components/works-list';
@@ -9,6 +9,7 @@ export default function ListView({
   selectedOpenAlex,
   allAffiliations,
   highlightRor,
+  setFilteredAffiliationName,
 }) {
   const defineRorColor = [];
   const dsColors = ['green-tilleul-verveine', 'green-bourgeon', 'green-emeraude', 'green-menthe',
@@ -42,7 +43,10 @@ export default function ListView({
           <li key={affiliation.key}>
             <Row>
               <Col md={1}>
-                <input type="checkbox" id={`affiliation-${affiliation.key}`} />
+                <input
+                  id={`affiliation-${affiliation.key}`}
+                  type="checkbox"
+                />
               </Col>
               <Col md={9}>
                 <Text as="label" htmlFor={`affiliation-${affiliation.key}`}>
@@ -72,6 +76,12 @@ export default function ListView({
                       <img src={`https://flagsapi.com/${ror.rorCountry}/flat/48.png`} alt={`${ror.rorCountry} flag`} />
                       <br />
                       {ror.rorName}
+                      <br />
+                      <Button
+                        onClick={() => setFilteredAffiliationName(ror.rorId)}
+                      >
+                        Filter on this id
+                      </Button>
                     </div>
                   </>
                 ))}
