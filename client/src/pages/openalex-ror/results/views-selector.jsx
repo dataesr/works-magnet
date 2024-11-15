@@ -1,20 +1,14 @@
 import { Button, Col, Row } from '@dataesr/dsfr-plus';
-import { Column } from 'primereact/column';
-import { DataTable } from 'primereact/datatable';
-import { InputTextarea } from 'primereact/inputtextarea';
+
 import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
 
-import useToast from '../../hooks/useToast';
-import { getAffiliationsCorrections } from '../../utils/curations';
-import { isRor } from '../../utils/ror';
-import {
-  correctionTemplate,
-  hasCorrectionTemplate,
-  nameTemplate,
-  rorTemplate,
-  worksExampleTemplate,
-} from '../../utils/templates';
+import useToast from '../../../hooks/useToast';
+import { getAffiliationsCorrections } from '../../../utils/curations';
+import { isRor } from '../../../utils/ror';
+
+import ListView from './list-view';
+import DataTableView from './datatable-view';
 
 export default function OpenalexView({
   allAffiliations,
@@ -27,15 +21,6 @@ export default function OpenalexView({
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
-
-  const cellEditor = (options) => (
-    <InputTextarea
-      id="editor-ror"
-      onChange={(e) => options.editorCallback(e.target.value)}
-      type="text"
-      value={options.value}
-    />
-  );
 
   const changeView = (view) => {
     searchParams.set('view', view);
@@ -92,69 +77,17 @@ export default function OpenalexView({
           </Col>
         </Row>
       </div>
-      <DataTable
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        dataKey="key"
-        editMode="row"
-        metaKeySelection
-        onRowEditComplete={onRowEditComplete}
-        onSelectionChange={(e) => setSelectedOpenAlex(e.value)}
-        scrollable
-        scrollHeight="800px"
-        selection={selectedOpenAlex}
-        size="small"
-        sortField="worksNumber"
-        sortOrder={-1}
-        stripedRows
-        style={{ fontSize: '14px', lineHeight: '13px' }}
-        tableStyle={{ minWidth: '50rem' }}
-        value={allAffiliations}
-        virtualScrollerOptions={{ itemSize: 46 }}
-      >
-        <Column selectionMode="multiple" />
-        <Column
-          body={nameTemplate}
-          field="nameHtml"
-          header="OpenAlex Raw affiliation"
-          style={{ maxWidth: '250px' }}
+      {searchParams.get('view') === 'table' ? (
+        <DataTableView
+          onRowEditComplete={onRowEditComplete}
+          setSelectedOpenAlex={setSelectedOpenAlex}
+          selectedOpenAlex={selectedOpenAlex}
+          allAffiliations={allAffiliations}
+          undo={undo}
         />
-        <Column
-          body={rorTemplate}
-          field="rorHtml"
-          header="ROR computed by OpenAlex"
-          sortable
-          sortField="rorsNumber"
-          style={{ maxWidth: '200px' }}
-        />
-        <Column
-          body={correctionTemplate}
-          editor={(options) => cellEditor(options)}
-          field="rorsToCorrect"
-          header="Click to improve / edit RORs"
-          style={{ maxWidth: '190px' }}
-        />
-        <Column
-          bodyStyle={{ textAlign: 'center' }}
-          headerStyle={{ width: '10%', minWidth: '8rem' }}
-          rowEditor
-          style={{ maxWidth: '80px' }}
-        />
-        <Column
-          body={(rowData) => hasCorrectionTemplate(rowData, undo)}
-          field="hasCorrection"
-          header="Modified by user?"
-          sortable
-          style={{ maxWidth: '115px' }}
-        />
-        <Column
-          body={worksExampleTemplate}
-          field="worksExamples"
-          header="Works"
-          sortable
-          sortField="worksNumber"
-          style={{ maxWidth: '150px' }}
-        />
-      </DataTable>
+      ) : (
+        <ListView />
+      )}
     </>
   );
 }

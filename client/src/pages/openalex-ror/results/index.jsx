@@ -1,26 +1,26 @@
 import {
+  Badge,
   Button,
   Container, Row, Col,
   Modal, ModalContent, ModalFooter, ModalTitle,
   Tag, TagGroup,
   Text,
   TextInput,
-  Badge,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { status } from '../../config';
-import useToast from '../../hooks/useToast';
-import Header from '../../layout/header';
-import { getAffiliationsCorrections } from '../../utils/curations';
-import { getRorData, isRor } from '../../utils/ror';
-import { capitalize, normalize, removeDiacritics } from '../../utils/strings';
-import { getWorks } from '../../utils/works';
-import ExportErrorsButton from './export-errors-button';
-import OpenalexView from './openalexView';
-import SendFeedbackButton from './send-feedback-button';
+import { status } from '../../../config';
+import useToast from '../../../hooks/useToast';
+import Header from '../../../layout/header';
+import { getAffiliationsCorrections } from '../../../utils/curations';
+import { getRorData, isRor } from '../../../utils/ror';
+import { capitalize, normalize, removeDiacritics } from '../../../utils/strings';
+import { getWorks } from '../../../utils/works';
+import ExportErrorsButton from '../components/export-errors-button';
+import ViewsSelector from './views-selector';
+import SendFeedbackButton from '../components/send-feedback-button';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -52,7 +52,7 @@ export default function Affiliations() {
   const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['openalex-ror', JSON.stringify(body)],
     // Search for works from affiliations for each affiliation strictly longer than 2 letters
-    queryFn: () => getWorks({ ...body, affiliationStrings: body.affiliationStrings.filter((affiliation) => affiliation.length >= VITE_APP_TAG_LIMIT)}, toast),
+    queryFn: () => getWorks({ ...body, affiliationStrings: body.affiliationStrings.filter((affiliation) => affiliation.length >= VITE_APP_TAG_LIMIT) }, toast),
     enabled: false,
   });
 
@@ -293,7 +293,7 @@ export default function Affiliations() {
                   />
                 </div>
 
-                <OpenalexView
+                <ViewsSelector
                   allAffiliations={filteredAffiliations}
                   filteredAffiliationName={filteredAffiliationName}
                   selectedOpenAlex={selectedOpenAlex}

@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
-import useToast from '../../hooks/useToast';
+import useToast from '../../../hooks/useToast';
 
 const { VITE_WS_HOST } = import.meta.env;
 

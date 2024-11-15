@@ -2,7 +2,6 @@ import {
   Button,
   Modal, ModalContent, ModalTitle,
   Text,
-  Title,
 } from '@dataesr/dsfr-plus';
 import { useState } from 'react';
 

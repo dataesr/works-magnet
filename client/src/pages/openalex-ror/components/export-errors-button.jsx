@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
 
-import ButtonDropdown from '../../components/button-dropdown';
+import ButtonDropdown from '../../../components/button-dropdown';
 
 export default function ExportErrorsButton({
   allOpenalexCorrections,
