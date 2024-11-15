@@ -12,7 +12,7 @@ export default function ExportErrorsButton({
     <ButtonDropdown
       className="fr-mr-1w"
       data={allOpenalexCorrections}
-      label="OpenAlex errors"
+      label="OpenAlex corrections"
       searchParams={searchParams}
     />
   );

@@ -86,7 +86,12 @@ export default function OpenalexView({
           undo={undo}
         />
       ) : (
-        <ListView />
+        <ListView
+          onRowEditComplete={onRowEditComplete}
+          setSelectedOpenAlex={setSelectedOpenAlex}
+          selectedOpenAlex={selectedOpenAlex}
+          allAffiliations={allAffiliations}
+        />
       )}
     </>
   );

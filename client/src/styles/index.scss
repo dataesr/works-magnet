@@ -169,6 +169,17 @@ html, body {
     margin-bottom: 5px;
     background-color: #eee;
   }
+
+  .wm-list {
+    background-color: #eee;
+    list-style: none;
+
+    li {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.9rem;
+    }
+  }
 }
 
 .loader{
