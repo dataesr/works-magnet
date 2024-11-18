@@ -40,6 +40,14 @@ export default function ListView({
                 <input
                   id={`affiliation-${affiliation.key}`}
                   type="checkbox"
+                  checked={selectedOpenAlex.includes(affiliation)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedOpenAlex([...selectedOpenAlex, affiliation]);
+                    } else {
+                      setSelectedOpenAlex(selectedOpenAlex.filter((a) => a.key !== affiliation.key));
+                    }
+                  }}
                 />
               </Col>
               <Col md={6}>

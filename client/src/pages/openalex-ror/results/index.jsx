@@ -6,6 +6,8 @@ import {
   Tag,
   Text,
   TextInput,
+  Link,
+  Title,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -169,6 +171,20 @@ export default function Affiliations() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [affiliations, filteredAffiliationName, filteredStatus]);
 
+  console.log('selectedOpenAlex', selectedOpenAlex);
+
+  const listOfUniqueRors = [];
+
+  selectedOpenAlex.forEach((affiliation) => {
+    affiliation.rors.forEach((rorItem) => {
+      if (listOfUniqueRors.find((item) => item.rorId === rorItem.rorId) === undefined) {
+        listOfUniqueRors.push(rorItem);
+      }
+    });
+  });
+
+  console.log('listOfUniqueRors', listOfUniqueRors);
+
   return (
     <>
       <Header />
@@ -254,8 +270,94 @@ export default function Affiliations() {
             </Col>
             <Col md={10}>
               <div className="wm-bg wm-content">
-                <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)}>
+                <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)} size="xl">
                   <ModalTitle>
+                    Modify ROR in
+                    <Badge color="brown-opera" className="fr-ml-1w">{selectedOpenAlex.length}</Badge>
+                    {` OpenAlex selected affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
+                  </ModalTitle>
+                  <ModalContent>
+                    <Row verticalAlign="bottom">
+                      <Col>
+                        <TextInput
+                          label={`Which ROR do you want to ${action} ?`}
+                          onChange={(e) => setRor(e.target.value)}
+                        />
+                      </Col>
+                      <Col md="2">
+                        <Button
+                          color="blue-ecume"
+                        >
+                          + Add
+                        </Button>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <Title as="h2" look="h6" className="fr-m-0 fr-mt-5w">
+                          List of identifiers associated with OpenAlex selected affiliations
+                        </Title>
+                        <div className="fr-table fr-table--bordered" id="table-bordered-component">
+                          <div className="fr-table__wrapper">
+                            <div className="fr-table__container">
+                              <div className="fr-table__content">
+                                <table id="table-bordered">
+                                  <thead>
+                                    <tr>
+                                      <th>Name</th>
+                                      <th>id</th>
+                                      <th>Actions</th>
+                                    </tr>
+                                  </thead>
+                                  {listOfUniqueRors.map((rorItem) => (
+                                    <tr>
+                                      <td>
+                                        <img
+                                          alt={`${rorItem.rorCountry} flag`}
+                                          src={`https://flagsapi.com/${rorItem.rorCountry}/flat/16.png`}
+                                        />
+                                        <span
+                                          className="fr-ml-1w"
+                                        >
+                                          {rorItem.rorName}
+                                        </span>
+                                      </td>
+                                      <td>
+                                        <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />
+                                        {` https://ror.org/${rorItem.rorId}`}
+                                      </td>
+                                      <td>
+                                        <Button
+                                          color="pink-tuile"
+                                          icon="delete-line"
+                                          onClick={() => setFilteredAffiliationName(rorItem.rorId)}
+                                          size="sm"
+                                        />
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
+                  </ModalContent>
+                  <ModalFooter>
+                    Once you have made your changes (add or remode Ror id), you can close this window, continue with your corrections and submit them to openAlex using the "Send feedback to OpenAlex" button.
+                    <Button
+                      onClick={() => {
+                        // actionToOpenAlex(action, selectedOpenAlex, ror);
+                        // setRor('');
+                        setIsModalOpen((prev) => !prev);
+                      }}
+                      title="Close"
+                    >
+                      Close
+                    </Button>
+                  </ModalFooter>
+                  {/* <ModalTitle>
                     {`${capitalize(action)} ROR to ${
                       selectedOpenAlex.length
                     } OpenAlex affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
@@ -281,7 +383,7 @@ export default function Affiliations() {
                     >
                       {capitalize(action)}
                     </Button>
-                  </ModalFooter>
+                  </ModalFooter> */}
                 </Modal>
                 <div className="wm-external-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div className="left-content">

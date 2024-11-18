@@ -3,7 +3,6 @@ import { Button, Col, Row } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
 
-import { useState } from 'react';
 import useToast from '../../../hooks/useToast';
 import { getAffiliationsCorrections } from '../../../utils/curations';
 import { isRor } from '../../../utils/ror';
