@@ -58,11 +58,13 @@ export default function OpenalexView({
     <>
       <div className="wm-internal-actions">
         <Row>
-          <Col xs="1">
-            <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
-            <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
+          <Col>
+            <input
+              className="fr-ml-2w"
+              type="checkbox"
+            />
           </Col>
-          <Col xs="9">
+          <Col xs="8">
             <span className="fr-icon-search-line" />
             <i className="fr-mx-1w">
               Filter results
@@ -110,7 +112,10 @@ export default function OpenalexView({
                 </div>
               </label>
             </span>
-
+          </Col>
+          <Col xs="1" className="text-right">
+            <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
+            <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
           </Col>
         </Row>
       </div>

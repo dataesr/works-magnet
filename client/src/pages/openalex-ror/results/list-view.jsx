@@ -48,45 +48,56 @@ export default function ListView({
                   type="checkbox"
                 />
               </Col>
-              <Col md={9}>
+              <Col md={7}>
                 <Text as="label" htmlFor={`affiliation-${affiliation.key}`}>
                   <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml }} />
                 </Text>
                 <WorksList works={affiliation.works} />
               </Col>
-              <Col>
-                {affiliation.rors.map((ror) => (
-                  <>
-                    <Tag
-                      color={defineRorColor.find((r) => r.ror === ror.rorId)?.color || 'blue-cumulus'}
-                      size="sm"
-                      className="fr-mr-1w"
-                      aria-describedby={`tooltip-${affiliation.key}-ror-${ror.rorId}`}
-                    >
-                      <Link className="fr-mr-1w" href={`https://ror.org/${ror.rorId}`} target="_blank">
-                        {ror.rorId}
-                      </Link>
-                    </Tag>
-                    <div
-                      className="fr-tooltip fr-placement text-center"
-                      id={`tooltip-${affiliation.key}-ror-${ror.rorId}`}
-                      role="tooltip"
-                      aria-hidden="true"
-                    >
-                      <img src={`https://flagsapi.com/${ror.rorCountry}/flat/48.png`} alt={`${ror.rorCountry} flag`} />
-                      <br />
-                      {ror.rorName}
-                      <br />
-                      <Button
-                        onClick={() => setFilteredAffiliationName(ror.rorId)}
-                        size="sm"
-                        variant="secondary"
-                      >
-                        Filter on this id
-                      </Button>
-                    </div>
-                  </>
-                ))}
+              <Col md={4}>
+                <table className="wm-table">
+                  {affiliation.rors.map((ror) => (
+                    <tr>
+                      <td>
+                        <img
+                          alt={`${ror.rorCountry} flag`}
+                          src={`https://flagsapi.com/${ror.rorCountry}/flat/16.png`}
+                        />
+                        <span
+                          className="fr-ml-1w"
+                          style={{
+                            width: '300px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            display: 'inline-block',
+                          }}
+                        >
+                          {ror.rorName}
+                        </span>
+                      </td>
+                      <td>
+                        <Tag
+                          className="fr-mr-1w"
+                          color={defineRorColor.find((r) => r.ror === ror.rorId)?.color || 'blue-cumulus'}
+                          size="sm"
+                        >
+                          <Link className="fr-mr-1w" href={`https://ror.org/${ror.rorId}`} target="_blank">
+                            {ror.rorId}
+                          </Link>
+                        </Tag>
+                        <Button
+                          icon="filter-line"
+                          onClick={() => setFilteredAffiliationName(ror.rorId)}
+                          size="sm"
+                          variant="text"
+                        />
+
+                      </td>
+                    </tr>
+                  ))}
+                </table>
+
               </Col>
             </Row>
           </li>

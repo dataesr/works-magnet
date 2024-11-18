@@ -283,50 +283,41 @@ export default function Affiliations() {
                     </Button>
                   </ModalFooter>
                 </Modal>
-                <div className="wm-external-actions">
-                  <span className="wm-text fr-mb-3w">
-                    <Badge color="brown-opera">{selectedOpenAlex.length}</Badge>
-                    <i>
-                      {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
-                    </i>
-                  </span>
-                  <Button
-                    className="fr-ml-5w fr-mr-1w"
-                    color="blue-ecume"
-                    disabled={!selectedOpenAlex.length}
-                    icon="add-circle-line"
-                    key="add-ror"
-                    onClick={() => {
-                      setAction('add');
-                      setIsModalOpen((prev) => !prev);
-                    }}
-                    size="sm"
-                    title="Add ROR"
-                  >
-                    Add ROR
-                  </Button>
-                  <Button
-                    className="fr-mr-1w"
-                    color="blue-ecume"
-                    disabled={!selectedOpenAlex.length}
-                    icon="close-circle-line"
-                    key="remove-ror"
-                    onClick={() => {
-                      setAction('remove');
-                      setIsModalOpen((prev) => !prev);
-                    }}
-                    size="sm"
-                    title="Remove ROR"
-                  >
-                    Remove ROR
-                  </Button>
-                  <ExportErrorsButton
-                    allOpenalexCorrections={allOpenalexCorrections}
-                    options={body}
-                  />
-                  <SendFeedbackButton
-                    allOpenalexCorrections={allOpenalexCorrections}
-                  />
+                <div className="wm-external-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className="left-content">
+                    <span className="wm-text fr-mb-3w fr-ml-1w">
+                      <Badge color="brown-opera">{selectedOpenAlex.length}</Badge>
+                      <i>
+                        {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
+                      </i>
+                    </span>
+
+                    <Button
+                      className="fr-ml-5w fr-mr-1w"
+                      color="blue-ecume"
+                      disabled={!selectedOpenAlex.length}
+                      icon="add-circle-line"
+                      key="add-ror"
+                      onClick={() => {
+                        setAction('add');
+                        setIsModalOpen((prev) => !prev);
+                      }}
+                      size="sm"
+                      title="Add ROR"
+                    >
+                      Modify selected ROR
+                    </Button>
+                  </div>
+
+                  <div className="right-content fr-mr-1w">
+                    <ExportErrorsButton
+                      allOpenalexCorrections={allOpenalexCorrections}
+                      options={body}
+                    />
+                    <SendFeedbackButton
+                      allOpenalexCorrections={allOpenalexCorrections}
+                    />
+                  </div>
                 </div>
                 <ViewsSelector
                   allAffiliations={filteredAffiliations}
