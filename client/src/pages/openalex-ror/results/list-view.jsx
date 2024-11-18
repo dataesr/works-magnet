@@ -1,5 +1,4 @@
 import { Button, Col, Link, Row, Tag, Text } from '@dataesr/dsfr-plus';
-import { useState } from 'react';
 
 import WorksList from '../components/works-list';
 
@@ -8,7 +7,6 @@ export default function ListView({
   setSelectedOpenAlex,
   selectedOpenAlex,
   allAffiliations,
-  highlightRor,
   setFilteredAffiliationName,
 }) {
   const defineRorColor = [];
@@ -16,25 +14,21 @@ export default function ListView({
     'green-archipel', 'blue-ecume', 'blue-cumulus', 'purple-glycine', 'pink-macaron',
     'pink-tuile', 'yellow-tournesol', 'yellow-moutarde', 'orange-terre-battue',
     'brown-cafe-creme', 'brown-caramel', 'brown-opera', 'beige-gris-galet'];
-  if (highlightRor) {
     // tri des ror mar nombre
     // creation d'un tableau de ror avec un index pour chaque ror et son nombre d'occurences
     // ajout des couleurs pour chaque ror
-    const rorCount = {};
-    allAffiliations.forEach((affiliation) => {
-      affiliation.rors.forEach((ror) => {
-        if (rorCount[ror.rorId]) {
-          rorCount[ror.rorId] += 1;
-        } else {
-          rorCount[ror.rorId] = 1;
-        }
-      });
+  const rorCount = {};
+  allAffiliations.forEach((affiliation) => {
+    affiliation.rors.forEach((ror) => {
+      if (rorCount[ror.rorId]) {
+        rorCount[ror.rorId] += 1;
+      } else {
+        rorCount[ror.rorId] = 1;
+      }
     });
-    const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
-    defineRorColor.push(...sortedRor.map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
-    console.log('defineRorColor', defineRorColor);
-  }
-  console.log(allAffiliations);
+  });
+  const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
+  defineRorColor.push(...sortedRor.map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
 
   return (
     <ul className="wm-list">
@@ -48,13 +42,13 @@ export default function ListView({
                   type="checkbox"
                 />
               </Col>
-              <Col md={7}>
+              <Col md={6}>
                 <Text as="label" htmlFor={`affiliation-${affiliation.key}`}>
                   <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml }} />
                 </Text>
                 <WorksList works={affiliation.works} />
               </Col>
-              <Col md={4}>
+              <Col md={5}>
                 <table className="wm-table">
                   {affiliation.rors.map((ror) => (
                     <tr>
@@ -83,7 +77,11 @@ export default function ListView({
                           size="sm"
                         >
                           <Link className="fr-mr-1w" href={`https://ror.org/${ror.rorId}`} target="_blank">
-                            {ror.rorId}
+                            {/* <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" /> */}
+                            <strong>
+                              ROR
+                            </strong>
+                            {` https://ror.org/${ror.rorId}`}
                           </Link>
                         </Tag>
                         <Button
@@ -92,7 +90,6 @@ export default function ListView({
                           size="sm"
                           variant="text"
                         />
-
                       </td>
                     </tr>
                   ))}

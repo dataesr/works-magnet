@@ -21,7 +21,6 @@ export default function OpenalexView({
   undo,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [highlightRor, setHighlightRor] = useState(true);
   const { toast } = useToast();
 
   const changeView = (view) => {
@@ -88,32 +87,14 @@ export default function OpenalexView({
             />
 
           </Col>
-          <Col xs={2}>
-            <span className="fr-checkbox-group fr-mt-2w">
-              <input
-                type="checkbox"
-                id="highlightRorCkb"
-                checked={highlightRor}
-                onChange={(e) => setHighlightRor(e.target.checked)}
-              />
-              <label className="fr-label" htmlFor="highlightRorCkb">
-                Highlight ROR
-                <i
-                  className="fr-icon-info-fill fr-ml-1w"
-                  aria-describedby="highlightInfo"
-                />
-                <div
-                  className="fr-tooltip fr-placement"
-                  id="highlightInfo"
-                  role="tooltip"
-                  aria-hidden="true"
-                >
-                  colours each ror id with a different color
-                </div>
-              </label>
-            </span>
-          </Col>
-          <Col xs="1" className="text-right">
+          <Col xs="3" className="text-right">
+            <Button
+              color="beige-gris-galet"
+              icon="filter-line"
+              size="sm"
+            >
+              filters
+            </Button>
             <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
             <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
           </Col>
@@ -134,7 +115,6 @@ export default function OpenalexView({
           selectedOpenAlex={selectedOpenAlex}
           setFilteredAffiliationName={setFilteredAffiliationName}
           allAffiliations={allAffiliations}
-          highlightRor={highlightRor}
         />
       )}
     </>
