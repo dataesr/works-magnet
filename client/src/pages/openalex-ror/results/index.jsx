@@ -171,10 +171,7 @@ export default function Affiliations() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [affiliations, filteredAffiliationName, filteredStatus]);
 
-  console.log('selectedOpenAlex', selectedOpenAlex);
-
   const listOfUniqueRors = [];
-
   selectedOpenAlex.forEach((affiliation) => {
     affiliation.rors.forEach((rorItem) => {
       if (listOfUniqueRors.find((item) => item.rorId === rorItem.rorId) === undefined) {
@@ -183,11 +180,9 @@ export default function Affiliations() {
     });
   });
 
-  console.log('listOfUniqueRors', listOfUniqueRors);
-
   return (
     <>
-      <Header />
+      <Header id="openalex-tile-title" />
       <Container fluid as="main" className="wm-bg">
         {isFetching && (
           <Container style={{ textAlign: 'center', minHeight: '600px' }} className="fr-pt-5w wm-font">
@@ -215,57 +210,66 @@ export default function Affiliations() {
 
         {!isFetching && isFetched && (
           <Row>
-            <Col md={2}>
-              <Row>
-                <Col>
-                  Start year:
-                  <Tag color="blue-ecume" key="tag-year-start" size="sm">
-                    {body.startYear}
-                  </Tag>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  End year:
-                  <Tag color="blue-ecume" key="tag-year-end" size="sm">
-                    {body.endYear}
-                  </Tag>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  Affiliations:
-                  {body.affiliations.map((affiliation) => (
-                    <Row key={`row-${affiliation.label}`}>
-                      <Tag
-                        className={`fr-mr-1w fr-mt-1w ${affiliation.isDisabled ? 'scratched' : ''}`}
-                        color={getTagColor(affiliation)}
-                        key={`tag-${affiliation.label}`}
-                        size="sm"
-                      >
-                        {affiliation.label}
-                      </Tag>
-                      {affiliation.children.map((child) => (
-                        <Tag
-                          className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''}`}
-                          color={getTagColor(child)}
-                          key={`tag-${child.label}`}
-                          size="sm"
-                        >
-                          {child.label}
-                        </Tag>
-                      ))}
-                    </Row>
-                  ))}
-                </Col>
-              </Row>
+            <Col className="wm-menu" md={2}>
               <Row>
                 <Button
                   className="fr-mt-1w"
+                  color="blue-ecume"
+                  icon="arrow-left-line"
                   onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}
+                  size="sm"
                 >
-                  Modify search
+                  Back to search page
                 </Button>
+              </Row>
+              <Row>
+                <Col>
+                  <div className="wm-title">
+                    <span className="fr-icon-calendar-line fr-mr-1w" aria-hidden="true" />
+                    Selected years
+                  </div>
+                  <div className="wm-content">
+                    <Tag className="fr-mr-1w" color="blue-cumulus" key="tag-year-start">
+                      {`Start: ${body.startYear}`}
+                    </Tag>
+
+                    <Tag color="blue-cumulus" key="tag-year-end">
+                      {`End: ${body.endYear}`}
+                    </Tag>
+                  </div>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col>
+                  <div className="wm-title">
+                    <span className="fr-icon-hotel-line fr-mr-1w" aria-hidden="true" />
+                    Searched affiliations
+                  </div>
+                  <div className="wm-content">
+
+                    {body.affiliations.map((affiliation) => (
+                      <Row key={`row-${affiliation.label}`}>
+                        <Tag
+                          className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''}`}
+                          color={getTagColor(affiliation)}
+                          key={`tag-${affiliation.label}`}
+                        >
+                          {affiliation.label}
+                        </Tag>
+                        {affiliation.children.map((child) => (
+                          <Tag
+                            className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''}`}
+                            color={getTagColor(child)}
+                            key={`tag-${child.label}`}
+                          >
+                            {child.label}
+                          </Tag>
+                        ))}
+                      </Row>
+                    ))}
+                  </div>
+                </Col>
               </Row>
             </Col>
             <Col md={10}>
@@ -305,8 +309,8 @@ export default function Affiliations() {
                                   <thead>
                                     <tr>
                                       <th>Name</th>
-                                      <th>id</th>
-                                      <th>Actions</th>
+                                      <th colSpan={2}>id</th>
+                                      {/* <th>Actions</th> */}
                                     </tr>
                                   </thead>
                                   {listOfUniqueRors.map((rorItem) => (
@@ -345,7 +349,8 @@ export default function Affiliations() {
                     </Row>
                   </ModalContent>
                   <ModalFooter>
-                    Once you have made your changes (add or remode Ror id), you can close this window, continue with your corrections and submit them to openAlex using the "Send feedback to OpenAlex" button.
+                    Once you have made your changes (add or remode Ror id), you can close this window,
+                    continue with your corrections and submit them to openAlex using the "Send feedback to OpenAlex" button.
                     <Button
                       onClick={() => {
                         // actionToOpenAlex(action, selectedOpenAlex, ror);

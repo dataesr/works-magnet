@@ -1,4 +1,4 @@
-import { Button, Col, Link, Row, Tag, Text } from '@dataesr/dsfr-plus';
+import { Badge, Button, Col, Link, Row, Tag, Text } from '@dataesr/dsfr-plus';
 
 import WorksList from '../components/works-list';
 
@@ -10,9 +10,8 @@ export default function ListView({
   setFilteredAffiliationName,
 }) {
   const defineRorColor = [];
-  const dsColors = ['green-tilleul-verveine', 'green-bourgeon', 'green-emeraude', 'green-menthe',
-    'green-archipel', 'blue-ecume', 'blue-cumulus', 'purple-glycine', 'pink-macaron',
-    'pink-tuile', 'yellow-tournesol', 'yellow-moutarde', 'orange-terre-battue',
+  const dsColors = ['green-archipel', 'blue-ecume', 'blue-cumulus', 'purple-glycine', 'pink-macaron',
+    'pink-tuile', 'orange-terre-battue',
     'brown-cafe-creme', 'brown-caramel', 'brown-opera', 'beige-gris-galet'];
     // tri des ror mar nombre
     // creation d'un tableau de ror avec un index pour chaque ror et son nombre d'occurences
@@ -28,7 +27,7 @@ export default function ListView({
     });
   });
   const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
-  defineRorColor.push(...sortedRor.map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
+  defineRorColor.push(...sortedRor.slice(0, 5).map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
 
   return (
     <ul className="wm-list">
@@ -79,19 +78,25 @@ export default function ListView({
                         </span>
                       </td>
                       <td>
-                        <Tag
+                        <img
+                          alt="ROR logo"
+                          className="vertical-middle fr-mx-1w"
+                          src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg"
+                          height="16"
+                        />
+                        https://ror.org/
+                        <Badge
                           className="fr-mr-1w"
-                          color={defineRorColor.find((r) => r.ror === ror.rorId)?.color || 'blue-cumulus'}
+                          color={defineRorColor.find((r) => r.ror === ror.rorId)?.color || 'yellow-tournesol'}
                           size="sm"
                         >
                           <Link className="fr-mr-1w" href={`https://ror.org/${ror.rorId}`} target="_blank">
-                            {/* <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" /> */}
-                            <strong>
+                            {/* <strong>
                               ROR
-                            </strong>
-                            {` https://ror.org/${ror.rorId}`}
+                            </strong> */}
+                            {` ${ror.rorId}`}
                           </Link>
-                        </Tag>
+                        </Badge>
                         <Button
                           icon="filter-line"
                           onClick={() => setFilteredAffiliationName(ror.rorId)}

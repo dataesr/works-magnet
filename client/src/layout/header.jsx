@@ -16,7 +16,7 @@ const {
 } = import.meta.env;
 
 // TODO : all, Link from dsfr-plus
-export default function Header({ isExpanded }) {
+export default function Header({ isExpanded, id }) {
   return isExpanded ? (
     <header role="banner" className="fr-header expanded">
       <Ribbon />
@@ -85,6 +85,15 @@ export default function Header({ isExpanded }) {
             </Title>
           </a>
         </Col>
+        {
+          id && (
+            <Col xs="9">
+              <Title as="h2" look="h6">
+                <FormattedMessage id={id} />
+              </Title>
+            </Col>
+          )
+        }
       </Row>
     </Container>
   );
@@ -92,7 +101,9 @@ export default function Header({ isExpanded }) {
 
 Header.defaultProps = {
   isExpanded: false,
+  id: '',
 };
 Header.propTypes = {
   isExpanded: PropTypes.bool,
+  id: PropTypes.string,
 };

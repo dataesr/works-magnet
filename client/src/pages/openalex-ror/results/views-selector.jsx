@@ -88,11 +88,12 @@ export default function OpenalexView({
           </Col>
           <Col xs="3" className="text-right">
             <Button
+              className="fr-mr-1w"
               color="beige-gris-galet"
               icon="filter-line"
               size="sm"
             >
-              filters
+              more filters
             </Button>
             <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
             <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />

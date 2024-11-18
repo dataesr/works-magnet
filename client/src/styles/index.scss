@@ -122,7 +122,7 @@ html, body {
 }
 
 .wm-bg {
-  background-color: #222;
+  background: linear-gradient(to right, #0e0e31, #1a1add);
 }
 .wm-message{
   background-color: #eee;
@@ -140,6 +140,20 @@ html, body {
 
 .wm-menu{
   min-height: fit-content;
+  padding-top: 10px;
+  
+  .wm-title{
+    background-color: #eee;
+    color: #222;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+
+  .wm-content{
+    min-height: 80px;
+  }
 .wm-text{
   color: white;
   padding: 5px;
