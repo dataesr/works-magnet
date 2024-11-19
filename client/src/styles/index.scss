@@ -205,6 +205,35 @@ html, body {
       font-size: 0.9rem;
     }
   }
+
+  .wm-ror-badge{
+    display: inline-flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 10px;
+    border-top-left-radius: 10px;
+    span{
+      border-radius: 10px;
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      margin-left: 5px;        
+      }
+      div{
+      margin-left: 5px;
+      display: inline-block;
+      background-color: #fff;
+    }
+  }
+}
+
+:root {
+  --ror-1: #006A6F;
+  --ror-2: #5c006f;
+  --ror-3: #e99700;
+  --ror-4: #6f0018;
+  --ror-5: #046f00;
+  --ror-x: #fff;
 }
 
 .loader{

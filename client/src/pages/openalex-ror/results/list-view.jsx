@@ -2,6 +2,7 @@ import { Badge, Button, Col, Link, Row, Text } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
 import WorksList from '../components/works-list';
+import RorBadge from '../components/ror-badge';
 
 export default function ListView({
   onRowEditComplete,
@@ -11,12 +12,7 @@ export default function ListView({
   setFilteredAffiliationName,
 }) {
   const defineRorColor = [];
-  const dsColors = ['green-archipel', 'blue-ecume', 'blue-cumulus', 'purple-glycine', 'pink-macaron',
-    'pink-tuile', 'orange-terre-battue',
-    'brown-cafe-creme', 'brown-caramel', 'brown-opera', 'beige-gris-galet'];
-    // tri des ror mar nombre
-    // creation d'un tableau de ror avec un index pour chaque ror et son nombre d'occurences
-    // ajout des couleurs pour chaque ror
+  const dsColors = ['ror-1', 'ror-2', 'ror-3', 'ror-4', 'ror-5'];
   const rorCount = {};
   allAffiliations.forEach((affiliation) => {
     affiliation.rors.forEach((ror) => {
@@ -29,6 +25,7 @@ export default function ListView({
   });
   const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
   defineRorColor.push(...sortedRor.slice(0, 5).map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
+  console.log('defineRorColor', defineRorColor);
 
   return (
     <ul className="wm-list">
@@ -61,49 +58,30 @@ export default function ListView({
                   {affiliation.rors.map((ror) => (
                     <tr>
                       <td>
-                        <img
-                          alt={`${ror.rorCountry} flag`}
-                          src={`https://flagsapi.com/${ror.rorCountry}/flat/16.png`}
+                        <RorBadge
+                          ror={ror}
+                          rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'ror-x'}
                         />
-                        <span
-                          className="fr-ml-1w"
-                          style={{
-                            width: '300px',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            display: 'inline-block',
-                          }}
-                        >
-                          {ror.rorName}
-                        </span>
                       </td>
                       <td>
-                        <img
-                          alt="ROR logo"
-                          className="vertical-middle fr-mx-1w"
-                          src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg"
-                          height="16"
-                        />
-                        https://ror.org/
-                        <Badge
-                          className="fr-mr-1w"
-                          color={defineRorColor.find((r) => r.ror === ror.rorId)?.color || 'yellow-tournesol'}
-                          size="sm"
-                        >
-                          <Link className="fr-mr-1w" href={`https://ror.org/${ror.rorId}`} target="_blank">
-                            {/* <strong>
-                              ROR
-                            </strong> */}
-                            {` ${ror.rorId}`}
-                          </Link>
-                        </Badge>
-                        <Button
-                          icon="filter-line"
-                          onClick={() => setFilteredAffiliationName(ror.rorId)}
-                          size="sm"
-                          variant="text"
-                        />
+                        <div style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <img
+                            alt={`${ror.rorCountry} flag`}
+                            src={`https://flagsapi.com/${ror.rorCountry}/flat/16.png`}
+                          />
+                          <span
+                            className="fr-ml-1w"
+                            style={{
+                              width: '300px',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              display: 'inline-block',
+                            }}
+                          >
+                            {ror.rorName}
+                          </span>
+                        </div>
                       </td>
                     </tr>
                   ))}
