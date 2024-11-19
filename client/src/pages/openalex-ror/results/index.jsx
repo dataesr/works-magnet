@@ -38,6 +38,8 @@ export default function Affiliations() {
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [body, setBody] = useState({});
   const { toast } = useToast();
+  const [addList, setAddList] = useState([]);
+  const [removeList, setRemoveList] = useState([]);
 
   const [action, setAction] = useState();
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -179,6 +181,13 @@ export default function Affiliations() {
       }
     });
   });
+
+  const applyActions = () => {
+    removeList.forEach((rorId) => {
+      const rorItem = listOfUniqueRors.find((item) => item.rorId === rorId);
+      actionToOpenAlex('remove', selectedOpenAlex, rorItem);
+    });
+  };
 
   return (
     <>
@@ -340,21 +349,52 @@ export default function Affiliations() {
                                           <span
                                             className="fr-ml-1w"
                                           >
-                                            {rorItem.rorName}
+                                            {
+                                              removeList.includes(rorItem.rorId) ? (
+                                                <strike>{rorItem.rorName}</strike>
+                                              ) : (
+                                                rorItem.rorName
+                                              )
+                                            }
                                           </span>
                                         </td>
                                         <td>
                                           <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />
-                                          {` https://ror.org/${rorItem.rorId}`}
+                                          {
+                                            removeList.includes(rorItem.rorId) ? (
+                                              <strike>{` https://ror.org/${rorItem.rorId}`}</strike>
+                                            ) : (
+                                                ` https://ror.org/${rorItem.rorId}`
+                                            )
+                                          }
                                         </td>
-                                        <td>
-                                          <Button
-                                            aria-label="Remove ROR"
-                                            color="pink-tuile"
-                                            icon="delete-line"
-                                            onClick={() => setFilteredAffiliationName(rorItem.rorId)}
-                                            size="sm"
-                                          />
+                                        <td style={{ minWidth: '160px' }}>
+                                          {
+                                            removeList.includes(rorItem.rorId) ? (
+                                              <>
+                                                <Button
+                                                  aria-label="undo remove"
+                                                  color="blue-ecume"
+                                                  icon="arrow-go-back-line"
+                                                  onClick={() => setRemoveList((prevList) => prevList.filter((item) => item !== rorItem.rorId))}
+                                                  // actionToOpenAlex('remove', selectedOpenAlex, rorItem)
+                                                  size="sm"
+                                                />
+                                                <Badge color="pink-tuile" className="fr-mr-1w">
+                                                  Removed
+                                                </Badge>
+                                              </>
+                                            ) : (
+                                              <Button
+                                                aria-label="Remove ROR"
+                                                color="pink-tuile"
+                                                disabled={removeList.includes(rorItem.rorId)}
+                                                icon="delete-line"
+                                                onClick={() => setRemoveList((prevList) => [...prevList, rorItem.rorId])}
+                                                size="sm"
+                                              />
+                                            )
+                                          }
                                         </td>
                                       </tr>
                                     ))}
@@ -371,8 +411,10 @@ export default function Affiliations() {
                     Once you have made your changes (add or remove Ror id), you can apply the changes using the "apply corrections" button,
                     continue with your corrections and submit them to openAlex using the "Send feedback to OpenAlex" button.
                     <Button
-                      disabled
+                      color="blue-ecume"
+                      disabled={removeList.length === 0}
                       onClick={() => {
+                        applyActions();
                         // actionToOpenAlex(action, selectedOpenAlex, ror);
                         // setRor('');
                         setIsModalOpen((prev) => !prev);
