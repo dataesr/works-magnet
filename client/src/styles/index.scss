@@ -122,7 +122,8 @@ html, body {
 }
 
 .wm-bg {
-  background: linear-gradient(to right, #0e0e31, #1a1add);
+  // background: linear-gradient(to right, #0e0e31, #1a1add);
+  background-color: #fff;
 }
 .wm-message{
   background-color: #eee;
@@ -143,21 +144,25 @@ html, body {
   padding-top: 10px;
   
   .wm-title{
-    background-color: #eee;
+    background-color: #eeeeee;
     color: #222;
     padding: 5px;
     margin-bottom: 10px;
+    margin-top: 10px;
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
+    border: #777 1px solid;
   }
 
   .wm-content{
     min-height: 80px;
   }
-.wm-text{
-  color: white;
-  padding: 5px;
-  & span{font-size: 1.5em; font-weight: bold;}
+
+  .wm-text{
+    color: white;
+    padding: 5px;
+    & span{font-size: 1.5em; font-weight: bold;
+  }
 }
   .wm-button{
     width: 90%;
@@ -171,7 +176,9 @@ html, body {
   border-bottom-right-radius: 15px;
   border-bottom-left-radius: 15px;
   
+  
   .wm-external-actions{
+    border: #777 1px solid;
     background-color: #eee;
     padding: 10px 0 0  10px;
     border-top-right-radius: 15px;
@@ -179,14 +186,18 @@ html, body {
     border-bottom: 1px solid #ddd;
   }
   .wm-internal-actions{
+    border-bottom: #777 1px solid;
+    border-left: #777 1px solid;
+    border-right: #777 1px solid;
     padding: 10px;
     margin-bottom: 5px;
     background-color: #eee;
   }
-
+  
   .wm-list {
     background-color: #eee;
     list-style: none;
+    border: #777 1px solid;
 
     li {
       padding: 10px;

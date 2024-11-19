@@ -1,4 +1,5 @@
-import { Badge, Button, Col, Link, Row, Tag, Text } from '@dataesr/dsfr-plus';
+import { Badge, Button, Col, Link, Row, Text } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
 
 import WorksList from '../components/works-list';
 
@@ -116,3 +117,10 @@ export default function ListView({
     </ul>
   );
 }
+
+ListView.propTypes = {
+  setSelectedOpenAlex: PropTypes.func.isRequired,
+  selectedOpenAlex: PropTypes.array.isRequired,
+  allAffiliations: PropTypes.array.isRequired,
+  setFilteredAffiliationName: PropTypes.func.isRequired,
+};

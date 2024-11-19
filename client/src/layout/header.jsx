@@ -60,7 +60,7 @@ export default function Header({ isExpanded, id }) {
       </div>
     </header>
   ) : (
-    <Container as="section" className="filters" fluid>
+    <Container as="section" fluid>
       <Row className="fr-p-1w" verticalAlign="top">
         <Ribbon />
         <Col offsetXs="1" xs="2">
@@ -88,7 +88,7 @@ export default function Header({ isExpanded, id }) {
         {
           id && (
             <Col xs="9">
-              <Title as="h2" look="h6">
+              <Title as="h2" look="h6" className="fr-mb-1w">
                 <FormattedMessage id={id} />
               </Title>
             </Col>

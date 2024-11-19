@@ -281,6 +281,14 @@ export default function Affiliations() {
                     {` OpenAlex selected affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
                   </ModalTitle>
                   <ModalContent>
+                    <Row>
+                      <Col>
+                        <Title as="h2" look="h6" className="fr-m-0 fr-mt-5w">
+                          <span className="fr-icon-arrow-right-fill" aria-hidden="true" />
+                          Add a ror to selected affiliations
+                        </Title>
+                      </Col>
+                    </Row>
                     <Row verticalAlign="bottom">
                       <Col>
                         <TextInput
@@ -297,9 +305,17 @@ export default function Affiliations() {
                       </Col>
                     </Row>
                     <Row>
+                      <Col className="text-center">
+                        <Text size="lead" className="fr-mt-3w">
+                          <strong>or</strong>
+                        </Text>
+                      </Col>
+                    </Row>
+                    <Row>
                       <Col>
-                        <Title as="h2" look="h6" className="fr-m-0 fr-mt-5w">
-                          List of identifiers associated with OpenAlex selected affiliations
+                        <Title as="h2" look="h6" className="fr-m-0">
+                          <span className="fr-icon-arrow-right-fill" aria-hidden="true" />
+                          Remove a ror from selected affiliations
                         </Title>
                         <div className="fr-table fr-table--bordered" id="table-bordered-component">
                           <div className="fr-table__wrapper">
@@ -313,33 +329,36 @@ export default function Affiliations() {
                                       {/* <th>Actions</th> */}
                                     </tr>
                                   </thead>
-                                  {listOfUniqueRors.map((rorItem) => (
-                                    <tr>
-                                      <td>
-                                        <img
-                                          alt={`${rorItem.rorCountry} flag`}
-                                          src={`https://flagsapi.com/${rorItem.rorCountry}/flat/16.png`}
-                                        />
-                                        <span
-                                          className="fr-ml-1w"
-                                        >
-                                          {rorItem.rorName}
-                                        </span>
-                                      </td>
-                                      <td>
-                                        <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />
-                                        {` https://ror.org/${rorItem.rorId}`}
-                                      </td>
-                                      <td>
-                                        <Button
-                                          color="pink-tuile"
-                                          icon="delete-line"
-                                          onClick={() => setFilteredAffiliationName(rorItem.rorId)}
-                                          size="sm"
-                                        />
-                                      </td>
-                                    </tr>
-                                  ))}
+                                  <tbody>
+                                    {listOfUniqueRors.map((rorItem) => (
+                                      <tr>
+                                        <td>
+                                          <img
+                                            alt={`${rorItem.rorCountry} flag`}
+                                            src={`https://flagsapi.com/${rorItem.rorCountry}/flat/16.png`}
+                                          />
+                                          <span
+                                            className="fr-ml-1w"
+                                          >
+                                            {rorItem.rorName}
+                                          </span>
+                                        </td>
+                                        <td>
+                                          <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />
+                                          {` https://ror.org/${rorItem.rorId}`}
+                                        </td>
+                                        <td>
+                                          <Button
+                                            color="pink-tuile"
+                                            icon="delete-line"
+                                            onClick={() => setFilteredAffiliationName(rorItem.rorId)}
+                                            size="sm"
+                                            aria-label="Remove ROR"
+                                          />
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
                                 </table>
                               </div>
                             </div>
@@ -349,9 +368,10 @@ export default function Affiliations() {
                     </Row>
                   </ModalContent>
                   <ModalFooter>
-                    Once you have made your changes (add or remode Ror id), you can close this window,
+                    Once you have made your changes (add or remove Ror id), you can apply the changes using the "apply corrections" button,
                     continue with your corrections and submit them to openAlex using the "Send feedback to OpenAlex" button.
                     <Button
+                      disabled
                       onClick={() => {
                         // actionToOpenAlex(action, selectedOpenAlex, ror);
                         // setRor('');
@@ -359,7 +379,7 @@ export default function Affiliations() {
                       }}
                       title="Close"
                     >
-                      Close
+                      Apply corrections
                     </Button>
                   </ModalFooter>
                   {/* <ModalTitle>
