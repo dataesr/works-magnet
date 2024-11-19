@@ -349,11 +349,11 @@ export default function Affiliations() {
                                         </td>
                                         <td>
                                           <Button
+                                            aria-label="Remove ROR"
                                             color="pink-tuile"
                                             icon="delete-line"
                                             onClick={() => setFilteredAffiliationName(rorItem.rorId)}
                                             size="sm"
-                                            aria-label="Remove ROR"
                                           />
                                         </td>
                                       </tr>
