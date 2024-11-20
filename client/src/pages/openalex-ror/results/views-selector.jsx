@@ -60,6 +60,13 @@ export default function OpenalexView({
             <input
               className="fr-ml-2w"
               type="checkbox"
+              onChange={() => {
+                if (selectedOpenAlex.length === 0) {
+                  setSelectedOpenAlex(allAffiliations);
+                } else {
+                  setSelectedOpenAlex([]);
+                }
+              }}
             />
           </Col>
           <Col xs="8">
