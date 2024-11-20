@@ -42,7 +42,6 @@ export default function Affiliations() {
   const [addList, setAddList] = useState([]);
   const [removeList, setRemoveList] = useState([]);
 
-  const [action, setAction] = useState();
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredStatus] = useState([
@@ -135,9 +134,9 @@ export default function Affiliations() {
   const actionToOpenAlex = (_action, _selectedOpenAlex, _ror) => {
     _selectedOpenAlex.map((item) => {
       let rorsToCorrect = item.rorsToCorrect.trim().split(';');
-      if (action === 'add') {
+      if (_action === 'add') {
         rorsToCorrect.push(_ror);
-      } else if (action === 'remove') {
+      } else if (_action === 'remove') {
         rorsToCorrect = rorsToCorrect.filter((item2) => item2 !== _ror);
       }
       // eslint-disable-next-line no-param-reassign
@@ -302,7 +301,7 @@ export default function Affiliations() {
                     <Row verticalAlign="bottom">
                       <Col>
                         <TextInput
-                          label={`Which ROR do you want to ${action} ?`}
+                          label="Which ROR do you want to add ?"
                           onChange={(e) => setRor(e.target.value)}
                         />
                       </Col>
@@ -342,7 +341,6 @@ export default function Affiliations() {
                                     <tr>
                                       <th>Name</th>
                                       <th colSpan={2}>ROR</th>
-                                      {/* <th>Actions</th> */}
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -531,10 +529,7 @@ export default function Affiliations() {
                       disabled={!selectedOpenAlex.length}
                       icon="add-circle-line"
                       key="add-ror"
-                      onClick={() => {
-                        setAction('add');
-                        setIsModalOpen((prev) => !prev);
-                      }}
+                      onClick={() => setIsModalOpen((prev) => !prev)}
                       size="sm"
                       title="Modify selected ROR"
                     >
