@@ -32,25 +32,31 @@ export default function ListView({
         allAffiliations.map((affiliation) => (
           <li key={affiliation.key}>
             <Row>
-              <Col md={1}>
-                <input
-                  id={`affiliation-${affiliation.key}`}
-                  type="checkbox"
-                  checked={selectedOpenAlex.includes(affiliation)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedOpenAlex([...selectedOpenAlex, affiliation]);
-                    } else {
-                      setSelectedOpenAlex(selectedOpenAlex.filter((a) => a.key !== affiliation.key));
-                    }
-                  }}
-                />
-              </Col>
               <Col>
-                <Text as="label" htmlFor={`affiliation-${affiliation.key}`}>
-                  <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml }} />
-                </Text>
-                <WorksList works={affiliation.works} />
+                <div style={{ display: 'inline-flex' }}>
+
+                  <div style={{ display: 'inline-block', width: '20px' }}>
+                    <input
+                      id={`affiliation-${affiliation.key}`}
+                      type="checkbox"
+                      checked={selectedOpenAlex.includes(affiliation)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedOpenAlex([...selectedOpenAlex, affiliation]);
+                        } else {
+                          setSelectedOpenAlex(selectedOpenAlex.filter((a) => a.key !== affiliation.key));
+                        }
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'inline-block', maxWidth: '95%' }}>
+
+                    <Text as="label" htmlFor={`affiliation-${affiliation.key}`}>
+                      <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml }} />
+                    </Text>
+                    <WorksList works={affiliation.works} />
+                  </div>
+                </div>
               </Col>
               <Col md={4}>
                 <table className="wm-table">

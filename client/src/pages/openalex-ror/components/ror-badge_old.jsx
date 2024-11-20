@@ -15,18 +15,14 @@ export default function RorBadge({ isRemoved, ror, setFilteredAffiliationName, r
       </div>
       {isRemoved ? (
         <strike>
-          https://ror.org/
           <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
-            {` ${ror.rorId}`}
+            {`https://ror.org/${ror.rorId}`}
           </Link>
         </strike>
       ) : (
-        <>
-          https://ror.org/
-          <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
-            {` ${ror.rorId}`}
-          </Link>
-        </>
+        <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
+          {`https://ror.org/${ror.rorId}`}
+        </Link>
       )}
       <button
         type="button"

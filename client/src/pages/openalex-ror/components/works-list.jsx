@@ -6,7 +6,7 @@ export default function WorksList({ works }) {
 
   const _works = showMore ? works : works.slice(0, 5);
   return (
-    <Text size="sm" className="fr-mt-1w fr-pl-1w" style={{ borderLeft: '5px solid #aaa' }}>
+    <Text size="sm" className="fr-my-1w fr-pl-1w" style={{ borderLeft: '5px solid #aaa' }}>
       <i>
         <span className="fr-mr-1w">
           works:
