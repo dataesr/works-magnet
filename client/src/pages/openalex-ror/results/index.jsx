@@ -51,6 +51,8 @@ export default function Affiliations() {
   ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ror, setRor] = useState('');
+  const [rorMessage, setRorMessage] = useState('');
+  const [rorMessageType, setRorMessageType] = useState('');
   const [selectedOpenAlex, setSelectedOpenAlex] = useState([]);
   const [timer, setTimer] = useState();
 
@@ -79,6 +81,40 @@ export default function Affiliations() {
     });
     setAffiliations(newAffiliations);
     setAllOpenalexCorrections(getAffiliationsCorrections(newAffiliations));
+  };
+
+  const listOfUniqueRors = {};
+  selectedOpenAlex.forEach((affiliation) => {
+    affiliation.rors.forEach((ror) => {
+      if (!Object.keys(listOfUniqueRors).includes(ror.rorId)) {
+        listOfUniqueRors[ror.rorId] = { ...ror, countAffiliations: 0 };
+      }
+      listOfUniqueRors[ror.rorId].countAffiliations += 1;
+    });
+  });
+
+  const actionToOpenAlex = (_action, _selectedOpenAlex, _ror) => {
+    _selectedOpenAlex.map((item) => {
+      let rorsToCorrect = item.rorsToCorrect.trim().split(';');
+      if (_action === 'add') {
+        rorsToCorrect.push(_ror);
+      } else if (_action === 'remove') {
+        rorsToCorrect = rorsToCorrect.filter((item2) => item2 !== _ror);
+      }
+      // eslint-disable-next-line no-param-reassign
+      item.rorsToCorrect = [...new Set(rorsToCorrect)].join(';');
+      // eslint-disable-next-line no-param-reassign
+      item.hasCorrection = item.rors.map((r) => r.rorId).join(';') !== item.rorsToCorrect;
+      return item;
+    });
+    setAllOpenalexCorrections(getAffiliationsCorrections(_selectedOpenAlex));
+  };
+
+  const applyActions = () => {
+    removeList.forEach((rorId) => {
+      const rorItem = listOfUniqueRors[rorId];
+      actionToOpenAlex('remove', selectedOpenAlex, rorItem);
+    });
   };
 
   useEffect(() => {
@@ -131,23 +167,6 @@ export default function Affiliations() {
     setAffiliations(data?.affiliations ?? []);
   }, [data]);
 
-  const actionToOpenAlex = (_action, _selectedOpenAlex, _ror) => {
-    _selectedOpenAlex.map((item) => {
-      let rorsToCorrect = item.rorsToCorrect.trim().split(';');
-      if (_action === 'add') {
-        rorsToCorrect.push(_ror);
-      } else if (_action === 'remove') {
-        rorsToCorrect = rorsToCorrect.filter((item2) => item2 !== _ror);
-      }
-      // eslint-disable-next-line no-param-reassign
-      item.rorsToCorrect = [...new Set(rorsToCorrect)].join(';');
-      // eslint-disable-next-line no-param-reassign
-      item.hasCorrection = item.rors.map((r) => r.rorId).join(';') !== item.rorsToCorrect;
-      return item;
-    });
-    setAllOpenalexCorrections(getAffiliationsCorrections(_selectedOpenAlex));
-  };
-
   useEffect(() => {
     if (timer) {
       clearTimeout(timer);
@@ -173,21 +192,21 @@ export default function Affiliations() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [affiliations, filteredAffiliationName, filteredStatus]);
 
-  const listOfUniqueRors = [];
-  selectedOpenAlex.forEach((affiliation) => {
-    affiliation.rors.forEach((rorItem) => {
-      if (listOfUniqueRors.find((item) => item.rorId === rorItem.rorId) === undefined) {
-        listOfUniqueRors.push(rorItem);
-      }
-    });
-  });
-
-  const applyActions = () => {
-    removeList.forEach((rorId) => {
-      const rorItem = listOfUniqueRors.find((item) => item.rorId === rorId);
-      actionToOpenAlex('remove', selectedOpenAlex, rorItem);
-    });
-  };
+  useEffect(() => {
+    if (ror === '') {
+      setRorMessage('');
+      setRorMessageType('');
+    } else if (!isRor(ror)) {
+      setRorMessage('Invalid ROR');
+      setRorMessageType('error');
+    } else if (Object.keys(listOfUniqueRors).includes(ror)) {
+      setRorMessage('Already listed ROR');
+      setRorMessageType('error');
+    } else {
+      setRorMessage('Valid ROR');
+      setRorMessageType('valid');
+    };
+  }, [ror]);
 
   return (
     <>
@@ -292,48 +311,6 @@ export default function Affiliations() {
                   <ModalContent>
                     <Row>
                       <Col>
-                        <Title as="h2" look="h6" className="fr-m-0 fr-mt-5w">
-                          <span className="fr-icon-arrow-right-fill" aria-hidden="true" />
-                          Add a ROR to selected affiliations
-                        </Title>
-                      </Col>
-                    </Row>
-                    <Row verticalAlign="bottom">
-                      <Col>
-                        <TextInput
-                          messageType={ ror === '' ? '' : (isRor(ror) ? 'valid': 'error') }
-                          message={ ror === '' ? '' : (isRor(ror) ? 'Valid ROR': 'Invalid ROR') }
-                          onChange={(e) => setRor(e.target.value)}
-                        />
-                      </Col>
-                      <Col md="2">
-                        <Button
-                          color="blue-ecume"
-                          onClick={async () => {
-                            if (isRor(ror)) {
-                              const rorData = await getRorData(ror);
-                              setAddList([...addList, ...rorData]);
-                              setRor('');
-                            }
-                          }}
-                        >
-                          + Add
-                        </Button>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col className="text-center">
-                        <Text size="lead" className="fr-mt-3w">
-                          <strong>or</strong>
-                        </Text>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col>
-                        <Title as="h2" look="h6" className="fr-m-0">
-                          <span className="fr-icon-arrow-right-fill" aria-hidden="true" />
-                          Remove a ROR from selected affiliations
-                        </Title>
                         <div className="fr-table fr-table--bordered" id="table-bordered-component">
                           <div className="fr-table__wrapper">
                             <div className="fr-table__container">
@@ -341,13 +318,27 @@ export default function Affiliations() {
                                 <table id="table-bordered">
                                   <thead>
                                     <tr>
+                                      <th>ROR</th>
                                       <th>Name</th>
-                                      <th colSpan={2}>ROR</th>
+                                      <th>Number of affiliations</th>
+                                      <th>Actions</th>
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {listOfUniqueRors.map((rorItem) => (
+                                    {Object.values(listOfUniqueRors).map((rorItem) => (
                                       <tr>
+                                        <td>
+                                          <a href={`https://ror.org/${rorItem.rorId}`} target="_blank">
+                                            <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />
+                                            {
+                                              removeList.includes(rorItem.rorId) ? (
+                                                <strike>{` https://ror.org/${rorItem.rorId}`}</strike>
+                                              ) : (
+                                                  ` https://ror.org/${rorItem.rorId}`
+                                              )
+                                            }
+                                          </a>
+                                        </td>
                                         <td>
                                           <img
                                             alt={`${rorItem.rorCountry} flag`}
@@ -365,16 +356,7 @@ export default function Affiliations() {
                                             }
                                           </span>
                                         </td>
-                                        <td>
-                                          <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />
-                                          {
-                                            removeList.includes(rorItem.rorId) ? (
-                                              <strike>{` https://ror.org/${rorItem.rorId}`}</strike>
-                                            ) : (
-                                                ` https://ror.org/${rorItem.rorId}`
-                                            )
-                                          }
-                                        </td>
+                                        <td>{rorItem.countAffiliations}</td>
                                         <td style={{ minWidth: '160px' }}>
                                           {
                                             removeList.includes(rorItem.rorId) ? (
@@ -401,11 +383,24 @@ export default function Affiliations() {
                                               />
                                             )
                                           }
+                                          <Button onClick={() => setAddList((prevList) => [...prevList, rorItem.rorId])}>Apply to all</Button>
                                         </td>
                                       </tr>
                                     ))}
                                     {addList.map((add) => (
                                       <tr>
+                                        <td>
+                                          <a href={`https://ror.org/${add.rorId}`} target="_blank">
+                                            <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />
+                                            {
+                                              removeList.includes(add.rorId) ? (
+                                                <strike>{` https://ror.org/${add.rorId}`}</strike>
+                                              ) : (
+                                                  ` https://ror.org/${add.rorId}`
+                                              )
+                                            }
+                                          </a>
+                                        </td>
                                         <td>
                                           <img
                                             alt={`${add.country} flag`}
@@ -423,22 +418,13 @@ export default function Affiliations() {
                                             }
                                           </span>
                                         </td>
-                                        <td>
-                                          <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />
-                                          {
-                                            removeList.includes(add.rorId) ? (
-                                              <strike>{` https://ror.org/${add.rorId}`}</strike>
-                                            ) : (
-                                                ` https://ror.org/${add.rorId}`
-                                            )
-                                          }
-                                        </td>
+                                        <td>{add?.countAffiliations}</td>
                                         <td style={{ minWidth: '160px' }}>
                                           {
                                             removeList.includes(add.rorId) ? (
                                               <>
                                                 <Button
-                                                  aria-label="undo remove"
+                                                  aria-label="Undo remove"
                                                   color="blue-ecume"
                                                   icon="arrow-go-back-line"
                                                   onClick={() => setRemoveList((prevList) => prevList.filter((item) => item !== add.rorId))}
@@ -459,6 +445,7 @@ export default function Affiliations() {
                                               />
                                             )
                                           }
+                                          <Button onClick={() => setAddList((prevList) => [...prevList, add.rorId])}>Apply to all</Button>
                                         </td>
                                       </tr>
                                     ))}
@@ -468,6 +455,28 @@ export default function Affiliations() {
                             </div>
                           </div>
                         </div>
+                      </Col>
+                    </Row>
+                    <Row verticalAlign="bottom">
+                      <Col>
+                        <TextInput
+                          messageType={rorMessageType}
+                          message={rorMessage}
+                          onChange={(e) => setRor(e.target.value)}
+                        />
+                      </Col>
+                      <Col md="2">
+                        <Button
+                          color="blue-ecume"
+                          disabled={['', 'error'].includes(rorMessageType)}
+                          onClick={async () => {
+                            const rorData = await getRorData(ror);
+                            setAddList([...addList, ...rorData]);
+                            setRor('');
+                          }}
+                        >
+                          + Add
+                        </Button>
                       </Col>
                     </Row>
                   </ModalContent>
@@ -495,7 +504,6 @@ export default function Affiliations() {
                         {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
                       </i>
                     </span>
-
                     <Button
                       className="fr-ml-5w fr-mr-1w"
                       color="blue-ecume"
@@ -509,7 +517,6 @@ export default function Affiliations() {
                       Modify selected ROR
                     </Button>
                   </div>
-
                   <div className="right-content fr-mr-1w">
                     <ExportErrorsButton
                       allOpenalexCorrections={allOpenalexCorrections}
