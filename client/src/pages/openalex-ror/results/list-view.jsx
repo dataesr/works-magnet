@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import WorksList from '../components/works-list';
 import RorBadge from '../components/ror-badge';
+import RorName from '../components/ror-name';
 
 export default function ListView({
   allAffiliations,
@@ -11,7 +12,8 @@ export default function ListView({
   setSelectedOpenAlex,
 }) {
   const defineRorColor = [];
-  const dsColors = ['ror-1', 'ror-2', 'ror-3', 'ror-4', 'ror-5'];
+  // const dsColors = ['ror-1', 'ror-2', 'ror-3', 'ror-4', 'ror-5'];
+  const dsColors = ['green-archipel', 'purple-glycine', 'pink-tuile', 'green-menthe', 'brown-cafe-creme'];
   const rorCount = {};
   allAffiliations.forEach((affiliation) => {
     affiliation.rors.forEach((ror) => {
@@ -24,7 +26,6 @@ export default function ListView({
   });
   const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
   defineRorColor.push(...sortedRor.slice(0, 5).map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
-  console.log('defineRorColor', defineRorColor);
 
   return (
     <ul className="wm-list">
@@ -46,46 +47,34 @@ export default function ListView({
                   }}
                 />
               </Col>
-              <Col md={6}>
+              <Col md={5}>
                 <Text as="label" htmlFor={`affiliation-${affiliation.key}`}>
                   <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml }} />
                 </Text>
                 <WorksList works={affiliation.works} />
               </Col>
-              <Col md={5}>
+              <Col md={6}>
                 <table className="wm-table">
                   {affiliation.rors.map((ror) => (
                     <tr>
                       <td>
                         <RorBadge
+                          // isRemoved
                           ror={ror}
-                          rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'ror-x'}
+                          rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
+                          // rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'ror-x'}
+                          setFilteredAffiliationName={setFilteredAffiliationName}
                         />
                       </td>
                       <td>
-                        <div style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}>
-                          <img
-                            alt={`${ror.rorCountry} flag`}
-                            src={`https://flagsapi.com/${ror.rorCountry}/flat/16.png`}
-                          />
-                          <span
-                            className="fr-ml-1w"
-                            style={{
-                              width: '300px',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              display: 'inline-block',
-                            }}
-                          >
-                            {ror.rorName}
-                          </span>
-                        </div>
+                        <RorName
+                          // isRemoved
+                          ror={ror}
+                        />
                       </td>
                     </tr>
                   ))}
                 </table>
-
               </Col>
             </Row>
           </li>
