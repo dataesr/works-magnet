@@ -1,9 +1,7 @@
 import { Link } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
-export default function RorBadge({ ror, setFilteredAffiliationName, rorColor }) {
-  console.log(rorColor, getComputedStyle(document.documentElement).getPropertyValue(`--${rorColor}`));
-
+export default function RorBadge({ isRemoved, ror, setFilteredAffiliationName, rorColor }) {
   return (
     <div className="wm-ror-badge">
       <span style={{ backgroundColor: getComputedStyle(document.documentElement).getPropertyValue(`--${rorColor}`) }} />
@@ -15,40 +13,27 @@ export default function RorBadge({ ror, setFilteredAffiliationName, rorColor }) 
           height="16"
         />
       </div>
-      https://ror.org/
-      <Link href={`https://ror.org/${ror.rorId}`} target="_blank">
-        {` ${ror.rorId}`}
-      </Link>
+      {isRemoved ? (
+        <strike>
+          https://ror.org/
+          <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
+            {` ${ror.rorId}`}
+          </Link>
+        </strike>
+      ) : (
+        <>
+          https://ror.org/
+          <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
+            {` ${ror.rorId}`}
+          </Link>
+        </>
+      )}
       <button
         type="button"
         aria-label="filter on this ROR id"
         className="fr-icon fr-fi-filter-line fr-icon--sm"
         onClick={() => setFilteredAffiliationName(ror.rorId)}
       />
-
-      {/* <img
-        alt="ROR logo"
-        className="vertical-middle fr-mx-1w"
-        src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg"
-        height="16"
-      />
-      https://ror.org/
-      <Badge
-        className="fr-mr-1w"
-        color={defineRorColor.find((r) => r.ror === ror.rorId)?.color || 'yellow-tournesol'}
-        size="sm"
-      >
-        <Link className="fr-mr-1w" href={`https://ror.org/${ror.rorId}`} target="_blank">
-          {` ${ror.rorId}`}
-        </Link>
-      </Badge>
-      <Button
-        aria-label="filter on this ROR id"
-        icon="filter-line"
-        onClick={() => setFilteredAffiliationName(ror.rorId)}
-        size="sm"
-        variant="text"
-      /> */}
     </div>
   );
 }

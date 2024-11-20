@@ -3,17 +3,14 @@ import PropTypes from 'prop-types';
 export default function RorName({ isRemoved, ror }) {
   return (
     <div style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}>
-      <img
-        alt={`${ror.rorCountry} flag`}
-        src={`https://flagsapi.com/${ror.rorCountry}/flat/16.png`}
-      />
+      <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
       <span
-        className="fr-ml-1w"
+        className="fr-mr-1w"
         style={{
-          width: '300px',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
+          fontSize: '0.8rem',
+          fontStyle: 'italic',
+          width: '100%',
+          wordBreak: 'break-all',
           display: 'inline-block',
         }}
       >
@@ -25,6 +22,10 @@ export default function RorName({ isRemoved, ror }) {
           ror.rorName
         )}
       </span>
+      <img
+        alt={`${ror.rorCountry} flag`}
+        src={`https://flagsapi.com/${ror.rorCountry}/flat/16.png`}
+      />
     </div>
   );
 }

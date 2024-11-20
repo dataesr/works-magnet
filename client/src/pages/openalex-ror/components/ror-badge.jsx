@@ -21,14 +21,14 @@ export default function RorBadge({
       {isRemoved ? (
         <strike>
           https://ror.org/
-          <Link href={`https://ror.org/${ror.rorId}`} target="_blank">
+          <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
             {` ${ror.rorId}`}
           </Link>
         </strike>
       ) : (
         <>
           https://ror.org/
-          <Link href={`https://ror.org/${ror.rorId}`} target="_blank">
+          <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
             {` ${ror.rorId}`}
           </Link>
         </>

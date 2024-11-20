@@ -1,8 +1,8 @@
-import { Badge, Button, Col, Link, Row, Text } from '@dataesr/dsfr-plus';
+import { Col, Row, Text } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
 import WorksList from '../components/works-list';
-import RorBadge from '../components/ror-badge';
+import RorBadge from '../components/ror-badge_old';
 import RorName from '../components/ror-name';
 
 export default function ListView({
@@ -12,7 +12,6 @@ export default function ListView({
   setSelectedOpenAlex,
 }) {
   const defineRorColor = [];
-  // const dsColors = ['ror-1', 'ror-2', 'ror-3', 'ror-4', 'ror-5'];
   const dsColors = ['green-archipel', 'purple-glycine', 'pink-tuile', 'green-menthe', 'brown-cafe-creme'];
   const rorCount = {};
   allAffiliations.forEach((affiliation) => {
@@ -47,13 +46,13 @@ export default function ListView({
                   }}
                 />
               </Col>
-              <Col md={5}>
+              <Col>
                 <Text as="label" htmlFor={`affiliation-${affiliation.key}`}>
                   <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml }} />
                 </Text>
                 <WorksList works={affiliation.works} />
               </Col>
-              <Col md={6}>
+              <Col md={4}>
                 <table className="wm-table">
                   {affiliation.rors.map((ror) => (
                     <tr>
@@ -65,8 +64,7 @@ export default function ListView({
                           // rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'ror-x'}
                           setFilteredAffiliationName={setFilteredAffiliationName}
                         />
-                      </td>
-                      <td>
+                        <br />
                         <RorName
                           // isRemoved
                           ror={ror}
