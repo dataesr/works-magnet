@@ -301,7 +301,8 @@ export default function Affiliations() {
                     <Row verticalAlign="bottom">
                       <Col>
                         <TextInput
-                          label="Which ROR do you want to add ?"
+                          messageType={ ror === '' ? '' : (isRor(ror) ? 'valid': 'error') }
+                          message={ ror === '' ? '' : (isRor(ror) ? 'Valid ROR': 'Invalid ROR') }
                           onChange={(e) => setRor(e.target.value)}
                         />
                       </Col>
@@ -312,6 +313,7 @@ export default function Affiliations() {
                             if (isRor(ror)) {
                               const rorData = await getRorData(ror);
                               setAddList([...addList, ...rorData]);
+                              setRor('');
                             }
                           }}
                         >
@@ -477,8 +479,6 @@ export default function Affiliations() {
                       disabled={removeList.length === 0 && addList.length === 0}
                       onClick={() => {
                         applyActions();
-                        // actionToOpenAlex(action, selectedOpenAlex, ror);
-                        // setRor('');
                         setIsModalOpen((prev) => !prev);
                       }}
                       title="Close"
@@ -486,33 +486,6 @@ export default function Affiliations() {
                       Apply corrections
                     </Button>
                   </ModalFooter>
-                  {/* <ModalTitle>
-                    {`${capitalize(action)} ROR to ${
-                      selectedOpenAlex.length
-                    } OpenAlex affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
-                  </ModalTitle>
-                  <ModalContent>
-                    <TextInput
-                      label={`Which ROR do you want to ${action} ?`}
-                      message={isRor(ror) ? 'ROR valid' : 'ROR invalid'}
-                      messageType={isRor(ror) ? 'valid' : 'error'}
-                      onChange={(e) => setRor(e.target.value)}
-                      required
-                    />
-                  </ModalContent>
-                  <ModalFooter>
-                    <Button
-                      disabled={!isRor(ror)}
-                      onClick={() => {
-                        actionToOpenAlex(action, selectedOpenAlex, ror);
-                        setRor('');
-                        setIsModalOpen((prev) => !prev);
-                      }}
-                      title="Send feedback to OpenAlex"
-                    >
-                      {capitalize(action)}
-                    </Button>
-                  </ModalFooter> */}
                 </Modal>
                 <div className="wm-external-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div className="left-content">
