@@ -5,11 +5,10 @@ import WorksList from '../components/works-list';
 import RorBadge from '../components/ror-badge';
 
 export default function ListView({
-  onRowEditComplete,
-  setSelectedOpenAlex,
-  selectedOpenAlex,
   allAffiliations,
+  selectedOpenAlex,
   setFilteredAffiliationName,
+  setSelectedOpenAlex,
 }) {
   const defineRorColor = [];
   const dsColors = ['ror-1', 'ror-2', 'ror-3', 'ror-4', 'ror-5'];

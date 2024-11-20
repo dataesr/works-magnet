@@ -102,19 +102,18 @@ export default function OpenalexView({
       </div>
       {searchParams.get('view') === 'table' ? (
         <DataTableView
-          onRowEditComplete={onRowEditComplete}
-          setSelectedOpenAlex={setSelectedOpenAlex}
-          selectedOpenAlex={selectedOpenAlex}
           allAffiliations={allAffiliations}
+          onRowEditComplete={onRowEditComplete}
+          selectedOpenAlex={selectedOpenAlex}
+          setSelectedOpenAlex={setSelectedOpenAlex}
           undo={undo}
         />
       ) : (
         <ListView
-          onRowEditComplete={onRowEditComplete}
-          setSelectedOpenAlex={setSelectedOpenAlex}
+          allAffiliations={allAffiliations}
           selectedOpenAlex={selectedOpenAlex}
           setFilteredAffiliationName={setFilteredAffiliationName}
-          allAffiliations={allAffiliations}
+          setSelectedOpenAlex={setSelectedOpenAlex}
         />
       )}
     </>

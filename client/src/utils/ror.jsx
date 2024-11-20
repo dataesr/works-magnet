@@ -24,6 +24,7 @@ const getRorData = async (affiliation, getChildren = false) => {
         ...response.aliases,
         ...response.labels.map((item) => item.label),
       ],
+      country: response?.country?.country_code,
     },
   ];
   if (!getChildren) {

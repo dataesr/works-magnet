@@ -1,12 +1,13 @@
 import {
   Badge,
   Button,
-  Container, Row, Col,
+  Col,
+  Container,
   Modal, ModalContent, ModalFooter, ModalTitle,
+  Row,
   Tag,
   Text,
   TextInput,
-  Link,
   Title,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
@@ -18,12 +19,12 @@ import useToast from '../../../hooks/useToast';
 import Header from '../../../layout/header';
 import { getAffiliationsCorrections } from '../../../utils/curations';
 import { getRorData, isRor } from '../../../utils/ror';
-import { capitalize, normalize, removeDiacritics } from '../../../utils/strings';
-import { getWorks } from '../../../utils/works';
+import { normalize, removeDiacritics } from '../../../utils/strings';
 import { getTagColor } from '../../../utils/tags';
+import { getWorks } from '../../../utils/works';
 import ExportErrorsButton from '../components/export-errors-button';
-import ViewsSelector from './views-selector';
 import SendFeedbackButton from '../components/send-feedback-button';
+import ViewsSelector from './views-selector';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -294,7 +295,7 @@ export default function Affiliations() {
                       <Col>
                         <Title as="h2" look="h6" className="fr-m-0 fr-mt-5w">
                           <span className="fr-icon-arrow-right-fill" aria-hidden="true" />
-                          Add a ror to selected affiliations
+                          Add a ROR to selected affiliations
                         </Title>
                       </Col>
                     </Row>
@@ -308,6 +309,12 @@ export default function Affiliations() {
                       <Col md="2">
                         <Button
                           color="blue-ecume"
+                          onClick={async () => {
+                            if (isRor(ror)) {
+                              const rorData = await getRorData(ror);
+                              setAddList([...addList, ...rorData]);
+                            }
+                          }}
                         >
                           + Add
                         </Button>
@@ -324,7 +331,7 @@ export default function Affiliations() {
                       <Col>
                         <Title as="h2" look="h6" className="fr-m-0">
                           <span className="fr-icon-arrow-right-fill" aria-hidden="true" />
-                          Remove a ror from selected affiliations
+                          Remove a ROR from selected affiliations
                         </Title>
                         <div className="fr-table fr-table--bordered" id="table-bordered-component">
                           <div className="fr-table__wrapper">
@@ -334,7 +341,7 @@ export default function Affiliations() {
                                   <thead>
                                     <tr>
                                       <th>Name</th>
-                                      <th colSpan={2}>id</th>
+                                      <th colSpan={2}>ROR</th>
                                       {/* <th>Actions</th> */}
                                     </tr>
                                   </thead>
@@ -377,7 +384,6 @@ export default function Affiliations() {
                                                   color="blue-ecume"
                                                   icon="arrow-go-back-line"
                                                   onClick={() => setRemoveList((prevList) => prevList.filter((item) => item !== rorItem.rorId))}
-                                                  // actionToOpenAlex('remove', selectedOpenAlex, rorItem)
                                                   size="sm"
                                                 />
                                                 <Badge color="pink-tuile" className="fr-mr-1w">
@@ -398,6 +404,64 @@ export default function Affiliations() {
                                         </td>
                                       </tr>
                                     ))}
+                                    {addList.map((add) => (
+                                      <tr>
+                                        <td>
+                                          <img
+                                            alt={`${add.country} flag`}
+                                            src={`https://flagsapi.com/${add.country}/flat/16.png`}
+                                          />
+                                          <span
+                                            className="fr-ml-1w"
+                                          >
+                                            {
+                                              removeList.includes(add.rorId) ? (
+                                                <strike>{add.names[0]}</strike>
+                                              ) : (
+                                                add.names[0]
+                                              )
+                                            }
+                                          </span>
+                                        </td>
+                                        <td>
+                                          <img alt="ROR logo" className="vertical-middle" src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg" height="16" />
+                                          {
+                                            removeList.includes(add.rorId) ? (
+                                              <strike>{` https://ror.org/${add.rorId}`}</strike>
+                                            ) : (
+                                                ` https://ror.org/${add.rorId}`
+                                            )
+                                          }
+                                        </td>
+                                        <td style={{ minWidth: '160px' }}>
+                                          {
+                                            removeList.includes(add.rorId) ? (
+                                              <>
+                                                <Button
+                                                  aria-label="undo remove"
+                                                  color="blue-ecume"
+                                                  icon="arrow-go-back-line"
+                                                  onClick={() => setRemoveList((prevList) => prevList.filter((item) => item !== add.rorId))}
+                                                  size="sm"
+                                                />
+                                                <Badge color="pink-tuile" className="fr-mr-1w">
+                                                  Removed
+                                                </Badge>
+                                              </>
+                                            ) : (
+                                              <Button
+                                                aria-label="Remove ROR"
+                                                color="pink-tuile"
+                                                disabled={removeList.includes(add.rorId)}
+                                                icon="delete-line"
+                                                onClick={() => setRemoveList((prevList) => [...prevList, add.rorId])}
+                                                size="sm"
+                                              />
+                                            )
+                                          }
+                                        </td>
+                                      </tr>
+                                    ))}
                                   </tbody>
                                 </table>
                               </div>
@@ -408,11 +472,11 @@ export default function Affiliations() {
                     </Row>
                   </ModalContent>
                   <ModalFooter>
-                    Once you have made your changes (add or remove Ror id), you can apply the changes using the "apply corrections" button,
+                    Once you have made your changes (add or remove ROR id), you can apply the changes using the "Apply corrections" button,
                     continue with your corrections and submit them to openAlex using the "Send feedback to OpenAlex" button.
                     <Button
                       color="blue-ecume"
-                      disabled={removeList.length === 0}
+                      disabled={removeList.length === 0 && addList.length === 0}
                       onClick={() => {
                         applyActions();
                         // actionToOpenAlex(action, selectedOpenAlex, ror);
@@ -472,7 +536,7 @@ export default function Affiliations() {
                         setIsModalOpen((prev) => !prev);
                       }}
                       size="sm"
-                      title="Add ROR"
+                      title="Modify selected ROR"
                     >
                       Modify selected ROR
                     </Button>
