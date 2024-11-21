@@ -14,7 +14,7 @@ import useToast from '../../../hooks/useToast';
 
 const { VITE_WS_HOST } = import.meta.env;
 
-export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
+export default function SendFeedbackButton({ allOpenalexCorrections, setAllOpenalexCorrections }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
@@ -39,7 +39,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
     shouldReconnect: () => true,
   });
 
-  const feedback = async () => {
+  const sendFeedback = async () => {
     try {
       sendJsonMessage({ data: allOpenalexCorrections, email: userEmail, type: 'openalex-affiliations' });
       toast({
@@ -48,6 +48,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
         id: 'initOpenAlex',
         title: 'OpenAlex corrections submitted',
       });
+      setAllOpenalexCorrections([]);
     } catch (error) {
       toast({
         description: error.message,
@@ -70,11 +71,13 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   return (
     <>
       <Button
+        aria-label="Send feedback to OpenAlex"
         color="blue-ecume"
         disabled={!allOpenalexCorrections.length > 0}
         icon="send-plane-fill"
         onClick={switchModal}
         size="sm"
+        title="Send feedback to OpenAlex"
       >
         Send feedback to OpenAlex
       </Button>
@@ -91,8 +94,9 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
         </ModalContent>
         <ModalFooter>
           <Button
+            aria-label="Send feedback to OpenAlex"
             disabled={!allOpenalexCorrections.length > 0 || !validEmail}
-            onClick={feedback}
+            onClick={sendFeedback}
             title="Send feedback to OpenAlex"
           >
             Send feedback to OpenAlex
@@ -103,7 +107,7 @@ export default function ActionsOpenalexFeedback({ allOpenalexCorrections }) {
   );
 }
 
-ActionsOpenalexFeedback.propTypes = {
+SendFeedbackButton.propTypes = {
   allOpenalexCorrections: PropTypes.arrayOf(
     PropTypes.shape({
       rawAffiliationString: PropTypes.string.isRequired,
@@ -113,4 +117,5 @@ ActionsOpenalexFeedback.propTypes = {
       worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
     }),
   ).isRequired,
+  setAllOpenalexCorrections: PropTypes.func.isRequired,
 };

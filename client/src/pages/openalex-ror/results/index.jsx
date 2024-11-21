@@ -576,6 +576,7 @@ export default function Affiliations() {
                     />
                     <SendFeedbackButton
                       allOpenalexCorrections={allOpenalexCorrections}
+                      setAllOpenalexCorrections={setAllOpenalexCorrections}
                     />
                   </div>
                 </div>
