@@ -16,6 +16,7 @@ import DataTableView from './datatable-view';
 
 export default function OpenalexView({
   allAffiliations,
+  allOpenalexCorrections,
   filteredAffiliationName,
   selectedOpenAlex,
   setAllOpenalexCorrections,
@@ -132,6 +133,7 @@ export default function OpenalexView({
       ) : (
         <ListView
           allAffiliations={allAffiliations}
+          allOpenalexCorrections={allOpenalexCorrections}
           selectedOpenAlex={selectedOpenAlex}
           setFilteredAffiliationName={setFilteredAffiliationName}
           setSelectedOpenAlex={setSelectedOpenAlex}
@@ -183,6 +185,7 @@ OpenalexView.propTypes = {
       worksNumber: PropTypes.number.isRequired,
     }),
   ).isRequired,
+  allOpenalexCorrections: PropTypes.array.isRequired,
   filteredAffiliationName: PropTypes.string.isRequired,
   selectedOpenAlex: PropTypes.arrayOf(
     PropTypes.shape({

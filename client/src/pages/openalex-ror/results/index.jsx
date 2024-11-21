@@ -436,7 +436,7 @@ export default function Affiliations() {
                                               uniqueRor.rorId,
                                             ) ? (
                                               <>
-                                                <Button
+                                                  <Button
                                                   aria-label="Undo remove"
                                                   color="blue-ecume"
                                                   icon="arrow-go-back-line"
@@ -446,11 +446,11 @@ export default function Affiliations() {
                                                   size="sm"
                                                   title="Undo remove"
                                                 />
-                                                <Badge
+                                                  <Badge
                                                   color="pink-tuile"
                                                   className="fr-mr-1w"
                                                 >
-                                                  Removed
+                                                    Removed
                                                 </Badge>
                                                 </>
                                               ) : (
@@ -585,6 +585,7 @@ export default function Affiliations() {
                 </div>
                 <ViewsSelector
                   allAffiliations={filteredAffiliations}
+                  allOpenalexCorrections={allOpenalexCorrections}
                   filteredAffiliationName={filteredAffiliationName}
                   selectedOpenAlex={selectedOpenAlex}
                   setAllOpenalexCorrections={setAllOpenalexCorrections}

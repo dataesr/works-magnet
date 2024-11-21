@@ -1,3 +1,4 @@
+import { Badge } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
 export default function RorName({ isRemoved, ror }) {
@@ -26,6 +27,14 @@ export default function RorName({ isRemoved, ror }) {
         alt={`${ror.rorCountry} flag`}
         src={`https://flagsapi.com/${ror.rorCountry}/flat/16.png`}
       />
+      {isRemoved && (
+        <Badge
+          className="fr-ml-1w"
+          color="warning"
+        >
+          Removed
+        </Badge>
+      )}
     </div>
   );
 }

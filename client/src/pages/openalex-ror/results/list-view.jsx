@@ -7,6 +7,7 @@ import RorName from '../components/ror-name';
 
 export default function ListView({
   allAffiliations,
+  allOpenalexCorrections,
   selectedOpenAlex,
   setFilteredAffiliationName,
   setSelectedOpenAlex,
@@ -48,6 +49,11 @@ export default function ListView({
                         }
                       }}
                     />
+                    {
+                      allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id) && (
+                        <span className="fr-icon-warning-fill fr-icon--sm" style={{ color: '#B34000' }} />
+                      )
+                    }
                   </div>
                   <div style={{ display: 'inline-block', maxWidth: '95%' }}>
 
@@ -64,15 +70,26 @@ export default function ListView({
                     <tr>
                       <td>
                         <RorBadge
-                          // isRemoved
+                          isRemoved={
+                            (allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                            && allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                              ?.correctedRors.split(';')
+                              .find((_ror) => _ror === ror.rorId) === undefined
+                            ) || false
+                          }
                           ror={ror}
                           rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
-                          // rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'ror-x'}
                           setFilteredAffiliationName={setFilteredAffiliationName}
                         />
                         <br />
                         <RorName
-                          // isRemoved
+                          isRemoved={
+                            (allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                            && allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                              ?.correctedRors.split(';')
+                              .find((_ror) => _ror === ror.rorId) === undefined
+                            ) || false
+                          }
                           ror={ror}
                         />
                       </td>
@@ -89,8 +106,9 @@ export default function ListView({
 }
 
 ListView.propTypes = {
+  allAffiliations: PropTypes.array.isRequired,
+  allOpenalexCorrections: PropTypes.array.isRequired,
   setSelectedOpenAlex: PropTypes.func.isRequired,
   selectedOpenAlex: PropTypes.array.isRequired,
-  allAffiliations: PropTypes.array.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
 };
