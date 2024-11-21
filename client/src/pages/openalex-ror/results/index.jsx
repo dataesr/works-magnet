@@ -93,28 +93,16 @@ export default function Affiliations() {
     setAllOpenalexCorrections(getAffiliationsCorrections(newAffiliations));
   };
 
-  const actionToOpenAlex = (action, _ror) => {
-    selectedOpenAlex.forEach((item) => {
+  const applyCorrections = () => {
+    const selectedOpenAlexTmp = selectedOpenAlex.map((item) => {
       let rorsToCorrect = item.rorsToCorrect.trim().split(';');
-      if (action === 'add') {
-        rorsToCorrect.push(_ror.rorId);
-      } else if (action === 'remove') {
-        rorsToCorrect = rorsToCorrect.filter((item2) => item2 !== _ror.rorId);
-      }
-      // eslint-disable-next-line no-param-reassign
-      item.rorsToCorrect = [...new Set(rorsToCorrect)].join(';');
-      // eslint-disable-next-line no-param-reassign
-      item.hasCorrection = item.rors.map((r) => r.rorId).join(';') !== item.rorsToCorrect.trim();
-      return item;
+      rorsToCorrect = [...rorsToCorrect, ...addList];
+      rorsToCorrect = rorsToCorrect.filter((item2) => !removeList.includes(item2));
+      rorsToCorrect = [...new Set(rorsToCorrect)].join(';');
+      const hasCorrection = item.rors.map((r) => r.rorId).join(';') !== rorsToCorrect.trim();
+      return { ...item, hasCorrection, rorsToCorrect };
     });
-    setAllOpenalexCorrections(getAffiliationsCorrections(selectedOpenAlex));
-  };
-
-  const applyActions = () => {
-    removeList.forEach((rorId) => {
-      const rorItem = uniqueRors[rorId];
-      actionToOpenAlex('remove', rorItem);
-    });
+    setAllOpenalexCorrections(getAffiliationsCorrections(selectedOpenAlexTmp));
   };
 
   useEffect(() => {
@@ -245,6 +233,7 @@ export default function Affiliations() {
       setRorMessage('Valid ROR');
       setRorMessageType('valid');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ror]);
 
   return (
@@ -286,11 +275,13 @@ export default function Affiliations() {
             <Col className="wm-menu" md={2}>
               <Row>
                 <Button
+                  aria-label="Back to search page"
                   className="fr-mt-1w"
                   color="blue-ecume"
                   icon="arrow-left-line"
                   onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}
                   size="sm"
+                  title="Back to search page"
                 >
                   Back to search page
                 </Button>
@@ -333,9 +324,8 @@ export default function Affiliations() {
                     {body.affiliations.map((affiliation) => (
                       <Row key={`row-${affiliation.label}`}>
                         <Tag
-                          className={`fr-mr-1w ${
-                            affiliation.isDisabled ? 'scratched' : ''
-                          }`}
+                          className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
+                            }`}
                           color={getTagColor(affiliation)}
                           key={`tag-${affiliation.label}`}
                         >
@@ -343,9 +333,8 @@ export default function Affiliations() {
                         </Tag>
                         {affiliation.children.map((child) => (
                           <Tag
-                            className={`fr-mr-1w fr-mt-1w ${
-                              child.isDisabled ? 'scratched' : ''
-                            }`}
+                            className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''
+                              }`}
                             color={getTagColor(child)}
                             key={`tag-${child.label}`}
                           >
@@ -370,9 +359,8 @@ export default function Affiliations() {
                     <Badge color="brown-opera" className="fr-ml-1w">
                       {selectedOpenAlex.length}
                     </Badge>
-                    {` OpenAlex selected affiliation${
-                      selectedOpenAlex.length > 1 ? 's' : ''
-                    }`}
+                    {` OpenAlex selected affiliation${selectedOpenAlex.length > 1 ? 's' : ''
+                      }`}
                   </ModalTitle>
                   <ModalContent>
                     <Row>
@@ -447,20 +435,21 @@ export default function Affiliations() {
                                               rorItem.rorId,
                                             ) ? (
                                               <>
-                                                  <Button
-                                                  aria-label="undo remove"
+                                                <Button
+                                                  aria-label="Undo remove"
                                                   color="blue-ecume"
                                                   icon="arrow-go-back-line"
                                                   onClick={() => setRemoveList((prevList) => prevList.filter(
                                                       (item) => item !== rorItem.rorId,
                                                     ))}
                                                   size="sm"
+                                                  title="Undo remove"
                                                 />
-                                                  <Badge
+                                                <Badge
                                                   color="pink-tuile"
                                                   className="fr-mr-1w"
                                                 >
-                                                    Removed
+                                                  Removed
                                                 </Badge>
                                                 </>
                                               ) : (
@@ -476,16 +465,23 @@ export default function Affiliations() {
                                                     rorItem.rorId,
                                                   ])}
                                                   size="sm"
+                                                  title="Remove ROR"
                                                 />
                                               )}
                                             <Button
+                                              aria-label="Propagate ROR to all affiliations"
+                                              disabled={
+                                                rorItem.countAffiliations
+                                                === selectedOpenAlex.length
+                                              }
                                               onClick={() => setAddList((prevList) => [
                                                 ...prevList,
                                                 rorItem.rorId,
                                               ])}
                                               size="sm"
+                                              title="Propagate ROR to all affiliations"
                                             >
-                                              Apply to all
+                                              Propagate ROR to all affiliations
                                             </Button>
                                           </td>
                                         </tr>
@@ -510,12 +506,14 @@ export default function Affiliations() {
                       </Col>
                       <Col md="2">
                         <Button
+                          aria-label="Add ROR"
                           color="blue-ecume"
                           disabled={['', 'error'].includes(rorMessageType)}
                           onClick={() => {
                             setAddList([...addList, ror]);
                             setRor('');
                           }}
+                          title="Add ROR"
                         >
                           + Add
                         </Button>
@@ -528,14 +526,15 @@ export default function Affiliations() {
                     continue with your corrections and submit them to openAlex
                     using the "Send feedback to OpenAlex" button.
                     <Button
+                      aria-label="Apply corrections"
                       color="blue-ecume"
                       disabled={removeList.length === 0 && addList.length === 0}
                       onClick={() => {
-                        applyActions();
+                        applyCorrections();
                         setSelectedOpenAlex([]);
                         setIsModalOpen((prev) => !prev);
                       }}
-                      title="Close"
+                      title="Apply corrections"
                     >
                       Apply corrections
                     </Button>
@@ -555,12 +554,12 @@ export default function Affiliations() {
                         {selectedOpenAlex.length}
                       </Badge>
                       <i>
-                        {` selected affiliation${
-                          selectedOpenAlex.length === 1 ? '' : 's'
-                        }`}
+                        {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'
+                          }`}
                       </i>
                     </span>
                     <Button
+                      aria-label="Modify selected ROR"
                       className="fr-ml-5w fr-mr-1w"
                       color="blue-ecume"
                       disabled={!selectedOpenAlex.length}
