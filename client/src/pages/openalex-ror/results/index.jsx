@@ -93,27 +93,27 @@ export default function Affiliations() {
     });
   });
 
-  const actionToOpenAlex = (_action, _selectedOpenAlex, _ror) => {
-    _selectedOpenAlex.map((item) => {
+  const actionToOpenAlex = (action, _ror) => {
+    selectedOpenAlex.map((item) => {
       let rorsToCorrect = item.rorsToCorrect.trim().split(';');
-      if (_action === 'add') {
-        rorsToCorrect.push(_ror);
-      } else if (_action === 'remove') {
-        rorsToCorrect = rorsToCorrect.filter((item2) => item2 !== _ror);
+      if (action === 'add') {
+        rorsToCorrect.push(_ror.rorId);
+      } else if (action === 'remove') {
+        rorsToCorrect = rorsToCorrect.filter((item2) => item2 !== _ror.rorId);
       }
       // eslint-disable-next-line no-param-reassign
       item.rorsToCorrect = [...new Set(rorsToCorrect)].join(';');
       // eslint-disable-next-line no-param-reassign
-      item.hasCorrection = item.rors.map((r) => r.rorId).join(';') !== item.rorsToCorrect;
+      item.hasCorrection = item.rors.map((r) => r.rorId).join(';') !== item.rorsToCorrect.trim();
       return item;
     });
-    setAllOpenalexCorrections(getAffiliationsCorrections(_selectedOpenAlex));
+    setAllOpenalexCorrections(getAffiliationsCorrections(selectedOpenAlex));
   };
 
   const applyActions = () => {
     removeList.forEach((rorId) => {
       const rorItem = listOfUniqueRors[rorId];
-      actionToOpenAlex('remove', selectedOpenAlex, rorItem);
+      actionToOpenAlex('remove', rorItem);
     });
   };
 
