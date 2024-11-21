@@ -63,8 +63,8 @@ export default function OpenalexView({
         <Row>
           <Col>
             <input
+              checked={selectedOpenAlex.length === allAffiliations.length}
               className="fr-ml-2w"
-              type="checkbox"
               onChange={() => {
                 if (selectedOpenAlex.length === 0) {
                   setSelectedOpenAlex(allAffiliations);
@@ -72,6 +72,7 @@ export default function OpenalexView({
                   setSelectedOpenAlex([]);
                 }
               }}
+              type="checkbox"
             />
           </Col>
           <Col xs="8">
