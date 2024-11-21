@@ -1,5 +1,9 @@
-import { Button, Col, Row } from '@dataesr/dsfr-plus';
-
+import { Badge,
+  Button,
+  Col, Row,
+  Modal, ModalContent, ModalFooter, ModalTitle,
+} from '@dataesr/dsfr-plus';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
 
@@ -20,6 +24,7 @@ export default function OpenalexView({
   undo,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
   const changeView = (view) => {
@@ -98,9 +103,17 @@ export default function OpenalexView({
               className="fr-mr-1w"
               color="beige-gris-galet"
               icon="filter-line"
+              onClick={() => setIsModalOpen((prev) => !prev)}
               size="sm"
             >
-              more filters
+              sorts & filters
+              {/* TODO: add number of active filters */}
+              {/* <Badge
+                className="fr-ml-1w"
+                color="yellow-tournesol"
+              >
+                3
+              </Badge> */}
             </Button>
             <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
             <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
@@ -123,6 +136,37 @@ export default function OpenalexView({
           setSelectedOpenAlex={setSelectedOpenAlex}
         />
       )}
+      <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)} size="xl">
+        <ModalTitle>
+          Sorts & filters
+        </ModalTitle>
+        <ModalContent>
+          Sort on number of ROR id per affiliation - ASC
+          <br />
+          Sort on number of ROR id per affiliation - DESC
+          <br />
+          show only affiliations with no ROR id
+          <br />
+          show only affiliations with corrections
+          <br />
+          show only affiliations with no corrections
+          <br />
+          filter by ROR country (multi-select on only present countries)
+        </ModalContent>
+        <ModalFooter>
+          <Button
+            color="blue-ecume"
+            // disabled={removeList.length === 0 && addList.length === 0}
+            onClick={() => {
+              // applyActions();
+              setIsModalOpen((prev) => !prev);
+            }}
+            title="Close"
+          >
+            Apply all
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 }
