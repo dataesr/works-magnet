@@ -358,8 +358,7 @@ export default function Affiliations() {
                     <Badge color="brown-opera" className="fr-ml-1w">
                       {selectedOpenAlex.length}
                     </Badge>
-                    {` OpenAlex selected affiliation${selectedOpenAlex.length > 1 ? 's' : ''
-                      }`}
+                    {` OpenAlex selected affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
                   </ModalTitle>
                   <ModalContent>
                     <Row>
@@ -553,8 +552,7 @@ export default function Affiliations() {
                         {selectedOpenAlex.length}
                       </Badge>
                       <i>
-                        {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'
-                          }`}
+                        {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
                       </i>
                     </span>
                     <Button

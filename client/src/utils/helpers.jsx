@@ -3,5 +3,5 @@
  * @returns boolean
  */
 export function isInProduction() {
-  return import.meta.env === 'production';
+  return import.meta.env.MODE === 'production';
 }

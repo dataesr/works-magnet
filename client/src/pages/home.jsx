@@ -5,7 +5,6 @@ import MentionsTile from '../components/tiles/mentions';
 import OpenalexTile from '../components/tiles/openalex';
 import PublicationsTile from '../components/tiles/publications';
 import Header from '../layout/header';
-import { isInProduction } from '../utils/helpers';
 
 export default function Home() {
   return (
@@ -22,11 +21,9 @@ export default function Home() {
           <Col sm={12} md={4}>
             <DatasetsTile />
           </Col>
-          {!isInProduction() && (
-            <Col sm={12} md={4}>
-              <MentionsTile />
-            </Col>
-          )}
+          <Col sm={12} md={4}>
+            <MentionsTile />
+          </Col>
         </Row>
       </Container>
     </>
