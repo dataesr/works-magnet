@@ -91,7 +91,7 @@ export default function Affiliations() {
       return affiliation;
     });
     setAffiliations(newAffiliations);
-    setAllOpenalexCorrections(getAffiliationsCorrections(newAffiliations));
+    setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(newAffiliations)]);
   };
 
   const applyCorrections = () => {
@@ -103,7 +103,9 @@ export default function Affiliations() {
       const hasCorrection = item.rors.map((r) => r.rorId).join(';') !== rorsToCorrect.trim();
       return { ...item, hasCorrection, rorsToCorrect };
     });
-    setAllOpenalexCorrections(getAffiliationsCorrections(selectedOpenAlexTmp));
+    setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(selectedOpenAlexTmp)]);
+    setAddList([]);
+    setRemoveList([]);
   };
 
   useEffect(() => {
@@ -209,9 +211,10 @@ export default function Affiliations() {
       );
       // Recompute corrections only when the array has changed
       if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
-        setAllOpenalexCorrections(
-          getAffiliationsCorrections(filteredAffiliationsTmp),
-        );
+        setAllOpenalexCorrections([
+          ...allOpenalexCorrections,
+          ...getAffiliationsCorrections(filteredAffiliationsTmp),
+        ]);
       }
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);

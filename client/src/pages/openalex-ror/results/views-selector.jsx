@@ -53,7 +53,7 @@ export default function OpenalexView({
         const rorsToCorrect = [...new Set(newValue.split(';'))].join(';');
         data.rorsToCorrect = rorsToCorrect;
         data.hasCorrection = data.rors.map((r) => r.rorId).join(';') !== rorsToCorrect;
-        setAllOpenalexCorrections(getAffiliationsCorrections(allAffiliations));
+        setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(allAffiliations)]);
       }
     }
   };
