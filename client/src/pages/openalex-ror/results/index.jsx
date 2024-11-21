@@ -300,18 +300,16 @@ export default function Affiliations() {
                     <Tag
                       className="fr-mr-1w"
                       color="blue-cumulus"
-                      key="tag-year-start"
+                      key="openalex-ror-tag-year-start"
                     >
                       {`Start: ${body.startYear}`}
                     </Tag>
-
-                    <Tag color="blue-cumulus" key="tag-year-end">
+                    <Tag color="blue-cumulus" key="openalex-ror-tag-year-end">
                       {`End: ${body.endYear}`}
                     </Tag>
                   </div>
                 </Col>
               </Row>
-
               <Row>
                 <Col>
                   <div className="wm-title">
@@ -323,12 +321,12 @@ export default function Affiliations() {
                   </div>
                   <div className="wm-content">
                     {body.affiliations.map((affiliation) => (
-                      <Row key={`row-${affiliation.label}`}>
+                      <Row key={`openalex-ror-search-${affiliation.label}`}>
                         <Tag
                           className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
                             }`}
                           color={getTagColor(affiliation)}
-                          key={`tag-${affiliation.label}`}
+                          key={`openalex-ror-tag-${affiliation.label}`}
                         >
                           {affiliation.label}
                         </Tag>
@@ -337,7 +335,7 @@ export default function Affiliations() {
                             className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''
                               }`}
                             color={getTagColor(child)}
-                            key={`tag-${child.label}`}
+                            key={`openalex-ror-tag-${child.label}`}
                           >
                             {child.label}
                           </Tag>
@@ -385,7 +383,7 @@ export default function Affiliations() {
                                   <tbody>
                                     {Object.values(uniqueRors).map(
                                       (uniqueRor) => (
-                                        <tr>
+                                        <tr key={`openalex-ror-modale-${uniqueRor.rorId}`}>
                                           <td>
                                             <Link
                                               className="fr-mr-1w"

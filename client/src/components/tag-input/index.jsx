@@ -102,6 +102,7 @@ export default function TagInput({
               <>
                 {label}
                 <Button
+                  aria-label="Remove all affiliations"
                   className="fr-ml-1w"
                   color="yellow-tournesol"
                   icon="delete-line"
@@ -131,16 +132,16 @@ export default function TagInput({
               <Col>
                 <Row>
                   <TagGroup>
-                    {currentTags.map((tag) => (
+                    {currentTags.map((currentTag) => (
                       <DismissibleTag
-                        className={`fr-mr-1w ${tag.isDisabled ? 'scratched' : ''}`}
-                        color={getTagColor(tag)}
-                        key={tag.label}
-                        onClick={() => handleDeleteClick(tag)}
+                        className={`fr-mr-1w ${currentTag.isDisabled ? 'scratched' : ''}`}
+                        color={getTagColor(currentTag)}
+                        key={currentTag.label}
+                        onClick={() => handleDeleteClick(currentTag)}
                         size="sm"
-                        title={`${tag.label}${tag.isDisabled ? ' (not searched)' : ''}`}
+                        title={`${currentTag.label}${currentTag.isDisabled ? ' (not searched)' : ''}`}
                       >
-                        {tag.label}
+                        {currentTag.label}
                       </DismissibleTag>
 
                     ))}

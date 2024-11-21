@@ -56,7 +56,6 @@ export default function ListView({
                     }
                   </div>
                   <div style={{ display: 'inline-block', maxWidth: '95%' }}>
-
                     <Text as="label" htmlFor={`affiliation-${affiliation.key}`}>
                       <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml }} />
                     </Text>
@@ -66,35 +65,37 @@ export default function ListView({
               </Col>
               <Col md={4}>
                 <table className="wm-table">
-                  {affiliation.rors.map((ror) => (
-                    <tr>
-                      <td>
-                        <RorBadge
-                          isRemoved={
-                            (allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                            && allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                              ?.correctedRors.split(';')
-                              .find((_ror) => _ror === ror.rorId) === undefined
-                            ) || false
-                          }
-                          ror={ror}
-                          rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
-                          setFilteredAffiliationName={setFilteredAffiliationName}
-                        />
-                        <br />
-                        <RorName
-                          isRemoved={
-                            (allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                            && allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                              ?.correctedRors.split(';')
-                              .find((_ror) => _ror === ror.rorId) === undefined
-                            ) || false
-                          }
-                          ror={ror}
-                        />
-                      </td>
-                    </tr>
-                  ))}
+                  <tbody>
+                    {affiliation.rors.map((ror) => (
+                      <tr key={`openalex-ror-affiliations-${ror.rorId}`}>
+                        <td>
+                          <RorBadge
+                            isRemoved={
+                              (allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                              && allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                                ?.correctedRors.split(';')
+                                .find((_ror) => _ror === ror.rorId) === undefined
+                              ) || false
+                            }
+                            ror={ror}
+                            rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
+                            setFilteredAffiliationName={setFilteredAffiliationName}
+                          />
+                          <br />
+                          <RorName
+                            isRemoved={
+                              (allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                              && allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                                ?.correctedRors.split(';')
+                                .find((_ror) => _ror === ror.rorId) === undefined
+                              ) || false
+                            }
+                            ror={ror}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
                 </table>
               </Col>
             </Row>

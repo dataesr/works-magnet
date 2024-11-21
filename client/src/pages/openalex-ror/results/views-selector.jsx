@@ -77,10 +77,7 @@ export default function OpenalexView({
             />
           </Col>
           <Col xs="8">
-            <span className="fr-icon-search-line" />
-            <i className="fr-mx-1w">
-              Filter results
-            </i>
+            <span className="fr-icon-search-line fr-mx-1w" />
             <input
               onChange={(e) => setFilteredAffiliationName(e.target.value)}
               style={{
