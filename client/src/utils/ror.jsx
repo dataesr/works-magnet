@@ -17,14 +17,15 @@ const getRorData = async (affiliation, getChildren = false) => {
   response = await response.json();
   const topLevel = [
     {
-      rorId: affiliationId,
       names: [
         response.name,
         ...response.acronyms,
         ...response.aliases,
         ...response.labels.map((item) => item.label),
       ],
-      country: response?.country?.country_code,
+      rorCountry: response?.country?.country_code,
+      rorId: affiliationId,
+      rorName: response.name,
     },
   ];
   if (!getChildren) {
