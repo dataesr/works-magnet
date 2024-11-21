@@ -13,6 +13,7 @@ const getRorData = async (affiliation, getChildren = false) => {
   if (!isRor(affiliationId)) return [];
   let response = await fetch(
     `https://api.ror.org/organizations/${affiliationId}`,
+    { cache: 'force-cache' },
   );
   response = await response.json();
   const topLevel = [

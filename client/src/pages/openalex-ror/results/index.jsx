@@ -3,6 +3,7 @@ import {
   Button,
   Col,
   Container,
+  Link,
   Modal,
   ModalContent,
   ModalFooter,
@@ -383,13 +384,13 @@ export default function Affiliations() {
                                   </thead>
                                   <tbody>
                                     {Object.values(uniqueRors).map(
-                                      (rorItem) => (
+                                      (uniqueRor) => (
                                         <tr>
                                           <td>
-                                            <a
-                                              href={`https://ror.org/${rorItem.rorId}`}
+                                            <Link
+                                              className="fr-mr-1w"
+                                              href={`https://ror.org/${uniqueRor.rorId}`}
                                               target="_blank"
-                                              rel="noreferrer"
                                             >
                                               <img
                                                 alt="ROR logo"
@@ -398,33 +399,33 @@ export default function Affiliations() {
                                                 height="16"
                                               />
                                               {removeList.includes(
-                                                rorItem.rorId,
+                                                uniqueRor.rorId,
                                               ) ? (
-                                                <strike>{` https://ror.org/${rorItem.rorId}`}</strike>
+                                                <strike>{` https://ror.org/${uniqueRor.rorId}`}</strike>
                                                 ) : (
-                                                ` https://ror.org/${rorItem.rorId}`
+                                                ` https://ror.org/${uniqueRor.rorId}`
                                                 )}
-                                            </a>
+                                            </Link>
                                           </td>
                                           <td>
                                             <img
-                                              alt={`${rorItem.rorCountry} flag`}
-                                              src={`https://flagsapi.com/${rorItem.rorCountry}/flat/16.png`}
+                                              alt={`${uniqueRor.rorCountry} flag`}
+                                              src={`https://flagsapi.com/${uniqueRor.rorCountry}/flat/16.png`}
                                             />
                                             <span className="fr-ml-1w">
                                               {removeList.includes(
-                                                rorItem.rorId,
+                                                uniqueRor.rorId,
                                               ) ? (
                                                 <strike>
-                                                    {rorItem.rorName}
+                                                    {uniqueRor.rorName}
                                                   </strike>
                                                 ) : (
-                                                  rorItem.rorName
+                                                  uniqueRor.rorName
                                                 )}
                                             </span>
                                           </td>
                                           <td>
-                                            {rorItem.countAffiliations}
+                                            {uniqueRor.countAffiliations}
                                             {' '}
                                             /
                                             {' '}
@@ -432,7 +433,7 @@ export default function Affiliations() {
                                           </td>
                                           <td style={{ minWidth: '160px' }}>
                                             {removeList.includes(
-                                              rorItem.rorId,
+                                              uniqueRor.rorId,
                                             ) ? (
                                               <>
                                                 <Button
@@ -440,7 +441,7 @@ export default function Affiliations() {
                                                   color="blue-ecume"
                                                   icon="arrow-go-back-line"
                                                   onClick={() => setRemoveList((prevList) => prevList.filter(
-                                                      (item) => item !== rorItem.rorId,
+                                                      (item) => item !== uniqueRor.rorId,
                                                     ))}
                                                   size="sm"
                                                   title="Undo remove"
@@ -457,12 +458,12 @@ export default function Affiliations() {
                                                   aria-label="Remove ROR"
                                                   color="pink-tuile"
                                                   disabled={removeList.includes(
-                                                    rorItem.rorId,
+                                                    uniqueRor.rorId,
                                                   )}
                                                   icon="delete-line"
                                                   onClick={() => setRemoveList((prevList) => [
                                                     ...prevList,
-                                                    rorItem.rorId,
+                                                    uniqueRor.rorId,
                                                   ])}
                                                   size="sm"
                                                   title="Remove ROR"
@@ -471,12 +472,12 @@ export default function Affiliations() {
                                             <Button
                                               aria-label="Propagate ROR to all affiliations"
                                               disabled={
-                                                rorItem.countAffiliations
+                                                uniqueRor.countAffiliations
                                                 === selectedOpenAlex.length
                                               }
                                               onClick={() => setAddList((prevList) => [
                                                 ...prevList,
-                                                rorItem.rorId,
+                                                uniqueRor.rorId,
                                               ])}
                                               size="sm"
                                               title="Propagate ROR to all affiliations"
