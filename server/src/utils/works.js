@@ -322,7 +322,6 @@ const getOpenAlexAffiliations = (work) => {
   const source = 'OpenAlex';
   const affiliations = work.authorships.map((author) => author.affiliations.map((affiliation) => {
     const rawAffiliation = affiliation.raw_affiliation_string;
-    let key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
     const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
     const rors = [];
     const rorsToCorrect = [];
@@ -331,11 +330,10 @@ const getOpenAlexAffiliations = (work) => {
     return matchedInstitutions.map((matchedInstitution) => {
       if (matchedInstitution?.ror) {
         const rorId = (matchedInstitution.ror).replace('https://ror.org/', '').replace('ror.org/', '');
-        key = `${label}##${rorId}`;
         rors.push({ rorCountry: matchedInstitution.country_code, rorId, rorName: matchedInstitution.display_name });
         rorsToCorrect.push({ rorCountry: matchedInstitution.country_code, rorId, rorName: matchedInstitution.display_name });
       }
-      return { key, label, rawAffiliation, rors, rorsToCorrect, source };s
+      return { key: label, label, rawAffiliation, rors, rorsToCorrect, source };
     });
   }));
   // TODO: recursive flat

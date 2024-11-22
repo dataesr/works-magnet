@@ -204,7 +204,9 @@ export default function Affiliations() {
   }, [body, refetch]);
 
   useEffect(() => {
-    setAffiliations(data?.affiliations ?? []);
+    setAffiliations(data?.affiliations?.filter(
+      (affiliation) => affiliation.source === 'OpenAlex',
+    ) ?? []);
   }, [data]);
 
   useEffect(() => {
@@ -212,10 +214,7 @@ export default function Affiliations() {
       clearTimeout(timer);
     }
     const timerTmp = setTimeout(() => {
-      const openAlexAffiliations = affiliations.filter(
-        (affiliation) => affiliation.source === 'OpenAlex',
-      );
-      const filteredAffiliationsTmp = openAlexAffiliations.filter(
+      const filteredAffiliationsTmp = affiliations.filter(
         (affiliation) => {
           const regex = new RegExp(removeDiacritics(filteredAffiliationName));
           return regex.test(
@@ -569,7 +568,7 @@ export default function Affiliations() {
                         {selectedOpenAlex.length}
                       </Badge>
                       <i>
-                        {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'}`}
+                        {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'} / ${affiliations.length}`}
                       </i>
                     </span>
                     <Button

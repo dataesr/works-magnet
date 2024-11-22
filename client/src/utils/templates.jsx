@@ -195,9 +195,7 @@ const correctionTemplate = (rowData) => {
   let html = '';
   html = html.concat('<ul>');
   const rorsToCorrect = rowData.rorsToCorrect
-    .split(';')
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
+    .map((item) => item.rorId);
   if (rorsToCorrect.length > 0) {
     rorsToCorrect.forEach((ror) => {
       html = html.concat(`<li key="ror-${ror}">${ror}</li>`);
