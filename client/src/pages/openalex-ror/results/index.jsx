@@ -9,6 +9,7 @@ import {
   ModalFooter,
   ModalTitle,
   Row,
+  Spinner,
   Tag,
   Text,
   TextInput,
@@ -38,21 +39,22 @@ export default function Affiliations() {
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+
+  const [addList, setAddList] = useState([]);
   const [affiliations, setAffiliations] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
   const [body, setBody] = useState({});
-  const { toast } = useToast();
-  const [addList, setAddList] = useState([]);
-  const [removeList, setRemoveList] = useState([]);
-
-  const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
+  const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredStatus] = useState([
     status.tobedecided.id,
     status.validated.id,
     status.excluded.id,
   ]);
+  const [isLoadingRorData, setIsLoadingRorData] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [removeList, setRemoveList] = useState([]);
   const [ror, setRor] = useState('');
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
@@ -128,16 +130,18 @@ export default function Affiliations() {
 
   useEffect(() => {
     const get = async () => {
-      const addedRorsData = await Promise.all(
+      setIsLoadingRorData(true);
+      const addedRors = await Promise.all(
         addList.map((add) => getRorData(add)),
       );
       const uniqueRorsTmp = {};
-      addedRorsData.flat().forEach((dd) => {
-        if (!Object.keys(uniqueRors).includes(dd.rorId)) {
-          uniqueRorsTmp[dd.rorId] = { ...dd, countAffiliations: 0 };
+      addedRors.flat().forEach((addedRor) => {
+        if (!Object.keys(uniqueRors).includes(addedRor.rorId)) {
+          uniqueRorsTmp[addedRor.rorId] = { ...addedRor, countAffiliations: 0 };
         }
       });
       setUniqueRors({ ...uniqueRors, ...uniqueRorsTmp });
+      setIsLoadingRorData(false);
     };
     get();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -370,11 +374,7 @@ export default function Affiliations() {
                   size="xl"
                 >
                   <ModalTitle>
-                    Modify ROR in
-                    <Badge color="brown-opera" className="fr-ml-1w">
-                      {selectedOpenAlex.length}
-                    </Badge>
-                    {` OpenAlex selected affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
+                    {`Modify ROR in ${selectedOpenAlex.length} OpenAlex selected affiliation${selectedOpenAlex.length > 1 ? 's' : ''}`}
                   </ModalTitle>
                   <ModalContent>
                     <Row>
@@ -472,24 +472,33 @@ export default function Affiliations() {
                                                   title="Remove ROR"
                                                 />
                                               )}
-                                            <Button
-                                              aria-label="Propagate ROR to all affiliations"
-                                              disabled={
-                                                uniqueRor.countAffiliations
-                                                === selectedOpenAlex.length
-                                              }
-                                              onClick={() => setAddList((prevList) => [
-                                                ...prevList,
-                                                uniqueRor.rorId,
-                                              ])}
-                                              size="sm"
-                                              title="Propagate ROR to all affiliations"
-                                            >
-                                              Propagate ROR to all affiliations
-                                            </Button>
+                                            {(uniqueRor.countAffiliations < selectedOpenAlex.length) && (
+                                              <Button
+                                                aria-label="Propagate ROR to all affiliations"
+                                                disabled={
+                                                  uniqueRor.countAffiliations
+                                                    === selectedOpenAlex.length
+                                                }
+                                                onClick={() => setAddList((prevList) => [
+                                                  ...prevList,
+                                                  uniqueRor.rorId,
+                                                ])}
+                                                size="sm"
+                                                title="Propagate ROR to all affiliations"
+                                              >
+                                                Propagate ROR to all affiliations
+                                              </Button>
+                                            )}
                                           </td>
                                         </tr>
                                       ),
+                                    )}
+                                    {isLoadingRorData && (
+                                      <tr>
+                                        <td colspan="4">
+                                          <Spinner size={24} />
+                                        </td>
+                                      </tr>
                                     )}
                                   </tbody>
                                 </table>
@@ -531,6 +540,7 @@ export default function Affiliations() {
                     using the "Send feedback to OpenAlex" button.
                     <Button
                       aria-label="Apply corrections"
+                      className="fr-ml-1w"
                       color="blue-ecume"
                       disabled={removeList.length === 0 && addList.length === 0}
                       onClick={() => {

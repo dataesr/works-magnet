@@ -35,35 +35,36 @@ export default function OpenalexView({
   const { toast } = useToast();
 
   useEffect(() => {
-    const initiaAffiliations = JSON.parse(JSON.stringify(allAffiliations));
+    // Deep copy of allAffiliations object
+    const initialAffiliations = JSON.parse(JSON.stringify(allAffiliations));
     if (sortsAndFilters.sortOnNumberOfRors === 'default') {
-      setSortedOrFilteredAffiliations(initiaAffiliations);
+      setSortedOrFilteredAffiliations(initialAffiliations);
     }
     if (sortsAndFilters.sortOnNumberOfRors === 'numberASC') {
-      setSortedOrFilteredAffiliations(initiaAffiliations.sort((a, b) => a.rors.length - b.rors.length));
+      setSortedOrFilteredAffiliations(initialAffiliations.sort((a, b) => a.rors.length - b.rors.length));
     }
     if (sortsAndFilters.sortOnNumberOfRors === 'numberDESC') {
-      setSortedOrFilteredAffiliations(initiaAffiliations.sort((a, b) => b.rors.length - a.rors.length));
+      setSortedOrFilteredAffiliations(initialAffiliations.sort((a, b) => b.rors.length - a.rors.length));
     }
     if (sortsAndFilters.sortOnNumberOfRors === 'empty') {
-      setSortedOrFilteredAffiliations(initiaAffiliations.filter((affiliation) => affiliation.rors.length === 0));
+      setSortedOrFilteredAffiliations(initialAffiliations.filter((affiliation) => affiliation.rors.length === 0));
     }
     if (sortsAndFilters.showAffiliations === 'all') {
-      setSortedOrFilteredAffiliations(initiaAffiliations);
+      setSortedOrFilteredAffiliations(initialAffiliations);
     }
     if (sortsAndFilters.showAffiliations === 'onlyWithCorrections') {
-      setSortedOrFilteredAffiliations(initiaAffiliations.filter((affiliation) => affiliation.hasCorrection));
+      setSortedOrFilteredAffiliations(initialAffiliations.filter((affiliation) => affiliation.hasCorrection));
     }
     if (sortsAndFilters.showAffiliations === 'onlyWithNoCorrection') {
-      setSortedOrFilteredAffiliations(initiaAffiliations.filter((affiliation) => !affiliation.hasCorrection));
+      setSortedOrFilteredAffiliations(initialAffiliations.filter((affiliation) => !affiliation.hasCorrection));
     }
     if (sortsAndFilters.rorCountry === 'all') {
-      setSortedOrFilteredAffiliations(initiaAffiliations);
+      setSortedOrFilteredAffiliations(initialAffiliations);
     }
     if (sortsAndFilters.rorCountry !== 'all') {
-      setSortedOrFilteredAffiliations(initiaAffiliations.filter((affiliation) => affiliation.rors.some((ror) => ror.rorCountry === sortsAndFilters.rorCountry)));
+      setSortedOrFilteredAffiliations(initialAffiliations.filter((affiliation) => affiliation.rors.some((ror) => ror.rorCountry === sortsAndFilters.rorCountry)));
     }
-  }, [sortsAndFilters, allAffiliations]);
+  }, [allAffiliations, sortsAndFilters]);
 
   const changeView = (view) => {
     searchParams.set('view', view);
@@ -136,13 +137,15 @@ export default function OpenalexView({
           </Col>
           <Col xs="3" className="text-right">
             <Button
+              aria-label="Sorts & filters"
               className="fr-mr-1w"
               color="beige-gris-galet"
               icon="filter-line"
               onClick={() => setIsModalOpen((prev) => !prev)}
               size="sm"
+              title="Sorts & filters"
             >
-              sorts & filters
+              Sorts & filters
               <Badge
                 className="fr-ml-1w"
                 color="green-bourgeon"
@@ -189,17 +192,17 @@ export default function OpenalexView({
                 value={sortsAndFilters.sortOnNumberOfRors}
               >
                 <option value="" disabled hidden>Select an option</option>
-                <option value="default">default</option>
-                <option value="numberASC">ASC</option>
-                <option value="numberDESC">DESC</option>
-                <option value="empty">no ROR detected</option>
+                <option value="default">Default</option>
+                <option value="numberASC">Ascending</option>
+                <option value="numberDESC">Descending</option>
+                <option value="empty">No ROR detected</option>
               </select>
             </label>
           </div>
 
           <div className="fr-select-group fr-mt-7w">
             <label className="fr-label" htmlFor="select-show-affiliations">
-              Show affiliations
+              Filter on affiliations corrections
               <select
                 className="fr-select"
                 id="select-show-affiliations"
@@ -208,9 +211,9 @@ export default function OpenalexView({
                 }}
                 value={sortsAndFilters.showAffiliations}
               >
-                <option value="all">all affiliations</option>
-                <option value="onlyWithCorrections">only those with corrections</option>
-                <option value="onlyWithNoCorrection">only those with no correction</option>
+                <option value="all">All affiliations</option>
+                <option value="onlyWithCorrections">Only those with corrections</option>
+                <option value="onlyWithNoCorrection">Only those without corrections</option>
               </select>
             </label>
           </div>
@@ -226,7 +229,7 @@ export default function OpenalexView({
                   setSortsAndFilters({ ...sortsAndFilters, rorCountry: e.target.value });
                 }}
               >
-                <option value="all">all countries</option>
+                <option value="all">All countries</option>
                 {
                   [...new Set(allAffiliations.flatMap((affiliation) => affiliation.rors.map((ror) => ror.rorCountry)))]
                     .sort((a, b) => allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === b)).length - allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === a)).length)
