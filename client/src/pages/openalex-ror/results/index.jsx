@@ -413,11 +413,7 @@ export default function Affiliations() {
                                               />
                                               {removeList.includes(
                                                 uniqueRor.rorId,
-                                              ) ? (
-                                                <strike>{` https://ror.org/${uniqueRor.rorId}`}</strike>
-                                                ) : (
-                                                ` https://ror.org/${uniqueRor.rorId}`
-                                                )}
+                                              ) ? (<strike>{` https://ror.org/${uniqueRor.rorId}`}</strike>) : (` https://ror.org/${uniqueRor.rorId}`)}
                                             </Link>
                                           </td>
                                           <td>
@@ -428,13 +424,7 @@ export default function Affiliations() {
                                             <span className="fr-ml-1w">
                                               {removeList.includes(
                                                 uniqueRor.rorId,
-                                              ) ? (
-                                                <strike>
-                                                    {uniqueRor.rorName}
-                                                  </strike>
-                                                ) : (
-                                                  uniqueRor.rorName
-                                                )}
+                                              ) ? (<strike>{uniqueRor.rorName}</strike>) : (uniqueRor.rorName)}
                                             </span>
                                           </td>
                                           <td>

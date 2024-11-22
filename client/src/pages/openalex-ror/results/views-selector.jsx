@@ -3,7 +3,7 @@ import { Badge,
   Col, Row,
   Modal, ModalContent, ModalFooter, ModalTitle,
 } from '@dataesr/dsfr-plus';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
 
@@ -26,7 +26,44 @@ export default function OpenalexView({
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortsAndFilters, setSortsAndFilters] = useState({
+    sortOnNumberOfRors: 'default',
+    showAffiliations: 'all',
+    rorCountry: 'all',
+  });
+  const [sortedOrFilteredAffiliations, setSortedOrFilteredAffiliations] = useState(allAffiliations);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const initiaAffiliations = JSON.parse(JSON.stringify(allAffiliations));
+    if (sortsAndFilters.sortOnNumberOfRors === 'default') {
+      setSortedOrFilteredAffiliations(initiaAffiliations);
+    }
+    if (sortsAndFilters.sortOnNumberOfRors === 'numberASC') {
+      setSortedOrFilteredAffiliations(initiaAffiliations.sort((a, b) => a.rors.length - b.rors.length));
+    }
+    if (sortsAndFilters.sortOnNumberOfRors === 'numberDESC') {
+      setSortedOrFilteredAffiliations(initiaAffiliations.sort((a, b) => b.rors.length - a.rors.length));
+    }
+    if (sortsAndFilters.sortOnNumberOfRors === 'empty') {
+      setSortedOrFilteredAffiliations(initiaAffiliations.filter((affiliation) => affiliation.rors.length === 0));
+    }
+    if (sortsAndFilters.showAffiliations === 'all') {
+      setSortedOrFilteredAffiliations(initiaAffiliations);
+    }
+    if (sortsAndFilters.showAffiliations === 'onlyWithCorrections') {
+      setSortedOrFilteredAffiliations(initiaAffiliations.filter((affiliation) => affiliation.hasCorrection));
+    }
+    if (sortsAndFilters.showAffiliations === 'onlyWithNoCorrection') {
+      setSortedOrFilteredAffiliations(initiaAffiliations.filter((affiliation) => !affiliation.hasCorrection));
+    }
+    if (sortsAndFilters.rorCountry === 'all') {
+      setSortedOrFilteredAffiliations(initiaAffiliations);
+    }
+    if (sortsAndFilters.rorCountry !== 'all') {
+      setSortedOrFilteredAffiliations(initiaAffiliations.filter((affiliation) => affiliation.rors.some((ror) => ror.rorCountry === sortsAndFilters.rorCountry)));
+    }
+  }, [sortsAndFilters, allAffiliations]);
 
   const changeView = (view) => {
     searchParams.set('view', view);
@@ -106,13 +143,12 @@ export default function OpenalexView({
               size="sm"
             >
               sorts & filters
-              {/* TODO: add number of active filters */}
-              {/* <Badge
+              <Badge
                 className="fr-ml-1w"
-                color="yellow-tournesol"
+                color="green-bourgeon"
               >
-                3
-              </Badge> */}
+                {Object.values(sortsAndFilters).filter((value) => value !== 'default' && value !== 'all').length}
+              </Badge>
             </Button>
             <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
             <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
@@ -129,41 +165,90 @@ export default function OpenalexView({
         />
       ) : (
         <ListView
-          allAffiliations={allAffiliations}
+          allAffiliations={sortedOrFilteredAffiliations}
           allOpenalexCorrections={allOpenalexCorrections}
           selectedOpenAlex={selectedOpenAlex}
           setFilteredAffiliationName={setFilteredAffiliationName}
           setSelectedOpenAlex={setSelectedOpenAlex}
         />
       )}
-      <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)} size="xl">
+      <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)} size="md">
         <ModalTitle>
           Sorts & filters
         </ModalTitle>
         <ModalContent>
-          Sort on number of ROR id per affiliation - ASC
-          <br />
-          Sort on number of ROR id per affiliation - DESC
-          <br />
-          show only affiliations with no ROR id
-          <br />
-          show only affiliations with corrections
-          <br />
-          show only affiliations with no corrections
-          <br />
-          filter by ROR country (multi-select on only present countries)
+          <div className="fr-select-group fr-mt-7w">
+            <label className="fr-label" htmlFor="select-sort-on-number-of-rors">
+              Sort on number of ROR
+              <select
+                className="fr-select"
+                id="select-sort-on-number-of-rors"
+                onChange={(e) => {
+                  setSortsAndFilters({ ...sortsAndFilters, sortOnNumberOfRors: e.target.value });
+                }}
+                value={sortsAndFilters.sortOnNumberOfRors}
+              >
+                <option value="" disabled hidden>Select an option</option>
+                <option value="default">default</option>
+                <option value="numberASC">ASC</option>
+                <option value="numberDESC">DESC</option>
+                <option value="empty">no ROR detected</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="fr-select-group fr-mt-7w">
+            <label className="fr-label" htmlFor="select-show-affiliations">
+              Show affiliations
+              <select
+                className="fr-select"
+                id="select-show-affiliations"
+                onChange={(e) => {
+                  setSortsAndFilters({ ...sortsAndFilters, showAffiliations: e.target.value });
+                }}
+                value={sortsAndFilters.showAffiliations}
+              >
+                <option value="all">all affiliations</option>
+                <option value="onlyWithCorrections">only those with corrections</option>
+                <option value="onlyWithNoCorrection">only those with no correction</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="fr-select-group fr-mt-7w">
+            <label className="fr-label" htmlFor="select-ror-country">
+              Filter by ROR country
+              <select
+                className="fr-select"
+                id="select-ror-country"
+                value={sortsAndFilters.rorCountry}
+                onChange={(e) => {
+                  setSortsAndFilters({ ...sortsAndFilters, rorCountry: e.target.value });
+                }}
+              >
+                <option value="all">all countries</option>
+                {
+                  [...new Set(allAffiliations.flatMap((affiliation) => affiliation.rors.map((ror) => ror.rorCountry)))]
+                    .sort((a, b) => allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === b)).length - allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === a)).length)
+                    .map((country) => (
+                      <option key={country} value={country}>
+                        {` ${new Intl.DisplayNames(['en'], { type: 'region' }).of(country)} (${allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === country)).length})`}
+                      </option>
+                    ))
+                }
+              </select>
+            </label>
+          </div>
         </ModalContent>
         <ModalFooter>
           <Button
-            color="blue-ecume"
-            // disabled={removeList.length === 0 && addList.length === 0}
-            onClick={() => {
-              // applyActions();
-              setIsModalOpen((prev) => !prev);
-            }}
-            title="Close"
+            onClick={() => setSortsAndFilters({
+              sortOnNumberOfRors: 'default',
+              showAffiliations: 'all',
+              rorCountry: 'all',
+            })}
           >
-            Apply all
+            Reset to default
           </Button>
         </ModalFooter>
       </Modal>
