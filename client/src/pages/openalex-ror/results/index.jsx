@@ -84,9 +84,7 @@ export default function Affiliations() {
         // eslint-disable-next-line no-param-reassign
         affiliation.hasCorrection = false;
         // eslint-disable-next-line no-param-reassign
-        affiliation.rorsToCorrect = affiliation.rors
-          .map((r) => r.rorId)
-          .join(';');
+        affiliation.rorsToCorrect = [...affiliation.rors];
       }
       return affiliation;
     });
@@ -94,13 +92,20 @@ export default function Affiliations() {
     setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(newAffiliations)]);
   };
 
-  const applyCorrections = () => {
+  const applyCorrections = async () => {
+    let rorsToAdd = await Promise.all(
+      addList.map((add) => getRorData(add)),
+    );
+    rorsToAdd = rorsToAdd.flat().map((rorToAdd) => ({
+      ...rorToAdd,
+      action: 'add',
+    }));
     const selectedOpenAlexTmp = selectedOpenAlex.map((item) => {
-      let rorsToCorrect = item.rorsToCorrect.trim().split(';');
-      rorsToCorrect = [...rorsToCorrect, ...addList];
-      rorsToCorrect = rorsToCorrect.filter((item2) => !removeList.includes(item2));
-      rorsToCorrect = [...new Set(rorsToCorrect)].join(';');
-      const hasCorrection = item.rors.map((r) => r.rorId).join(';') !== rorsToCorrect.trim();
+      const rorsToCorrect = [...item.rorsToCorrect, ...rorsToAdd].map((rorToCorrect) => ({
+        ...rorToCorrect,
+        action: removeList.includes(rorToCorrect.rorId) ? 'remove' : undefined,
+      }));
+      const hasCorrection = rorsToCorrect.filter((rorToCorrect) => rorToCorrect?.action).length > 0;
       return { ...item, hasCorrection, rorsToCorrect };
     });
     setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(selectedOpenAlexTmp)]);

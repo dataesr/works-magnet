@@ -333,9 +333,9 @@ const getOpenAlexAffiliations = (work) => {
         const rorId = (matchedInstitution.ror).replace('https://ror.org/', '').replace('ror.org/', '');
         key = `${label}##${rorId}`;
         rors.push({ rorCountry: matchedInstitution.country_code, rorId, rorName: matchedInstitution.display_name });
-        rorsToCorrect.push(rorId);
+        rorsToCorrect.push({ rorCountry: matchedInstitution.country_code, rorId, rorName: matchedInstitution.display_name });
       }
-      return { key, label, rawAffiliation, rors, rorsToCorrect, source };
+      return { key, label, rawAffiliation, rors, rorsToCorrect, source };s
     });
   }));
   // TODO: recursive flat
@@ -483,7 +483,7 @@ const groupByAffiliations = ({ options, works }) => {
             nameHtml: toKeep[normalizedAffiliation].displayAffiliation,
             rors: affiliation.rors || [],
             rorsNumber: affiliation.rors?.length || 0,
-            rorsToCorrect: (affiliation.rorsToCorrect || []).join(';'),
+            rorsToCorrect: affiliation.rorsToCorrect,
             source: affiliation.source,
             status: 'tobedecided',
             works: [id],

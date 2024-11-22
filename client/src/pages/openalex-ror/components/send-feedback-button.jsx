@@ -112,7 +112,7 @@ SendFeedbackButton.propTypes = {
     PropTypes.shape({
       rawAffiliationString: PropTypes.string.isRequired,
       rorsInOpenAlex: PropTypes.arrayOf(PropTypes.object).isRequired,
-      correctedRors: PropTypes.string.isRequired,
+      correctedRors: PropTypes.arrayOf(PropTypes.object).isRequired,
       worksExample: PropTypes.arrayOf(PropTypes.object).isRequired,
       worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
     }),

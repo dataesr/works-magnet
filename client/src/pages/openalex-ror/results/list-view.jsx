@@ -66,31 +66,49 @@ export default function ListView({
               <Col md={4}>
                 <table className="wm-table">
                   <tbody>
-                    {affiliation.rors.map((ror) => (
-                      <tr key={`openalex-ror-affiliations-${ror.rorId}`}>
+                    {affiliation.rorsToCorrect.map((rorToCorrect) => (
+                      <tr key={`openalex-ror-affiliations-${rorToCorrect.rorId}`}>
                         <td>
                           <RorBadge
                             isRemoved={
-                              (allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                              && allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                                ?.correctedRors.split(';')
-                                .find((_ror) => _ror === ror.rorId) === undefined
-                              ) || false
+                              allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                                ?.correctedRors?.find((_ror) => _ror.rorId === rorToCorrect.rorId)?.action === 'remove' ?? false
                             }
-                            ror={ror}
-                            rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
+                            ror={rorToCorrect}
+                            rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
                             setFilteredAffiliationName={setFilteredAffiliationName}
                           />
                           <br />
                           <RorName
                             isRemoved={
-                              (allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                              && allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                                ?.correctedRors.split(';')
-                                .find((_ror) => _ror === ror.rorId) === undefined
-                              ) || false
+                              allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                                ?.correctedRors?.find((_ror) => _ror.rorId === rorToCorrect.rorId)?.action === 'remove' ?? false
                             }
-                            ror={ror}
+                            ror={rorToCorrect}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                    {(allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                      ?.correctedRors?.filter((_ror) => _ror.action === 'add') ?? []).map((rorToCorrect) => (
+                      <tr key={`openalex-ror-affiliations-${rorToCorrect.rorId}`}>
+                        <td>
+                          <RorBadge
+                            isRemoved={
+                              allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                                ?.correctedRors?.find((_ror) => _ror.rorId === rorToCorrect.rorId)?.action === 'remove' ?? false
+                            }
+                            ror={rorToCorrect}
+                            rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
+                            setFilteredAffiliationName={setFilteredAffiliationName}
+                          />
+                          <br />
+                          <RorName
+                            isRemoved={
+                              allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
+                                ?.correctedRors?.find((_ror) => _ror.rorId === rorToCorrect.rorId)?.action === 'remove' ?? false
+                            }
+                            ror={rorToCorrect}
                           />
                         </td>
                       </tr>

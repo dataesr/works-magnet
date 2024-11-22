@@ -20,7 +20,7 @@ export default function ExportErrorsButton({
 
 ExportErrorsButton.propTypes = {
   allOpenalexCorrections: PropTypes.arrayOf(PropTypes.shape({
-    correctedRors: PropTypes.string.isRequired,
+    correctedRors: PropTypes.arrayOf(PropTypes.object).isRequired,
     rawAffiliationString: PropTypes.string.isRequired,
     rorsInOpenAlex: PropTypes.arrayOf(PropTypes.shape({
       rorCountry: PropTypes.string.isRequired,

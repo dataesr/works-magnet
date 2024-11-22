@@ -26,6 +26,7 @@ export default function DataTableView({
       value={options.value}
     />
   );
+
   return (
     <DataTable
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
