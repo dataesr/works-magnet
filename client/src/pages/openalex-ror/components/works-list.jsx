@@ -2,12 +2,12 @@ import { Button, Link, Text } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-const WORKS_LENGTH = 5;
+const SEE_MORE_AFTER = 5;
 
 export default function WorksList({ works }) {
   const [showMore, setShowMore] = useState(false);
 
-  const displayedWorks = showMore ? works : works.slice(0, WORKS_LENGTH);
+  const displayedWorks = showMore ? works : works.slice(0, SEE_MORE_AFTER);
 
   return (
     <Text className="fr-my-1w fr-pl-1w" size="sm" style={{ borderLeft: '5px solid #aaa' }}>
@@ -23,7 +23,7 @@ export default function WorksList({ works }) {
         {
           works.length > 5 && (
             <Button onClick={() => setShowMore(!showMore)} variant="text">
-              {showMore ? 'show less works' : `show more works (${works.length - WORKS_LENGTH})`}
+              {showMore ? 'show less works' : `show more works (${works.length - SEE_MORE_AFTER})`}
             </Button>
           )
         }

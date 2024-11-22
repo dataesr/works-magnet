@@ -30,7 +30,7 @@ export default function TagInput({
   placeholder,
   seeMoreAction,
   seeMoreAfter,
-  setGetRorChildren,
+  switchGetRorChildren,
   tags,
 }) {
   const [excludedValues, setExcludedValues] = useState(deletedTags);
@@ -151,7 +151,7 @@ export default function TagInput({
                       className="fr-mr-1w"
                       // eslint-disable-next-line react/no-array-index-key
                       key={`tags-ror-${index}`}
-                      onClick={() => setGetRorChildren(!getRorChildren)}
+                      onClick={() => switchGetRorChildren()}
                       size="sm"
                       variant="text"
                     >
@@ -209,7 +209,7 @@ TagInput.propTypes = {
   placeholder: PropTypes.string,
   seeMoreAction: PropTypes.func,
   seeMoreAfter: PropTypes.number,
-  setGetRorChildren: PropTypes.func,
+  switchGetRorChildren: PropTypes.func,
   tags: PropTypes.arrayOf(PropTypes.object),
 };
 
@@ -225,6 +225,6 @@ TagInput.defaultProps = {
   placeholder: '',
   seeMoreAfter: SEE_MORE_AFTER,
   seeMoreAction: undefined,
-  setGetRorChildren: () => { },
+  switchGetRorChildren: () => { },
   tags: [],
 };

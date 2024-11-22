@@ -142,6 +142,7 @@ export default function Affiliations() {
     const getData = async () => {
       const queryParams = {
         endYear: searchParams.get('endYear') ?? '2023',
+        getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? '2023',
       };
       queryParams.deletedAffiliations = [];
@@ -149,19 +150,27 @@ export default function Affiliations() {
       queryParams.affiliations = await Promise.all(
         searchParams.getAll('affiliations').map(async (affiliation) => {
           const label = normalize(affiliation);
-          let children = [];
+          const children = [];
           // Compute rorNames
           if (isRor(label)) {
-            const rorNames = await getRorData(label);
-            children = rorNames
-              .map((item) => item.names)
-              .flat()
-              .map((name) => ({
-                isDisabled: name.length < VITE_APP_TAG_LIMIT,
-                isRor: false,
-                label: name,
-                source: 'ror',
-              }));
+            const rors = await getRorData(label, queryParams.getRorChildren === '1');
+            rors
+              .forEach((item) => {
+                children.push({
+                  isDisabled: false,
+                  label: item.rorId,
+                  source: 'ror',
+                  type: 'rorId',
+                });
+                item.names.forEach((name) => {
+                  children.push({
+                    isDisabled: name.length < VITE_APP_TAG_LIMIT,
+                    label: name,
+                    source: 'ror',
+                    type: 'affiliationString',
+                  });
+                });
+              });
           }
           return {
             children,

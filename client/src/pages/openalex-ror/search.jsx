@@ -25,7 +25,7 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
   .map((year) => ({ label: year, value: year }));
 
 export default function OpenalexRorSearch() {
-  const { pathname, search } = useLocation();
+  const { search } = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -33,7 +33,6 @@ export default function OpenalexRorSearch() {
   const [deletedAffiliations, setDeletedAffiliations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [getRorChildren, setGetRorChildren] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
@@ -42,12 +41,13 @@ export default function OpenalexRorSearch() {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    if (searchParams.size < 2) {
+    if (searchParams.size < 4) {
       // Set default params values
       setSearchParams({
         affiliations: searchParams.getAll('affiliations') ?? [],
         deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
         endYear: searchParams.get('endYear') ?? '2023',
+        getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? '2023',
         view: searchParams.get('view') ?? 'list',
       });
@@ -60,6 +60,7 @@ export default function OpenalexRorSearch() {
         affiliations,
         deletedAffiliations: deletedAffiliations1,
         endYear: searchParams.get('endYear') ?? '2023',
+        getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? '2023',
         view: searchParams.get('view') ?? 'list',
       });
@@ -82,7 +83,6 @@ export default function OpenalexRorSearch() {
     }
   }, [
     deletedAffiliations,
-    getRorChildren,
     searchedAffiliations,
     searchParams,
     setSearchParams,
@@ -94,7 +94,7 @@ export default function OpenalexRorSearch() {
       const filteredSearchedAffiliation = searchedAffiliations.filter(
         (affiliation) => !deletedAffiliations.includes(affiliation),
       );
-      const queries = filteredSearchedAffiliation.map((affiliation) => getRorData(affiliation, getRorChildren));
+      const queries = filteredSearchedAffiliation.map((affiliation) => getRorData(affiliation, currentSearchParams.getRorChildren === '1'));
       let rorNames = await Promise.all(queries);
       rorNames = rorNames.filter(
         (rorName) => !deletedAffiliations.includes(rorName),
@@ -107,7 +107,7 @@ export default function OpenalexRorSearch() {
         const label = cleanRor(affiliation);
         if (isRor(label)) {
           allTags.push({
-            isDisabled: label.length < VITE_APP_TAG_LIMIT,
+            isDisabled: false,
             label,
             source: 'user',
             type: 'rorId',
@@ -127,7 +127,7 @@ export default function OpenalexRorSearch() {
         if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
           if (!deletedAffiliations.includes(rorElt.rorId)) {
             allTags.push({
-              isDisabled: rorElt.rorId.length < VITE_APP_TAG_LIMIT,
+              isDisabled: false,
               label: rorElt.rorId,
               source: 'ror',
               type: 'rorId',
@@ -159,7 +159,7 @@ export default function OpenalexRorSearch() {
     };
 
     getData();
-  }, [deletedAffiliations, getRorChildren, searchedAffiliations]);
+  }, [currentSearchParams.getRorChildren, deletedAffiliations, searchedAffiliations]);
 
   const onTagsChange = async (_affiliations, _deletedAffiliations) => {
     const affiliations = _affiliations
@@ -196,8 +196,10 @@ export default function OpenalexRorSearch() {
     }
     setMessageType('');
     setMessage('');
-    navigate(`/${pathname.split('/')[1]}/results${search}`);
+    navigate(`/openalex-ror/results${search}`);
   };
+
+  const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
 
   const NB_TAGS_STICKY = 2;
   const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
@@ -259,7 +261,7 @@ export default function OpenalexRorSearch() {
               </Col>
               <Col xs="12">
                 <TagInput
-                  getRorChildren={getRorChildren}
+                  getRorChildren={currentSearchParams.getRorChildren === '1'}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
                   isRequired
@@ -269,7 +271,7 @@ export default function OpenalexRorSearch() {
                   onInputHandler={setOnInputAffiliationsHandler}
                   onTagsChange={onTagsChange}
                   seeMoreAfter={0}
-                  setGetRorChildren={setGetRorChildren}
+                  switchGetRorChildren={switchGetRorChildren}
                   tags={tags}
                 />
               </Col>
@@ -299,7 +301,7 @@ export default function OpenalexRorSearch() {
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput
-              getRorChildren={getRorChildren}
+              getRorChildren={currentSearchParams.getRorChildren === '1'}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
               isLoading={isLoading}
               isRequired
@@ -312,7 +314,7 @@ export default function OpenalexRorSearch() {
                 setIsOpen(true);
                 e.preventDefault();
               }}
-              setGetRorChildren={setGetRorChildren}
+              switchGetRorChildren={switchGetRorChildren}
               tags={tags}
             />
           </Col>
