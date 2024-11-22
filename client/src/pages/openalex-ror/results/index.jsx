@@ -103,7 +103,7 @@ export default function Affiliations() {
     const selectedOpenAlexTmp = selectedOpenAlex.map((item) => {
       const rorsToCorrect = [...item.rorsToCorrect, ...rorsToAdd].map((rorToCorrect) => ({
         ...rorToCorrect,
-        action: removeList.includes(rorToCorrect.rorId) ? 'remove' : undefined,
+        action: removeList.includes(rorToCorrect.rorId) ? 'remove' : rorToCorrect?.action,
       }));
       const hasCorrection = rorsToCorrect.filter((rorToCorrect) => rorToCorrect?.action).length > 0;
       return { ...item, hasCorrection, rorsToCorrect };

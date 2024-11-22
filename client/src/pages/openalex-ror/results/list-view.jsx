@@ -35,7 +35,6 @@ export default function ListView({
             <Row>
               <Col>
                 <div style={{ display: 'inline-flex' }}>
-
                   <div style={{ display: 'inline-block', width: '20px' }}>
                     <input
                       id={`affiliation-${affiliation.key}`}
@@ -110,6 +109,7 @@ export default function ListView({
                             }
                             ror={rorToCorrect}
                           />
+                          <span className="fr-icon-chat-check-fill fr-icon--sm fr-ml-1w" style={{ color: '#B34000' }} />
                         </td>
                       </tr>
                     ))}
