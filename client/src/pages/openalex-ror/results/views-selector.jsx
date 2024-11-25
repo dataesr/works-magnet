@@ -256,11 +256,6 @@ export default function OpenalexView({
         <ModalFooter style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
             onClick={() => {
-              setSortsAndFilters({
-                sortOnNumberOfRors: 'default',
-                showAffiliations: 'all',
-                rorCountry: 'all',
-              });
               setSelectSortOnNumberOfRors('default');
               setSelectShowAffiliations('all');
               setSelectRorCountry('all');
