@@ -33,7 +33,6 @@ export default function RorBadge({
           </Link>
         </>
       )}
-
       <button
         disabled={isRemoved}
         aria-label="filter on this ROR id"
@@ -42,7 +41,6 @@ export default function RorBadge({
         type="button"
       />
     </Tag>
-
   );
 }
 

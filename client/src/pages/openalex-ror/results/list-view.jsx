@@ -1,4 +1,4 @@
-import { Col, Row, Text } from '@dataesr/dsfr-plus';
+import { Badge, Col, Row, Text } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
 import WorksList from '../components/works-list';
@@ -55,7 +55,7 @@ export default function ListView({
                     }
                   </div>
                   <div style={{ display: 'inline-block', maxWidth: '95%' }}>
-                    <Text as="label" htmlFor={`affiliation-${affiliation.key}`}>
+                    <Text as="label" htmlFor={`affiliation-${affiliation.key}`} style={{ cursor: 'pointer' }}>
                       <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml }} />
                     </Text>
                     <WorksList works={affiliation.works} />
@@ -109,7 +109,12 @@ export default function ListView({
                             }
                             ror={rorToCorrect}
                           />
-                          <span className="fr-icon-chat-check-fill fr-icon--sm fr-ml-1w" style={{ color: '#B34000' }} />
+                          <Badge
+                            className="fr-ml-1w"
+                            color="warning"
+                          >
+                            Added
+                          </Badge>
                         </td>
                       </tr>
                     ))}

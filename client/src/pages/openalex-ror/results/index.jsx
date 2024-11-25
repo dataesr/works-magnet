@@ -356,7 +356,7 @@ export default function Affiliations() {
               </Row>
             </Col>
             <Col md={10}>
-              <div className="wm-bg wm-content">
+              <div className="wm-bg wm-content" style={{ overflow: `${isModalOpen ? 'hidden' : 'unset'}` }}>
                 <Modal
                   isOpen={isModalOpen}
                   hide={() => setIsModalOpen((prev) => !prev)}
@@ -427,23 +427,23 @@ export default function Affiliations() {
                                             {removeList.includes(
                                               uniqueRor.rorId,
                                             ) ? (
-                                              <>
+                                                <>
                                                   <Button
-                                                  aria-label="Undo remove"
-                                                  color="blue-ecume"
-                                                  icon="arrow-go-back-line"
-                                                  onClick={() => setRemoveList((prevList) => prevList.filter(
+                                                    aria-label="Undo remove"
+                                                    color="blue-ecume"
+                                                    icon="arrow-go-back-line"
+                                                    onClick={() => setRemoveList((prevList) => prevList.filter(
                                                       (item) => item !== uniqueRor.rorId,
                                                     ))}
-                                                  size="sm"
-                                                  title="Undo remove"
-                                                />
+                                                    size="sm"
+                                                    title="Undo remove"
+                                                  />
                                                   <Badge
-                                                  color="pink-tuile"
-                                                  className="fr-mr-1w"
-                                                >
+                                                    color="pink-tuile"
+                                                    className="fr-mr-1w"
+                                                  >
                                                     Removed
-                                                </Badge>
+                                                  </Badge>
                                                 </>
                                               ) : (
                                                 <Button
@@ -468,6 +468,7 @@ export default function Affiliations() {
                                                   uniqueRor.countAffiliations
                                                     === selectedOpenAlex.length
                                                 }
+                                                icon="delete-line"
                                                 onClick={() => setAddList((prevList) => [
                                                   ...prevList,
                                                   uniqueRor.rorId,
