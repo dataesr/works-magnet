@@ -495,7 +495,7 @@ export default function Affiliations() {
                                     )}
                                     {isLoadingRorData && (
                                       <tr>
-                                        <td colspan="4">
+                                        <td colSpan={4}>
                                           <Spinner size={24} />
                                         </td>
                                       </tr>

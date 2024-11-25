@@ -1,20 +1,20 @@
-import { Badge,
+import {
+  Badge,
   Button,
-  Col, Row,
+  Col,
   Modal, ModalContent, ModalFooter, ModalTitle,
-  ButtonGroup,
+  Row,
 } from '@dataesr/dsfr-plus';
-import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import useToast from '../../../hooks/useToast';
 import { getAffiliationsCorrections } from '../../../utils/curations';
-import { isRor } from '../../../utils/ror';
-
-import ListView from './list-view';
-import DataTableView from './datatable-view';
 import getFlagEmoji from '../../../utils/flags';
+import { isRor } from '../../../utils/ror';
+import DataTableView from './datatable-view';
+import ListView from './list-view';
 
 export default function OpenalexView({
   allAffiliations,
@@ -108,7 +108,7 @@ export default function OpenalexView({
         <Row>
           <Col>
             <input
-              checked={selectedOpenAlex.length === allAffiliations.length}
+              checked={(selectedOpenAlex.length === allAffiliations.length) && (selectedOpenAlex.length > 0)}
               className="fr-ml-2w"
               onChange={() => {
                 if (selectedOpenAlex.length === 0) {
@@ -238,6 +238,8 @@ export default function OpenalexView({
                 <option value="all">All countries</option>
                 {
                   [...new Set(allAffiliations.flatMap((affiliation) => affiliation.rors.map((ror) => ror.rorCountry)))]
+                    .filter((country) => !!country)
+                    .sort((a, b) => new Intl.DisplayNames(['en'], { type: 'region' }).of(a).localeCompare(new Intl.DisplayNames(['en'], { type: 'region' }).of(b)))
                     .sort((a, b) => allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === b)).length - allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === a)).length)
                     .map((country) => (
                       <option
@@ -263,7 +265,6 @@ export default function OpenalexView({
           >
             Reset to default
           </Button>
-
           <Button
             onClick={() => {
               setSortsAndFilters({
