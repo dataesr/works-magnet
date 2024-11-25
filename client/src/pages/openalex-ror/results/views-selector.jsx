@@ -106,7 +106,7 @@ export default function OpenalexView({
     <>
       <div className="wm-internal-actions">
         <Row>
-          <Col>
+          <Col xs="3">
             <input
               checked={(selectedOpenAlex.length === allAffiliations.length) && (selectedOpenAlex.length > 0)}
               className="fr-ml-2w"
@@ -119,8 +119,16 @@ export default function OpenalexView({
               }}
               type="checkbox"
             />
+            <span className="wm-text fr-mb-3w fr-ml-1w">
+              <Badge color="brown-opera">
+                {selectedOpenAlex.length}
+              </Badge>
+              <i>
+                {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'} / ${allAffiliations.length}`}
+              </i>
+            </span>
           </Col>
-          <Col xs="8">
+          <Col xs="7">
             <span className="fr-icon-search-line fr-mx-1w" />
             <input
               onChange={(e) => setFilteredAffiliationName(e.target.value)}
@@ -133,15 +141,16 @@ export default function OpenalexView({
               value={filteredAffiliationName}
             />
             <Button
+              aria-label="Clear search"
               className=" fr-ml-1w "
               icon="delete-line"
               onClick={() => setFilteredAffiliationName('')}
               size="sm"
+              title="Clear search"
               variant="text"
             />
-
           </Col>
-          <Col xs="3" className="text-right">
+          <Col xs="2" className="text-right">
             <Button
               aria-label="Sorts & filters"
               className="fr-mr-1w"

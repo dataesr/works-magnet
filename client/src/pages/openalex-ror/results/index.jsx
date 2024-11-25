@@ -563,14 +563,6 @@ export default function Affiliations() {
                   }}
                 >
                   <div className="left-content">
-                    <span className="wm-text fr-mb-3w fr-ml-1w">
-                      <Badge color="brown-opera">
-                        {selectedOpenAlex.length}
-                      </Badge>
-                      <i>
-                        {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'} / ${affiliations.length}`}
-                      </i>
-                    </span>
                     <Button
                       aria-label="Modify selected ROR"
                       className="fr-ml-5w fr-mr-1w"
