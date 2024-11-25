@@ -23,7 +23,7 @@ export default function DataTableView({
       id="editor-ror"
       onChange={(e) => options.editorCallback(e.target.value)}
       type="text"
-      value={options.value}
+      value={Array.isArray(options?.value) ? options.value?.map((v) => v.rorId).join(';') : options.value}
     />
   );
 

@@ -7,7 +7,6 @@ import RorName from '../components/ror-name';
 
 export default function ListView({
   allAffiliations,
-  allOpenalexCorrections,
   selectedOpenAlex,
   setFilteredAffiliationName,
   setSelectedOpenAlex,
@@ -69,46 +68,29 @@ export default function ListView({
                       <tr key={`openalex-ror-affiliations-${rorToCorrect.rorId}`}>
                         <td>
                           <RorBadge
-                            isRemoved={
-                              allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                                ?.correctedRors?.find((_ror) => _ror.rorId === rorToCorrect.rorId)?.action === 'remove' ?? false
-                            }
+                            isRemoved={rorToCorrect?.action === 'remove' ?? false}
                             ror={rorToCorrect}
                             rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
                             setFilteredAffiliationName={setFilteredAffiliationName}
                           />
                           <br />
                           <RorName
-                            isRemoved={
-                              allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                                ?.correctedRors?.find((_ror) => _ror.rorId === rorToCorrect.rorId)?.action === 'remove' ?? false
-                            }
+                            isRemoved={rorToCorrect?.action === 'remove' ?? false}
                             ror={rorToCorrect}
                           />
                         </td>
                       </tr>
                     ))}
-                    {(allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                      ?.correctedRors?.filter((_ror) => _ror.action === 'add') ?? []).map((rorToCorrect) => (
+                    {affiliation.rorsToCorrect?.filter((_ror) => _ror.action === 'add').map((rorToCorrect) => (
                       <tr key={`openalex-ror-affiliations-${rorToCorrect.rorId}`}>
                         <td>
                           <RorBadge
-                            isRemoved={
-                              allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                                ?.correctedRors?.find((_ror) => _ror.rorId === rorToCorrect.rorId)?.action === 'remove' ?? false
-                            }
                             ror={rorToCorrect}
                             rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
                             setFilteredAffiliationName={setFilteredAffiliationName}
                           />
                           <br />
-                          <RorName
-                            isRemoved={
-                              allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id)
-                                ?.correctedRors?.find((_ror) => _ror.rorId === rorToCorrect.rorId)?.action === 'remove' ?? false
-                            }
-                            ror={rorToCorrect}
-                          />
+                          <RorName ror={rorToCorrect} />
                           <Badge
                             className="fr-ml-1w"
                             color="warning"
@@ -131,7 +113,6 @@ export default function ListView({
 
 ListView.propTypes = {
   allAffiliations: PropTypes.array.isRequired,
-  allOpenalexCorrections: PropTypes.array.isRequired,
   setSelectedOpenAlex: PropTypes.func.isRequired,
   selectedOpenAlex: PropTypes.array.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,

@@ -9,8 +9,8 @@ export default function RorBadge({ isRemoved, ror, setFilteredAffiliationName, r
         <img
           alt="ROR logo"
           className="vertical-middle fr-mx-1w"
-          src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg"
           height="16"
+          src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg"
         />
       </div>
       {isRemoved ? (
@@ -25,19 +25,25 @@ export default function RorBadge({ isRemoved, ror, setFilteredAffiliationName, r
         </Link>
       )}
       <button
-        type="button"
-        aria-label="filter on this ROR id"
+        aria-label="Filter on this ROR"
         className="fr-icon fr-fi-filter-line fr-icon--sm"
         onClick={() => setFilteredAffiliationName(ror.rorId)}
+        title="Filter on this ROR"
+        type="button"
       />
     </div>
   );
 }
 
+RorBadge.defaultProps = {
+  isRemoved: false,
+};
+
 RorBadge.propTypes = {
+  isRemoved: PropTypes.bool,
   ror: PropTypes.shape({
     rorId: PropTypes.string.isRequired,
   }).isRequired,
-  setFilteredAffiliationName: PropTypes.func.isRequired,
   rorColor: PropTypes.string.isRequired,
+  setFilteredAffiliationName: PropTypes.func.isRequired,
 };

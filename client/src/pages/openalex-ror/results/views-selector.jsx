@@ -17,10 +17,12 @@ import DataTableView from './datatable-view';
 import ListView from './list-view';
 
 export default function ViewsSelector({
-  allAffiliations,
+  affiliations,
   allOpenalexCorrections,
   filteredAffiliationName,
+  filteredAffiliations,
   selectedOpenAlex,
+  setAffiliations,
   setAllOpenalexCorrections,
   setFilteredAffiliationName,
   setSelectedOpenAlex,
@@ -37,12 +39,12 @@ export default function ViewsSelector({
     showAffiliations: 'all',
     rorCountry: 'all',
   });
-  const [sortedOrFilteredAffiliations, setSortedOrFilteredAffiliations] = useState(allAffiliations);
+  const [sortedOrFilteredAffiliations, setSortedOrFilteredAffiliations] = useState(filteredAffiliations);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Deep copy of allAffiliations object
-    const initialAffiliations = JSON.parse(JSON.stringify(allAffiliations));
+    // Deep copy of filteredAffiliations object
+    const initialAffiliations = JSON.parse(JSON.stringify(filteredAffiliations));
     if (sortsAndFilters.sortOnNumberOfRors === 'default') {
       setSortedOrFilteredAffiliations(initialAffiliations);
     }
@@ -70,7 +72,7 @@ export default function ViewsSelector({
     if (sortsAndFilters.rorCountry !== 'all') {
       setSortedOrFilteredAffiliations(initialAffiliations.filter((affiliation) => affiliation.rors.some((ror) => ror.rorCountry === sortsAndFilters.rorCountry)));
     }
-  }, [allAffiliations, sortsAndFilters]);
+  }, [filteredAffiliations, sortsAndFilters]);
 
   const changeView = (view) => {
     searchParams.set('view', view);
@@ -97,7 +99,18 @@ export default function ViewsSelector({
         const rorsToCorrect = [...new Set(newValue.split(';'))].join(';');
         data.rorsToCorrect = rorsToCorrect;
         data.hasCorrection = data.rors.map((r) => r.rorId).join(';') !== rorsToCorrect;
-        setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(allAffiliations)]);
+        setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(filteredAffiliations)]);
+        // Deep copy of affiliations array
+        const affiliationsTmp = [...affiliations];
+        const affiliation = affiliationsTmp.find((aff) => data.id === aff.id);
+        const rorsToCorrect2 = rorsToCorrect.split(';').map((ror) => ({ rorId: ror }));
+        affiliation.rorsToCorrect = rorsToCorrect2;
+        affiliation.hasCorrection = data.hasCorrection;
+        // TODO: should be replaced
+        affiliation.correctedRors = rorsToCorrect2;
+        affiliation.rawAffiliationString = affiliation.name;
+        affiliation.rorsInOpenAlex = affiliation.rors;
+        setAffiliations(affiliationsTmp);
       }
     }
   };
@@ -108,11 +121,11 @@ export default function ViewsSelector({
         <Row>
           <Col xs="3">
             <input
-              checked={(selectedOpenAlex.length === allAffiliations.length) && (selectedOpenAlex.length > 0)}
+              checked={(selectedOpenAlex.length === filteredAffiliations.length) && (selectedOpenAlex.length > 0)}
               className="fr-ml-2w"
               onChange={() => {
                 if (selectedOpenAlex.length === 0) {
-                  setSelectedOpenAlex(allAffiliations);
+                  setSelectedOpenAlex(filteredAffiliations);
                 } else {
                   setSelectedOpenAlex([]);
                 }
@@ -124,7 +137,7 @@ export default function ViewsSelector({
                 {selectedOpenAlex.length}
               </Badge>
               <i>
-                {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'} / ${allAffiliations.length}`}
+                {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'} / ${filteredAffiliations.length}`}
               </i>
             </span>
           </Col>
@@ -175,7 +188,7 @@ export default function ViewsSelector({
       </div>
       {searchParams.get('view') === 'table' ? (
         <DataTableView
-          allAffiliations={allAffiliations}
+          allAffiliations={filteredAffiliations}
           onRowEditComplete={onRowEditComplete}
           selectedOpenAlex={selectedOpenAlex}
           setSelectedOpenAlex={setSelectedOpenAlex}
@@ -184,7 +197,6 @@ export default function ViewsSelector({
       ) : (
         <ListView
           allAffiliations={sortedOrFilteredAffiliations}
-          allOpenalexCorrections={allOpenalexCorrections}
           selectedOpenAlex={selectedOpenAlex}
           setFilteredAffiliationName={setFilteredAffiliationName}
           setSelectedOpenAlex={setSelectedOpenAlex}
@@ -221,9 +233,7 @@ export default function ViewsSelector({
               <select
                 className="fr-select"
                 id="select-show-affiliations"
-                onChange={(e) => {
-                  setSelectShowAffiliations(e.target.value);
-                }}
+                onChange={(e) => setSelectShowAffiliations(e.target.value)}
                 value={selectShowAffiliations}
               >
                 <option value="all">All affiliations</option>
@@ -246,17 +256,17 @@ export default function ViewsSelector({
               >
                 <option value="all">All countries</option>
                 {
-                  [...new Set(allAffiliations.flatMap((affiliation) => affiliation.rors.map((ror) => ror.rorCountry)))]
+                  [...new Set(filteredAffiliations.flatMap((affiliation) => affiliation.rors.map((ror) => ror.rorCountry)))]
                     .filter((country) => !!country)
                     .sort((a, b) => new Intl.DisplayNames(['en'], { type: 'region' }).of(a).localeCompare(new Intl.DisplayNames(['en'], { type: 'region' }).of(b)))
-                    .sort((a, b) => allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === b)).length - allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === a)).length)
+                    .sort((a, b) => filteredAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === b)).length - filteredAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === a)).length)
                     .map((country) => (
                       <option
                         key={country}
                         value={country}
                       >
                         {getFlagEmoji(country)}
-                        {` ${new Intl.DisplayNames(['en'], { type: 'region' }).of(country)} (${allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === country)).length})`}
+                        {` ${new Intl.DisplayNames(['en'], { type: 'region' }).of(country)} (${filteredAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === country)).length})`}
                       </option>
                     ))
                 }
@@ -293,7 +303,7 @@ export default function ViewsSelector({
 }
 
 ViewsSelector.propTypes = {
-  allAffiliations: PropTypes.arrayOf(
+  affiliations: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       nameHtml: PropTypes.string.isRequired,
@@ -305,6 +315,16 @@ ViewsSelector.propTypes = {
   ).isRequired,
   allOpenalexCorrections: PropTypes.array.isRequired,
   filteredAffiliationName: PropTypes.string.isRequired,
+  filteredAffiliations: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      nameHtml: PropTypes.string.isRequired,
+      source: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+      works: PropTypes.arrayOf(PropTypes.string).isRequired,
+      worksNumber: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
   selectedOpenAlex: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
@@ -315,6 +335,7 @@ ViewsSelector.propTypes = {
       worksNumber: PropTypes.number.isRequired,
     }),
   ).isRequired,
+  setAffiliations: PropTypes.func.isRequired,
   setAllOpenalexCorrections: PropTypes.func.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
   setSelectedOpenAlex: PropTypes.func.isRequired,

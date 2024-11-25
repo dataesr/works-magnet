@@ -121,6 +121,10 @@ export default function Affiliations() {
       }));
       affiliation.rorsToCorrect = rorsToCorrect;
       affiliation.hasCorrection = rorsToCorrect.filter((rorToCorrect) => rorToCorrect?.action).length > 0;
+      // TODO: should be replaced
+      affiliation.correctedRors = rorsToCorrect;
+      affiliation.rawAffiliationString = affiliation.name;
+      affiliation.rorsInOpenAlex = affiliation.rors;
     });
     setAffiliations(affiliationsTmp);
     setAddList([]);
@@ -587,7 +591,7 @@ export default function Affiliations() {
                   </div>
                   <div className="right-content fr-mr-1w">
                     <ExportErrorsButton
-                      allOpenalexCorrections={allOpenalexCorrections}
+                      allOpenalexCorrections={affiliations.filter((affiliation) => affiliation.hasCorrection)}
                       options={body}
                     />
                     <SendFeedbackButton
@@ -597,10 +601,12 @@ export default function Affiliations() {
                   </div>
                 </div>
                 <ViewsSelector
-                  allAffiliations={filteredAffiliations}
+                  affiliations={affiliations}
                   allOpenalexCorrections={allOpenalexCorrections}
                   filteredAffiliationName={filteredAffiliationName}
+                  filteredAffiliations={filteredAffiliations}
                   selectedOpenAlex={selectedOpenAlex}
+                  setAffiliations={setAffiliations}
                   setAllOpenalexCorrections={setAllOpenalexCorrections}
                   setFilteredAffiliationName={setFilteredAffiliationName}
                   setSelectedOpenAlex={setSelectedOpenAlex}

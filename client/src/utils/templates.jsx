@@ -194,8 +194,12 @@ const datasourceTemplate = (rowData) => {
 const correctionTemplate = (rowData) => {
   let html = '';
   html = html.concat('<ul>');
-  const rorsToCorrect = rowData.rorsToCorrect
-    .map((item) => item.rorId);
+  let rorsToCorrect = [];
+  if (Array.isArray(rowData?.rorsToCorrect)) {
+    rorsToCorrect = rowData.rorsToCorrect.map((item) => item.rorId);
+  } else {
+    rorsToCorrect = rowData.rorsToCorrect.split(';');
+  }
   if (rorsToCorrect.length > 0) {
     rorsToCorrect.forEach((ror) => {
       html = html.concat(`<li key="ror-${ror}">${ror}</li>`);

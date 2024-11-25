@@ -37,8 +37,12 @@ export default function RorName({ isRemoved, ror }) {
   );
 }
 
+RorName.defaultProps = {
+  isRemoved: false,
+};
+
 RorName.propTypes = {
-  isRemoved: PropTypes.bool.isRequired,
+  isRemoved: PropTypes.bool,
   ror: PropTypes.shape({
     rorCountry: PropTypes.string.isRequired,
     rorName: PropTypes.string.isRequired,
