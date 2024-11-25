@@ -1,4 +1,4 @@
-import { Badge, Col, Row, Text } from '@dataesr/dsfr-plus';
+import { Badge, Checkbox, Col, Row, Text } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
 import WorksList from '../components/works-list';
@@ -36,10 +36,9 @@ export default function ListView({
               <Col>
                 <div style={{ display: 'inline-flex' }}>
                   <div style={{ display: 'inline-block', width: '20px' }}>
-                    <input
-                      id={`affiliation-${affiliation.key}`}
-                      type="checkbox"
+                    <Checkbox
                       checked={selectedOpenAlex.includes(affiliation)}
+                      name="affiliations"
                       onChange={(e) => {
                         if (e.target.checked) {
                           setSelectedOpenAlex([...selectedOpenAlex, affiliation]);
@@ -48,15 +47,16 @@ export default function ListView({
                         }
                       }}
                     />
+                    <br />
                     {
-                      allOpenalexCorrections.find((correctedAffiliation) => correctedAffiliation.id === affiliation.id) && (
+                      (affiliation.hasCorrection) && (
                         <span className="fr-icon-warning-fill fr-icon--sm" style={{ color: '#B34000' }} />
                       )
                     }
                   </div>
-                  <div style={{ display: 'inline-block', maxWidth: '95%' }}>
+                  <div className="fr-ml-1w" style={{ display: 'inline-block', maxWidth: '95%' }}>
                     <Text as="label" htmlFor={`affiliation-${affiliation.key}`} style={{ cursor: 'pointer' }}>
-                      <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml }} />
+                      <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml.replace(' [ source: OpenAlex ]', '') }} />
                     </Text>
                     <WorksList works={affiliation.works} />
                   </div>

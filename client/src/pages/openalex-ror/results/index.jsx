@@ -22,6 +22,7 @@ import { status } from '../../../config';
 import useToast from '../../../hooks/useToast';
 import Header from '../../../layout/header';
 import { getAffiliationsCorrections } from '../../../utils/curations';
+import getFlagEmoji from '../../../utils/flags';
 import { getRorData, isRor } from '../../../utils/ror';
 import { normalize, removeDiacritics } from '../../../utils/strings';
 import { getTagColor } from '../../../utils/tags';
@@ -110,6 +111,18 @@ export default function Affiliations() {
       return { ...item, hasCorrection, rorsToCorrect };
     });
     setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(selectedOpenAlexTmp)]);
+    // Duplicate affiliations array
+    const affiliationsTmp = [...affiliations];
+    selectedOpenAlex.forEach((selected) => {
+      const affiliation = affiliationsTmp.find((aff) => selected.id === aff.id);
+      const rorsToCorrect = [...affiliation.rorsToCorrect, ...rorsToAdd].map((rorToCorrect) => ({
+        ...rorToCorrect,
+        action: removeList.includes(rorToCorrect.rorId) ? 'remove' : rorToCorrect?.action,
+      }));
+      affiliation.rorsToCorrect = rorsToCorrect;
+      affiliation.hasCorrection = rorsToCorrect.filter((rorToCorrect) => rorToCorrect?.action).length > 0;
+    });
+    setAffiliations(affiliationsTmp);
     setAddList([]);
     setRemoveList([]);
   };
@@ -406,10 +419,7 @@ export default function Affiliations() {
                                             </Link>
                                           </td>
                                           <td>
-                                            <img
-                                              alt={`${uniqueRor.rorCountry} flag`}
-                                              src={`https://flagsapi.com/${uniqueRor.rorCountry}/flat/16.png`}
-                                            />
+                                            {getFlagEmoji(uniqueRor.rorCountry)}
                                             <span className="fr-ml-1w">
                                               {removeList.includes(
                                                 uniqueRor.rorId,
@@ -464,20 +474,28 @@ export default function Affiliations() {
                                             {(uniqueRor.countAffiliations < selectedOpenAlex.length) && (
                                               <Button
                                                 aria-label="Propagate ROR to all affiliations"
+                                                className="fr-ml-1w"
+                                                color="pink-tuile"
                                                 disabled={
                                                   uniqueRor.countAffiliations
                                                     === selectedOpenAlex.length
                                                 }
-                                                icon="delete-line"
+                                                icon="chat-check-line"
                                                 onClick={() => setAddList((prevList) => [
                                                   ...prevList,
                                                   uniqueRor.rorId,
                                                 ])}
                                                 size="sm"
-                                                title="Propagate ROR to all affiliations"
+                                                title={`Propagate ROR to ${selectedOpenAlex?.length ?? 0 - uniqueRor.countAffiliations} affiliations`}
+                                              />
+                                            )}
+                                            {(addList.includes(uniqueRor.rorId)) && (
+                                              <Badge
+                                                color="pink-tuile"
+                                                className="fr-mr-1w"
                                               >
-                                                Propagate ROR to all affiliations
-                                              </Button>
+                                                Added
+                                              </Badge>
                                             )}
                                           </td>
                                         </tr>
