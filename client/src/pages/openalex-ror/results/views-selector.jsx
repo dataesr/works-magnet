@@ -16,7 +16,7 @@ import { isRor } from '../../../utils/ror';
 import DataTableView from './datatable-view';
 import ListView from './list-view';
 
-export default function OpenalexView({
+export default function ViewsSelector({
   allAffiliations,
   allOpenalexCorrections,
   filteredAffiliationName,
@@ -292,7 +292,7 @@ export default function OpenalexView({
   );
 }
 
-OpenalexView.propTypes = {
+ViewsSelector.propTypes = {
   allAffiliations: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,

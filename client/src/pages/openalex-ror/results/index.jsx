@@ -59,7 +59,6 @@ export default function Affiliations() {
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
   const [selectedOpenAlex, setSelectedOpenAlex] = useState([]);
-  const [timer, setTimer] = useState();
   const [uniqueRors, setUniqueRors] = useState({});
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
@@ -214,31 +213,21 @@ export default function Affiliations() {
   }, [data]);
 
   useEffect(() => {
-    if (timer) {
-      clearTimeout(timer);
+    const regex = new RegExp(removeDiacritics(filteredAffiliationName));
+    const filteredAffiliationsTmp = affiliations.filter(
+      (affiliation) => regex.test(
+        `${affiliation.key.replace('[ source: ', '').replace(' ]', '')} ${affiliation.rors.map((_ror) => _ror.rorId).join(' ')}`,
+      ),
+    );
+    // Recompute corrections only when the array has changed
+    if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
+      setAllOpenalexCorrections([
+        ...allOpenalexCorrections,
+        ...getAffiliationsCorrections(filteredAffiliationsTmp),
+      ]);
     }
-    const timerTmp = setTimeout(() => {
-      const filteredAffiliationsTmp = affiliations.filter(
-        (affiliation) => {
-          const regex = new RegExp(removeDiacritics(filteredAffiliationName));
-          return regex.test(
-            affiliation.key.replace('[ source: ', '').replace(' ]', ''),
-          );
-        },
-      );
-      // Recompute corrections only when the array has changed
-      if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
-        setAllOpenalexCorrections([
-          ...allOpenalexCorrections,
-          ...getAffiliationsCorrections(filteredAffiliationsTmp),
-        ]);
-      }
-      setFilteredAffiliations(filteredAffiliationsTmp);
-    }, 500);
-    setTimer(timerTmp);
-    // The timer should not be tracked
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [affiliations, filteredAffiliationName, filteredStatus]);
+    setFilteredAffiliations(filteredAffiliationsTmp);
+  }, [affiliations, allOpenalexCorrections, filteredAffiliationName, filteredAffiliations.length, filteredStatus]);
 
   useEffect(() => {
     if (ror === '') {
@@ -557,9 +546,9 @@ export default function Affiliations() {
                 <div
                   className="wm-external-actions"
                   style={{
+                    alignItems: 'center',
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
                   }}
                 >
                   <div className="left-content">
