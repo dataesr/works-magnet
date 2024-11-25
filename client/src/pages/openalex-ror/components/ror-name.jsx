@@ -1,5 +1,6 @@
 import { Badge } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
+import getFlagEmoji from '../../../utils/flags';
 
 export default function RorName({ isRemoved, ror }) {
   return (
@@ -23,10 +24,7 @@ export default function RorName({ isRemoved, ror }) {
           ror.rorName
         )}
       </span>
-      <img
-        alt={`${ror.rorCountry} flag`}
-        src={`https://flagsapi.com/${ror.rorCountry}/flat/16.png`}
-      />
+      {getFlagEmoji(ror.rorCountry)}
       {isRemoved && (
         <Badge
           className="fr-ml-1w"

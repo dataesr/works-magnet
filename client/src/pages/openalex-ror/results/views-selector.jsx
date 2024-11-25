@@ -13,6 +13,7 @@ import { isRor } from '../../../utils/ror';
 
 import ListView from './list-view';
 import DataTableView from './datatable-view';
+import getFlagEmoji from '../../../utils/flags';
 
 export default function OpenalexView({
   allAffiliations,
@@ -234,7 +235,11 @@ export default function OpenalexView({
                   [...new Set(allAffiliations.flatMap((affiliation) => affiliation.rors.map((ror) => ror.rorCountry)))]
                     .sort((a, b) => allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === b)).length - allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === a)).length)
                     .map((country) => (
-                      <option key={country} value={country}>
+                      <option
+                        key={country}
+                        value={country}
+                      >
+                        {getFlagEmoji(country)}
                         {` ${new Intl.DisplayNames(['en'], { type: 'region' }).of(country)} (${allAffiliations.filter((aff) => aff.rors.some((r) => r.rorCountry === country)).length})`}
                       </option>
                     ))
