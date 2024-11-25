@@ -2,6 +2,7 @@ import { Badge,
   Button,
   Col, Row,
   Modal, ModalContent, ModalFooter, ModalTitle,
+  ButtonGroup,
 } from '@dataesr/dsfr-plus';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -27,6 +28,10 @@ export default function OpenalexView({
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectSortOnNumberOfRors, setSelectSortOnNumberOfRors] = useState('default');
+  const [selectShowAffiliations, setSelectShowAffiliations] = useState('all');
+  const [selectRorCountry, setSelectRorCountry] = useState('all');
+
   const [sortsAndFilters, setSortsAndFilters] = useState({
     sortOnNumberOfRors: 'default',
     showAffiliations: 'all',
@@ -188,9 +193,9 @@ export default function OpenalexView({
                 className="fr-select"
                 id="select-sort-on-number-of-rors"
                 onChange={(e) => {
-                  setSortsAndFilters({ ...sortsAndFilters, sortOnNumberOfRors: e.target.value });
+                  setSelectSortOnNumberOfRors(e.target.value);
                 }}
-                value={sortsAndFilters.sortOnNumberOfRors}
+                value={selectSortOnNumberOfRors}
               >
                 <option value="" disabled hidden>Select an option</option>
                 <option value="default">Default</option>
@@ -208,9 +213,9 @@ export default function OpenalexView({
                 className="fr-select"
                 id="select-show-affiliations"
                 onChange={(e) => {
-                  setSortsAndFilters({ ...sortsAndFilters, showAffiliations: e.target.value });
+                  setSelectShowAffiliations(e.target.value);
                 }}
-                value={sortsAndFilters.showAffiliations}
+                value={selectShowAffiliations}
               >
                 <option value="all">All affiliations</option>
                 <option value="onlyWithCorrections">Only those with corrections</option>
@@ -225,10 +230,10 @@ export default function OpenalexView({
               <select
                 className="fr-select"
                 id="select-ror-country"
-                value={sortsAndFilters.rorCountry}
                 onChange={(e) => {
-                  setSortsAndFilters({ ...sortsAndFilters, rorCountry: e.target.value });
+                  setSelectRorCountry(e.target.value);
                 }}
+                value={selectRorCountry}
               >
                 <option value="all">All countries</option>
                 {
@@ -248,7 +253,7 @@ export default function OpenalexView({
             </label>
           </div>
         </ModalContent>
-        <ModalFooter>
+        <ModalFooter style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
             onClick={() => setSortsAndFilters({
               sortOnNumberOfRors: 'default',
@@ -257,6 +262,19 @@ export default function OpenalexView({
             })}
           >
             Reset to default
+          </Button>
+
+          <Button
+            onClick={() => {
+              setSortsAndFilters({
+                sortOnNumberOfRors: selectSortOnNumberOfRors,
+                showAffiliations: selectShowAffiliations,
+                rorCountry: selectRorCountry,
+              });
+              setIsModalOpen((prev) => !prev);
+            }}
+          >
+            Apply & close
           </Button>
         </ModalFooter>
       </Modal>
