@@ -134,11 +134,13 @@ export default function Affiliations() {
   useEffect(() => {
     const uniqueRorsTmp = {};
     selectedOpenAlex.forEach((affiliation) => {
-      affiliation.rors.forEach((_ror) => {
+      affiliation.rorsToCorrect.forEach((_ror) => {
         if (!Object.keys(uniqueRorsTmp).includes(_ror.rorId)) {
-          uniqueRorsTmp[_ror.rorId] = { ..._ror, countAffiliations: 0 };
+          uniqueRorsTmp[_ror.rorId] = { ..._ror, addedBy: 0, countAffiliations: 0, removedBy: 0 };
         }
         uniqueRorsTmp[_ror.rorId].countAffiliations += 1;
+        if (_ror?.action === 'add') uniqueRorsTmp[_ror.rorId].addedBy += 1;
+        if (_ror?.action === 'remove') uniqueRorsTmp[_ror.rorId].removedBy += 1;
       });
     });
     setUniqueRors(uniqueRorsTmp);
@@ -414,6 +416,8 @@ export default function Affiliations() {
                                       <th>ROR</th>
                                       <th>Name</th>
                                       <th>Number of affiliations</th>
+                                      <th>Added by</th>
+                                      <th>Removed by</th>
                                       <th>Actions</th>
                                     </tr>
                                   </thead>
@@ -453,6 +457,8 @@ export default function Affiliations() {
                                             {' '}
                                             {selectedOpenAlex.length}
                                           </td>
+                                          <td>{uniqueRor.addedBy}</td>
+                                          <td>{uniqueRor.removedBy}</td>
                                           <td style={{ minWidth: '160px' }}>
                                             {removeList.includes(
                                               uniqueRor.rorId,
