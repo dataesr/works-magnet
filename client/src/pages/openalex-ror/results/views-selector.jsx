@@ -1,6 +1,7 @@
 import {
   Badge,
   Button,
+  Checkbox,
   Col,
   Modal, ModalContent, ModalFooter, ModalTitle,
   Row,
@@ -123,7 +124,7 @@ export default function ViewsSelector({
       >
         <Row>
           <Col xs="3">
-            <input
+            <Checkbox
               checked={(selectedOpenAlex.length === filteredAffiliations.length) && (selectedOpenAlex.length > 0)}
               className="fr-ml-2w"
               onChange={() => {
@@ -133,9 +134,8 @@ export default function ViewsSelector({
                   setSelectedOpenAlex([]);
                 }
               }}
-              type="checkbox"
             />
-            <span className="wm-text fr-mb-3w fr-ml-1w">
+            <span className="wm-text fr-mb-3w fr-ml-6w">
               <Badge color="brown-opera">
                 {selectedOpenAlex.length}
               </Badge>

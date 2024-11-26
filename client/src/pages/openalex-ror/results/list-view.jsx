@@ -36,7 +36,7 @@ export default function ListView({
                 <div style={{ display: 'inline-flex' }}>
                   <div style={{ display: 'inline-block', width: '20px' }}>
                     <Checkbox
-                      checked={selectedOpenAlex.includes(affiliation)}
+                      checked={selectedOpenAlex.some((a) => a.key === affiliation.key)}
                       name="affiliations"
                       onChange={(e) => {
                         if (e.target.checked) {
