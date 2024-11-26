@@ -126,7 +126,6 @@ export default function ViewsSelector({
           <Col xs="3">
             <Checkbox
               checked={(selectedOpenAlex.length === filteredAffiliations.length) && (selectedOpenAlex.length > 0)}
-              className="fr-ml-2w"
               onChange={() => {
                 if (selectedOpenAlex.length === 0) {
                   setSelectedOpenAlex(filteredAffiliations);

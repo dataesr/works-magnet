@@ -30,7 +30,10 @@ export default function ListView({
     <ul className="wm-list">
       {
         allAffiliations.map((affiliation) => (
-          <li key={affiliation.key}>
+          <li
+            className={selectedOpenAlex.some((a) => a.key === affiliation.key) ? 'selected' : ''}
+            key={affiliation.key}
+          >
             <Row>
               <Col>
                 <div style={{ display: 'inline-flex' }}>
@@ -54,7 +57,7 @@ export default function ListView({
                     }
                   </div>
                   <div className="fr-ml-1w" style={{ display: 'inline-block', maxWidth: '95%' }}>
-                    <Text as="label" htmlFor={`affiliation-${affiliation.key}`} style={{ cursor: 'pointer' }}>
+                    <Text as="span">
                       <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml.replace(' [ source: OpenAlex ]', '') }} />
                     </Text>
                     <WorksList works={affiliation.works} />

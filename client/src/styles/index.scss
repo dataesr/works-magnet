@@ -198,11 +198,16 @@ html, body {
     background-color: #eee;
     list-style: none;
     border: #777 1px solid;
+    padding-left: 1px;
 
     li {
       padding: 10px;
       border-bottom: 1px solid #ddd;
       font-size: 0.9rem;
+
+    }
+    .selected {
+      background-color: #d7cdf1;
     }
   }
 
