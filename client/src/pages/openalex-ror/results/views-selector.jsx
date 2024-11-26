@@ -117,7 +117,10 @@ export default function ViewsSelector({
 
   return (
     <>
-      <div className="wm-internal-actions">
+      <div
+        className="wm-internal-actions"
+        style={{ position: 'sticky', top: '44px', zIndex: 1000 }}
+      >
         <Row>
           <Col xs="3">
             <input

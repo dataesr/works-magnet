@@ -299,81 +299,97 @@ export default function Affiliations() {
 
         {!isFetching && isFetched && (
           <Row>
-            <Col className="wm-menu" md={2}>
-              <Row>
-                <Button
-                  aria-label="Back to search page"
-                  className="fr-mt-1w"
-                  color="blue-ecume"
-                  icon="arrow-left-line"
-                  onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}
-                  size="sm"
-                  title="Back to search page"
-                >
-                  Back to search page
-                </Button>
-              </Row>
-              <Row>
-                <Col>
-                  <div className="wm-title">
-                    <span
-                      className="fr-icon-calendar-line fr-mr-1w"
-                      aria-hidden="true"
-                    />
-                    Selected years
-                  </div>
-                  <div className="wm-content">
-                    <Tag
-                      className="fr-mr-1w"
-                      color="blue-cumulus"
-                      key="openalex-ror-tag-year-start"
-                    >
-                      {`Start: ${body.startYear}`}
-                    </Tag>
-                    <Tag color="blue-cumulus" key="openalex-ror-tag-year-end">
-                      {`End: ${body.endYear}`}
-                    </Tag>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <div className="wm-title">
-                    <span
-                      className="fr-icon-hotel-line fr-mr-1w"
-                      aria-hidden="true"
-                    />
-                    Searched affiliations
-                  </div>
-                  <div className="wm-content">
-                    {body.affiliations.map((affiliation) => (
-                      <Row key={`openalex-ror-search-${affiliation.label}`}>
-                        <Tag
-                          className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
-                            }`}
-                          color={getTagColor(affiliation)}
-                          key={`openalex-ror-tag-${affiliation.label}`}
-                        >
-                          {affiliation.label}
-                        </Tag>
-                        {affiliation.children.map((child) => (
+            <Col
+              className="wm-menu"
+              md={2}
+            >
+              <div
+                style={{
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1000,
+                }}
+              >
+
+                <Row>
+                  <Button
+                    aria-label="Back to search page"
+                    className="fr-mt-1w"
+                    color="blue-ecume"
+                    icon="arrow-left-line"
+                    onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}
+                    size="sm"
+                    title="Back to search page"
+                  >
+                    Back to search page
+                  </Button>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="wm-title">
+                      <span
+                        className="fr-icon-calendar-line fr-mr-1w"
+                        aria-hidden="true"
+                      />
+                      Selected years
+                    </div>
+                    <div className="wm-content">
+                      <Tag
+                        className="fr-mr-1w"
+                        color="blue-cumulus"
+                        key="openalex-ror-tag-year-start"
+                      >
+                        {`Start: ${body.startYear}`}
+                      </Tag>
+                      <Tag color="blue-cumulus" key="openalex-ror-tag-year-end">
+                        {`End: ${body.endYear}`}
+                      </Tag>
+                    </div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="wm-title">
+                      <span
+                        className="fr-icon-hotel-line fr-mr-1w"
+                        aria-hidden="true"
+                      />
+                      Searched affiliations
+                    </div>
+                    <div className="wm-content">
+                      {body.affiliations.map((affiliation) => (
+                        <Row key={`openalex-ror-search-${affiliation.label}`}>
                           <Tag
-                            className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''
-                              }`}
-                            color={getTagColor(child)}
-                            key={`openalex-ror-tag-${child.label}`}
+                            className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
+                            }`}
+                            color={getTagColor(affiliation)}
+                            key={`openalex-ror-tag-${affiliation.label}`}
                           >
-                            {child.label}
+                            {affiliation.label}
                           </Tag>
-                        ))}
-                      </Row>
-                    ))}
-                  </div>
-                </Col>
-              </Row>
+                          {affiliation.children.map((child) => (
+                            <Tag
+                              className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''
+                              }`}
+                              color={getTagColor(child)}
+                              key={`openalex-ror-tag-${child.label}`}
+                            >
+                              {child.label}
+                            </Tag>
+                          ))}
+                        </Row>
+                      ))}
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+
             </Col>
             <Col md={10}>
-              <div className="wm-bg wm-content" style={{ overflow: `${isModalOpen ? 'hidden' : 'unset'}` }}>
+              <div
+                className="wm-bg wm-content"
+                style={{ overflow: `${isModalOpen ? 'hidden' : 'unset'}` }}
+              >
                 <Modal
                   isOpen={isModalOpen}
                   hide={() => setIsModalOpen((prev) => !prev)}
@@ -442,7 +458,7 @@ export default function Affiliations() {
                                               uniqueRor.rorId,
                                             ) ? (
                                                 <>
-                                                  <Button
+                                                <Button
                                                     aria-label="Undo remove"
                                                     color="blue-ecume"
                                                     icon="arrow-go-back-line"
@@ -452,13 +468,13 @@ export default function Affiliations() {
                                                     size="sm"
                                                     title="Undo remove"
                                                   />
-                                                  <Badge
+                                                <Badge
                                                     color="pink-tuile"
                                                     className="fr-mr-1w"
                                                   >
                                                     Removed
                                                   </Badge>
-                                                </>
+                                              </>
                                               ) : (
                                                 <Button
                                                   aria-label="Remove ROR"
@@ -572,6 +588,9 @@ export default function Affiliations() {
                     alignItems: 'center',
                     display: 'flex',
                     justifyContent: 'space-between',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 1000,
                   }}
                 >
                   <div className="left-content">
