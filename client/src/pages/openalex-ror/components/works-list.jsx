@@ -16,7 +16,7 @@ export default function WorksList({ works }) {
           Works:
         </span>
         {displayedWorks.map((work) => (
-          <Link className="fr-mr-1w" href={`https://openalex.org/${work}`} key={`works-list-${work}`} target="_blank">
+          <Link className="fr-mr-1w" href={`https://doi.org/${work}`} key={`works-list-${work}`} target="_blank">
             {work}
           </Link>
         ))}
