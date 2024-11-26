@@ -57,7 +57,17 @@ export default function ListView({
                     }
                   </div>
                   <div className="fr-ml-1w" style={{ display: 'inline-block', maxWidth: '95%' }}>
-                    <Text as="span">
+                    <Text
+                      as="span"
+                      onClick={() => {
+                        if (selectedOpenAlex.some((a) => a.key === affiliation.key)) {
+                          setSelectedOpenAlex(selectedOpenAlex.filter((a) => a.key !== affiliation.key));
+                        } else {
+                          setSelectedOpenAlex([...selectedOpenAlex, affiliation]);
+                        }
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml.replace(' [ source: OpenAlex ]', '') }} />
                     </Text>
                     <WorksList works={affiliation.works} />
