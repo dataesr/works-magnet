@@ -305,7 +305,10 @@ export default function Affiliations() {
 
   const addRor = () => {
     const updatedAffiliations = affiliations.map((affiliation) => {
-      if (affiliation.selected && !affiliation.addList.some((item) => item.rorId === cleanRor.rorId)) {
+      if (affiliation.selected
+        && !affiliation.addList.some((item) => item.rorId === cleanRor.rorId)
+        && !affiliation.rors.some((item) => item.rorId === cleanRor.rorId)
+      ) {
         return {
           ...affiliation,
           addList: [...affiliation.addList, cleanRor],
