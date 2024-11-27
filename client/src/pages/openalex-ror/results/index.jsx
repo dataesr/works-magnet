@@ -56,8 +56,10 @@ export default function Affiliations() {
   ]);
   const [isLoadingRorData, setIsLoadingRorData] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [removeList, setRemoveList] = useState([]);
   const [ror, setRor] = useState('');
+  const [cleanRor, setCleanRor] = useState('');
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
   const [selectedOpenAlex, setSelectedOpenAlex] = useState([]);
@@ -282,11 +284,46 @@ export default function Affiliations() {
     setAffiliations(updatedAffiliations);
   };
 
-  const addRor = (affiliationId, rorObject) => {
-    console.log('addRor', affiliationId, rorObject);
+  const removeRorFromAddList = (affiliationId, rorId) => {
+    const updatedAffiliations = affiliations.map((affiliation) => {
+      if (affiliation.id === affiliationId) {
+        if (affiliation.addList.find((item) => item.rorId === rorId)) {
+          return { ...affiliation, addList: affiliation.addList.filter((item) => item.rorId !== rorId) };
+        }
+      }
+      return affiliation;
+    });
+
+    setAffiliations(updatedAffiliations);
   };
 
-  // toggle the selection of an affiliation
+  useEffect(() => {
+    if (rorMessageType !== 'valid') {
+      setCleanRor({});
+    }
+  }, [rorMessageType]);
+
+  const addRor = () => {
+    const updatedAffiliations = affiliations.map((affiliation) => {
+      if (affiliation.selected && !affiliation.addList.some((item) => item.rorId === cleanRor.rorId)) {
+        return {
+          ...affiliation,
+          addList: [...affiliation.addList, cleanRor],
+        };
+      }
+      return affiliation;
+    });
+    setAffiliations(updatedAffiliations);
+    setRor('');
+    setCleanRor({});
+    setIsAddModalOpen(false);
+  };
+
+  const getCleanRor = async () => {
+    const cleanRorData = await getRorData(ror);
+    setCleanRor(cleanRorData[0]);
+  };
+
   const setSelectAffiliations = (affiliationIds) => {
     const updatedAffiliations = affiliations.map((affiliation) => {
       if (affiliationIds.includes(affiliation.id)) {
@@ -598,7 +635,7 @@ export default function Affiliations() {
                           //   setAddList([...addList, ror]);
                           //   setRor('');
                           // }}
-                          onClick={() => getRorData()}
+                          onClick={() => getCleanRor()}
                           title="Add ROR"
                         >
                           + Add
@@ -639,7 +676,7 @@ export default function Affiliations() {
                   }}
                 >
                   <div className="left-content">
-                    <Button
+                    {/* <Button
                       aria-label="Modify selected ROR"
                       className="fr-ml-5w fr-mr-1w"
                       color="blue-ecume"
@@ -651,7 +688,87 @@ export default function Affiliations() {
                       title="Modify selected ROR"
                     >
                       Modify selected ROR
+                    </Button> */}
+                    <Button
+                      aria-label="Add ROR to selected affiliations"
+                      className="fr-ml-5w fr-mr-1w"
+                      color="blue-ecume"
+                      disabled={filteredAffiliations.filter((affiliation) => affiliation.selected).length === 0}
+                      icon="add-circle-line"
+                      key="add-ror"
+                      onClick={() => setIsAddModalOpen((prev) => !prev)}
+                      size="sm"
+                      title="Add ROR to selected affiliations"
+                    >
+                      Add ROR to selected affiliations
                     </Button>
+                    <Modal
+                      isOpen={isAddModalOpen}
+                      hide={() => setIsAddModalOpen((prev) => !prev)}
+                      // size="xl"
+                    >
+                      <ModalTitle>
+                        {`Add ROR to ${filteredAffiliations.filter((affiliation) => affiliation.selected).length} OpenAlex selected affiliation${filteredAffiliations.filter((affiliation) => affiliation.selected).length > 1 ? 's' : ''}`}
+                      </ModalTitle>
+                      <ModalContent>
+                        <Container fluid>
+                          <Row verticalAlign="bottom">
+                            <Col>
+                              <TextInput
+                                messageType={rorMessageType}
+                                message={rorMessage}
+                                onChange={(e) => setRor(e.target.value)}
+                                value={ror}
+                                label="ROR"
+                                hint="Enter a valid ROR id and 'check' it with ROR API"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Button
+                                aria-label="Check ROR"
+                                color="blue-ecume"
+                                disabled={['', 'error'].includes(rorMessageType)}
+                                onClick={() => getCleanRor()}
+                                size="sm"
+                                variant="secondary"
+                              >
+                                Check it
+                              </Button>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col>
+                              {
+                                rorMessageType === 'valid' && cleanRor.rorName && cleanRor.rorCountry
+                                  && (
+                                    <>
+                                      <div>
+                                        <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
+                                        <span className="fr-mx-1w">
+                                          {cleanRor.rorName}
+                                        </span>
+                                        {getFlagEmoji(cleanRor.rorCountry)}
+                                      </div>
+                                      <Button
+                                        aria-label="Add ROR"
+                                        className="fr-mt-3w"
+                                        color="blue-ecume"
+                                        disabled={['', 'error'].includes(rorMessageType) || !cleanRor.rorName || !cleanRor.rorCountry}
+                                        onClick={() => { addRor(); }}
+                                        size="sm"
+                                        title="Add ROR"
+                                      >
+                                        Add this ROR to selected affiliations
+                                      </Button>
+                                    </>
+                                  )
+                              }
+                            </Col>
+                          </Row>
+                        </Container>
+                      </ModalContent>
+                    </Modal>
+
                   </div>
                   <div className="right-content fr-mr-1w">
                     <ExportErrorsButton
@@ -677,6 +794,7 @@ export default function Affiliations() {
                   undo={undo}
                   toggleRemovedRor={toggleRemovedRor}
                   setSelectAffiliations={setSelectAffiliations}
+                  removeRorFromAddList={removeRorFromAddList}
                 />
               </div>
             </Col>

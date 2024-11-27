@@ -31,6 +31,7 @@ export default function ViewsSelector({
 
   toggleRemovedRor,
   setSelectAffiliations,
+  removeRorFromAddList,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -203,6 +204,7 @@ export default function ViewsSelector({
           toggleRemovedRor={toggleRemovedRor}
           setSelectAffiliations={setSelectAffiliations}
           selectedOpenAlex={selectedOpenAlex}
+          removeRorFromAddList={removeRorFromAddList}
         />
       )}
       <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)} size="md">
@@ -345,4 +347,5 @@ ViewsSelector.propTypes = {
   undo: PropTypes.func.isRequired,
   toggleRemovedRor: PropTypes.func.isRequired,
   setSelectAffiliations: PropTypes.func.isRequired,
+  removeRorFromAddList: PropTypes.func.isRequired,
 };

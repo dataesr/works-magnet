@@ -7,13 +7,10 @@ import RorName from '../components/ror-name';
 
 export default function ListView({
   allAffiliations,
-  selectedOpenAlex,
   setFilteredAffiliationName,
-  setSelectedOpenAlex,
-  // removeList,
-  // setRemoveList,
   toggleRemovedRor,
   setSelectAffiliations,
+  removeRorFromAddList,
 }) {
   const defineRorColor = [];
   const dsColors = ['green-archipel', 'purple-glycine', 'pink-tuile', 'green-menthe', 'brown-cafe-creme'];
@@ -29,8 +26,6 @@ export default function ListView({
   });
   const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
   defineRorColor.push(...sortedRor.slice(0, 5).map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
-
-  // console.log('ListView', allAffiliations[0]);
 
   return (
     <ul className="wm-list">
@@ -79,7 +74,7 @@ export default function ListView({
                             ror={rorToCorrect}
                             rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
                             setFilteredAffiliationName={setFilteredAffiliationName}
-                            toggleRemovedRor={() => toggleRemovedRor(affiliation.id, rorToCorrect.rorId)}
+                            removeRor={() => toggleRemovedRor(affiliation.id, rorToCorrect.rorId)}
                           />
                           <br />
                           <RorName
@@ -89,19 +84,20 @@ export default function ListView({
                         </td>
                       </tr>
                     ))}
-                    {affiliation.rorsToCorrect?.filter((_ror) => _ror.action === 'add').map((rorToCorrect) => (
-                      <tr key={`openalex-ror-affiliations-${rorToCorrect.rorId}`}>
+                    {affiliation.addList.map((ror) => (
+                      <tr key={`openalex-ror-affiliations-${ror.rorId}`}>
                         <td>
                           <RorBadge
-                            ror={rorToCorrect}
-                            rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
+                            ror={ror}
+                            rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
                             setFilteredAffiliationName={setFilteredAffiliationName}
+                            removeRor={() => removeRorFromAddList(affiliation.id, ror.rorId)}
                           />
                           <br />
-                          <RorName ror={rorToCorrect} />
+                          <RorName ror={ror} />
                           <Badge
                             className="fr-ml-1w"
-                            color="warning"
+                            color="blue-cumulus"
                           >
                             Added
                           </Badge>
@@ -121,8 +117,8 @@ export default function ListView({
 
 ListView.propTypes = {
   allAffiliations: PropTypes.array.isRequired,
-  setSelectedOpenAlex: PropTypes.func.isRequired,
-  selectedOpenAlex: PropTypes.array.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
   setSelectAffiliations: PropTypes.func.isRequired,
+  toggleRemovedRor: PropTypes.func.isRequired,
+  removeRorFromAddList: PropTypes.func.isRequired,
 };
