@@ -1,6 +1,7 @@
 import {
   Badge,
   Button,
+  ButtonGroup,
   Col,
   Container,
   Link,
@@ -148,6 +149,8 @@ export default function Affiliations() {
 
   useEffect(() => {
     const get = async () => {
+      console.log('before get');
+
       setIsLoadingRorData(true);
       const addedRors = await Promise.all(
         addList.map((add) => getRorData(add)),
@@ -155,12 +158,13 @@ export default function Affiliations() {
       const uniqueRorsTmp = {};
       addedRors.flat().forEach((addedRor) => {
         if (!Object.keys(uniqueRors).includes(addedRor.rorId)) {
-          uniqueRorsTmp[addedRor.rorId] = { ...addedRor, countAffiliations: 0 };
+          uniqueRorsTmp[addedRor.rorId] = { ...addedRor, countAffiliations: selectedOpenAlex.length };
         }
       });
       setUniqueRors({ ...uniqueRors, ...uniqueRorsTmp });
       setIsLoadingRorData(false);
     };
+
     get();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addList]);
@@ -264,6 +268,10 @@ export default function Affiliations() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ror]);
+
+  console.log('uniqueRors', uniqueRors);
+  console.log('selectedOpenAlex', selectedOpenAlex);
+  console.log('addList', addList);
 
   return (
     <>
@@ -414,7 +422,7 @@ export default function Affiliations() {
                                   <thead>
                                     <tr>
                                       <th>ROR</th>
-                                      <th>Name</th>
+                                      {/* <th>Name</th> */}
                                       <th>Number of affiliations</th>
                                       <th>Added by</th>
                                       <th>Removed by</th>
@@ -441,14 +449,16 @@ export default function Affiliations() {
                                                 uniqueRor.rorId,
                                               ) ? (<strike>{` https://ror.org/${uniqueRor.rorId}`}</strike>) : (` https://ror.org/${uniqueRor.rorId}`)}
                                             </Link>
-                                          </td>
-                                          <td>
-                                            {getFlagEmoji(uniqueRor.rorCountry)}
-                                            <span className="fr-ml-1w">
+                                            {/* </td>
+                                          <td> */}
+                                            <br />
+                                            <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
+                                            <span className="fr-mx-1w">
                                               {removeList.includes(
                                                 uniqueRor.rorId,
                                               ) ? (<strike>{uniqueRor.rorName}</strike>) : (uniqueRor.rorName)}
                                             </span>
+                                            {getFlagEmoji(uniqueRor.rorCountry)}
                                           </td>
                                           <td>
                                             {uniqueRor.countAffiliations}
@@ -460,11 +470,12 @@ export default function Affiliations() {
                                           <td>{uniqueRor.addedBy}</td>
                                           <td>{uniqueRor.removedBy}</td>
                                           <td style={{ minWidth: '160px' }}>
-                                            {removeList.includes(
-                                              uniqueRor.rorId,
-                                            ) ? (
-                                                <>
-                                                <Button
+                                            <ButtonGroup>
+                                              {removeList.includes(
+                                                uniqueRor.rorId,
+                                              )
+                                                ? (
+                                                  <Button
                                                     aria-label="Undo remove"
                                                     color="blue-ecume"
                                                     icon="arrow-go-back-line"
@@ -473,56 +484,59 @@ export default function Affiliations() {
                                                     ))}
                                                     size="sm"
                                                     title="Undo remove"
-                                                  />
-                                                <Badge
-                                                    color="pink-tuile"
-                                                    className="fr-mr-1w"
+                                                    variant="secondary"
                                                   >
-                                                    Removed
-                                                  </Badge>
-                                              </>
-                                              ) : (
+                                                    Undo remove
+                                                  </Button>
+                                                ) : (
+                                                  <Button
+                                                    aria-label="Remove ROR"
+                                                    color="pink-tuile"
+                                                    disabled={removeList.includes(
+                                                      uniqueRor.rorId,
+                                                    )}
+                                                    icon="delete-line"
+                                                    onClick={() => setRemoveList((prevList) => [
+                                                      ...prevList,
+                                                      uniqueRor.rorId,
+                                                    ])}
+                                                    size="sm"
+                                                    title="Remove ROR"
+                                                    variant="secondary"
+                                                  >
+                                                    Remove this ROR
+                                                  </Button>
+                                                )}
+                                              {(uniqueRor.countAffiliations < selectedOpenAlex.length) && (
                                                 <Button
-                                                  aria-label="Remove ROR"
-                                                  color="pink-tuile"
-                                                  disabled={removeList.includes(
-                                                    uniqueRor.rorId,
-                                                  )}
-                                                  icon="delete-line"
-                                                  onClick={() => setRemoveList((prevList) => [
+                                                  aria-label="Propagate ROR to all affiliations"
+                                                  className="fr-ml-1w"
+                                                  color="green-emeraude"
+                                                  disabled={
+                                                    uniqueRor.countAffiliations
+                                                    === selectedOpenAlex.length
+                                                  }
+                                                  icon="chat-check-line"
+                                                  onClick={() => setAddList((prevList) => [
                                                     ...prevList,
                                                     uniqueRor.rorId,
                                                   ])}
                                                   size="sm"
-                                                  title="Remove ROR"
-                                                />
+                                                  title={`Propagate ROR to ${selectedOpenAlex?.length ?? 0 - uniqueRor.countAffiliations} affiliations`}
+                                                  variant="secondary"
+                                                >
+                                                  Propagate this ROR
+                                                </Button>
                                               )}
-                                            {(uniqueRor.countAffiliations < selectedOpenAlex.length) && (
-                                              <Button
-                                                aria-label="Propagate ROR to all affiliations"
-                                                className="fr-ml-1w"
-                                                color="pink-tuile"
-                                                disabled={
-                                                  uniqueRor.countAffiliations
-                                                    === selectedOpenAlex.length
-                                                }
-                                                icon="chat-check-line"
-                                                onClick={() => setAddList((prevList) => [
-                                                  ...prevList,
-                                                  uniqueRor.rorId,
-                                                ])}
-                                                size="sm"
-                                                title={`Propagate ROR to ${selectedOpenAlex?.length ?? 0 - uniqueRor.countAffiliations} affiliations`}
-                                              />
-                                            )}
-                                            {(addList.includes(uniqueRor.rorId)) && (
+                                              {/* {(addList.includes(uniqueRor.rorId)) && (
                                               <Badge
-                                                color="pink-tuile"
+                                                color="green-emeraude"
                                                 className="fr-mr-1w"
                                               >
                                                 Added
                                               </Badge>
-                                            )}
+                                            )} */}
+                                            </ButtonGroup>
                                           </td>
                                         </tr>
                                       ),
@@ -556,10 +570,11 @@ export default function Affiliations() {
                           aria-label="Add ROR"
                           color="blue-ecume"
                           disabled={['', 'error'].includes(rorMessageType)}
-                          onClick={() => {
-                            setAddList([...addList, ror]);
-                            setRor('');
-                          }}
+                          // onClick={() => {
+                          //   setAddList([...addList, ror]);
+                          //   setRor('');
+                          // }}
+                          onClick={() => getRorData()}
                           title="Add ROR"
                         >
                           + Add
