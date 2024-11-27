@@ -1,7 +1,7 @@
 import { Link } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
-export default function RorBadge({ isRemoved, ror, setFilteredAffiliationName, rorColor }) {
+export default function RorBadge({ isRemoved, ror, setFilteredAffiliationName, rorColor, toggleRemovedRor }) {
   return (
     <div className="wm-ror-badge">
       <span style={{ backgroundColor: getComputedStyle(document.documentElement).getPropertyValue(`--${rorColor}`) }} />
@@ -31,6 +31,25 @@ export default function RorBadge({ isRemoved, ror, setFilteredAffiliationName, r
         title="Filter on this ROR"
         type="button"
       />
+      {
+        isRemoved ? (
+          <button
+            aria-label="Filter on this ROR"
+            className="fr-icon fr-fi-arrow-go-back-line fr-icon--sm"
+            onClick={() => { toggleRemovedRor(); }}
+            title="Undo remove"
+            type="button"
+          />
+        ) : (
+          <button
+            aria-label="Filter on this ROR"
+            className="fr-icon fr-fi-delete-line fr-icon--sm"
+            onClick={() => { toggleRemovedRor(); }}
+            title="Remove this ROR"
+            type="button"
+          />
+        )
+      }
     </div>
   );
 }
@@ -45,5 +64,5 @@ RorBadge.propTypes = {
     rorId: PropTypes.string.isRequired,
   }).isRequired,
   rorColor: PropTypes.string.isRequired,
-  setFilteredAffiliationName: PropTypes.func.isRequired,
+  toggleRemovedRor: PropTypes.func.isRequired,
 };

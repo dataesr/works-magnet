@@ -10,6 +10,10 @@ export default function ListView({
   selectedOpenAlex,
   setFilteredAffiliationName,
   setSelectedOpenAlex,
+  // removeList,
+  // setRemoveList,
+  toggleRemovedRor,
+  setSelectAffiliations,
 }) {
   const defineRorColor = [];
   const dsColors = ['green-archipel', 'purple-glycine', 'pink-tuile', 'green-menthe', 'brown-cafe-creme'];
@@ -26,12 +30,14 @@ export default function ListView({
   const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
   defineRorColor.push(...sortedRor.slice(0, 5).map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
 
+  // console.log('ListView', allAffiliations[0]);
+
   return (
     <ul className="wm-list">
       {
         allAffiliations.map((affiliation) => (
           <li
-            className={selectedOpenAlex.some((a) => a.key === affiliation.key) ? 'selected' : ''}
+            className={affiliation.selected ? 'selected' : ''}
             key={affiliation.key}
           >
             <Row>
@@ -39,15 +45,9 @@ export default function ListView({
                 <div style={{ display: 'inline-flex' }}>
                   <div style={{ display: 'inline-block', width: '20px' }}>
                     <Checkbox
-                      checked={selectedOpenAlex.some((a) => a.key === affiliation.key)}
+                      checked={affiliation.selected}
                       name="affiliations"
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedOpenAlex([...selectedOpenAlex, affiliation]);
-                        } else {
-                          setSelectedOpenAlex(selectedOpenAlex.filter((a) => a.key !== affiliation.key));
-                        }
-                      }}
+                      onChange={() => setSelectAffiliations([affiliation.id])}
                     />
                     <br />
                     {
@@ -59,13 +59,7 @@ export default function ListView({
                   <div className="fr-ml-1w" style={{ display: 'inline-block', maxWidth: '95%' }}>
                     <Text
                       as="span"
-                      onClick={() => {
-                        if (selectedOpenAlex.some((a) => a.key === affiliation.key)) {
-                          setSelectedOpenAlex(selectedOpenAlex.filter((a) => a.key !== affiliation.key));
-                        } else {
-                          setSelectedOpenAlex([...selectedOpenAlex, affiliation]);
-                        }
-                      }}
+                      onClick={() => setSelectAffiliations([affiliation.id])}
                       style={{ cursor: 'pointer' }}
                     >
                       <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml.replace(' [ source: OpenAlex ]', '') }} />
@@ -81,14 +75,15 @@ export default function ListView({
                       <tr key={`openalex-ror-affiliations-${rorToCorrect.rorId}`}>
                         <td>
                           <RorBadge
-                            isRemoved={rorToCorrect?.action === 'remove' ?? false}
+                            isRemoved={affiliation.removeList.includes(rorToCorrect.rorId)}
                             ror={rorToCorrect}
                             rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
                             setFilteredAffiliationName={setFilteredAffiliationName}
+                            toggleRemovedRor={() => toggleRemovedRor(affiliation.id, rorToCorrect.rorId)}
                           />
                           <br />
                           <RorName
-                            isRemoved={rorToCorrect?.action === 'remove' ?? false}
+                            isRemoved={affiliation.removeList.includes(rorToCorrect.rorId)}
                             ror={rorToCorrect}
                           />
                         </td>
@@ -129,4 +124,5 @@ ListView.propTypes = {
   setSelectedOpenAlex: PropTypes.func.isRequired,
   selectedOpenAlex: PropTypes.array.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
+  setSelectAffiliations: PropTypes.func.isRequired,
 };

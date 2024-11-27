@@ -149,8 +149,6 @@ export default function Affiliations() {
 
   useEffect(() => {
     const get = async () => {
-      console.log('before get');
-
       setIsLoadingRorData(true);
       const addedRors = await Promise.all(
         addList.map((add) => getRorData(add)),
@@ -232,7 +230,12 @@ export default function Affiliations() {
   useEffect(() => {
     setAffiliations(data?.affiliations?.filter(
       (affiliation) => affiliation.source === 'OpenAlex',
-    ) ?? []);
+    ).map((affiliation) => ({
+      ...affiliation,
+      addList: [],
+      removeList: [],
+      selected: false,
+    })) ?? []);
   }, [data]);
 
   useEffect(() => {
@@ -269,9 +272,30 @@ export default function Affiliations() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ror]);
 
-  console.log('uniqueRors', uniqueRors);
-  console.log('selectedOpenAlex', selectedOpenAlex);
-  console.log('addList', addList);
+  const toggleRemovedRor = (affiliationId, rorId) => {
+    const updatedAffiliations = affiliations.map((affiliation) => {
+      if (affiliation.id === affiliationId) {
+        return { ...affiliation, removeList: affiliation.removeList.includes(rorId) ? affiliation.removeList.filter((item) => item !== rorId) : [...affiliation.removeList, rorId] };
+      }
+      return affiliation;
+    });
+    setAffiliations(updatedAffiliations);
+  };
+
+  const addRor = (affiliationId, rorObject) => {
+    console.log('addRor', affiliationId, rorObject);
+  };
+
+  // toggle the selection of an affiliation
+  const setSelectAffiliations = (affiliationIds) => {
+    const updatedAffiliations = affiliations.map((affiliation) => {
+      if (affiliationIds.includes(affiliation.id)) {
+        return { ...affiliation, selected: !affiliation.selected };
+      }
+      return affiliation;
+    });
+    setAffiliations(updatedAffiliations);
+  };
 
   return (
     <>
@@ -651,6 +675,8 @@ export default function Affiliations() {
                   setFilteredAffiliationName={setFilteredAffiliationName}
                   setSelectedOpenAlex={setSelectedOpenAlex}
                   undo={undo}
+                  toggleRemovedRor={toggleRemovedRor}
+                  setSelectAffiliations={setSelectAffiliations}
                 />
               </div>
             </Col>

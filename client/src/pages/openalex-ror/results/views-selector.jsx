@@ -28,6 +28,9 @@ export default function ViewsSelector({
   setFilteredAffiliationName,
   setSelectedOpenAlex,
   undo,
+
+  toggleRemovedRor,
+  setSelectAffiliations,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -125,21 +128,17 @@ export default function ViewsSelector({
         <Row>
           <Col xs="3">
             <Checkbox
-              checked={(selectedOpenAlex.length === filteredAffiliations.length) && (selectedOpenAlex.length > 0)}
+              checked={sortedOrFilteredAffiliations.find((affiliation) => !affiliation.selected) === undefined}
               onChange={() => {
-                if (selectedOpenAlex.length === 0) {
-                  setSelectedOpenAlex(filteredAffiliations);
-                } else {
-                  setSelectedOpenAlex([]);
-                }
+                setSelectAffiliations(sortedOrFilteredAffiliations.map((affiliation) => affiliation.id));
               }}
             />
             <span className="wm-text fr-mb-3w fr-ml-6w">
               <Badge color="brown-opera">
-                {selectedOpenAlex.length}
+                {sortedOrFilteredAffiliations.filter((affiliation) => affiliation.selected)?.length || 0}
               </Badge>
               <i>
-                {` selected affiliation${selectedOpenAlex.length === 1 ? '' : 's'} / ${filteredAffiliations.length}`}
+                {` selected affiliation${sortedOrFilteredAffiliations.filter((affiliation) => affiliation.selected)?.length === 1 ? '' : 's'} / ${filteredAffiliations.length}`}
               </i>
             </span>
           </Col>
@@ -199,9 +198,11 @@ export default function ViewsSelector({
       ) : (
         <ListView
           allAffiliations={sortedOrFilteredAffiliations}
-          selectedOpenAlex={selectedOpenAlex}
           setFilteredAffiliationName={setFilteredAffiliationName}
           setSelectedOpenAlex={setSelectedOpenAlex}
+          toggleRemovedRor={toggleRemovedRor}
+          setSelectAffiliations={setSelectAffiliations}
+          selectedOpenAlex={selectedOpenAlex}
         />
       )}
       <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)} size="md">
@@ -342,4 +343,6 @@ ViewsSelector.propTypes = {
   setFilteredAffiliationName: PropTypes.func.isRequired,
   setSelectedOpenAlex: PropTypes.func.isRequired,
   undo: PropTypes.func.isRequired,
+  toggleRemovedRor: PropTypes.func.isRequired,
+  setSelectAffiliations: PropTypes.func.isRequired,
 };
