@@ -34,7 +34,7 @@ export default function RorBadge({ isRemoved, ror, setFilteredAffiliationName, r
       {
         isRemoved ? (
           <button
-            aria-label="Filter on this ROR"
+            aria-label="Undo remove this ROR"
             className="fr-icon fr-fi-arrow-go-back-line fr-icon--sm"
             onClick={() => { removeRor(); }}
             title="Undo remove"
@@ -42,7 +42,7 @@ export default function RorBadge({ isRemoved, ror, setFilteredAffiliationName, r
           />
         ) : (
           <button
-            aria-label="Filter on this ROR"
+            aria-label="Remove this ROR"
             className="fr-icon fr-fi-delete-line fr-icon--sm"
             onClick={() => { removeRor(); }}
             title="Remove this ROR"
