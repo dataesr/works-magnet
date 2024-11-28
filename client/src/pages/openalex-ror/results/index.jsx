@@ -339,8 +339,10 @@ export default function Affiliations() {
         return {
           ...affiliation,
           addList: [...affiliation.addList, cleanRor],
+          selected: false,
         };
       }
+      affiliation.selected = false;
       return affiliation;
     });
     setAffiliations(updatedAffiliations);
@@ -363,8 +365,6 @@ export default function Affiliations() {
     });
     setAffiliations(updatedAffiliations);
   };
-
-  console.log(filteredAffiliations);
 
   const getUniqueRors = () => {
     const selectedRors = {};
