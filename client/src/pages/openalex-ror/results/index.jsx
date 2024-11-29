@@ -275,7 +275,7 @@ export default function Affiliations() {
   }, [ror]);
 
   // -------------------------------------------
-  // TODO: afficher les ROR supprimer (striked) dans la modal de suppression
+  // TODO: afficher les ROR supprimer (striked) dans la modal de suppression - à discuter
   // TODO: faire fonctionner les filtres
   // TODO: bonton copier ROR
   // TODO: lien vers ror.org dans modales
