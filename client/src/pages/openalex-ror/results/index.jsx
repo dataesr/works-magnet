@@ -1,16 +1,12 @@
 import {
-  Badge,
   Button,
-  ButtonGroup,
   Col,
   Container,
   Link,
   Modal,
   ModalContent,
-  ModalFooter,
   ModalTitle,
   Row,
-  Spinner,
   Tag,
   Text,
   TextInput,
@@ -45,7 +41,7 @@ export default function Affiliations() {
 
   const [addList, setAddList] = useState([]);
   const [affiliations, setAffiliations] = useState([]);
-  const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]);
+  const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]); // TODO: ??
   const [body, setBody] = useState({});
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -54,16 +50,17 @@ export default function Affiliations() {
     status.validated.id,
     status.excluded.id,
   ]);
-  const [isLoadingRorData, setIsLoadingRorData] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoadingRorData, setIsLoadingRorData] = useState(false); // TODO: spinner dans modal
+  const [isModalOpen, setIsModalOpen] = useState(false); // TODO: ancienne modal - a supp
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [removeList, setRemoveList] = useState([]);
   const [ror, setRor] = useState('');
-  const [cleanRor, setCleanRor] = useState('');
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
-  const [selectedOpenAlex, setSelectedOpenAlex] = useState([]);
+  const [cleanRor, setCleanRor] = useState('');
+  const [selectedOpenAlex, setSelectedOpenAlex] = useState([]); // TODO: should be deleted
   const [uniqueRors, setUniqueRors] = useState({});
   const [rorsToRemove, setRorsToRemove] = useState([]);
 
@@ -85,7 +82,7 @@ export default function Affiliations() {
     enabled: false,
   });
 
-  const undo = (id) => {
+  const undo = (id) => { // TODO: should be deleted
     const newAffiliations = affiliations.map((affiliation) => {
       if (affiliation.id === id) {
         // eslint-disable-next-line no-param-reassign
@@ -99,7 +96,7 @@ export default function Affiliations() {
     setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(newAffiliations)]);
   };
 
-  const applyCorrections = async () => {
+  const applyCorrections = async () => { // TODO: should be adapted
     let rorsToAdd = await Promise.all(
       addList.map((add) => getRorData(add)),
     );
@@ -115,6 +112,7 @@ export default function Affiliations() {
       const hasCorrection = rorsToCorrect.filter((rorToCorrect) => rorToCorrect?.action).length > 0;
       return { ...item, hasCorrection, rorsToCorrect };
     });
+
     setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(selectedOpenAlexTmp)]);
     // Duplicate affiliations array
     const affiliationsTmp = [...affiliations];
@@ -136,7 +134,7 @@ export default function Affiliations() {
     setRemoveList([]);
   };
 
-  useEffect(() => {
+  useEffect(() => { // TODO: should be deleted
     const uniqueRorsTmp = {};
     selectedOpenAlex.forEach((affiliation) => {
       affiliation.rorsToCorrect.forEach((_ror) => {
@@ -277,6 +275,13 @@ export default function Affiliations() {
   }, [ror]);
 
   // -------------------------------------------
+  // TODO: afficher les ROR supprimer (striked) dans la modal de suppression
+  // TODO: faire fonctionner les filtres
+  // TODO: bonton copier ROR
+  // TODO: lien vers ror.org dans modales
+  // TODO: faire fonctionner les exports
+  // TODO: faire fonctionner le feedback
+
   const toggleRemovedRor = (affiliationId, rorId) => {
     const updatedAffiliations = affiliations.map((affiliation) => {
       if (affiliation.id === affiliationId) {
@@ -292,6 +297,26 @@ export default function Affiliations() {
     setAffiliations(updatedAffiliations);
   };
 
+  const removeRorMultiple = () => {
+    const selectedRorIds = rorsToRemove.filter((_ror) => _ror.removed).map((_ror) => _ror.rorId);
+
+    const updatedAffiliations = affiliations.map((affiliation) => {
+      if (affiliation.selected) {
+        return {
+          ...affiliation,
+          addList: affiliation.addList.filter((item) => !selectedRorIds.includes(item.rorId)),
+          removeList: [...new Set([...affiliation.removeList, ...selectedRorIds])],
+          selected: false,
+        };
+      }
+      return affiliation;
+    });
+
+    setAffiliations(updatedAffiliations);
+    setRorsToRemove([]);
+    setIsRemoveModalOpen(false);
+  };
+
   const removeRorFromAddList = (affiliationId, rorId) => {
     const updatedAffiliations = affiliations.map((affiliation) => {
       if (affiliation.id === affiliationId) {
@@ -303,25 +328,6 @@ export default function Affiliations() {
     });
 
     setAffiliations(updatedAffiliations);
-  };
-
-  const removeRorMultiple = () => {
-    const selectedRorIds = rorsToRemove.filter((_ror) => _ror.removed).map((_ror) => _ror.rorId);
-
-    const updatedAffiliations = affiliations.map((affiliation) => {
-      if (affiliation.selected) {
-        return {
-          ...affiliation,
-          removeList: [...new Set([...affiliation.removeList, ...selectedRorIds])],
-          selected: false,
-        };
-      }
-      return affiliation;
-    });
-
-    setAffiliations(updatedAffiliations);
-    setRorsToRemove([]);
-    setIsRemoveModalOpen(false);
   };
 
   useEffect(() => {
