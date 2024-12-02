@@ -276,11 +276,10 @@ export default function Affiliations() {
 
   // -------------------------------------------
   // TODO: afficher les ROR supprimer (striked) dans la modal de suppression - à discuter
-  // TODO: faire fonctionner les filtres
-  // TODO: bonton copier ROR
-  // TODO: lien vers ror.org dans modales
   // TODO: faire fonctionner les exports
   // TODO: faire fonctionner le feedback
+  // TODO: pastilles de couleur pour les RORs
+  // TODO: optimisation
 
   const toggleRemovedRor = (affiliationId, rorId) => {
     const updatedAffiliations = affiliations.map((affiliation) => {
@@ -570,6 +569,13 @@ export default function Affiliations() {
                       </ModalTitle>
                       <ModalContent>
                         <Container fluid>
+                          <Row>
+                            <Col className="text-right">
+                              <Link href="https://ror.org/" target="_blank">
+                                ROR website
+                              </Link>
+                            </Col>
+                          </Row>
                           <Row verticalAlign="bottom">
                             <Col>
                               <TextInput
@@ -648,6 +654,13 @@ export default function Affiliations() {
                       </ModalTitle>
                       <ModalContent>
                         <Container fluid>
+                          <Row>
+                            <Col className="text-right">
+                              <Link href="https://ror.org/" target="_blank">
+                                ROR website
+                              </Link>
+                            </Col>
+                          </Row>
                           <Row verticalAlign="bottom">
                             <Col>
                               {
