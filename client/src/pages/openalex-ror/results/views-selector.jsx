@@ -49,34 +49,26 @@ export default function ViewsSelector({
 
   useEffect(() => {
     // Deep copy of filteredAffiliations object
-    const initialAffiliations = JSON.parse(JSON.stringify(filteredAffiliations));
-    if (sortsAndFilters.sortOnNumberOfRors === 'default') {
-      setSortedOrFilteredAffiliations(initialAffiliations);
-    }
+    let initialAffiliations = JSON.parse(JSON.stringify(filteredAffiliations));
     if (sortsAndFilters.sortOnNumberOfRors === 'numberASC') {
-      setSortedOrFilteredAffiliations(initialAffiliations.sort((a, b) => a.rors.length - b.rors.length));
+      initialAffiliations.sort((a, b) => a.rors.length - b.rors.length);
+    } else if (sortsAndFilters.sortOnNumberOfRors === 'numberDESC') {
+      initialAffiliations.sort((a, b) => b.rors.length - a.rors.length);
+    } else if (sortsAndFilters.sortOnNumberOfRors === 'empty') {
+      initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.rors.length === 0);
     }
-    if (sortsAndFilters.sortOnNumberOfRors === 'numberDESC') {
-      setSortedOrFilteredAffiliations(initialAffiliations.sort((a, b) => b.rors.length - a.rors.length));
-    }
-    if (sortsAndFilters.sortOnNumberOfRors === 'empty') {
-      setSortedOrFilteredAffiliations(initialAffiliations.filter((affiliation) => affiliation.rors.length === 0));
-    }
-    if (sortsAndFilters.showAffiliations === 'all') {
-      setSortedOrFilteredAffiliations(initialAffiliations);
-    }
+
     if (sortsAndFilters.showAffiliations === 'onlyWithCorrections') {
-      setSortedOrFilteredAffiliations(initialAffiliations.filter((affiliation) => affiliation.hasCorrection));
+      initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.hasCorrection);
+    } else if (sortsAndFilters.showAffiliations === 'onlyWithNoCorrection') {
+      initialAffiliations = initialAffiliations.filter((affiliation) => !affiliation.hasCorrection);
     }
-    if (sortsAndFilters.showAffiliations === 'onlyWithNoCorrection') {
-      setSortedOrFilteredAffiliations(initialAffiliations.filter((affiliation) => !affiliation.hasCorrection));
-    }
-    if (sortsAndFilters.rorCountry === 'all') {
-      setSortedOrFilteredAffiliations(initialAffiliations);
-    }
+
     if (sortsAndFilters.rorCountry !== 'all') {
-      setSortedOrFilteredAffiliations(initialAffiliations.filter((affiliation) => affiliation.rors.some((ror) => ror.rorCountry === sortsAndFilters.rorCountry)));
+      initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.rors.some((ror) => ror.rorCountry === sortsAndFilters.rorCountry));
     }
+
+    setSortedOrFilteredAffiliations(initialAffiliations);
   }, [filteredAffiliations, sortsAndFilters]);
 
   const changeView = (view) => {
