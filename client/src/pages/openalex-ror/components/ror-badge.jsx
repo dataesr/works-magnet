@@ -42,7 +42,7 @@ export default function RorBadge({ isRemoved, removeRor, ror, rorColor, setFilte
       />
       <button
         aria-label="Copier"
-        className="fr-icon fr-fi-file-copy-line fr-icon-sm"
+        className="ri-file-copy-line"
         onClick={() => copy(ror.rorId)}
         title="Copier"
         type="button"
