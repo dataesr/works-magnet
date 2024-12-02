@@ -59,9 +59,9 @@ export default function ViewsSelector({
     }
 
     if (sortsAndFilters.showAffiliations === 'onlyWithCorrections') {
-      initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.hasCorrection);
+      initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0);
     } else if (sortsAndFilters.showAffiliations === 'onlyWithNoCorrection') {
-      initialAffiliations = initialAffiliations.filter((affiliation) => !affiliation.hasCorrection);
+      initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.addList.length === 0 && affiliation.removeList.length === 0);
     }
 
     if (sortsAndFilters.rorCountry !== 'all') {
