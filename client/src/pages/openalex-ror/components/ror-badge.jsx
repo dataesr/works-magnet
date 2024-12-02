@@ -1,51 +1,82 @@
-import { Link, Tag } from '@dataesr/dsfr-plus';
+import { Link } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
-export default function RorBadge({
-  isRemoved,
-  ror,
-  rorColor,
-  setFilteredAffiliationName,
-}) {
+import useCopyToClipboard from '../../../hooks/useCopyToClipboard';
+
+export default function RorBadge({ isRemoved, removeRor, ror, rorColor, setFilteredAffiliationName }) {
+  const [copyStatus, copy] = useCopyToClipboard();
+
+  const iconsType = {
+    Copié: 'ri-checkbox-circle-fill',
+    Erreur: 'ri-settings-6-fill',
+  };
+
   return (
-    <Tag
-      color={rorColor}
-      size="sm"
-    >
-      <img
-        alt="ROR logo"
-        className="vertical-middle fr-mx-1w"
-        src="https://raw.githubusercontent.com/ror-community/ror-logos/0ef82987ac9bf4c9681dacdb3cb78d2a9d81167b/ror-icon-rgb-transparent.svg"
-        height="16"
-      />
+    <div className="wm-ror-badge">
+      <span style={{ backgroundColor: getComputedStyle(document.documentElement).getPropertyValue(`--${rorColor}`) }} />
+      <div>
+        <img
+          alt="ROR logo"
+          className="vertical-middle fr-mx-1w"
+          height="16"
+          src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg"
+        />
+      </div>
       {isRemoved ? (
         <strike>
-          https://ror.org/
           <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
-            {` ${ror.rorId}`}
+            {`https://ror.org/${ror.rorId}`}
           </Link>
         </strike>
       ) : (
-        <>
-          https://ror.org/
-          <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
-            {` ${ror.rorId}`}
-          </Link>
-        </>
+        <Link href={`https://ror.org/${ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
+          {`https://ror.org/${ror.rorId}`}
+        </Link>
       )}
       <button
-        disabled={isRemoved}
-        aria-label="filter on this ROR id"
+        aria-label="Filter on this ROR"
         className="fr-icon fr-fi-filter-line fr-icon--sm"
         onClick={() => setFilteredAffiliationName(ror.rorId)}
+        title="Filter on this ROR"
         type="button"
       />
-    </Tag>
+      <button
+        aria-label="Copier"
+        className="fr-icon fr-fi-file-copy-line fr-icon-sm"
+        onClick={() => copy(ror.rorId)}
+        title="Copier"
+        type="button"
+      />
+      {
+        isRemoved ? (
+          <button
+            aria-label="Undo remove"
+            className="fr-icon fr-fi-arrow-go-back-line fr-icon--sm"
+            onClick={() => { removeRor(); }}
+            title="Undo remove"
+            type="button"
+          />
+        ) : (
+          <button
+            aria-label="Remove this ROR"
+            className="fr-icon fr-fi-delete-line fr-icon--sm"
+            onClick={() => { removeRor(); }}
+            title="Remove this ROR"
+            type="button"
+          />
+        )
+      }
+    </div>
   );
 }
 
+RorBadge.defaultProps = {
+  isRemoved: false,
+};
+
 RorBadge.propTypes = {
-  isRemoved: PropTypes.bool.isRequired,
+  isRemoved: PropTypes.bool,
+  removeRor: PropTypes.func.isRequired,
   ror: PropTypes.shape({
     rorId: PropTypes.string.isRequired,
   }).isRequired,

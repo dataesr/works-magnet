@@ -1,16 +1,16 @@
 import { Badge, Checkbox, Col, Row, Text } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 
-import WorksList from '../components/works-list';
-import RorBadge from '../components/ror-badge_old';
+import RorBadge from '../components/ror-badge';
 import RorName from '../components/ror-name';
+import WorksList from '../components/works-list';
 
 export default function ListView({
   allAffiliations,
-  setFilteredAffiliationName,
-  toggleRemovedRor,
-  setSelectAffiliations,
   removeRorFromAddList,
+  setFilteredAffiliationName,
+  setSelectAffiliations,
+  toggleRemovedRor,
 }) {
   const defineRorColor = [];
   const dsColors = ['green-archipel', 'purple-glycine', 'pink-tuile', 'green-menthe', 'brown-cafe-creme'];
@@ -117,8 +117,8 @@ export default function ListView({
 
 ListView.propTypes = {
   allAffiliations: PropTypes.array.isRequired,
+  removeRorFromAddList: PropTypes.func.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
   setSelectAffiliations: PropTypes.func.isRequired,
   toggleRemovedRor: PropTypes.func.isRequired,
-  removeRorFromAddList: PropTypes.func.isRequired,
 };
