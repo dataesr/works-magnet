@@ -111,9 +111,9 @@ export default function MainFooter() {
                       <Link
                         className="fr-footer__top-link"
                         href="https://x.com/dataESR"
-                        target="_blank"
                         icon="twitter-x-fill"
                         iconPosition="left"
+                        target="_blank"
                       >
                         X
                       </Link>
@@ -122,9 +122,9 @@ export default function MainFooter() {
                       <Link
                         className="fr-footer__top-link"
                         href="https://www.linkedin.com/company/enseignementsup-recherche/mycompany/"
-                        target="_blank"
                         icon="linkedin-box-fill"
                         iconPosition="left"
+                        target="_blank"
                       >
                         Linkedin
                       </Link>
@@ -133,11 +133,41 @@ export default function MainFooter() {
                       <Link
                         className="fr-footer__top-link"
                         href="https://www.facebook.com/enseignementsup.recherche"
-                        target="_blank"
-                        iconPosition="left"
                         icon="facebook-circle-fill"
+                        iconPosition="left"
+                        target="_blank"
                       >
                         Facebook
+                      </Link>
+                    </li>
+                  </ul>
+                  <Title
+                    as="h3"
+                    className={cn('fr-footer__top-cat', 'text-center')}
+                  >
+                    Open
+                  </Title>
+                  <ul>
+                    <li>
+                      <Link
+                        className="fr-footer__top-link"
+                        href="https://data.enseignementsup-recherche.gouv.fr/explore/dataset/openalex-affiliations-corrections/information/"
+                        icon="table-fill"
+                        iconPosition="left"
+                        target="_blank"
+                      >
+                        Open data
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className="fr-footer__top-link"
+                        href="https://github.com/dataesr/works-magnet/"
+                        icon="code-s-slash-line"
+                        iconPosition="left"
+                        target="_blank"
+                      >
+                        Open source
                       </Link>
                     </li>
                   </ul>
