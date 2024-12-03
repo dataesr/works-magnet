@@ -44,15 +44,14 @@ const encrypt = (text) => {
 };
 
 const createIssueOpenAlexAffiliations = ({ email, issue }) => {
-  let title = `Correction for raw affiliation ${issue.rawAffiliationString}`;
+  let title = `Correction for raw affiliation ${issue.name}`;
   if (title.length > 1000) {
     title = `${title.slice(0, 1000)}...`;
   }
-  let body = `Correction needed for raw affiliation ${issue.rawAffiliationString}\n`;
-  body += `raw_affiliation_name: ${issue.rawAffiliationString}\n`;
-  body += `new_rors: ${issue.correctedRors}\n`;
-  const previousRoRs = issue.rorsInOpenAlex.map((e) => e.rorId).join(';');
-  body += `previous_rors: ${previousRoRs}\n`;
+  let body = `Correction needed for raw affiliation ${issue.name}\n`;
+  body += `raw_affiliation_name: ${issue.name}\n`;
+  body += `new_rors: ${issue.rorsToCorrect.map((ror) => ror.rorId).join(';')}\n`;
+  body += `previous_rors: ${issue.rors.map((ror) => ror.rorId).join(';')}\n`;
   let workIds = '';
   if (issue.worksExample) {
     workIds = issue.worksExample

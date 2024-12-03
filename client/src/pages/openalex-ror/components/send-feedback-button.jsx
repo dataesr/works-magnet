@@ -14,7 +14,7 @@ import useToast from '../../../hooks/useToast';
 
 const { VITE_WS_HOST } = import.meta.env;
 
-export default function SendFeedbackButton({ allOpenalexCorrections, setAllOpenalexCorrections }) {
+export default function SendFeedbackButton({ corrections, resetCorrections }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
@@ -41,14 +41,14 @@ export default function SendFeedbackButton({ allOpenalexCorrections, setAllOpena
 
   const sendFeedback = async () => {
     try {
-      sendJsonMessage({ data: allOpenalexCorrections, email: userEmail, type: 'openalex-affiliations' });
+      sendJsonMessage({ data: corrections, email: userEmail, type: 'openalex-affiliations' });
       toast({
         autoDismissAfter: 5000,
         description: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
         id: 'initOpenAlex',
         title: 'OpenAlex corrections submitted',
       });
-      setAllOpenalexCorrections([]);
+      resetCorrections();
     } catch (error) {
       toast({
         description: error.message,
@@ -73,7 +73,7 @@ export default function SendFeedbackButton({ allOpenalexCorrections, setAllOpena
       <Button
         aria-label="Send feedback to OpenAlex"
         color="blue-ecume"
-        disabled={!allOpenalexCorrections.length > 0}
+        disabled={!corrections.length > 0}
         icon="send-plane-fill"
         onClick={switchModal}
         size="sm"
@@ -84,7 +84,9 @@ export default function SendFeedbackButton({ allOpenalexCorrections, setAllOpena
       <Modal isOpen={isModalOpen} hide={switchModal}>
         <ModalTitle>Improve OpenAlex data</ModalTitle>
         <ModalContent>
-          {`You corrected ROR matching for ${allOpenalexCorrections.length} raw affiliation(s) string(s).`}
+          {`You corrected ROR matching for ${corrections.length} raw
+          affiliation${(corrections.length === 1) ? '' : 's'}
+          string${(corrections.length === 1) ? '' : 's'}.`}
           <TextInput
             label="Please indicate your email. Only an encrypted version of your email will be public."
             onChange={(e) => setUserEmail(e.target.value)}
@@ -95,7 +97,7 @@ export default function SendFeedbackButton({ allOpenalexCorrections, setAllOpena
         <ModalFooter>
           <Button
             aria-label="Send feedback to OpenAlex"
-            disabled={!allOpenalexCorrections.length > 0 || !validEmail}
+            disabled={!corrections.length > 0 || !validEmail}
             onClick={sendFeedback}
             title="Send feedback to OpenAlex"
           >
@@ -108,14 +110,33 @@ export default function SendFeedbackButton({ allOpenalexCorrections, setAllOpena
 }
 
 SendFeedbackButton.propTypes = {
-  allOpenalexCorrections: PropTypes.arrayOf(
-    PropTypes.shape({
-      rawAffiliationString: PropTypes.string.isRequired,
-      rorsInOpenAlex: PropTypes.arrayOf(PropTypes.object).isRequired,
-      correctedRors: PropTypes.arrayOf(PropTypes.object).isRequired,
-      worksExample: PropTypes.arrayOf(PropTypes.object).isRequired,
-      worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
-    }),
-  ).isRequired,
-  setAllOpenalexCorrections: PropTypes.func.isRequired,
+  corrections: PropTypes.arrayOf(PropTypes.shape({
+    addList: PropTypes.arrayOf(PropTypes.string).isRequired,
+    hasCorrection: PropTypes.bool.isRequired,
+    name: PropTypes.string.isRequired,
+    nameHtml: PropTypes.string.isRequired,
+    removeList: PropTypes.arrayOf(PropTypes.string).isRequired,
+    rors: PropTypes.arrayOf(PropTypes.shape({
+      rorCountry: PropTypes.string.isRequired,
+      rorId: PropTypes.string.isRequired,
+      rorName: PropTypes.string.isRequired,
+    })).isRequired,
+    rorsNumber: PropTypes.number.isRequired,
+    rorsToCorrect: PropTypes.arrayOf(PropTypes.shape({
+      rorCountry: PropTypes.string.isRequired,
+      rorId: PropTypes.string.isRequired,
+      rorName: PropTypes.string.isRequired,
+    })).isRequired,
+    selected: PropTypes.bool.isRequired,
+    source: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    works: PropTypes.arrayOf(PropTypes.string).isRequired,
+    worksExample: PropTypes.arrayOf(PropTypes.shape({
+      id_type: PropTypes.string.isRequired,
+      id_value: PropTypes.string.isRequired,
+    })).isRequired,
+    worksNumber: PropTypes.number.isRequired,
+    worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
+  })).isRequired,
+  resetCorrections: PropTypes.func.isRequired,
 };

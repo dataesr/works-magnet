@@ -1,13 +1,13 @@
 .dropdown {
   display: inline-block;
   position: relative;
-  z-index: 2;
+  z-index: 20;
 
   .dropdown-content {
     display: none;
     min-width: 160px;
     position: absolute;
-    z-index: 1;
+    z-index: 20;
   }
 }
 

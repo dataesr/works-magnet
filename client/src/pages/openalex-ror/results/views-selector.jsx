@@ -22,16 +22,15 @@ export default function ViewsSelector({
   allOpenalexCorrections,
   filteredAffiliationName,
   filteredAffiliations,
+  removeRorFromAddList,
   selectedOpenAlex,
   setAffiliations,
   setAllOpenalexCorrections,
   setFilteredAffiliationName,
-  setSelectedOpenAlex,
-  undo,
-
-  toggleRemovedRor,
   setSelectAffiliations,
-  removeRorFromAddList,
+  setSelectedOpenAlex,
+  toggleRemovedRor,
+  undo,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,8 +102,6 @@ export default function ViewsSelector({
         const rorsToCorrect2 = rorsToCorrect.split(';').map((ror) => ({ rorId: ror }));
         affiliation.rorsToCorrect = rorsToCorrect2;
         affiliation.hasCorrection = data.hasCorrection;
-        // TODO: should be replaced
-        affiliation.correctedRors = rorsToCorrect2;
         affiliation.rawAffiliationString = affiliation.name;
         affiliation.rorsInOpenAlex = affiliation.rors;
         setAffiliations(affiliationsTmp);
@@ -116,7 +113,7 @@ export default function ViewsSelector({
     <>
       <div
         className="wm-internal-actions"
-        style={{ position: 'sticky', top: '44px', zIndex: 1000 }}
+        style={{ position: 'sticky', top: '44px', zIndex: 10 }}
       >
         <Row>
           <Col xs="3">
@@ -322,6 +319,7 @@ ViewsSelector.propTypes = {
       worksNumber: PropTypes.number.isRequired,
     }),
   ).isRequired,
+  removeRorFromAddList: PropTypes.func.isRequired,
   selectedOpenAlex: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
@@ -336,8 +334,7 @@ ViewsSelector.propTypes = {
   setAllOpenalexCorrections: PropTypes.func.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
   setSelectedOpenAlex: PropTypes.func.isRequired,
-  undo: PropTypes.func.isRequired,
-  toggleRemovedRor: PropTypes.func.isRequired,
   setSelectAffiliations: PropTypes.func.isRequired,
-  removeRorFromAddList: PropTypes.func.isRequired,
+  toggleRemovedRor: PropTypes.func.isRequired,
+  undo: PropTypes.func.isRequired,
 };

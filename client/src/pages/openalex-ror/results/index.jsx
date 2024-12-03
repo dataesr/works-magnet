@@ -124,8 +124,6 @@ export default function Affiliations() {
       }));
       affiliation.rorsToCorrect = rorsToCorrect;
       affiliation.hasCorrection = rorsToCorrect.filter((rorToCorrect) => rorToCorrect?.action).length > 0;
-      // TODO: should be replaced
-      affiliation.correctedRors = rorsToCorrect;
       affiliation.rawAffiliationString = affiliation.name;
       affiliation.rorsInOpenAlex = affiliation.rors;
     });
@@ -275,9 +273,7 @@ export default function Affiliations() {
   }, [ror]);
 
   // -------------------------------------------
-  // TODO: afficher les ROR supprimer (striked) dans la modal de suppression - à discuter
-  // TODO: faire fonctionner les exports
-  // TODO: faire fonctionner le feedback
+  // TODO: afficher les ROR supprimés (striked) dans la modal de suppression - à discuter
   // TODO: pastilles de couleur pour les RORs
   // TODO: optimisation
 
@@ -298,8 +294,7 @@ export default function Affiliations() {
 
   const removeRorMultiple = () => {
     const selectedRorIds = rorsToRemove.filter((_ror) => _ror.removed).map((_ror) => _ror.rorId);
-
-    const updatedAffiliations = affiliations.map((affiliation) => {
+    const affiliationsTmp = affiliations.map((affiliation) => {
       if (affiliation.selected) {
         return {
           ...affiliation,
@@ -310,9 +305,8 @@ export default function Affiliations() {
       }
       return affiliation;
     });
-
-    setAffiliations(updatedAffiliations);
-    setRorsToRemove([]);
+    setAffiliations(affiliationsTmp);
+    setRorsToRemove([]); // TODO: Is it still used ?
     setIsRemoveModalOpen(false);
   };
 
@@ -404,6 +398,16 @@ export default function Affiliations() {
       removed: false,
     }));
     return rorArray;
+  };
+
+  const resetCorrections = () => {
+    const affiliationsTmp = affiliations.map((affiliation) => ({
+      ...affiliation,
+      addList: [],
+      removeList: [],
+      rorToCorrect: affiliation.rors,
+    }));
+    setAffiliations(affiliationsTmp);
   };
 
   return (
@@ -504,7 +508,7 @@ export default function Affiliations() {
                         <Row key={`openalex-ror-search-${affiliation.label}`}>
                           <Tag
                             className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
-                            }`}
+                              }`}
                             color={getTagColor(affiliation)}
                             key={`openalex-ror-tag-${affiliation.label}`}
                           >
@@ -513,7 +517,7 @@ export default function Affiliations() {
                           {affiliation.children.map((child) => (
                             <Tag
                               className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''
-                              }`}
+                                }`}
                               color={getTagColor(child)}
                               key={`openalex-ror-tag-${child.label}`}
                             >
@@ -604,28 +608,28 @@ export default function Affiliations() {
                             <Col>
                               {
                                 rorMessageType === 'valid' && cleanRor.rorName && cleanRor.rorCountry
-                                  && (
-                                    <>
-                                      <div>
-                                        <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
-                                        <span className="fr-mx-1w">
-                                          {cleanRor.rorName}
-                                        </span>
-                                        {getFlagEmoji(cleanRor.rorCountry)}
-                                      </div>
-                                      <Button
-                                        aria-label="Add ROR"
-                                        className="fr-mt-3w"
-                                        color="blue-ecume"
-                                        disabled={['', 'error'].includes(rorMessageType) || !cleanRor.rorName || !cleanRor.rorCountry}
-                                        onClick={() => { addRor(); }}
-                                        size="sm"
-                                        title="Add ROR"
-                                      >
-                                        Add this ROR to selected affiliations
-                                      </Button>
-                                    </>
-                                  )
+                                && (
+                                  <>
+                                    <div>
+                                      <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
+                                      <span className="fr-mx-1w">
+                                        {cleanRor.rorName}
+                                      </span>
+                                      {getFlagEmoji(cleanRor.rorCountry)}
+                                    </div>
+                                    <Button
+                                      aria-label="Add ROR"
+                                      className="fr-mt-3w"
+                                      color="blue-ecume"
+                                      disabled={['', 'error'].includes(rorMessageType) || !cleanRor.rorName || !cleanRor.rorCountry}
+                                      onClick={() => { addRor(); }}
+                                      size="sm"
+                                      title="Add ROR"
+                                    >
+                                      Add this ROR to selected affiliations
+                                    </Button>
+                                  </>
+                                )
                               }
                             </Col>
                           </Row>
@@ -633,22 +637,23 @@ export default function Affiliations() {
                       </ModalContent>
                     </Modal>
                     <Button
-                      aria-label="Remove RORs to selected affiliations"
+                      aria-label="Remove ROR to selected affiliations"
                       color="pink-tuile"
                       disabled={filteredAffiliations.filter((affiliation) => affiliation.selected).length === 0}
                       icon="delete-line"
                       onClick={() => { setRorsToRemove(getUniqueRors()); setIsRemoveModalOpen(true); }}
                       size="sm"
-                      title="Remove RORs to selected affiliations"
+                      title="Remove ROR to selected affiliations"
                     >
-                      Remove RORs to selected affiliations
+                      Remove ROR to selected affiliations
                     </Button>
                     <Modal
                       isOpen={isRemoveModalOpen}
                       hide={() => setIsRemoveModalOpen((prev) => !prev)}
                     >
                       <ModalTitle>
-                        Remove ROR to &nbsp;
+                        Remove ROR to
+                        {' '}
                         {filteredAffiliations.filter((affiliation) => affiliation.selected).length}
                         {` selected affiliation${filteredAffiliations.filter((affiliation) => affiliation.selected).length > 1 ? 's' : ''}`}
                       </ModalTitle>
@@ -716,7 +721,6 @@ export default function Affiliations() {
                                             </>
                                           )
                                         }
-
                                       </li>
                                     ))}
                                   </ul>
@@ -726,7 +730,7 @@ export default function Affiliations() {
                           </Row>
                           <Row>
                             <Col>
-                              <Button color="pink-tuile" onClick={() => { removeRorMultiple(); }}>
+                              <Button color="pink-tuile" onClick={removeRorMultiple}>
                                 Apply to selected affiliations
                               </Button>
                             </Col>
@@ -737,12 +741,11 @@ export default function Affiliations() {
                   </div>
                   <div className="right-content fr-mr-1w">
                     <ExportErrorsButton
-                      allOpenalexCorrections={affiliations.filter((affiliation) => affiliation.hasCorrection)}
-                      options={body}
+                      corrections={affiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0)}
                     />
                     <SendFeedbackButton
-                      allOpenalexCorrections={allOpenalexCorrections}
-                      setAllOpenalexCorrections={setAllOpenalexCorrections}
+                      corrections={affiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0)}
+                      resetCorrections={resetCorrections}
                     />
                   </div>
                 </div>
