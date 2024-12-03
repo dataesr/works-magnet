@@ -259,6 +259,7 @@ export default function OpenalexAffiliationsSearch() {
               </Col>
               <Col xs="12">
                 <TagInput
+                  deletedAffiliations={deletedAffiliations}
                   getRorChildren={currentSearchParams.getRorChildren === '1'}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
@@ -299,6 +300,7 @@ export default function OpenalexAffiliationsSearch() {
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput
+              deletedAffiliations={deletedAffiliations}
               getRorChildren={currentSearchParams.getRorChildren === '1'}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
               isLoading={isLoading}

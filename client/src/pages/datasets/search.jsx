@@ -267,6 +267,7 @@ export default function DatasetsSearch() {
               </Col>
               <Col xs="12">
                 <TagInput
+                  deletedAffiliations={deletedAffiliations}
                   getRorChildren={getRorChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isFetching}
@@ -319,6 +320,7 @@ export default function DatasetsSearch() {
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput
+              deletedAffiliations={deletedAffiliations}
               getRorChildren={getRorChildren}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
               isLoading={isFetching}

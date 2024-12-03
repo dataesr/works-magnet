@@ -17,6 +17,7 @@ const { VITE_APP_TAG_LIMIT } = import.meta.env;
 const SEE_MORE_AFTER = 3;
 
 export default function TagInput({
+  deletedAffiliations,
   deletedTags,
   getRorChildren,
   hint,
@@ -106,7 +107,7 @@ export default function TagInput({
                   className="fr-ml-1w"
                   color="yellow-tournesol"
                   icon="delete-line"
-                  onClick={() => onTagsChange([], tags)}
+                  onClick={() => onTagsChange([], deletedAffiliations)}
                   size="sm"
                   title="Remove all affiliations"
                   variant="text"
@@ -196,6 +197,7 @@ export default function TagInput({
 }
 
 TagInput.propTypes = {
+  deletedAffiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
   deletedTags: PropTypes.arrayOf(PropTypes.object),
   getRorChildren: PropTypes.bool,
   hint: PropTypes.string,
