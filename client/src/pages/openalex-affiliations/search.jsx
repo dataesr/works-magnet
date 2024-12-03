@@ -41,12 +41,13 @@ export default function OpenalexAffiliationsSearch() {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    if (searchParams.size < 3) {
+    if (searchParams.size < 4) {
       // Set default params values
       setSearchParams({
         affiliations: searchParams.getAll('affiliations') ?? [],
         deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
         endYear: searchParams.get('endYear') ?? '2023',
+        excludedRors: searchParams.get('excludedRors') ?? '',
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? '2023',
       });
@@ -59,6 +60,7 @@ export default function OpenalexAffiliationsSearch() {
         affiliations,
         deletedAffiliations: deletedAffiliations1,
         endYear: searchParams.get('endYear') ?? '2023',
+        excludedRors: searchParams.get('excludedRors') ?? '',
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? '2023',
       });

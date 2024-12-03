@@ -2,6 +2,8 @@
  * Return true if the app in running in production mode
  * @returns boolean
  */
-export function isInProduction() {
-  return import.meta.env.MODE === 'production';
-}
+const isInProduction = () => import.meta.env.MODE === 'production';
+
+export {
+  isInProduction,
+};

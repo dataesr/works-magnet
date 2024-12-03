@@ -8,29 +8,18 @@ import {
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 
-import useToast from '../../../hooks/useToast';
-import { getAffiliationsCorrections } from '../../../utils/curations';
 import getFlagEmoji from '../../../utils/flags';
-import { isRor } from '../../../utils/ror';
 import ListView from './list-view';
 
 export default function ViewsSelector({
-  affiliations,
-  allOpenalexCorrections,
   filteredAffiliationName,
   filteredAffiliations,
   removeRorFromAddList,
-  selectedOpenAlex,
-  setAffiliations,
-  setAllOpenalexCorrections,
   setFilteredAffiliationName,
   setSelectAffiliations,
-  setSelectedOpenAlex,
   toggleRemovedRor,
 }) {
-  const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectSortOnNumberOfRors, setSelectSortOnNumberOfRors] = useState('default');
   const [selectShowAffiliations, setSelectShowAffiliations] = useState('all');
@@ -42,7 +31,6 @@ export default function ViewsSelector({
     rorCountry: 'all',
   });
   const [sortedOrFilteredAffiliations, setSortedOrFilteredAffiliations] = useState(filteredAffiliations);
-  const { toast } = useToast();
 
   useEffect(() => {
     // Deep copy of filteredAffiliations object
@@ -137,10 +125,8 @@ export default function ViewsSelector({
       <ListView
         allAffiliations={sortedOrFilteredAffiliations}
         removeRorFromAddList={removeRorFromAddList}
-        selectedOpenAlex={selectedOpenAlex}
         setFilteredAffiliationName={setFilteredAffiliationName}
         setSelectAffiliations={setSelectAffiliations}
-        setSelectedOpenAlex={setSelectedOpenAlex}
         toggleRemovedRor={toggleRemovedRor}
       />
       <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)} size="md">
@@ -244,17 +230,6 @@ export default function ViewsSelector({
 }
 
 ViewsSelector.propTypes = {
-  affiliations: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      nameHtml: PropTypes.string.isRequired,
-      source: PropTypes.string.isRequired,
-      status: PropTypes.string.isRequired,
-      works: PropTypes.arrayOf(PropTypes.string).isRequired,
-      worksNumber: PropTypes.number.isRequired,
-    }),
-  ).isRequired,
-  allOpenalexCorrections: PropTypes.array.isRequired,
   filteredAffiliationName: PropTypes.string.isRequired,
   filteredAffiliations: PropTypes.arrayOf(
     PropTypes.shape({
@@ -267,20 +242,7 @@ ViewsSelector.propTypes = {
     }),
   ).isRequired,
   removeRorFromAddList: PropTypes.func.isRequired,
-  selectedOpenAlex: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      nameHtml: PropTypes.string.isRequired,
-      source: PropTypes.string.isRequired,
-      status: PropTypes.string.isRequired,
-      works: PropTypes.arrayOf(PropTypes.string).isRequired,
-      worksNumber: PropTypes.number.isRequired,
-    }),
-  ).isRequired,
-  setAffiliations: PropTypes.func.isRequired,
-  setAllOpenalexCorrections: PropTypes.func.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
-  setSelectedOpenAlex: PropTypes.func.isRequired,
   setSelectAffiliations: PropTypes.func.isRequired,
   toggleRemovedRor: PropTypes.func.isRequired,
 };

@@ -43,6 +43,7 @@ export default function Affiliations() {
   const [affiliations, setAffiliations] = useState([]);
   const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]); // TODO: ??
   const [body, setBody] = useState({});
+  const [cleanRor, setCleanRor] = useState('');
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [filteredStatus] = useState([
@@ -51,18 +52,14 @@ export default function Affiliations() {
     status.excluded.id,
   ]);
   const [isLoadingRorData, setIsLoadingRorData] = useState(false); // TODO: spinner dans modal
-  const [isModalOpen, setIsModalOpen] = useState(false); // TODO: ancienne modal - a supp
-
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-  const [removeList, setRemoveList] = useState([]);
   const [ror, setRor] = useState('');
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
-  const [cleanRor, setCleanRor] = useState('');
-  const [selectedOpenAlex, setSelectedOpenAlex] = useState([]); // TODO: should be deleted
-  const [uniqueRors, setUniqueRors] = useState({});
   const [rorsToRemove, setRorsToRemove] = useState([]);
+  const [timer, setTimer] = useState();
+  const [uniqueRors, setUniqueRors] = useState({});
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['openalex-affiliations', JSON.stringify(body)],
@@ -82,57 +79,6 @@ export default function Affiliations() {
     enabled: false,
   });
 
-  const applyCorrections = async () => { // TODO: should be adapted
-    let rorsToAdd = await Promise.all(
-      addList.map((add) => getRorData(add)),
-    );
-    rorsToAdd = rorsToAdd.flat().map((rorToAdd) => ({
-      ...rorToAdd,
-      action: 'add',
-    }));
-    const selectedOpenAlexTmp = selectedOpenAlex.map((item) => {
-      const rorsToCorrect = [...item.rorsToCorrect, ...rorsToAdd].map((rorToCorrect) => ({
-        ...rorToCorrect,
-        action: removeList.includes(rorToCorrect.rorId) ? 'remove' : rorToCorrect?.action,
-      }));
-      const hasCorrection = rorsToCorrect.filter((rorToCorrect) => rorToCorrect?.action).length > 0;
-      return { ...item, hasCorrection, rorsToCorrect };
-    });
-
-    setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(selectedOpenAlexTmp)]);
-    // Duplicate affiliations array
-    const affiliationsTmp = [...affiliations];
-    selectedOpenAlex.forEach((selected) => {
-      const affiliation = affiliationsTmp.find((aff) => selected.id === aff.id);
-      const rorsToCorrect = [...affiliation.rorsToCorrect, ...rorsToAdd].map((rorToCorrect) => ({
-        ...rorToCorrect,
-        action: removeList.includes(rorToCorrect.rorId) ? 'remove' : rorToCorrect?.action,
-      }));
-      affiliation.rorsToCorrect = rorsToCorrect;
-      affiliation.hasCorrection = rorsToCorrect.filter((rorToCorrect) => rorToCorrect?.action).length > 0;
-      affiliation.rawAffiliationString = affiliation.name;
-      affiliation.rorsInOpenAlex = affiliation.rors;
-    });
-    setAffiliations(affiliationsTmp);
-    setAddList([]);
-    setRemoveList([]);
-  };
-
-  useEffect(() => { // TODO: should be deleted
-    const uniqueRorsTmp = {};
-    selectedOpenAlex.forEach((affiliation) => {
-      affiliation.rorsToCorrect.forEach((_ror) => {
-        if (!Object.keys(uniqueRorsTmp).includes(_ror.rorId)) {
-          uniqueRorsTmp[_ror.rorId] = { ..._ror, addedBy: 0, countAffiliations: 0, removedBy: 0 };
-        }
-        uniqueRorsTmp[_ror.rorId].countAffiliations += 1;
-        if (_ror?.action === 'add') uniqueRorsTmp[_ror.rorId].addedBy += 1;
-        if (_ror?.action === 'remove') uniqueRorsTmp[_ror.rorId].removedBy += 1;
-      });
-    });
-    setUniqueRors(uniqueRorsTmp);
-  }, [selectedOpenAlex]);
-
   useEffect(() => {
     const get = async () => {
       setIsLoadingRorData(true);
@@ -142,7 +88,7 @@ export default function Affiliations() {
       const uniqueRorsTmp = {};
       addedRors.flat().forEach((addedRor) => {
         if (!Object.keys(uniqueRors).includes(addedRor.rorId)) {
-          uniqueRorsTmp[addedRor.rorId] = { ...addedRor, countAffiliations: selectedOpenAlex.length };
+          uniqueRorsTmp[addedRor.rorId] = { ...addedRor };
         }
       });
       setUniqueRors({ ...uniqueRors, ...uniqueRorsTmp });
@@ -225,20 +171,24 @@ export default function Affiliations() {
   }, [data]);
 
   useEffect(() => {
-    const regex = new RegExp(removeDiacritics(filteredAffiliationName));
-    const filteredAffiliationsTmp = affiliations.filter(
-      (affiliation) => regex.test(
-        `${affiliation.key.replace('[ source: ', '').replace(' ]', '')} ${affiliation.rors.map((_ror) => _ror.rorId).join(' ')}`,
-      ),
-    );
-    // Recompute corrections only when the array has changed
-    if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
-      setAllOpenalexCorrections([
-        ...allOpenalexCorrections,
-        ...getAffiliationsCorrections(filteredAffiliationsTmp),
-      ]);
-    }
-    setFilteredAffiliations(filteredAffiliationsTmp);
+    if (timer) clearTimeout(timer);
+    const timerTmp = setTimeout(() => {
+      const regex = new RegExp(removeDiacritics(filteredAffiliationName));
+      const filteredAffiliationsTmp = affiliations.filter(
+        (affiliation) => regex.test(
+          `${affiliation.key.replace('[ source: ', '').replace(' ]', '')} ${affiliation.rors.map((_ror) => _ror.rorId).join(' ')}`,
+        ),
+      );
+      // Recompute corrections only when the array has changed
+      if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
+        setAllOpenalexCorrections([
+          ...allOpenalexCorrections,
+          ...getAffiliationsCorrections(filteredAffiliationsTmp),
+        ]);
+      }
+      setFilteredAffiliations(filteredAffiliationsTmp);
+    }, 500);
+    setTimer(timerTmp);
   }, [affiliations, allOpenalexCorrections, filteredAffiliationName, filteredAffiliations.length, filteredStatus]);
 
   useEffect(() => {
@@ -522,7 +472,7 @@ export default function Affiliations() {
             <Col md={10}>
               <div
                 className="wm-bg wm-content"
-                style={{ overflow: `${isModalOpen ? 'hidden' : 'unset'}` }}
+                style={{ overflow: 'unset' }}
               >
                 <div
                   className="wm-external-actions"
@@ -737,17 +687,11 @@ export default function Affiliations() {
                   </div>
                 </div>
                 <ViewsSelector
-                  affiliations={affiliations}
-                  allOpenalexCorrections={allOpenalexCorrections}
                   filteredAffiliationName={filteredAffiliationName}
                   filteredAffiliations={filteredAffiliations}
                   removeRorFromAddList={removeRorFromAddList}
-                  selectedOpenAlex={selectedOpenAlex}
-                  setAffiliations={setAffiliations}
-                  setAllOpenalexCorrections={setAllOpenalexCorrections}
                   setFilteredAffiliationName={setFilteredAffiliationName}
                   setSelectAffiliations={setSelectAffiliations}
-                  setSelectedOpenAlex={setSelectedOpenAlex}
                   toggleRemovedRor={toggleRemovedRor}
                 />
               </div>
