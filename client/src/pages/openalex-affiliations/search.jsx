@@ -41,7 +41,7 @@ export default function OpenalexAffiliationsSearch() {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    if (searchParams.size < 4) {
+    if (searchParams.size < 3) {
       // Set default params values
       setSearchParams({
         affiliations: searchParams.getAll('affiliations') ?? [],
@@ -199,6 +199,14 @@ export default function OpenalexAffiliationsSearch() {
 
   const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
 
+  const removeAllAffiliations = () => {
+    setSearchParams({
+      ...currentSearchParams,
+      affiliations: [],
+    });
+    setSearchedAffiliations([]);
+  };
+
   const NB_TAGS_STICKY = 2;
   const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
 
@@ -259,7 +267,6 @@ export default function OpenalexAffiliationsSearch() {
               </Col>
               <Col xs="12">
                 <TagInput
-                  deletedAffiliations={deletedAffiliations}
                   getRorChildren={currentSearchParams.getRorChildren === '1'}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isLoading}
@@ -269,6 +276,7 @@ export default function OpenalexAffiliationsSearch() {
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
                   onTagsChange={onTagsChange}
+                  removeAllAffiliations={removeAllAffiliations}
                   seeMoreAfter={0}
                   switchGetRorChildren={switchGetRorChildren}
                   tags={tags}
@@ -300,7 +308,6 @@ export default function OpenalexAffiliationsSearch() {
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput
-              deletedAffiliations={deletedAffiliations}
               getRorChildren={currentSearchParams.getRorChildren === '1'}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
               isLoading={isLoading}
@@ -310,6 +317,7 @@ export default function OpenalexAffiliationsSearch() {
               messageType={messageType}
               onInputHandler={setOnInputAffiliationsHandler}
               onTagsChange={onTagsChange}
+              removeAllAffiliations={removeAllAffiliations}
               seeMoreAction={(e) => {
                 setIsOpen(true);
                 e.preventDefault();

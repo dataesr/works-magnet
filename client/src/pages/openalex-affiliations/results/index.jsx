@@ -262,6 +262,7 @@ export default function Affiliations() {
   // TODO: afficher les ROR supprimés (striked) dans la modal de suppression - à discuter
   // TODO: pastilles de couleur pour les RORs
   // TODO: optimisation
+  // TODO: Rename views-selector component
 
   const toggleRemovedRor = (affiliationId, rorId) => {
     const updatedAffiliations = affiliations.map((affiliation) => {

@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   Button,
-  Row, Col,
+  Col,
+  DismissibleTag,
+  Row,
   Spinner,
-  TagGroup, DismissibleTag,
+  TagGroup,
   TextInput,
 } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 
 import { getTagColor } from '../../utils/tags';
 
@@ -17,7 +19,6 @@ const { VITE_APP_TAG_LIMIT } = import.meta.env;
 const SEE_MORE_AFTER = 3;
 
 export default function TagInput({
-  deletedAffiliations,
   deletedTags,
   getRorChildren,
   hint,
@@ -29,6 +30,7 @@ export default function TagInput({
   onInputHandler,
   onTagsChange,
   placeholder,
+  removeAllAffiliations,
   seeMoreAction,
   seeMoreAfter,
   switchGetRorChildren,
@@ -107,7 +109,7 @@ export default function TagInput({
                   className="fr-ml-1w"
                   color="yellow-tournesol"
                   icon="delete-line"
-                  onClick={() => onTagsChange([], deletedAffiliations)}
+                  onClick={() => removeAllAffiliations()}
                   size="sm"
                   title="Remove all affiliations"
                   variant="text"
@@ -197,7 +199,6 @@ export default function TagInput({
 }
 
 TagInput.propTypes = {
-  deletedAffiliations: PropTypes.arrayOf(PropTypes.string).isRequired,
   deletedTags: PropTypes.arrayOf(PropTypes.object),
   getRorChildren: PropTypes.bool,
   hint: PropTypes.string,
@@ -209,6 +210,7 @@ TagInput.propTypes = {
   onInputHandler: PropTypes.func,
   onTagsChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
+  removeAllAffiliations: PropTypes.func.isRequired,
   seeMoreAction: PropTypes.func,
   seeMoreAfter: PropTypes.number,
   switchGetRorChildren: PropTypes.func,

@@ -207,6 +207,14 @@ export default function DatasetsSearch() {
     navigate(`/${pathname.split('/')[1]}/results${queryParams}`);
   };
 
+  const removeAllAffiliations = () => {
+    setSearchParams({
+      ...currentSearchParams,
+      affiliations: [],
+    });
+    setSearchedAffiliations([]);
+  };
+
   const NB_TAGS_STICKY = 2;
   const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
 
@@ -267,7 +275,6 @@ export default function DatasetsSearch() {
               </Col>
               <Col xs="12">
                 <TagInput
-                  deletedAffiliations={deletedAffiliations}
                   getRorChildren={getRorChildren}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
                   isLoading={isFetching}
@@ -277,6 +284,7 @@ export default function DatasetsSearch() {
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
                   onTagsChange={onTagsChange}
+                  removeAllAffiliations={removeAllAffiliations}
                   seeMoreAfter={0}
                   setGetRorChildren={setGetRorChildren}
                   tags={tags}
@@ -320,7 +328,6 @@ export default function DatasetsSearch() {
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput
-              deletedAffiliations={deletedAffiliations}
               getRorChildren={getRorChildren}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
               isLoading={isFetching}
@@ -330,6 +337,7 @@ export default function DatasetsSearch() {
               messageType={messageType}
               onInputHandler={setOnInputAffiliationsHandler}
               onTagsChange={onTagsChange}
+              removeAllAffiliations={removeAllAffiliations}
               seeMoreAction={(e) => {
                 setIsOpen(true);
                 e.preventDefault();
