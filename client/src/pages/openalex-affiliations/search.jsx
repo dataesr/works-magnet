@@ -49,7 +49,6 @@ export default function OpenalexAffiliationsSearch() {
         endYear: searchParams.get('endYear') ?? '2023',
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? '2023',
-        view: searchParams.get('view') ?? 'list',
       });
       setTags([]);
     } else {
@@ -62,7 +61,6 @@ export default function OpenalexAffiliationsSearch() {
         endYear: searchParams.get('endYear') ?? '2023',
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? '2023',
-        view: searchParams.get('view') ?? 'list',
       });
       const newSearchedAffiliations = affiliations.filter(
         (affiliation) => !searchedAffiliations.includes(affiliation),

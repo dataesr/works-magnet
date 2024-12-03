@@ -82,20 +82,6 @@ export default function Affiliations() {
     enabled: false,
   });
 
-  const undo = (id) => { // TODO: should be deleted
-    const newAffiliations = affiliations.map((affiliation) => {
-      if (affiliation.id === id) {
-        // eslint-disable-next-line no-param-reassign
-        affiliation.hasCorrection = false;
-        // eslint-disable-next-line no-param-reassign
-        affiliation.rorsToCorrect = [...affiliation.rors];
-      }
-      return affiliation;
-    });
-    setAffiliations(newAffiliations);
-    setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(newAffiliations)]);
-  };
-
   const applyCorrections = async () => { // TODO: should be adapted
     let rorsToAdd = await Promise.all(
       addList.map((add) => getRorData(add)),
@@ -754,15 +740,14 @@ export default function Affiliations() {
                   allOpenalexCorrections={allOpenalexCorrections}
                   filteredAffiliationName={filteredAffiliationName}
                   filteredAffiliations={filteredAffiliations}
+                  removeRorFromAddList={removeRorFromAddList}
                   selectedOpenAlex={selectedOpenAlex}
                   setAffiliations={setAffiliations}
                   setAllOpenalexCorrections={setAllOpenalexCorrections}
                   setFilteredAffiliationName={setFilteredAffiliationName}
-                  setSelectedOpenAlex={setSelectedOpenAlex}
-                  undo={undo}
-                  toggleRemovedRor={toggleRemovedRor}
                   setSelectAffiliations={setSelectAffiliations}
-                  removeRorFromAddList={removeRorFromAddList}
+                  setSelectedOpenAlex={setSelectedOpenAlex}
+                  toggleRemovedRor={toggleRemovedRor}
                 />
               </div>
             </Col>

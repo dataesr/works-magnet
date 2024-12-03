@@ -14,7 +14,6 @@ import useToast from '../../../hooks/useToast';
 import { getAffiliationsCorrections } from '../../../utils/curations';
 import getFlagEmoji from '../../../utils/flags';
 import { isRor } from '../../../utils/ror';
-import DataTableView from './datatable-view';
 import ListView from './list-view';
 
 export default function ViewsSelector({
@@ -30,7 +29,6 @@ export default function ViewsSelector({
   setSelectAffiliations,
   setSelectedOpenAlex,
   toggleRemovedRor,
-  undo,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,45 +67,6 @@ export default function ViewsSelector({
 
     setSortedOrFilteredAffiliations(initialAffiliations);
   }, [filteredAffiliations, sortsAndFilters]);
-
-  const changeView = (view) => {
-    searchParams.set('view', view);
-    setSearchParams(searchParams);
-  };
-
-  const onRowEditComplete = async (edit) => {
-    const { data, newData } = edit;
-    let isValid = true;
-    const newValue = newData.rorsToCorrect.trim();
-    if (newValue !== data.rorsToCorrect) {
-      newValue.split(';').forEach((x) => {
-        if (!isRor(x) && x.length > 0) {
-          isValid = false;
-          toast({
-            description: `"${x}" is not a valid ROR`,
-            id: 'rorError',
-            title: 'Invalid ROR identifier',
-            toastType: 'error',
-          });
-        }
-      });
-      if (isValid) {
-        const rorsToCorrect = [...new Set(newValue.split(';'))].join(';');
-        data.rorsToCorrect = rorsToCorrect;
-        data.hasCorrection = data.rors.map((r) => r.rorId).join(';') !== rorsToCorrect;
-        setAllOpenalexCorrections([...allOpenalexCorrections, ...getAffiliationsCorrections(filteredAffiliations)]);
-        // Deep copy of affiliations array
-        const affiliationsTmp = [...affiliations];
-        const affiliation = affiliationsTmp.find((aff) => data.id === aff.id);
-        const rorsToCorrect2 = rorsToCorrect.split(';').map((ror) => ({ rorId: ror }));
-        affiliation.rorsToCorrect = rorsToCorrect2;
-        affiliation.hasCorrection = data.hasCorrection;
-        affiliation.rawAffiliationString = affiliation.name;
-        affiliation.rorsInOpenAlex = affiliation.rors;
-        setAffiliations(affiliationsTmp);
-      }
-    }
-  };
 
   return (
     <>
@@ -172,30 +131,18 @@ export default function ViewsSelector({
                 {Object.values(sortsAndFilters).filter((value) => value !== 'default' && value !== 'all').length}
               </Badge>
             </Button>
-            <Button onClick={() => changeView('table')} icon="table-line" size="sm" color="beige-gris-galet" />
-            <Button onClick={() => changeView('list')} icon="list-unordered" size="sm" color="beige-gris-galet" />
           </Col>
         </Row>
       </div>
-      {searchParams.get('view') === 'table' ? (
-        <DataTableView
-          allAffiliations={filteredAffiliations}
-          onRowEditComplete={onRowEditComplete}
-          selectedOpenAlex={selectedOpenAlex}
-          setSelectedOpenAlex={setSelectedOpenAlex}
-          undo={undo}
-        />
-      ) : (
-        <ListView
-          allAffiliations={sortedOrFilteredAffiliations}
-          setFilteredAffiliationName={setFilteredAffiliationName}
-          setSelectedOpenAlex={setSelectedOpenAlex}
-          toggleRemovedRor={toggleRemovedRor}
-          setSelectAffiliations={setSelectAffiliations}
-          selectedOpenAlex={selectedOpenAlex}
-          removeRorFromAddList={removeRorFromAddList}
-        />
-      )}
+      <ListView
+        allAffiliations={sortedOrFilteredAffiliations}
+        removeRorFromAddList={removeRorFromAddList}
+        selectedOpenAlex={selectedOpenAlex}
+        setFilteredAffiliationName={setFilteredAffiliationName}
+        setSelectAffiliations={setSelectAffiliations}
+        setSelectedOpenAlex={setSelectedOpenAlex}
+        toggleRemovedRor={toggleRemovedRor}
+      />
       <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)} size="md">
         <ModalTitle>
           Sorts & filters
@@ -336,5 +283,4 @@ ViewsSelector.propTypes = {
   setSelectedOpenAlex: PropTypes.func.isRequired,
   setSelectAffiliations: PropTypes.func.isRequired,
   toggleRemovedRor: PropTypes.func.isRequired,
-  undo: PropTypes.func.isRequired,
 };
