@@ -65,7 +65,7 @@ export default function Affiliations() {
   const [rorsToRemove, setRorsToRemove] = useState([]);
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['openalex-ror', JSON.stringify(body)],
+    queryKey: ['openalex-affiliations', JSON.stringify(body)],
     // Search for works from affiliations for each affiliation strictly longer than 2 letters
     queryFn: () => getWorks(
       {
@@ -484,11 +484,11 @@ export default function Affiliations() {
                       <Tag
                         className="fr-mr-1w"
                         color="blue-cumulus"
-                        key="openalex-ror-tag-year-start"
+                        key="openalex-affiliations-tag-year-start"
                       >
                         {`Start: ${body.startYear}`}
                       </Tag>
-                      <Tag color="blue-cumulus" key="openalex-ror-tag-year-end">
+                      <Tag color="blue-cumulus" key="openalex-affiliations-tag-year-end">
                         {`End: ${body.endYear}`}
                       </Tag>
                     </div>
@@ -505,12 +505,12 @@ export default function Affiliations() {
                     </div>
                     <div className="wm-content">
                       {body.affiliations.map((affiliation) => (
-                        <Row key={`openalex-ror-search-${affiliation.label}`}>
+                        <Row key={`openalex-affiliations-search-${affiliation.label}`}>
                           <Tag
                             className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
                               }`}
                             color={getTagColor(affiliation)}
-                            key={`openalex-ror-tag-${affiliation.label}`}
+                            key={`openalex-affiliations-tag-${affiliation.label}`}
                           >
                             {affiliation.label}
                           </Tag>
@@ -519,7 +519,7 @@ export default function Affiliations() {
                               className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''
                                 }`}
                               color={getTagColor(child)}
-                              key={`openalex-ror-tag-${child.label}`}
+                              key={`openalex-affiliations-tag-${child.label}`}
                             >
                               {child.label}
                             </Tag>
@@ -672,7 +672,7 @@ export default function Affiliations() {
                                 rorsToRemove && rorsToRemove.length > 0 && (
                                   <ul>
                                     {rorsToRemove.map((_ror) => (
-                                      <li key={`openalex-ror-remove-${_ror.rorId}`} style={{ listStyle: 'none', marginBottom: '16px' }}>
+                                      <li key={`openalex-affiliations-remove-${_ror.rorId}`} style={{ listStyle: 'none', marginBottom: '16px' }}>
                                         <img
                                           alt="ROR logo"
                                           className="vertical-middle fr-mx-1w"

@@ -67,7 +67,7 @@ export default function ListView({
                 <table className="wm-table">
                   <tbody>
                     {affiliation.rorsToCorrect.map((rorToCorrect) => (
-                      <tr key={`openalex-ror-affiliations-${rorToCorrect.rorId}`}>
+                      <tr key={`openalex-affiliations-affiliations-${rorToCorrect.rorId}`}>
                         <td>
                           <RorBadge
                             isRemoved={affiliation.removeList.includes(rorToCorrect.rorId)}
@@ -85,7 +85,7 @@ export default function ListView({
                       </tr>
                     ))}
                     {affiliation.addList.map((ror) => (
-                      <tr key={`openalex-ror-affiliations-${ror.rorId}`}>
+                      <tr key={`openalex-affiliations-affiliations-${ror.rorId}`}>
                         <td>
                           <RorBadge
                             ror={ror}

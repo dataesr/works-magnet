@@ -24,7 +24,7 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
   .map((year) => (year + START_YEAR).toString())
   .map((year) => ({ label: year, value: year }));
 
-export default function OpenalexRorSearch() {
+export default function OpenalexAffiliationsSearch() {
   const { search } = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -196,7 +196,7 @@ export default function OpenalexRorSearch() {
     }
     setMessageType('');
     setMessage('');
-    navigate(`/openalex-ror/results${search}`);
+    navigate(`/openalex-affiliations/results${search}`);
   };
 
   const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
