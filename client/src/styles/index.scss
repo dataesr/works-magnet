@@ -125,6 +125,7 @@ html, body {
   // background: linear-gradient(to right, #0e0e31, #1a1add);
   background-color: #fff;
 }
+
 .wm-message{
   background-color: #eee;
   padding: 15px;
@@ -161,23 +162,33 @@ html, body {
   .wm-text{
     color: white;
     padding: 5px;
-    & span{font-size: 1.5em; font-weight: bold;
+    & span{
+      font-size: 1.5em; 
+      font-weight: bold;
+    }
   }
-}
-  .wm-button{
+  
+  .wm-button {
     width: 90%;
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
   }
 }
 
+.wm-dot {
+  border-radius: 10px;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-left: 5px;
+}
+
 .wm-content {
   padding: 10px;
   border-bottom-right-radius: 15px;
   border-bottom-left-radius: 15px;
-  
-  
-  .wm-external-actions{
+    
+  .wm-external-actions {
     border: #777 1px solid;
     background-color: #eee;
     padding: 10px 0 0  10px;
@@ -185,7 +196,7 @@ html, body {
     border-top-left-radius: 15px;
     border-bottom: 1px solid #ddd;
   }
-  .wm-internal-actions{
+  .wm-internal-actions {
     border-bottom: #777 1px solid;
     border-left: #777 1px solid;
     border-right: #777 1px solid;
@@ -233,12 +244,6 @@ html, body {
 }
 
 :root {
-  --ror-1: #006A6F;
-  --ror-2: #5c006f;
-  --ror-3: #e99700;
-  --ror-4: #6f0018;
-  --ror-5: #046f00;
-  --ror-x: #fff;
   --green-archipel: #00a99d;
   --purple-glycine: #8a2be2;
   --pink-tuile: #ff69b4;

@@ -24,6 +24,7 @@ export default function ListView({
   toggleRemovedRor,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isColorInfoModalOpen, setIsColorInfoModalOpen] = useState(false);
   const [selectSortOnNumberOfRors, setSelectSortOnNumberOfRors] = useState('default');
   const [selectShowAffiliations, setSelectShowAffiliations] = useState('all');
   const [selectRorCountry, setSelectRorCountry] = useState('all');
@@ -139,6 +140,68 @@ export default function ListView({
                 {Object.values(sortsAndFilters).filter((value) => value !== 'default' && value !== 'all').length}
               </Badge>
             </Button>
+            <Button
+              aria-label="Open colors info modal"
+              color="beige-gris-galet"
+              onClick={() => setIsColorInfoModalOpen((prev) => !prev)}
+              size="sm"
+              icon="palette-fill"
+            />
+            <Modal isOpen={isColorInfoModalOpen} hide={() => setIsColorInfoModalOpen((prev) => !prev)} size="md">
+              <ModalTitle>
+                Additional information for colors
+              </ModalTitle>
+              <ModalContent>
+                <Text>
+                  RORs are grouped, summed and sorted for all the affiliations displayed. A colour is assigned to the most represented
+                  <br />
+                  <br />
+                  A colour is assigned to a single ROR
+                  <br />
+                  <br />
+                  Here is the order of colours from most to least represented
+                  <br />
+                  <i>Most represented</i>
+                  <span
+                    className="wm-dot fr-mr-2w fr-ml-1w"
+                    style={{
+                      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--green-archipel'),
+                    }}
+                  />
+                  <span
+                    className="wm-dot fr-mr-2w"
+                    style={{
+                      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--purple-glycine'),
+                    }}
+                  />
+                  <span
+                    className="wm-dot fr-mr-2w"
+                    style={{
+                      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--pink-tuile'),
+                    }}
+                  />
+                  <span
+                    className="wm-dot fr-mr-2w"
+                    style={{
+                      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--green-menthe'),
+                    }}
+                  />
+                  <span
+                    className="wm-dot fr-mr-2w"
+                    style={{
+                      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--brown-cafe-creme'),
+                    }}
+                  />
+                  <span
+                    className="wm-dot fr-mr-1w"
+                    style={{
+                      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--beige-gris-galet'),
+                    }}
+                  />
+                  <i>Less represented</i>
+                </Text>
+              </ModalContent>
+            </Modal>
           </Col>
         </Row>
       </div>
