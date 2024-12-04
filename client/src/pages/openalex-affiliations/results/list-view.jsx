@@ -106,6 +106,7 @@ export default function ListView({
                 borderRadius: '4px',
                 padding: '0.375rem 0.75rem',
                 width: '600px',
+                backgroundColor: 'white',
               }}
               value={filteredAffiliationName}
             />
