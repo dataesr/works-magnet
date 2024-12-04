@@ -26,7 +26,7 @@ import { getTagColor } from '../../../utils/tags';
 import { getWorks } from '../../../utils/works';
 import ExportErrorsButton from '../components/export-errors-button';
 import SendFeedbackButton from '../components/send-feedback-button';
-import ViewsSelector from './views-selector';
+import ListView from './list-view';
 
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -212,7 +212,6 @@ export default function Affiliations() {
   // TODO: afficher les ROR supprimés (striked) dans la modal de suppression - à discuter
   // TODO: pastilles de couleur pour les RORs
   // TODO: optimisation
-  // TODO: Rename views-selector component
 
   const toggleRemovedRor = (affiliationId, rorId) => {
     const updatedAffiliations = affiliations.map((affiliation) => {
@@ -686,7 +685,7 @@ export default function Affiliations() {
                     />
                   </div>
                 </div>
-                <ViewsSelector
+                <ListView
                   filteredAffiliationName={filteredAffiliationName}
                   filteredAffiliations={filteredAffiliations}
                   removeRorFromAddList={removeRorFromAddList}
