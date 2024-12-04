@@ -108,15 +108,18 @@ export default function ListView({
               }}
               value={filteredAffiliationName}
             />
-            <Button
+            <button
               aria-label="Clear search"
-              className=" fr-ml-1w "
+              className=" fr-ml-1w"
+              disabled={!filteredAffiliationName.length}
               icon="delete-line"
               onClick={() => setFilteredAffiliationName('')}
               size="sm"
               title="Clear search"
-              variant="text"
-            />
+              type="button"
+            >
+              <i className="ri-delete-bin-6-line" />
+            </button>
           </Col>
           <Col xs="2" className="text-right">
             <Button
