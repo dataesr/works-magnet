@@ -36,7 +36,7 @@ export default function OpenalexAffiliationsSearch() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
-  const [rorExclusions, setRorExclusions] = useState('');
+  const [excludedRors, setExcludedRors] = useState('');
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
   const [tags, setTags] = useState([]);
 
@@ -64,6 +64,7 @@ export default function OpenalexAffiliationsSearch() {
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? '2023',
       });
+      setExcludedRors(currentSearchParams.excludedRors);
       const newSearchedAffiliations = affiliations.filter(
         (affiliation) => !searchedAffiliations.includes(affiliation),
       );
@@ -81,12 +82,7 @@ export default function OpenalexAffiliationsSearch() {
       }
       setIsLoading(false);
     }
-  }, [
-    deletedAffiliations,
-    searchedAffiliations,
-    searchParams,
-    setSearchParams,
-  ]);
+  }, [deletedAffiliations, searchedAffiliations, searchParams, setSearchParams, currentSearchParams.excludedRors]);
 
   useEffect(() => {
     const getData = async () => {
@@ -196,7 +192,9 @@ export default function OpenalexAffiliationsSearch() {
     }
     setMessageType('');
     setMessage('');
-    navigate(`/openalex-affiliations/results${search}`);
+    const _searchParams = new URLSearchParams(search);
+    _searchParams.set('excludedRors', excludedRors);
+    navigate(`/openalex-affiliations/results?${_searchParams.toString()}`);
   };
 
   const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
@@ -288,8 +286,8 @@ export default function OpenalexAffiliationsSearch() {
                 <TextInput
                   hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
                   label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
-                  onChange={(e) => setRorExclusions(e.target.value)}
-                  value={rorExclusions}
+                  onChange={(e) => setExcludedRors(e.target.value)}
+                  value={excludedRors}
                 />
               </Col>
               <Col xs="12">
@@ -374,8 +372,10 @@ export default function OpenalexAffiliationsSearch() {
             <TextInput
               hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
               label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
-              onChange={(e) => setRorExclusions(e.target.value)}
-              value={rorExclusions}
+              onChange={(e) => {
+                setExcludedRors(e.target.value);
+              }}
+              value={excludedRors}
             />
           </Col>
           <Col offsetXs="1" className="text-right fr-pl-3w">

@@ -23,9 +23,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
   }, [affiliations]);
 
   useEffect(() => {
-    if (timer) {
-      clearTimeout(timer);
-    }
+    if (timer) clearTimeout(timer);
     const timerTmp = setTimeout(() => {
       const filteredAffiliationsTmp = affiliations.filter((affiliation) => {
         const regex = new RegExp(removeDiacritics(filteredAffiliationName));

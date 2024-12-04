@@ -103,6 +103,7 @@ export default function Affiliations() {
     const getData = async () => {
       const queryParams = {
         endYear: searchParams.get('endYear') ?? '2023',
+        excludedRors: searchParams.get('excludedRors') ?? '',
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? '2023',
       };
@@ -189,6 +190,8 @@ export default function Affiliations() {
       setFilteredAffiliations(filteredAffiliationsTmp);
     }, 500);
     setTimer(timerTmp);
+  // The timer should not be tracked
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [affiliations, allOpenalexCorrections, filteredAffiliationName, filteredAffiliations.length, filteredStatus]);
 
   useEffect(() => {
@@ -465,8 +468,28 @@ export default function Affiliations() {
                     </div>
                   </Col>
                 </Row>
+                <Row>
+                  <Col>
+                    <div className="wm-title">
+                      <span>
+                        <i className="ri-prohibited-line fr-mr-1w" />
+                        Excluded RORs
+                      </span>
+                    </div>
+                    <div className="wm-content">
+                      {body.excludedRors.split(' ').map((excludedRor) => (
+                        <Tag
+                          className="fr-mr-1w"
+                          color="green-archipel"
+                          key="openalex-affiliations-rors-excluded"
+                        >
+                          {excludedRor}
+                        </Tag>
+                      ))}
+                    </div>
+                  </Col>
+                </Row>
               </div>
-
             </Col>
             <Col md={10}>
               <div
