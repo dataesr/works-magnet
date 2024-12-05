@@ -468,27 +468,29 @@ export default function Affiliations() {
                     </div>
                   </Col>
                 </Row>
-                <Row>
-                  <Col>
-                    <div className="wm-title">
-                      <span>
-                        <i className="ri-prohibited-line fr-mr-1w" />
-                        Excluded RORs
-                      </span>
-                    </div>
-                    <div className="wm-content">
-                      {body.excludedRors.split(' ').map((excludedRor) => (
-                        <Tag
-                          className="fr-mr-1w"
-                          color="green-archipel"
-                          key="openalex-affiliations-rors-excluded"
-                        >
-                          {excludedRor}
-                        </Tag>
-                      ))}
-                    </div>
-                  </Col>
-                </Row>
+                {(body.excludedRors.length > 0) && (
+                  <Row>
+                    <Col>
+                      <div className="wm-title">
+                        <span>
+                          <i className="ri-prohibited-line fr-mr-1w" />
+                          Excluded RORs
+                        </span>
+                      </div>
+                      <div className="wm-content">
+                        {body.excludedRors.split(' ').map((excludedRor) => (
+                          <Tag
+                            className="fr-mr-1w"
+                            color="green-archipel"
+                            key="openalex-affiliations-rors-excluded"
+                          >
+                            {excludedRor}
+                          </Tag>
+                        ))}
+                      </div>
+                    </Col>
+                  </Row>
+                )}
               </div>
             </Col>
             <Col md={10}>
