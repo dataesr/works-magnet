@@ -5,6 +5,7 @@ import DatasetsResults from './pages/datasets/results';
 import DatasetsSearch from './pages/datasets/search';
 import Home from './pages/home';
 import Mentions from './pages/mentions';
+import OpenalexAffiliationsCorrections from './pages/openalex-affiliations/corrections';
 import OpenalexaffiliationsResults from './pages/openalex-affiliations/results';
 import OpenalexAffiliationsSearch from './pages/openalex-affiliations/search';
 import PublicationsResults from './pages/publications/results';
@@ -27,6 +28,7 @@ export default function Router() {
             <OpenalexaffiliationsResults />
           }
         />
+        <Route path="/openalex-affiliations/corrections" element={<OpenalexAffiliationsCorrections />} />
         <Route
           path="/publications"
           element={<Navigate to="/publications/search" replace />}
