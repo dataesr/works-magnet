@@ -7,6 +7,7 @@ import {
   ModalContent,
   ModalTitle,
   Row,
+  Spinner,
   Tag,
   Text,
   TextInput,
@@ -51,6 +52,7 @@ export default function Affiliations() {
     status.validated.id,
     status.excluded.id,
   ]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingRorData, setIsLoadingRorData] = useState(false); // TODO: spinner dans modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
@@ -58,7 +60,6 @@ export default function Affiliations() {
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
   const [rorsToRemove, setRorsToRemove] = useState([]);
-  const [timer, setTimer] = useState();
   const [uniqueRors, setUniqueRors] = useState({});
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
@@ -172,26 +173,22 @@ export default function Affiliations() {
   }, [data]);
 
   useEffect(() => {
-    if (timer) clearTimeout(timer);
-    const timerTmp = setTimeout(() => {
-      const regex = new RegExp(removeDiacritics(filteredAffiliationName));
-      const filteredAffiliationsTmp = affiliations.filter(
-        (affiliation) => regex.test(
-          `${affiliation.key.replace('[ source: ', '').replace(' ]', '')} ${affiliation.rors.map((_ror) => _ror.rorId).join(' ')}`,
-        ),
-      );
-      // Recompute corrections only when the array has changed
-      if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
-        setAllOpenalexCorrections([
-          ...allOpenalexCorrections,
-          ...getAffiliationsCorrections(filteredAffiliationsTmp),
-        ]);
-      }
-      setFilteredAffiliations(filteredAffiliationsTmp);
-    }, 500);
-    setTimer(timerTmp);
-  // The timer should not be tracked
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setIsLoading(true);
+    const regex = new RegExp(removeDiacritics(filteredAffiliationName));
+    const filteredAffiliationsTmp = affiliations.filter(
+      (affiliation) => regex.test(
+        `${affiliation.key.replace('[ source: ', '').replace(' ]', '')} ${affiliation.rors.map((_ror) => _ror.rorId).join(' ')}`,
+      ),
+    );
+    // Recompute corrections only when the array has changed
+    if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
+      setAllOpenalexCorrections([
+        ...allOpenalexCorrections,
+        ...getAffiliationsCorrections(filteredAffiliationsTmp),
+      ]);
+    }
+    setFilteredAffiliations(filteredAffiliationsTmp);
+    setIsLoading(false);
   }, [affiliations, allOpenalexCorrections, filteredAffiliationName, filteredAffiliations.length, filteredStatus]);
 
   useEffect(() => {
@@ -353,7 +350,7 @@ export default function Affiliations() {
     <>
       <Header id="openalex-tile-title" />
       <Container fluid as="main" className="wm-bg">
-        {isFetching && (
+        {(isFetching || isLoading) && (
           <Container
             style={{ textAlign: 'center', minHeight: '600px' }}
             className="fr-pt-5w wm-font"
@@ -370,6 +367,10 @@ export default function Affiliations() {
               <span className="loader fr-my-5w">Loading</span>
             </div>
           </Container>
+        )}
+
+        {isLoading && (
+          <Spinner size={48} />
         )}
 
         {error && (
