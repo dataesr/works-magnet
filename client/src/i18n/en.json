@@ -1,4 +1,8 @@
 {
+  "corpus-title": "Build up a corpus of publications or datasets",
+  "feedback-description-1": "AI techniques are used on a large scale on the corpus of publications. In particular, OpenAlex associates affiliation signatures with ROR identifiers. Errors and omissions can occur, distorting the results obtained from OpenAlex data, such as the (open) Leiden ranking. Helping to correct these data improves the reliability and representativeness of these analyses.",
+  "feedback-description-2": "Similarly, tools are used to detect mentions of software and data sets in the full text of publications. Here too, these detections may contain errors. The works-magnet can be used to explore all the mentions detected in the French corpus and to report any errors. These reports will be added to the learning database, helping to train new, more reliable detection models.",
+  "feedback-title": "Improve the automatic detections made by AI",
   "datasets-tile-title": "🗃 Find the datasets affiliated to your institution",
   "datasets-tile-detail-1": "🔎 Explore the most frequent raw affiliation strings retrieved in the French Open Science Monitor data and in OpenAlex for your query (datasets only).",
   "datasets-tile-detail-2": "🤔 Validate ✅ or exclude ❌ each of them, whether it actually corresponds to your institution or not.",
