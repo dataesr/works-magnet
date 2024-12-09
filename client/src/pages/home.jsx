@@ -34,6 +34,8 @@ export default function Home() {
           <h3>
             <FormattedMessage id="corpus-title" />
           </h3>
+        </Row>
+        <Row gutters>
           <Col sm={12} md={6}>
             <PublicationsTile />
           </Col>
