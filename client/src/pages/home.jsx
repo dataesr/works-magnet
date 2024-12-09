@@ -1,4 +1,4 @@
-import { Col, Container, Row } from '@dataesr/dsfr-plus';
+import { Col, Container, Row, Title } from '@dataesr/dsfr-plus';
 import { FormattedMessage } from 'react-intl';
 
 import DatasetsTile from '../components/tiles/datasets';
@@ -12,17 +12,18 @@ export default function Home() {
     <>
       <Header isExpanded />
       <Container as="section" className="fr-mt-4w">
-        <Row gutters className="fr-mb-8w">
+        <Row className="fr-mb-3w">
+          <Title as="h3">
+            <FormattedMessage id="feedback-title" />
+          </Title>
           <p>
-            <h3>
-              <FormattedMessage id="feedback-title" />
-            </h3>
-            <div>
-              <FormattedMessage id="feedback-description-1" />
-              <br />
-              <FormattedMessage id="feedback-description-2" />
-            </div>
+            <FormattedMessage id="feedback-description-1" />
           </p>
+          <p>
+            <FormattedMessage id="feedback-description-2" />
+          </p>
+        </Row>
+        <Row gutters className="fr-mb-8w">
           <Col sm={12} md={6}>
             <OpenalexTile />
           </Col>
@@ -30,12 +31,12 @@ export default function Home() {
             <MentionsTile />
           </Col>
         </Row>
-        <Row gutters className="fr-mb-16w">
-          <h3>
+        <Row>
+          <Title as="h3">
             <FormattedMessage id="corpus-title" />
-          </h3>
+          </Title>
         </Row>
-        <Row gutters>
+        <Row gutters className="fr-mb-16w">
           <Col sm={12} md={6}>
             <PublicationsTile />
           </Col>
