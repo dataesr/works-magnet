@@ -19,7 +19,6 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { status } from '../../../config';
 import useToast from '../../../hooks/useToast';
 import Header from '../../../layout/header';
-import { getAffiliationsCorrections } from '../../../utils/curations';
 import getFlagEmoji from '../../../utils/flags';
 import { getRorData, isRor } from '../../../utils/ror';
 import { normalize, removeDiacritics } from '../../../utils/strings';
@@ -42,7 +41,6 @@ export default function Affiliations() {
 
   const [addList, setAddList] = useState([]);
   const [affiliations, setAffiliations] = useState([]);
-  const [allOpenalexCorrections, setAllOpenalexCorrections] = useState([]); // TODO: ??
   const [body, setBody] = useState({});
   const [cleanRor, setCleanRor] = useState('');
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
@@ -177,16 +175,9 @@ export default function Affiliations() {
         `${affiliation.key.replace('[ source: ', '').replace(' ]', '')} ${affiliation.rors.map((_ror) => _ror.rorId).join(' ')}`,
       ),
     );
-    // Recompute corrections only when the array has changed
-    if (filteredAffiliationsTmp.length !== filteredAffiliations.length) {
-      setAllOpenalexCorrections([
-        ...allOpenalexCorrections,
-        ...getAffiliationsCorrections(filteredAffiliationsTmp),
-      ]);
-    }
     setFilteredAffiliations(filteredAffiliationsTmp);
     setIsLoading(false);
-  }, [affiliations, allOpenalexCorrections, filteredAffiliationName, filteredAffiliations.length, filteredStatus]);
+  }, [affiliations, filteredAffiliationName]);
 
   useEffect(() => {
     if (ror === '') {

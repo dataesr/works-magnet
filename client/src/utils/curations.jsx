@@ -1,13 +1,3 @@
-const getAffiliationsCorrections = (affiliations) => affiliations
-  .filter((affiliation) => affiliation.hasCorrection)
-  .map((affiliation) => ({
-    id: affiliation.id,
-    rawAffiliationString: affiliation.name,
-    rorsInOpenAlex: affiliation.rors,
-    worksExample: affiliation.worksExample,
-    worksOpenAlex: affiliation.worksOpenAlex,
-  }));
-
 const getMentionsCorrections = (mentions) => mentions
   .filter((mention) => mention.hasCorrection)
   .map((mention) => {
@@ -61,4 +51,4 @@ const getMentionsCorrections = (mentions) => mentions
   })
   .flat();
 
-export { getAffiliationsCorrections, getMentionsCorrections };
+export { getMentionsCorrections };
