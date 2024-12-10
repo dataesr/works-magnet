@@ -17,6 +17,7 @@ import RorName from '../components/ror-name';
 import WorksList from '../components/works-list';
 
 export default function ListView({
+  affiliationsCount,
   filteredAffiliations,
   removeRorFromAddList,
   setFilteredAffiliationName,
@@ -120,26 +121,27 @@ export default function ListView({
               value={search}
             />
             <Button
+              aria-label="Search in affiliations"
               className="fr-ml-1w"
               color="blue-ecume"
               disabled={!search.length}
               onClick={() => setFilteredAffiliationName(search)}
               size="sm"
+              title="Search in affiliations"
             >
               Search in affiliations
             </Button>
-            <button
+            <Button
               aria-label="Clear search"
-              className=" fr-ml-1w"
-              disabled={!search.length}
+              className="fr-ml-1w"
+              color="blue-ecume"
+              disabled={sortedOrFilteredAffiliations.length === affiliationsCount}
               icon="delete-line"
               onClick={() => { setSearch(''); setFilteredAffiliationName(''); }}
               size="sm"
+              style={{ verticalAlign: 'bottom' }}
               title="Clear search"
-              type="button"
-            >
-              <i className="ri-delete-bin-6-line" />
-            </button>
+            />
           </Col>
           <Col xs="2" className="text-right">
             <Button
@@ -412,7 +414,7 @@ export default function ListView({
 }
 
 ListView.propTypes = {
-  filteredAffiliationName: PropTypes.string.isRequired,
+  affiliationsCount: PropTypes.number.isRequired,
   filteredAffiliations: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,

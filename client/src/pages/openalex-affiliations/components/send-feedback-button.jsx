@@ -34,8 +34,6 @@ export default function SendFeedbackButton({ corrections, resetCorrections }) {
         toastType: toastType ?? 'info',
       });
     },
-    onOpen: () => console.log('Websocket opened'),
-    onClose: () => console.log('Websocket closed'),
     shouldReconnect: () => true,
   });
 

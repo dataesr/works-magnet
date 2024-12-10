@@ -53,7 +53,6 @@ export default function Affiliations() {
     status.excluded.id,
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingRorData, setIsLoadingRorData] = useState(false); // TODO: spinner dans modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [ror, setRor] = useState('');
@@ -82,7 +81,6 @@ export default function Affiliations() {
 
   useEffect(() => {
     const get = async () => {
-      setIsLoadingRorData(true);
       const addedRors = await Promise.all(
         addList.map((add) => getRorData(add)),
       );
@@ -93,7 +91,6 @@ export default function Affiliations() {
         }
       });
       setUniqueRors({ ...uniqueRors, ...uniqueRorsTmp });
-      setIsLoadingRorData(false);
     };
 
     get();
@@ -277,8 +274,10 @@ export default function Affiliations() {
           selected: false,
         };
       }
-      affiliation.selected = false;
-      return affiliation;
+      return {
+        ...affiliation,
+        selected: false,
+      };
     });
     setAffiliations(updatedAffiliations);
     setRor('');
@@ -712,7 +711,7 @@ export default function Affiliations() {
                   </div>
                 </div>
                 <ListView
-                  filteredAffiliationName={filteredAffiliationName}
+                  affiliationsCount={affiliations.length}
                   filteredAffiliations={filteredAffiliations}
                   removeRorFromAddList={removeRorFromAddList}
                   setFilteredAffiliationName={setFilteredAffiliationName}
