@@ -474,7 +474,7 @@ export default function Affiliations() {
                     <Col>
                       <div className="wm-title">
                         <span>
-                          <i className="ri-prohibited-line fr-mr-1w" />
+                          <i className="ri-forbid-2-line fr-mr-1w" />
                           Excluded RORs
                         </span>
                       </div>

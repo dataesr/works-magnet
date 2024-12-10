@@ -17,7 +17,6 @@ import RorName from '../components/ror-name';
 import WorksList from '../components/works-list';
 
 export default function ListView({
-  filteredAffiliationName,
   filteredAffiliations,
   removeRorFromAddList,
   setFilteredAffiliationName,
@@ -106,6 +105,11 @@ export default function ListView({
             <span className="fr-icon-search-line fr-mx-1w" />
             <input
               onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && search.length > 0) {
+                  setFilteredAffiliationName(search);
+                }
+              }}
               style={{
                 border: '1px solid #ced4da',
                 borderRadius: '4px',
@@ -326,7 +330,6 @@ export default function ListView({
                 }}
                 value={selectSortOnNumberOfRors}
               >
-                <option value="" disabled hidden>Select an option</option>
                 <option value="default">Default</option>
                 <option value="numberASC">Ascending</option>
                 <option value="numberDESC">Descending</option>
