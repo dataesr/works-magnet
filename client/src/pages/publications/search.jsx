@@ -212,6 +212,7 @@ export default function PublicationsSearch() {
     setSearchParams({
       ...currentSearchParams,
       affiliations: [],
+      deletedAffiliations: [],
     });
     setSearchedAffiliations([]);
   };

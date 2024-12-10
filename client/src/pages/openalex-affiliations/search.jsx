@@ -203,6 +203,7 @@ export default function OpenalexAffiliationsSearch() {
     setSearchParams({
       ...currentSearchParams,
       affiliations: [],
+      deletedAffiliations: [],
     });
     setSearchedAffiliations([]);
   };

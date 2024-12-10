@@ -211,6 +211,7 @@ export default function DatasetsSearch() {
     setSearchParams({
       ...currentSearchParams,
       affiliations: [],
+      deletedAffiliations: [],
     });
     setSearchedAffiliations([]);
   };
