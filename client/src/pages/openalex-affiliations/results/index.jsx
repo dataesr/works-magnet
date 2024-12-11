@@ -16,7 +16,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { status } from '../../../config';
 import useToast from '../../../hooks/useToast';
 import Header from '../../../layout/header';
 import getFlagEmoji from '../../../utils/flags';
@@ -45,11 +44,6 @@ export default function Affiliations() {
   const [cleanRor, setCleanRor] = useState('');
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
-  const [filteredStatus] = useState([
-    status.tobedecided.id,
-    status.validated.id,
-    status.excluded.id,
-  ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
@@ -195,11 +189,6 @@ export default function Affiliations() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ror]);
-
-  // -------------------------------------------
-  // TODO: afficher les ROR supprimés (striked) dans la modal de suppression - à discuter
-  // TODO: pastilles de couleur pour les RORs
-  // TODO: optimisation
 
   const toggleRemovedRor = (affiliationId, rorId) => {
     const updatedAffiliations = affiliations.map((affiliation) => {

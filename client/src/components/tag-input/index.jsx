@@ -19,6 +19,7 @@ const { VITE_APP_TAG_LIMIT } = import.meta.env;
 const SEE_MORE_AFTER = 3;
 
 export default function TagInput({
+  className,
   deletedTags,
   getRorChildren,
   hint,
@@ -97,7 +98,7 @@ export default function TagInput({
 
   return (
     <>
-      <Row verticalAlign="bottom">
+      <Row className={className} verticalAlign="bottom">
         <Col className="fr-pb-2w">
           <TextInput
             hint={hint}
@@ -199,6 +200,7 @@ export default function TagInput({
 }
 
 TagInput.propTypes = {
+  className: PropTypes.string,
   deletedTags: PropTypes.arrayOf(PropTypes.object),
   getRorChildren: PropTypes.bool,
   hint: PropTypes.string,
@@ -218,6 +220,7 @@ TagInput.propTypes = {
 };
 
 TagInput.defaultProps = {
+  className: '',
   deletedTags: [],
   getRorChildren: false,
   hint: 'Press "ENTER" to search for several terms',

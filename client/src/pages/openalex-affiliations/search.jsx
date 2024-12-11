@@ -9,12 +9,15 @@ import {
   SelectOption,
   TextInput,
 } from '@dataesr/dsfr-plus';
+import { Steps } from 'intro.js-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import TagInput from '../../components/tag-input';
 import Header from '../../layout/header';
 import { cleanRor, getRorData, isRor } from '../../utils/ror';
+
+import 'intro.js/introjs.css';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
@@ -39,6 +42,28 @@ export default function OpenalexAffiliationsSearch() {
   const [excludedRors, setExcludedRors] = useState('');
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
   const [tags, setTags] = useState([]);
+
+  const steps = [
+    {
+      element: '.step-ror-to-add',
+      intro: 'Searched affiliations. Can be ROR or string. Press ENTER to validate. OR boolean.',
+      position: 'right',
+      tooltipClass: 'myTooltipClass',
+      highlightClass: 'myHighlightClass',
+    },
+    {
+      element: '.step-ror-to-exclude',
+      intro: 'Excluded ROR. Only ROR. Separate by space.',
+    },
+    {
+      element: '.step-year-start',
+      intro: 'Filter on publication year between start and end, included',
+    },
+    {
+      element: '.step-search-works',
+      intro: '⏳ Finally run the search. It can take a while ',
+    },
+  ];
 
   useEffect(() => {
     if (searchParams.size < 4) {
@@ -218,6 +243,12 @@ export default function OpenalexAffiliationsSearch() {
   return (
     <>
       <Header />
+      <Steps
+        enabled={true}
+        initialStep={0}
+        steps={steps}
+        onExit={() => {}}
+      />
       <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
         <ModalContent>
           <Container as="section" className="filters fr-my-5w">
@@ -307,7 +338,7 @@ export default function OpenalexAffiliationsSearch() {
       </Modal>
       <Container as="section" className="filters fr-my-5w">
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
-          <Col xs="8">
+          <Col className="step-ror-to-add" xs="8">
             <TagInput
               getRorChildren={currentSearchParams.getRorChildren === '1'}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
@@ -329,7 +360,7 @@ export default function OpenalexAffiliationsSearch() {
           </Col>
           <Col offsetXs="1" className="text-right fr-pl-3w">
             <Row gutters verticalAlign="bottom">
-              <Col>
+              <Col className="step-year-start">
                 <Select
                   aria-label="Select a start year for search"
                   buttonLabel={currentSearchParams.startYear}
@@ -369,7 +400,7 @@ export default function OpenalexAffiliationsSearch() {
           </Col>
         </Row>
         <Row className="fr-pt-0 fr-pr-2w fr-pb-2w fr-pl-2w">
-          <Col xs="8">
+          <Col className="step-ror-to-exclude" xs="8">
             <TextInput
               hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
               label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
@@ -379,7 +410,7 @@ export default function OpenalexAffiliationsSearch() {
               value={excludedRors}
             />
           </Col>
-          <Col offsetXs="1" className="text-right fr-pl-3w">
+          <Col offsetXs="1" className="fr-pl-3w step-search-works text-right">
             <Button
               className="fr-mt-2w"
               disabled={searchParams.getAll('affiliations').length === 0}
