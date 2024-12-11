@@ -4,13 +4,14 @@ import { useSearchParams } from 'react-router-dom';
 import ButtonDropdown from '../../../components/button-dropdown';
 
 export default function ExportErrorsButton({
+  className,
   corrections,
 }) {
   const [searchParams] = useSearchParams();
 
   return (
     <ButtonDropdown
-      className="fr-mr-1w"
+      className={`fr-mr-1w ${className}`}
       data={corrections}
       label="OpenAlex corrections"
       searchParams={searchParams}
@@ -19,6 +20,7 @@ export default function ExportErrorsButton({
 }
 
 ExportErrorsButton.propTypes = {
+  className: PropTypes.string,
   corrections: PropTypes.arrayOf(PropTypes.shape({
     addList: PropTypes.arrayOf(PropTypes.string).isRequired,
     hasCorrection: PropTypes.bool.isRequired,
@@ -47,4 +49,8 @@ ExportErrorsButton.propTypes = {
     worksNumber: PropTypes.number.isRequired,
     worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,
+};
+
+ExportErrorsButton.defaultProps = {
+  className: '',
 };

@@ -14,7 +14,7 @@ import useToast from '../../../hooks/useToast';
 
 const { VITE_WS_HOST } = import.meta.env;
 
-export default function SendFeedbackButton({ corrections, resetCorrections }) {
+export default function SendFeedbackButton({ className, corrections, resetCorrections }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
@@ -70,6 +70,7 @@ export default function SendFeedbackButton({ corrections, resetCorrections }) {
     <>
       <Button
         aria-label="Send feedback to OpenAlex"
+        className={className}
         color="blue-ecume"
         disabled={!corrections.length > 0}
         icon="send-plane-fill"
@@ -108,6 +109,7 @@ export default function SendFeedbackButton({ corrections, resetCorrections }) {
 }
 
 SendFeedbackButton.propTypes = {
+  className: PropTypes.string,
   corrections: PropTypes.arrayOf(PropTypes.shape({
     addList: PropTypes.arrayOf(PropTypes.string).isRequired,
     hasCorrection: PropTypes.bool.isRequired,
@@ -137,4 +139,8 @@ SendFeedbackButton.propTypes = {
     worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,
   resetCorrections: PropTypes.func.isRequired,
+};
+
+SendFeedbackButton.defaultProps = {
+  className: '',
 };

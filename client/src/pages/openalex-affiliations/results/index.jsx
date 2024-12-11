@@ -13,6 +13,7 @@ import {
   TextInput,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
+import { Steps } from 'intro.js-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -27,6 +28,7 @@ import ExportErrorsButton from '../components/export-errors-button';
 import SendFeedbackButton from '../components/send-feedback-button';
 import ListView from './list-view';
 
+import 'intro.js/introjs.css';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
@@ -51,7 +53,31 @@ export default function Affiliations() {
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
   const [rorsToRemove, setRorsToRemove] = useState([]);
+  const [stepsEnabled, setStepsEnabled] = useState(false);
   const [uniqueRors, setUniqueRors] = useState({});
+
+  const steps = [
+    {
+      element: '.step-search-summary',
+      intro: 'Here is your search',
+    },
+    {
+      element: '.step-search-go-back',
+      intro: 'Click here to modify your search',
+    },
+    {
+      element: '.step-action-add-remove-ror',
+      intro: 'Click here to add or remove ROR from selected affiliations',
+    },
+    {
+      element: '.step-action-export',
+      intro: 'Click here to export corrections, choose between CSV and JSONL format',
+    },
+    {
+      element: '.step-action-feedback',
+      intro: 'Click here to send feedback to OpenAlex',
+    },
+  ];
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['openalex-affiliations', JSON.stringify(body)],
@@ -171,6 +197,7 @@ export default function Affiliations() {
     );
     setFilteredAffiliations(filteredAffiliationsTmp);
     setIsLoading(false);
+    setStepsEnabled(true);
   }, [affiliations, filteredAffiliationName]);
 
   useEffect(() => {
@@ -189,6 +216,8 @@ export default function Affiliations() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ror]);
+
+  const onExit = () => setStepsEnabled(false);
 
   const toggleRemovedRor = (affiliationId, rorId) => {
     const updatedAffiliations = affiliations.map((affiliation) => {
@@ -327,7 +356,7 @@ export default function Affiliations() {
 
   return (
     <>
-      <Header id="openalex-tile-title" />
+      <Header />
       <Container fluid as="main" className="wm-bg">
         {(isFetching || isLoading) && (
           <Container
@@ -364,343 +393,350 @@ export default function Affiliations() {
         )}
 
         {!isFetching && isFetched && (
-          <Row>
-            <Col
-              className="wm-menu"
-              md={2}
-            >
-              <div
-                style={{
-                  position: 'sticky',
-                  top: 0,
-                  zIndex: 1000,
-                }}
-              >
-
-                <Row>
-                  <Button
-                    aria-label="Back to search page"
-                    className="fr-mt-1w"
-                    color="blue-ecume"
-                    icon="arrow-left-line"
-                    onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}
-                    size="sm"
-                    title="Back to search page"
-                  >
-                    Back to search page
-                  </Button>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="wm-title">
-                      <span
-                        className="fr-icon-calendar-line fr-mr-1w"
-                        aria-hidden="true"
-                      />
-                      Selected years
-                    </div>
-                    <div className="wm-content">
-                      <Tag
-                        className="fr-mr-1w"
-                        color="blue-cumulus"
-                        key="openalex-affiliations-tag-year-start"
-                      >
-                        {`Start: ${body.startYear}`}
-                      </Tag>
-                      <Tag color="blue-cumulus" key="openalex-affiliations-tag-year-end">
-                        {`End: ${body.endYear}`}
-                      </Tag>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="wm-title">
-                      <span
-                        className="fr-icon-hotel-line fr-mr-1w"
-                        aria-hidden="true"
-                      />
-                      Searched affiliations
-                    </div>
-                    <div className="wm-content">
-                      {body.affiliations.map((affiliation) => (
-                        <Row key={`openalex-affiliations-search-${affiliation.label}`}>
-                          <Tag
-                            className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
-                              }`}
-                            color={getTagColor(affiliation)}
-                            key={`openalex-affiliations-tag-${affiliation.label}`}
-                          >
-                            {affiliation.label}
-                          </Tag>
-                          {affiliation.children.map((child) => (
-                            <Tag
-                              className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''
-                                }`}
-                              color={getTagColor(child)}
-                              key={`openalex-affiliations-tag-${child.label}`}
-                            >
-                              {child.label}
-                            </Tag>
-                          ))}
-                        </Row>
-                      ))}
-                    </div>
-                  </Col>
-                </Row>
-                {(body.excludedRors.length > 0) && (
-                  <Row>
-                    <Col>
-                      <div className="wm-title">
-                        <span>
-                          <i className="ri-forbid-2-line fr-mr-1w" />
-                          Excluded RORs
-                        </span>
-                      </div>
-                      <div className="wm-content">
-                        {body.excludedRors.split(' ').map((excludedRor) => (
-                          <Tag
-                            className="fr-mr-1w"
-                            color="green-archipel"
-                            key="openalex-affiliations-rors-excluded"
-                          >
-                            {excludedRor}
-                          </Tag>
-                        ))}
-                      </div>
-                    </Col>
-                  </Row>
-                )}
-              </div>
-            </Col>
-            <Col md={10}>
-              <div
-                className="wm-bg wm-content"
-                style={{ overflow: 'unset' }}
+          <>
+            <Steps
+              enabled={stepsEnabled}
+              initialStep={0}
+              onExit={() => onExit()}
+              steps={steps}
+            />
+            <Row>
+              <Col
+                className="wm-menu"
+                md={2}
               >
                 <div
-                  className="wm-external-actions"
                   style={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    justifyContent: 'space-between',
                     position: 'sticky',
                     top: 0,
                     zIndex: 1000,
                   }}
                 >
-                  <div className="left-content">
+                  <Row className="step-search-go-back">
                     <Button
-                      aria-label="Add ROR to selected affiliations"
-                      className="fr-mx-1w"
+                      aria-label="Back to search page"
+                      className="fr-mt-1w"
                       color="blue-ecume"
-                      disabled={filteredAffiliations.filter((affiliation) => affiliation.selected).length === 0}
-                      icon="add-circle-line"
-                      onClick={() => setIsAddModalOpen((prev) => !prev)}
+                      icon="arrow-left-line"
+                      onClick={() => navigate(`/${pathname.split('/')[1]}/search${search}`)}
                       size="sm"
-                      title="Add ROR to selected affiliations"
+                      title="Back to search page"
                     >
-                      Add ROR to selected affiliations
+                      Back to search page
                     </Button>
-                    <Modal
-                      isOpen={isAddModalOpen}
-                      hide={() => setIsAddModalOpen((prev) => !prev)}
-                    >
-                      <ModalTitle>
-                        Add ROR to &nbsp;
-                        {filteredAffiliations.filter((affiliation) => affiliation.selected).length}
-                        &nbsp;
-                        {`OpenAlex selected affiliation${filteredAffiliations.filter((affiliation) => affiliation.selected).length > 1 ? 's' : ''}`}
-                      </ModalTitle>
-                      <ModalContent>
-                        <Container fluid>
-                          <Row>
-                            <Col className="text-right">
-                              <Link href="https://ror.org/" target="_blank">
-                                ROR website
-                              </Link>
-                            </Col>
-                          </Row>
-                          <Row verticalAlign="bottom">
-                            <Col>
-                              <TextInput
-                                messageType={rorMessageType}
-                                message={rorMessage}
-                                onChange={(e) => setRor(e.target.value)}
-                                value={ror}
-                                label="ROR"
-                                hint="Enter a valid ROR id and 'check' it with ROR API"
-                              />
-                            </Col>
-                            <Col md="3">
-                              <Button
-                                aria-label="Check ROR"
-                                color="blue-ecume"
-                                disabled={['', 'error'].includes(rorMessageType)}
-                                onClick={() => getCleanRor()}
-                                size="sm"
-                                variant="secondary"
+                  </Row>
+                  <Row className="step-search-summary">
+                    <Col xs="12">
+                      <div className="wm-title">
+                        <span
+                          className="fr-icon-calendar-line fr-mr-1w"
+                          aria-hidden="true"
+                        />
+                        Selected years
+                      </div>
+                      <div className="wm-content">
+                        <Tag
+                          className="fr-mr-1w"
+                          color="blue-cumulus"
+                          key="openalex-affiliations-tag-year-start"
+                        >
+                          {`Start: ${body.startYear}`}
+                        </Tag>
+                        <Tag color="blue-cumulus" key="openalex-affiliations-tag-year-end">
+                          {`End: ${body.endYear}`}
+                        </Tag>
+                      </div>
+                    </Col>
+                    <Col xs="12">
+                      <div className="wm-title">
+                        <span
+                          className="fr-icon-hotel-line fr-mr-1w"
+                          aria-hidden="true"
+                        />
+                        Searched affiliations
+                      </div>
+                      <div className="wm-content">
+                        {body.affiliations.map((affiliation) => (
+                          <Row key={`openalex-affiliations-search-${affiliation.label}`}>
+                            <Tag
+                              className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
+                                }`}
+                              color={getTagColor(affiliation)}
+                              key={`openalex-affiliations-tag-${affiliation.label}`}
+                            >
+                              {affiliation.label}
+                            </Tag>
+                            {affiliation.children.map((child) => (
+                              <Tag
+                                className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''
+                                  }`}
+                                color={getTagColor(child)}
+                                key={`openalex-affiliations-tag-${child.label}`}
                               >
-                                Check it
-                              </Button>
-                            </Col>
+                                {child.label}
+                              </Tag>
+                            ))}
                           </Row>
-                          <Row>
-                            <Col>
-                              {
-                                rorMessageType === 'valid' && cleanRor.rorName && cleanRor.rorCountry
-                                && (
-                                  <>
-                                    <div>
-                                      <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
-                                      <span className="fr-mx-1w">
-                                        {cleanRor.rorName}
-                                      </span>
-                                      {getFlagEmoji(cleanRor.rorCountry)}
-                                    </div>
-                                    <Button
-                                      aria-label="Add ROR"
-                                      className="fr-mt-3w"
-                                      color="blue-ecume"
-                                      disabled={['', 'error'].includes(rorMessageType) || !cleanRor.rorName || !cleanRor.rorCountry}
-                                      onClick={() => { addRor(); }}
-                                      size="sm"
-                                      title="Add ROR"
-                                    >
-                                      Add this ROR to selected affiliations
-                                    </Button>
-                                  </>
-                                )
-                              }
-                            </Col>
-                          </Row>
-                        </Container>
-                      </ModalContent>
-                    </Modal>
-                    <Button
-                      aria-label="Remove ROR to selected affiliations"
-                      color="pink-tuile"
-                      disabled={filteredAffiliations.filter((affiliation) => affiliation.selected).length === 0}
-                      icon="delete-line"
-                      onClick={() => { setRorsToRemove(getUniqueRors()); setIsRemoveModalOpen(true); }}
-                      size="sm"
-                      title="Remove ROR to selected affiliations"
-                    >
-                      Remove ROR to selected affiliations
-                    </Button>
-                    <Modal
-                      isOpen={isRemoveModalOpen}
-                      hide={() => setIsRemoveModalOpen((prev) => !prev)}
-                    >
-                      <ModalTitle>
-                        Remove ROR to
-                        {' '}
-                        {filteredAffiliations.filter((affiliation) => affiliation.selected).length}
-                        {` selected affiliation${filteredAffiliations.filter((affiliation) => affiliation.selected).length > 1 ? 's' : ''}`}
-                      </ModalTitle>
-                      <ModalContent>
-                        <Container fluid>
-                          <Row>
-                            <Col className="text-right">
-                              <Link href="https://ror.org/" target="_blank">
-                                ROR website
-                              </Link>
-                            </Col>
-                          </Row>
-                          <Row verticalAlign="bottom">
-                            <Col>
-                              {
-                                rorsToRemove && rorsToRemove.length > 0 && (
-                                  <ul>
-                                    {rorsToRemove.map((_ror) => (
-                                      <li key={`openalex-affiliations-remove-${_ror.rorId}`} style={{ listStyle: 'none', marginBottom: '16px' }}>
-                                        <img
-                                          alt="ROR logo"
-                                          className="vertical-middle fr-mx-1w"
-                                          height="16"
-                                          src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg"
-                                        />
-                                        {
-                                          _ror.removed ? (
-                                            <strike>
+                        ))}
+                      </div>
+                    </Col>
+                  </Row>
+                  {(body.excludedRors.length > 0) && (
+                    <Row>
+                      <Col>
+                        <div className="wm-title">
+                          <span>
+                            <i className="ri-forbid-2-line fr-mr-1w" />
+                            Excluded RORs
+                          </span>
+                        </div>
+                        <div className="wm-content">
+                          {body.excludedRors.split(' ').map((excludedRor) => (
+                            <Tag
+                              className="fr-mr-1w"
+                              color="green-archipel"
+                              key="openalex-affiliations-rors-excluded"
+                            >
+                              {excludedRor}
+                            </Tag>
+                          ))}
+                        </div>
+                      </Col>
+                    </Row>
+                  )}
+                </div>
+              </Col>
+              <Col md={10}>
+                <div
+                  className="wm-bg wm-content"
+                  style={{ overflow: 'unset' }}
+                >
+                  <div
+                    className="wm-external-actions"
+                    style={{
+                      alignItems: 'center',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 1000,
+                    }}
+                  >
+                    <div className="left-content step-action-add-remove-ror">
+                      <Button
+                        aria-label="Add ROR to selected affiliations"
+                        className="fr-mx-1w"
+                        color="blue-ecume"
+                        disabled={filteredAffiliations.filter((affiliation) => affiliation.selected).length === 0}
+                        icon="add-circle-line"
+                        onClick={() => setIsAddModalOpen((prev) => !prev)}
+                        size="sm"
+                        title="Add ROR to selected affiliations"
+                      >
+                        Add ROR to selected affiliations
+                      </Button>
+                      <Modal
+                        isOpen={isAddModalOpen}
+                        hide={() => setIsAddModalOpen((prev) => !prev)}
+                      >
+                        <ModalTitle>
+                          Add ROR to &nbsp;
+                          {filteredAffiliations.filter((affiliation) => affiliation.selected).length}
+                          &nbsp;
+                          {`OpenAlex selected affiliation${filteredAffiliations.filter((affiliation) => affiliation.selected).length > 1 ? 's' : ''}`}
+                        </ModalTitle>
+                        <ModalContent>
+                          <Container fluid>
+                            <Row>
+                              <Col className="text-right">
+                                <Link href="https://ror.org/" target="_blank">
+                                  ROR website
+                                </Link>
+                              </Col>
+                            </Row>
+                            <Row verticalAlign="bottom">
+                              <Col>
+                                <TextInput
+                                  messageType={rorMessageType}
+                                  message={rorMessage}
+                                  onChange={(e) => setRor(e.target.value)}
+                                  value={ror}
+                                  label="ROR"
+                                  hint="Enter a valid ROR id and 'check' it with ROR API"
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Button
+                                  aria-label="Check ROR"
+                                  color="blue-ecume"
+                                  disabled={['', 'error'].includes(rorMessageType)}
+                                  onClick={() => getCleanRor()}
+                                  size="sm"
+                                  variant="secondary"
+                                >
+                                  Check it
+                                </Button>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col>
+                                {
+                                  rorMessageType === 'valid' && cleanRor.rorName && cleanRor.rorCountry
+                                  && (
+                                    <>
+                                      <div>
+                                        <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
+                                        <span className="fr-mx-1w">
+                                          {cleanRor.rorName}
+                                        </span>
+                                        {getFlagEmoji(cleanRor.rorCountry)}
+                                      </div>
+                                      <Button
+                                        aria-label="Add ROR"
+                                        className="fr-mt-3w"
+                                        color="blue-ecume"
+                                        disabled={['', 'error'].includes(rorMessageType) || !cleanRor.rorName || !cleanRor.rorCountry}
+                                        onClick={() => { addRor(); }}
+                                        size="sm"
+                                        title="Add ROR"
+                                      >
+                                        Add this ROR to selected affiliations
+                                      </Button>
+                                    </>
+                                  )
+                                }
+                              </Col>
+                            </Row>
+                          </Container>
+                        </ModalContent>
+                      </Modal>
+                      <Button
+                        aria-label="Remove ROR from selected affiliations"
+                        color="pink-tuile"
+                        disabled={filteredAffiliations.filter((affiliation) => affiliation.selected).length === 0}
+                        icon="delete-line"
+                        onClick={() => { setRorsToRemove(getUniqueRors()); setIsRemoveModalOpen(true); }}
+                        size="sm"
+                        title="Remove ROR from selected affiliations"
+                      >
+                        Remove ROR from selected affiliations
+                      </Button>
+                      <Modal
+                        isOpen={isRemoveModalOpen}
+                        hide={() => setIsRemoveModalOpen((prev) => !prev)}
+                      >
+                        <ModalTitle>
+                          Remove ROR to
+                          {' '}
+                          {filteredAffiliations.filter((affiliation) => affiliation.selected).length}
+                          {` selected affiliation${filteredAffiliations.filter((affiliation) => affiliation.selected).length > 1 ? 's' : ''}`}
+                        </ModalTitle>
+                        <ModalContent>
+                          <Container fluid>
+                            <Row>
+                              <Col className="text-right">
+                                <Link href="https://ror.org/" target="_blank">
+                                  ROR website
+                                </Link>
+                              </Col>
+                            </Row>
+                            <Row verticalAlign="bottom">
+                              <Col>
+                                {
+                                  rorsToRemove && rorsToRemove.length > 0 && (
+                                    <ul>
+                                      {rorsToRemove.map((_ror) => (
+                                        <li key={`openalex-affiliations-remove-${_ror.rorId}`} style={{ listStyle: 'none', marginBottom: '16px' }}>
+                                          <img
+                                            alt="ROR logo"
+                                            className="vertical-middle fr-mx-1w"
+                                            height="16"
+                                            src="https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg"
+                                          />
+                                          {
+                                            _ror.removed ? (
+                                              <strike>
+                                                <Link href={`https://ror.org/${_ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
+                                                  {`https://ror.org/${_ror.rorId}`}
+                                                </Link>
+                                              </strike>
+                                            ) : (
                                               <Link href={`https://ror.org/${_ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
                                                 {`https://ror.org/${_ror.rorId}`}
                                               </Link>
-                                            </strike>
-                                          ) : (
-                                            <Link href={`https://ror.org/${_ror.rorId}`} target="_blank" style={{ fontFamily: 'monospace' }}>
-                                              {`https://ror.org/${_ror.rorId}`}
-                                            </Link>
-                                          )
-                                        }
-                                        <button
-                                          aria-label="Remove this ROR"
-                                          className={`fr-icon fr-icon--sm  ${_ror.removed ? 'fr-fi-arrow-go-back-line' : 'fr-fi-delete-line'}`}
-                                          onClick={() => setRorsToRemove(rorsToRemove.map((_r) => (_r.rorId === _ror.rorId ? { ..._r, removed: !_r.removed } : _r)))}
-                                          title="Remove this ROR"
-                                          type="button"
-                                        />
-                                        <br />
-                                        {
-                                          _ror.removed ? (
-                                            <strike>
-                                              <span className="fr-mx-1w">
-                                                {_ror.rorName}
-                                              </span>
-                                              <span className="fr-ml-1w">
-                                                {getFlagEmoji(_ror.rorCountry)}
-                                              </span>
-                                            </strike>
-                                          ) : (
-                                            <>
-                                              <span className="fr-mx-1w">
-                                                {_ror.rorName}
-                                              </span>
-                                              <span className="fr-ml-1w">
-                                                {getFlagEmoji(_ror.rorCountry)}
-                                              </span>
-                                            </>
-                                          )
-                                        }
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )
-                              }
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col>
-                              <Button color="pink-tuile" onClick={removeRorMultiple}>
-                                Apply to selected affiliations
-                              </Button>
-                            </Col>
-                          </Row>
-                        </Container>
-                      </ModalContent>
-                    </Modal>
+                                            )
+                                          }
+                                          <button
+                                            aria-label="Remove this ROR"
+                                            className={`fr-icon fr-icon--sm  ${_ror.removed ? 'fr-fi-arrow-go-back-line' : 'fr-fi-delete-line'}`}
+                                            onClick={() => setRorsToRemove(rorsToRemove.map((_r) => (_r.rorId === _ror.rorId ? { ..._r, removed: !_r.removed } : _r)))}
+                                            title="Remove this ROR"
+                                            type="button"
+                                          />
+                                          <br />
+                                          {
+                                            _ror.removed ? (
+                                              <strike>
+                                                <span className="fr-mx-1w">
+                                                  {_ror.rorName}
+                                                </span>
+                                                <span className="fr-ml-1w">
+                                                  {getFlagEmoji(_ror.rorCountry)}
+                                                </span>
+                                              </strike>
+                                            ) : (
+                                              <>
+                                                <span className="fr-mx-1w">
+                                                  {_ror.rorName}
+                                                </span>
+                                                <span className="fr-ml-1w">
+                                                  {getFlagEmoji(_ror.rorCountry)}
+                                                </span>
+                                              </>
+                                            )
+                                          }
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )
+                                }
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col>
+                                <Button color="pink-tuile" onClick={removeRorMultiple}>
+                                  Apply to selected affiliations
+                                </Button>
+                              </Col>
+                            </Row>
+                          </Container>
+                        </ModalContent>
+                      </Modal>
+                    </div>
+                    <div className="fr-mr-1w right-content">
+                      <ExportErrorsButton
+                        className="step-action-export"
+                        corrections={affiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0)}
+                      />
+                      <SendFeedbackButton
+                        className="step-action-feedback"
+                        corrections={affiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0)}
+                        resetCorrections={resetCorrections}
+                      />
+                    </div>
                   </div>
-                  <div className="right-content fr-mr-1w">
-                    <ExportErrorsButton
-                      corrections={affiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0)}
-                    />
-                    <SendFeedbackButton
-                      corrections={affiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0)}
-                      resetCorrections={resetCorrections}
-                    />
-                  </div>
+                  <ListView
+                    affiliationsCount={affiliations.length}
+                    filteredAffiliations={filteredAffiliations}
+                    removeRorFromAddList={removeRorFromAddList}
+                    setFilteredAffiliationName={setFilteredAffiliationName}
+                    setSelectAffiliations={setSelectAffiliations}
+                    toggleRemovedRor={toggleRemovedRor}
+                  />
                 </div>
-                <ListView
-                  affiliationsCount={affiliations.length}
-                  filteredAffiliations={filteredAffiliations}
-                  removeRorFromAddList={removeRorFromAddList}
-                  setFilteredAffiliationName={setFilteredAffiliationName}
-                  setSelectAffiliations={setSelectAffiliations}
-                  toggleRemovedRor={toggleRemovedRor}
-                />
-              </div>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
+          </>
         )}
       </Container>
     </>

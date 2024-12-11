@@ -34,34 +34,41 @@ export default function OpenalexAffiliationsSearch() {
 
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [deletedAffiliations, setDeletedAffiliations] = useState([]);
+  const [excludedRors, setExcludedRors] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
-  const [excludedRors, setExcludedRors] = useState('');
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
+  const [stepsEnabled, setStepsEnabled] = useState(true);
   const [tags, setTags] = useState([]);
 
   const steps = [
     {
       element: '.step-ror-to-add',
-      intro: 'Searched affiliations. Can be ROR or string. Press ENTER to validate. OR boolean.',
-      position: 'right',
-      tooltipClass: 'myTooltipClass',
-      highlightClass: 'myHighlightClass',
+      intro: <ul>
+        <li>Searched affiliations</li>
+        <li>Can be either ROR or string</li>
+        <li>Press ENTER to validate each seizure</li>
+        <li>OR boolean will be applied during the search</li>
+      </ul>,
     },
     {
       element: '.step-ror-to-exclude',
-      intro: 'Excluded ROR. Only ROR. Separate by space.',
+      intro: <ul>
+        <li>ROR to exclude</li>
+        <li>ROR only</li>
+        <li>Separate multiple ROR by space</li>
+      </ul>,
     },
     {
       element: '.step-year-start',
-      intro: 'Filter on publication year between start and end, included',
+      intro: 'Filter on publication year between start and end',
     },
     {
       element: '.step-search-works',
-      intro: '⏳ Finally run the search. It can take a while ',
+      intro: 'Click here to run the search. ⏳ It can take a while',
     },
   ];
 
@@ -182,26 +189,6 @@ export default function OpenalexAffiliationsSearch() {
     getData();
   }, [currentSearchParams.getRorChildren, deletedAffiliations, searchedAffiliations]);
 
-  const onTagsChange = async (_affiliations, _deletedAffiliations) => {
-    const affiliations = _affiliations
-      .filter((affiliation) => affiliation.source === 'user')
-      .map((affiliation) => affiliation.label);
-    const deletedAffiliations1 = [
-      ...new Set(
-        _deletedAffiliations
-          .map((affiliation) => affiliation.label)
-          .concat(currentSearchParams.deletedAffiliations || []),
-      ),
-    ].filter(
-      (item) => !_affiliations.map((affiliation) => affiliation.label).includes(item),
-    );
-    setSearchParams({
-      ...currentSearchParams,
-      affiliations,
-      deletedAffiliations: deletedAffiliations1,
-    });
-  };
-
   const checkAndSendQuery = () => {
     if (onInputAffiliationsHandler) {
       setMessageType('error');
@@ -222,7 +209,27 @@ export default function OpenalexAffiliationsSearch() {
     navigate(`/openalex-affiliations/results?${_searchParams.toString()}`);
   };
 
-  const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
+  const onExit = () => setStepsEnabled(false);
+
+  const onTagsChange = async (_affiliations, _deletedAffiliations) => {
+    const affiliations = _affiliations
+      .filter((affiliation) => affiliation.source === 'user')
+      .map((affiliation) => affiliation.label);
+    const deletedAffiliations1 = [
+      ...new Set(
+        _deletedAffiliations
+          .map((affiliation) => affiliation.label)
+          .concat(currentSearchParams.deletedAffiliations || []),
+      ),
+    ].filter(
+      (item) => !_affiliations.map((affiliation) => affiliation.label).includes(item),
+    );
+    setSearchParams({
+      ...currentSearchParams,
+      affiliations,
+      deletedAffiliations: deletedAffiliations1,
+    });
+  };
 
   const removeAllAffiliations = () => {
     setSearchParams({
@@ -232,6 +239,8 @@ export default function OpenalexAffiliationsSearch() {
     });
     setSearchedAffiliations([]);
   };
+
+  const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
 
   const NB_TAGS_STICKY = 2;
   const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
@@ -244,10 +253,10 @@ export default function OpenalexAffiliationsSearch() {
     <>
       <Header />
       <Steps
-        enabled={true}
+        enabled={stepsEnabled}
         initialStep={0}
+        onExit={() => onExit()}
         steps={steps}
-        onExit={() => {}}
       />
       <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
         <ModalContent>
