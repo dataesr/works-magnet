@@ -3,16 +3,11 @@ import PropTypes from 'prop-types';
 
 import useCopyToClipboard from '../../../hooks/useCopyToClipboard';
 
-export default function RorBadge({ isRemoved, removeRor, ror, rorColor, setFilteredAffiliationName }) {
-  const [copyStatus, copy] = useCopyToClipboard();
-
-  const iconsType = {
-    Copié: 'ri-checkbox-circle-fill',
-    Erreur: 'ri-settings-6-fill',
-  };
+export default function RorBadge({ className, isRemoved, removeRor, ror, rorColor, setFilteredAffiliationName }) {
+  const [_, copy] = useCopyToClipboard();
 
   return (
-    <div className="wm-ror-badge">
+    <div className={`wm-ror-badge ${className}`}>
       <span style={{ backgroundColor: getComputedStyle(document.documentElement).getPropertyValue(`--${rorColor}`) }} />
       <div>
         <img
@@ -52,7 +47,7 @@ export default function RorBadge({ isRemoved, removeRor, ror, rorColor, setFilte
           <button
             aria-label="Undo remove"
             className="fr-icon fr-fi-arrow-go-back-line fr-icon--sm"
-            onClick={() => { removeRor(); }}
+            onClick={() => removeRor()}
             title="Undo remove"
             type="button"
           />
@@ -60,7 +55,7 @@ export default function RorBadge({ isRemoved, removeRor, ror, rorColor, setFilte
           <button
             aria-label="Remove this ROR"
             className="fr-icon fr-fi-delete-line fr-icon--sm"
-            onClick={() => { removeRor(); }}
+            onClick={() => removeRor()}
             title="Remove this ROR"
             type="button"
           />
@@ -71,10 +66,12 @@ export default function RorBadge({ isRemoved, removeRor, ror, rorColor, setFilte
 }
 
 RorBadge.defaultProps = {
+  className: '',
   isRemoved: false,
 };
 
 RorBadge.propTypes = {
+  className: PropTypes.string,
   isRemoved: PropTypes.bool,
   removeRor: PropTypes.func.isRequired,
   ror: PropTypes.shape({

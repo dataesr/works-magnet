@@ -8,6 +8,7 @@ import {
   Spinner,
   Text,
 } from '@dataesr/dsfr-plus';
+import { Steps } from 'intro.js-react';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
@@ -16,12 +17,15 @@ import RorBadge from '../components/ror-badge';
 import RorName from '../components/ror-name';
 import WorksList from '../components/works-list';
 
+import 'intro.js/introjs.css';
 export default function ListView({
   affiliationsCount,
   filteredAffiliations,
   removeRorFromAddList,
   setFilteredAffiliationName,
   setSelectAffiliations,
+  setStepsEnabledList,
+  stepsEnabledList,
   toggleRemovedRor,
 }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +57,51 @@ export default function ListView({
   const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
   defineRorColor.push(...sortedRor.slice(0, 5).map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
 
+  const steps = [
+    {
+      element: '.step-affiliations-select',
+      intro: 'Select all affiliations',
+    },
+    {
+      element: '.step-affiliations-search',
+      intro: 'Search through affiliations names',
+    },
+    {
+      element: '.step-affiliations-sort',
+      intro: 'Open menu to filter affiliations by country and sort them',
+    },
+    {
+      element: '.step-affiliations-colors',
+      intro: 'Explanation about the colors of ROR',
+    },
+    {
+      element: '.step-affiliation-checkbox',
+      intro: 'Select affiliation one by one',
+    },
+    {
+      element: '.step-affiliation-badge',
+      intro: <ul>
+        <li>Colors are given to the most 5 frequent ROR</li>
+        <li>Click here to see the ROR matched</li>
+        <li>
+          <i className="fr-fi-filter-line fr-icon--sm" />
+          {' '}
+          Filter on this ROR
+        </li>
+        <li>
+          <i className="ri-file-copy-line" />
+          {' '}
+          Copy ROR
+        </li>
+        <li>
+          <i className="fr-fi-delete-line fr-icon--sm" />
+          {' '}
+          Delete this ROR from this affiliation
+        </li>
+      </ul>,
+    },
+  ];
+
   useEffect(() => {
     setIsLoading(true);
     // Deep copy of filteredAffiliations object
@@ -81,12 +130,19 @@ export default function ListView({
 
   return (
     <>
+      <Steps
+        enabled={stepsEnabledList}
+        initialStep={0}
+        onComplete={() => localStorage.setItem('works-magnet-tour-results', 'done')}
+        onExit={() => setStepsEnabledList(false)}
+        steps={steps}
+      />
       <div
         className="wm-internal-actions"
         style={{ position: 'sticky', top: '44px', zIndex: 10 }}
       >
         <Row>
-          <Col xs="3">
+          <Col className="step-affiliations-select" xs="3">
             <Checkbox
               checked={sortedOrFilteredAffiliations.find((affiliation) => !affiliation.selected) === undefined}
               onChange={() => {
@@ -102,7 +158,7 @@ export default function ListView({
               </i>
             </span>
           </Col>
-          <Col xs="7">
+          <Col className="step-affiliations-search" xs="7">
             <span className="fr-icon-search-line fr-mx-1w" />
             <input
               onChange={(e) => setSearch(e.target.value)}
@@ -143,10 +199,10 @@ export default function ListView({
               title="Clear search"
             />
           </Col>
-          <Col xs="2" className="text-right">
+          <Col className="text-right" xs="2">
             <Button
               aria-label="Sorts & filters"
-              className="fr-mr-1w"
+              className="fr-mr-1w step-affiliations-sort"
               color="beige-gris-galet"
               icon="filter-line"
               onClick={() => setIsModalOpen((prev) => !prev)}
@@ -163,6 +219,7 @@ export default function ListView({
             </Button>
             <Button
               aria-label="Open colors info modal"
+              className="step-affiliations-colors"
               color="beige-gris-galet"
               onClick={() => setIsColorInfoModalOpen((prev) => !prev)}
               size="sm"
@@ -232,7 +289,7 @@ export default function ListView({
         <div>
           <ul className="wm-list">
             {
-              sortedOrFilteredAffiliations.map((affiliation) => (
+              sortedOrFilteredAffiliations.map((affiliation, index) => (
                 <li
                   className={affiliation.selected ? 'selected' : ''}
                   key={affiliation.key}
@@ -240,7 +297,7 @@ export default function ListView({
                   <Row>
                     <Col>
                       <div style={{ display: 'inline-flex' }}>
-                        <div style={{ display: 'inline-block', width: '20px' }}>
+                        <div className={index === 0 ? 'step-affiliation-checkbox' : ''} style={{ display: 'inline-block', width: '20px' }}>
                           <Checkbox
                             checked={affiliation.selected}
                             name="affiliations"
@@ -272,11 +329,12 @@ export default function ListView({
                             <tr key={`openalex-affiliations-affiliations-${rorToCorrect.rorId}`}>
                               <td>
                                 <RorBadge
+                                  className="step-affiliation-badge"
                                   isRemoved={affiliation.removeList.includes(rorToCorrect.rorId)}
+                                  removeRor={() => toggleRemovedRor(affiliation.id, rorToCorrect.rorId)}
                                   ror={rorToCorrect}
                                   rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
                                   setFilteredAffiliationName={setFilteredAffiliationName}
-                                  removeRor={() => toggleRemovedRor(affiliation.id, rorToCorrect.rorId)}
                                 />
                                 <br />
                                 <RorName
@@ -290,10 +348,11 @@ export default function ListView({
                             <tr key={`openalex-affiliations-affiliations-${ror.rorId}`}>
                               <td>
                                 <RorBadge
+                                  className="step-affiliation-badge"
+                                  removeRor={() => removeRorFromAddList(affiliation.id, ror.rorId)}
                                   ror={ror}
                                   rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
                                   setFilteredAffiliationName={setFilteredAffiliationName}
-                                  removeRor={() => removeRorFromAddList(affiliation.id, ror.rorId)}
                                 />
                                 <br />
                                 <RorName ror={ror} />
@@ -428,5 +487,7 @@ ListView.propTypes = {
   removeRorFromAddList: PropTypes.func.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
   setSelectAffiliations: PropTypes.func.isRequired,
+  setStepsEnabledList: PropTypes.func.isRequired,
+  stepsEnabledList: PropTypes.bool.isRequired,
   toggleRemovedRor: PropTypes.func.isRequired,
 };

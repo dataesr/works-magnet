@@ -54,6 +54,7 @@ export default function Affiliations() {
   const [rorMessageType, setRorMessageType] = useState('');
   const [rorsToRemove, setRorsToRemove] = useState([]);
   const [stepsEnabled, setStepsEnabled] = useState(false);
+  const [stepsEnabledList, setStepsEnabledList] = useState(false);
   const [uniqueRors, setUniqueRors] = useState({});
 
   const steps = [
@@ -98,7 +99,6 @@ export default function Affiliations() {
   });
 
   useEffect(() => {
-    console.log('useEffect');
     // Enable guided tour only for the first visit
     if (localStorage.getItem('works-magnet-tour-results') !== 'done') setStepsEnabled(true);
   }, [setStepsEnabled]);
@@ -400,10 +400,9 @@ export default function Affiliations() {
             <Steps
               enabled={stepsEnabled}
               initialStep={0}
-              onComplete={() => localStorage.setItem('works-magnet-tour-results', 'done')}
               onExit={() => {
                 setStepsEnabled(false);
-                localStorage.setItem('works-magnet-tour-results', 'done');
+                setStepsEnabledList(true);
               }}
               steps={steps}
             />
@@ -738,6 +737,8 @@ export default function Affiliations() {
                     removeRorFromAddList={removeRorFromAddList}
                     setFilteredAffiliationName={setFilteredAffiliationName}
                     setSelectAffiliations={setSelectAffiliations}
+                    setStepsEnabledList={setStepsEnabledList}
+                    stepsEnabledList={stepsEnabledList}
                     toggleRemovedRor={toggleRemovedRor}
                   />
                 </div>

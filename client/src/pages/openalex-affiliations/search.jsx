@@ -190,7 +190,6 @@ export default function Search() {
   }, [currentSearchParams.getRorChildren, deletedAffiliations, searchedAffiliations]);
 
   useEffect(() => {
-    console.log('useEffect');
     // Enable guided tour only for the first visit
     if (localStorage.getItem('works-magnet-tour-search') !== 'done') setStepsEnabled(true);
   }, [setStepsEnabled]);
