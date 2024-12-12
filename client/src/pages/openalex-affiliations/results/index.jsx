@@ -98,6 +98,12 @@ export default function Affiliations() {
   });
 
   useEffect(() => {
+    console.log('useEffect');
+    // Enable guided tour only for the first visit
+    if (localStorage.getItem('works-magnet-tour-results') !== 'done') setStepsEnabled(true);
+  }, [setStepsEnabled]);
+
+  useEffect(() => {
     const get = async () => {
       const addedRors = await Promise.all(
         addList.map((add) => getRorData(add)),
@@ -197,7 +203,6 @@ export default function Affiliations() {
     );
     setFilteredAffiliations(filteredAffiliationsTmp);
     setIsLoading(false);
-    setStepsEnabled(true);
   }, [affiliations, filteredAffiliationName]);
 
   useEffect(() => {
@@ -216,8 +221,6 @@ export default function Affiliations() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ror]);
-
-  const onExit = () => setStepsEnabled(false);
 
   const toggleRemovedRor = (affiliationId, rorId) => {
     const updatedAffiliations = affiliations.map((affiliation) => {
@@ -397,7 +400,11 @@ export default function Affiliations() {
             <Steps
               enabled={stepsEnabled}
               initialStep={0}
-              onExit={() => onExit()}
+              onComplete={() => localStorage.setItem('works-magnet-tour-results', 'done')}
+              onExit={() => {
+                setStepsEnabled(false);
+                localStorage.setItem('works-magnet-tour-results', 'done');
+              }}
               steps={steps}
             />
             <Row>

@@ -27,7 +27,7 @@ const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
   .map((year) => (year + START_YEAR).toString())
   .map((year) => ({ label: year, value: year }));
 
-export default function OpenalexAffiliationsSearch() {
+export default function Search() {
   const { search } = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,7 +41,7 @@ export default function OpenalexAffiliationsSearch() {
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
-  const [stepsEnabled, setStepsEnabled] = useState(true);
+  const [stepsEnabled, setStepsEnabled] = useState(false);
   const [tags, setTags] = useState([]);
 
   const steps = [
@@ -189,6 +189,12 @@ export default function OpenalexAffiliationsSearch() {
     getData();
   }, [currentSearchParams.getRorChildren, deletedAffiliations, searchedAffiliations]);
 
+  useEffect(() => {
+    console.log('useEffect');
+    // Enable guided tour only for the first visit
+    if (localStorage.getItem('works-magnet-tour-search') !== 'done') setStepsEnabled(true);
+  }, [setStepsEnabled]);
+
   const checkAndSendQuery = () => {
     if (onInputAffiliationsHandler) {
       setMessageType('error');
@@ -208,8 +214,6 @@ export default function OpenalexAffiliationsSearch() {
     _searchParams.set('excludedRors', excludedRors);
     navigate(`/openalex-affiliations/results?${_searchParams.toString()}`);
   };
-
-  const onExit = () => setStepsEnabled(false);
 
   const onTagsChange = async (_affiliations, _deletedAffiliations) => {
     const affiliations = _affiliations
@@ -255,7 +259,11 @@ export default function OpenalexAffiliationsSearch() {
       <Steps
         enabled={stepsEnabled}
         initialStep={0}
-        onExit={() => onExit()}
+        onComplete={() => localStorage.setItem('works-magnet-tour-search', 'done')}
+        onExit={() => {
+          setStepsEnabled(false);
+          localStorage.setItem('works-magnet-tour-search', 'done');
+        }}
         steps={steps}
       />
       <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
