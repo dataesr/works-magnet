@@ -40,7 +40,7 @@ export default function Affiliations() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
-  const [addList, setAddList] = useState([]);
+  const [addList, setAddList] = useState([]); // TODO: still used ?
   const [affiliations, setAffiliations] = useState([]);
   const [body, setBody] = useState({});
   const [cleanRor, setCleanRor] = useState('');
@@ -731,16 +731,20 @@ export default function Affiliations() {
                       />
                     </div>
                   </div>
-                  <ListView
-                    affiliationsCount={affiliations.length}
-                    filteredAffiliations={filteredAffiliations}
-                    removeRorFromAddList={removeRorFromAddList}
-                    setFilteredAffiliationName={setFilteredAffiliationName}
-                    setSelectAffiliations={setSelectAffiliations}
-                    setStepsEnabledList={setStepsEnabledList}
-                    stepsEnabledList={stepsEnabledList}
-                    toggleRemovedRor={toggleRemovedRor}
-                  />
+                  {filteredAffiliations.length === 0 ? (
+                    <Spinner size={48} /> // TODO replace spinner by skeleton
+                  ) : (
+                    <ListView
+                      affiliationsCount={affiliations.length}
+                      filteredAffiliations={filteredAffiliations}
+                      removeRorFromAddList={removeRorFromAddList}
+                      setFilteredAffiliationName={setFilteredAffiliationName}
+                      setSelectAffiliations={setSelectAffiliations}
+                      setStepsEnabledList={setStepsEnabledList}
+                      stepsEnabledList={stepsEnabledList}
+                      toggleRemovedRor={toggleRemovedRor}
+                    />
+                  )}
                 </div>
               </Col>
             </Row>

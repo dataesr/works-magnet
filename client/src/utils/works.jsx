@@ -63,6 +63,7 @@ const getIdLink = (type, id) => {
 };
 
 const getMentions = async (options) => {
+  // TODO: Replace by useQuery
   const response = await fetch(`${VITE_API}/mentions`, {
     body: JSON.stringify(options),
     headers: { 'Content-Type': 'application/json' },
@@ -77,6 +78,7 @@ const getMentions = async (options) => {
 };
 
 const getWorks = async (body, toast) => {
+  // TODO: Replace by useQuery
   const response = await fetch(`${VITE_API}/works`, {
     body: JSON.stringify(body),
     headers: { 'Content-Type': 'application/json' },
