@@ -6,11 +6,11 @@ import {
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-import AffiliationsView from './affiliationsView';
 import Gauge from '../components/gauge';
 import { status } from '../config';
 import { removeDiacritics } from '../utils/strings';
 import { renderButtons } from '../utils/works';
+import AffiliationsView from './affiliationsView';
 
 export default function AffiliationsTab({ affiliations, selectedAffiliations, setSelectedAffiliations, tagAffiliations }) {
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -43,7 +43,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
           <span className="number">
             {selectedAffiliations.length}
           </span>
-          {`selected affiliation${selectedAffiliations.length === 1 ? '' : 's'}`}
+          {` selected affiliation${selectedAffiliations.length === 1 ? '' : 's'}`}
         </div>
         {renderButtons(selectedAffiliations, tagAffiliations)}
         <div className="text-right">

@@ -130,12 +130,12 @@ const range = (startYear, endYear = new Date().getFullYear()) => {
 const renderButtons = (selected, fn) => Object.values(status).map((st) => (
   <Button
     className="fr-mb-1w fr-pl-1w button"
+    color="blue-ecume"
     disabled={!selected.length}
     key={st.id}
     onClick={() => fn(selected, st.id)}
     size="lg"
     style={{ display: 'block', width: '100%', textAlign: 'left' }}
-    color="blue-ecume"
   >
     <i
       className={`${st.buttonIcon} fr-mr-2w`}

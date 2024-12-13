@@ -47,7 +47,10 @@ export default function Affiliations() {
     setAffiliations(
       _affiliations
         ?.filter((affiliation) => affiliationIds.includes(affiliation.id))
-        .map((affiliation) => (affiliation.status = action)),
+        .map((affiliation) => ({
+          ...affiliation,
+          status: action,
+        })),
     );
     setSelectedAffiliations([]);
   };
