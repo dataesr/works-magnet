@@ -26,7 +26,7 @@ export default function Affiliations() {
   const { toast } = useToast();
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['publications', JSON.stringify(options)],
+    queryKey: ['works', JSON.stringify(options)],
     queryFn: () => getWorks(options, toast),
     enabled: false,
   });
@@ -39,15 +39,19 @@ export default function Affiliations() {
       data?.publications?.results
         ?.filter((publication) => worksIds.includes(publication.id))
         .map((publication) => (publication.status = action));
-      data?.datasets?.results
-        ?.filter((dataset) => worksIds.includes(dataset.id))
-        .map((dataset) => (dataset.status = action));
     }
     const affiliationIds = _affiliations.map((affiliation) => affiliation.id);
     setAffiliations(
-      _affiliations
-        ?.filter((affiliation) => affiliationIds.includes(affiliation.id))
-        .map((affiliation) => (affiliation.status = action)),
+      affiliations
+        .map((affiliation) => {
+          if (affiliationIds.includes(affiliation.id)) {
+            return ({
+              ...affiliation,
+              status: action,
+            });
+          }
+          return affiliation;
+        }),
     );
     setSelectedAffiliations([]);
   };

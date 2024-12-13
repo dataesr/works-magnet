@@ -5,7 +5,6 @@ import {
   Col,
   Modal, ModalContent, ModalFooter, ModalTitle,
   Row,
-  Spinner,
   Text,
 } from '@dataesr/dsfr-plus';
 import { Steps } from 'intro.js-react';
@@ -36,9 +35,9 @@ export default function ListView({
   const [selectShowAffiliations, setSelectShowAffiliations] = useState('all');
   const [selectRorCountry, setSelectRorCountry] = useState('all');
   const [sortsAndFilters, setSortsAndFilters] = useState({
-    sortOnNumberOfRors: 'default',
-    showAffiliations: 'all',
     rorCountry: 'all',
+    showAffiliations: 'all',
+    sortOnNumberOfRors: 'default',
   });
   const [sortedOrFilteredAffiliations, setSortedOrFilteredAffiliations] = useState(filteredAffiliations);
 
@@ -113,17 +112,14 @@ export default function ListView({
     } else if (sortsAndFilters.sortOnNumberOfRors === 'empty') {
       initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.rors.length === 0);
     }
-
     if (sortsAndFilters.showAffiliations === 'onlyWithCorrections') {
       initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0);
     } else if (sortsAndFilters.showAffiliations === 'onlyWithNoCorrection') {
       initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.addList.length === 0 && affiliation.removeList.length === 0);
     }
-
     if (sortsAndFilters.rorCountry !== 'all') {
       initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.rors.some((ror) => ror.rorCountry === sortsAndFilters.rorCountry));
     }
-
     setSortedOrFilteredAffiliations(initialAffiliations);
     setIsLoading(false);
   }, [filteredAffiliations, sortsAndFilters]);
@@ -145,9 +141,7 @@ export default function ListView({
           <Col className="step-affiliations-select" xs="3">
             <Checkbox
               checked={sortedOrFilteredAffiliations.find((affiliation) => !affiliation.selected) === undefined}
-              onChange={() => {
-                setSelectAffiliations(sortedOrFilteredAffiliations.map((affiliation) => affiliation.id));
-              }}
+              onChange={() => setSelectAffiliations(sortedOrFilteredAffiliations.map((affiliation) => affiliation.id))}
             />
             <span className="wm-text fr-mb-3w fr-ml-6w">
               <Badge color="brown-opera">
@@ -221,9 +215,9 @@ export default function ListView({
               aria-label="Open colors info modal"
               className="step-affiliations-colors"
               color="beige-gris-galet"
+              icon="palette-fill"
               onClick={() => setIsColorInfoModalOpen((prev) => !prev)}
               size="sm"
-              icon="palette-fill"
             />
             <Modal isOpen={isColorInfoModalOpen} hide={() => setIsColorInfoModalOpen((prev) => !prev)} size="md">
               <ModalTitle>
@@ -283,98 +277,94 @@ export default function ListView({
           </Col>
         </Row>
       </div>
-      {isLoading ? (
-        <Spinner size={48} />
-      ) : (
-        <div>
-          <ul className="wm-list">
-            {
-              sortedOrFilteredAffiliations.map((affiliation, index) => (
-                <li
-                  className={affiliation.selected ? 'selected' : ''}
-                  key={affiliation.key}
-                >
-                  <Row>
-                    <Col>
-                      <div style={{ display: 'inline-flex' }}>
-                        <div className={index === 0 ? 'step-affiliation-checkbox' : ''} style={{ display: 'inline-block', width: '20px' }}>
-                          <Checkbox
-                            checked={affiliation.selected}
-                            name="affiliations"
-                            onChange={() => setSelectAffiliations([affiliation.id])}
-                          />
-                          <br />
-                          {
-                            (affiliation.hasCorrection) && (
-                              <span className="fr-icon-warning-fill fr-icon--sm" style={{ color: '#B34000' }} />
-                            )
-                          }
-                        </div>
-                        <div className="fr-ml-1w" style={{ display: 'inline-block', maxWidth: '95%' }}>
-                          <Text
-                            as="span"
-                            onClick={() => setSelectAffiliations([affiliation.id])}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml.replace(' [ source: OpenAlex ]', '') }} />
-                          </Text>
-                          <WorksList works={affiliation.works} />
-                        </div>
+      <div>
+        <ul className="wm-list">
+          {
+            sortedOrFilteredAffiliations.map((affiliation, index) => (
+              <li
+                className={affiliation.selected ? 'selected' : ''}
+                key={affiliation.key}
+              >
+                <Row>
+                  <Col>
+                    <div style={{ display: 'inline-flex' }}>
+                      <div className={index === 0 ? 'step-affiliation-checkbox' : ''} style={{ display: 'inline-block', width: '20px' }}>
+                        <Checkbox
+                          checked={affiliation.selected}
+                          name="affiliations"
+                          onChange={() => setSelectAffiliations([affiliation.id])}
+                        />
+                        <br />
+                        {
+                          (affiliation.hasCorrection) && (
+                            <span className="fr-icon-warning-fill fr-icon--sm" style={{ color: '#B34000' }} />
+                          )
+                        }
                       </div>
-                    </Col>
-                    <Col md={4}>
-                      <table className="wm-table">
-                        <tbody>
-                          {affiliation.rorsToCorrect.map((rorToCorrect) => (
-                            <tr key={`openalex-affiliations-affiliations-${rorToCorrect.rorId}`}>
-                              <td>
-                                <RorBadge
-                                  className="step-affiliation-badge"
-                                  isRemoved={affiliation.removeList.includes(rorToCorrect.rorId)}
-                                  removeRor={() => toggleRemovedRor(affiliation.id, rorToCorrect.rorId)}
-                                  ror={rorToCorrect}
-                                  rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
-                                  setFilteredAffiliationName={setFilteredAffiliationName}
-                                />
-                                <br />
-                                <RorName
-                                  isRemoved={affiliation.removeList.includes(rorToCorrect.rorId)}
-                                  ror={rorToCorrect}
-                                />
-                              </td>
-                            </tr>
-                          ))}
-                          {affiliation.addList.map((ror) => (
-                            <tr key={`openalex-affiliations-affiliations-${ror.rorId}`}>
-                              <td>
-                                <RorBadge
-                                  className="step-affiliation-badge"
-                                  removeRor={() => removeRorFromAddList(affiliation.id, ror.rorId)}
-                                  ror={ror}
-                                  rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
-                                  setFilteredAffiliationName={setFilteredAffiliationName}
-                                />
-                                <br />
-                                <RorName ror={ror} />
-                                <Badge
-                                  className="fr-ml-1w"
-                                  color="blue-cumulus"
-                                >
-                                  Added
-                                </Badge>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </Col>
-                  </Row>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      )}
+                      <div className="fr-ml-1w" style={{ display: 'inline-block', maxWidth: '95%' }}>
+                        <Text
+                          as="span"
+                          onClick={() => setSelectAffiliations([affiliation.id])}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div dangerouslySetInnerHTML={{ __html: affiliation.nameHtml.replace(' [ source: OpenAlex ]', '') }} />
+                        </Text>
+                        <WorksList works={affiliation.works} />
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md={4}>
+                    <table className="wm-table">
+                      <tbody>
+                        {affiliation.rorsToCorrect.map((rorToCorrect) => (
+                          <tr key={`openalex-affiliations-affiliations-${rorToCorrect.rorId}`}>
+                            <td>
+                              <RorBadge
+                                className="step-affiliation-badge"
+                                isRemoved={affiliation.removeList.includes(rorToCorrect.rorId)}
+                                removeRor={() => toggleRemovedRor(affiliation.id, rorToCorrect.rorId)}
+                                ror={rorToCorrect}
+                                rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
+                                setFilteredAffiliationName={setFilteredAffiliationName}
+                              />
+                              <br />
+                              <RorName
+                                isRemoved={affiliation.removeList.includes(rorToCorrect.rorId)}
+                                ror={rorToCorrect}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                        {affiliation.addList.map((ror) => (
+                          <tr key={`openalex-affiliations-affiliations-${ror.rorId}`}>
+                            <td>
+                              <RorBadge
+                                className="step-affiliation-badge"
+                                removeRor={() => removeRorFromAddList(affiliation.id, ror.rorId)}
+                                ror={ror}
+                                rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
+                                setFilteredAffiliationName={setFilteredAffiliationName}
+                              />
+                              <br />
+                              <RorName ror={ror} />
+                              <Badge
+                                className="fr-ml-1w"
+                                color="blue-cumulus"
+                              >
+                                Added
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </Col>
+                </Row>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
       <Modal isOpen={isModalOpen} hide={() => setIsModalOpen((prev) => !prev)} size="md">
         <ModalTitle>
           Sorts & filters
@@ -447,9 +437,9 @@ export default function ListView({
         <ModalFooter style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
             onClick={() => {
-              setSelectSortOnNumberOfRors('default');
-              setSelectShowAffiliations('all');
               setSelectRorCountry('all');
+              setSelectShowAffiliations('all');
+              setSelectSortOnNumberOfRors('default');
             }}
           >
             Reset to default
@@ -457,9 +447,9 @@ export default function ListView({
           <Button
             onClick={() => {
               setSortsAndFilters({
-                sortOnNumberOfRors: selectSortOnNumberOfRors,
-                showAffiliations: selectShowAffiliations,
                 rorCountry: selectRorCountry,
+                showAffiliations: selectShowAffiliations,
+                sortOnNumberOfRors: selectSortOnNumberOfRors,
               });
               setIsModalOpen((prev) => !prev);
             }}

@@ -4,6 +4,7 @@ import { Badge, Button } from '@dataesr/dsfr-plus';
 import { MultiSelect } from 'primereact/multiselect';
 import { Tooltip } from 'react-tooltip';
 
+import { status } from '../config';
 import { getIdLink } from './works';
 
 const affiliationsTemplate = (rowData) => (
@@ -24,9 +25,8 @@ const affiliations2Template = (rowData) => {
     )
     .join('');
   if (rowData.affiliations.length > 3) {
-    affiliationsHtml += `<li class="ellipsis">and others (${
-      rowData.affiliations.length - 3
-    })</li>`;
+    affiliationsHtml += `<li class="ellipsis">and others (${rowData.affiliations.length - 3
+      })</li>`;
   }
   affiliationsHtml += '</ul>';
   let affiliationsTooltip = '<ul>';

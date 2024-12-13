@@ -20,9 +20,7 @@ export default function AffiliationsView({
   setFilteredAffiliationName,
   setSelectedAffiliations,
 }) {
-  const [filters] = useState({
-    status: { value: null, matchMode: FilterMatchMode.IN },
-  });
+  const [filters] = useState({ status: { matchMode: FilterMatchMode.IN, value: null } });
   const [selectionPageOnly, setSelectionPageOnly] = useState(true);
 
   const paginatorLeft = () => (

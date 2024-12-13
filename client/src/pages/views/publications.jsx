@@ -33,6 +33,7 @@ export default function Publications({
   if (allPublications?.length === 0) {
     return <div>No publications detected.</div>;
   }
+
   return (
     <div>
       <Row>
