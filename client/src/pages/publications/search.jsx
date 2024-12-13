@@ -1,7 +1,9 @@
 import {
+  Breadcrumb,
   Button,
   Col,
   Container,
+  Link,
   Modal,
   ModalContent,
   Row,
@@ -327,6 +329,14 @@ export default function PublicationsSearch() {
       )}
 
       <Container as="section" className="filters fr-my-5w">
+        <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
+          <Link href="/">
+            Home
+          </Link>
+          <Link current>
+            Build my corpus of publications
+          </Link>
+        </Breadcrumb>
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput
@@ -348,7 +358,7 @@ export default function PublicationsSearch() {
               tags={tags}
             />
           </Col>
-          <Col offsetXs="1" className="text-right fr-pl-3w">
+          <Col offsetXs="1" className="text-right fr-pl-3w fr-mt-4w">
             <Row gutters verticalAlign="bottom">
               <Col>
                 <Select
@@ -390,14 +400,6 @@ export default function PublicationsSearch() {
           </Col>
         </Row>
         <Row className="fr-pt-0 fr-pr-2w fr-pb-2w fr-pl-2w">
-          <Col xs="8">
-            <TextInput
-              hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
-              label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
-              onChange={(e) => setRorExclusions(e.target.value)}
-              value={rorExclusions}
-            />
-          </Col>
           <Col offsetXs="1" className="text-right fr-pl-3w">
             <Button
               className="fr-mt-2w"
