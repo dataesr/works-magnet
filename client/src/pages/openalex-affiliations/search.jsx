@@ -1,7 +1,9 @@
 import {
+  Breadcrumb,
   Button,
   Col,
   Container,
+  Link,
   Modal,
   ModalContent,
   Row,
@@ -353,6 +355,14 @@ export default function Search() {
         </ModalContent>
       </Modal>
       <Container as="section" className="filters fr-my-5w">
+        <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
+          <Link href="/">
+            Home
+          </Link>
+          <Link current>
+            Search raw affiliations and ROR in OpenAlex
+          </Link>
+        </Breadcrumb>
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col className="step-ror-to-add" xs="8">
             <TagInput
@@ -374,7 +384,7 @@ export default function Search() {
               tags={tags}
             />
           </Col>
-          <Col offsetXs="1" className="text-right fr-pl-3w">
+          <Col offsetXs="1" className="text-right fr-pl-3w fr-mt-4w">
             <Row gutters verticalAlign="bottom">
               <Col className="step-year-start">
                 <Select
@@ -426,7 +436,7 @@ export default function Search() {
               value={excludedRors}
             />
           </Col>
-          <Col offsetXs="1" className="fr-pl-3w step-search-works text-right">
+          <Col offsetXs="1" className="fr-pl-3w fr-mt-7w step-search-works text-right">
             <Button
               className="fr-mt-2w"
               disabled={searchParams.getAll('affiliations').length === 0}

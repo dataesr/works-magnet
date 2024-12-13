@@ -1,8 +1,10 @@
 /* eslint-disable no-param-reassign */
 import {
+  Breadcrumb,
   Button,
   Col,
   Container,
+  Link,
   Modal,
   ModalContent,
   ModalFooter,
@@ -343,15 +345,23 @@ export default function Mentions() {
     <>
       <Header />
       <Container as="section" className="fr-mt-4w mentions">
+        <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
+          <Link href="/">
+            Home
+          </Link>
+          <Link current>
+            Search software and dataset mentions in the full-text
+          </Link>
+        </Breadcrumb>
         <div
           className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`}
           title="actions"
         >
           <div
-            className={`selected-item ${selectedMentions.length && 'selected'}`}
+            className={`selected-item ${selectedMentions.length && ' selected'}`}
           >
             <span className="number">{selectedMentions.length}</span>
-            {`selected mention${selectedMentions.length > 1 ? 's' : ''}`}
+            {` selected mention${selectedMentions.length > 1 ? 's' : ''}`}
           </div>
           <Button
             className="fr-mb-1w fr-pl-1w button"

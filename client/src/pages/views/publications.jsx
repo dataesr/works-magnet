@@ -1,7 +1,9 @@
 /* eslint-disable max-len */
 import {
+  Breadcrumb,
   Row,
   Col,
+  Link,
   SegmentedControl,
   SegmentedElement,
   Title,
@@ -33,6 +35,19 @@ export default function Publications({
   }
   return (
     <div>
+      <Row>
+        <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
+          <Link href="/">
+            Home
+          </Link>
+          <Link href="/publications">
+            Build my corpus of publications
+          </Link>
+          <Link current>
+            Select the affiliations and build the corpus
+          </Link>
+        </Breadcrumb>
+      </Row>
       {options.datasets ? (
         <>
           <Title as="h2" look="h6">

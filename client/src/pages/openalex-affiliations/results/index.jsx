@@ -1,4 +1,5 @@
 import {
+  Breadcrumb,
   Button,
   Col,
   Container,
@@ -406,6 +407,19 @@ export default function Affiliations() {
               }}
               steps={steps}
             />
+            <Row>
+              <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w fr-ml-8w">
+                <Link href="/">
+                  Home
+                </Link>
+                <Link href="/openalex-affiliations">
+                  Search raw affiliations and ROR in OpenAlex
+                </Link>
+                <Link current>
+                  See results and make corrections
+                </Link>
+              </Breadcrumb>
+            </Row>
             <Row>
               <Col
                 className="wm-menu"

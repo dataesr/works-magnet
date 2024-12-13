@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
+  Breadcrumb,
+  Link,
   Row,
   Col,
   SegmentedControl,
@@ -33,6 +35,17 @@ export default function Datasets({
   return (
     <>
       <Row>
+        <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
+          <Link href="/">
+            Home
+          </Link>
+          <Link href="/datasets">
+            Build my corpus of datasets from repositories
+          </Link>
+          <Link current>
+            Select the affiliations and build the corpus
+          </Link>
+        </Breadcrumb>
         <Col>
           <Title as="h2" look="h6" className="fr-mt-1w">
             🗃 Find the datasets affiliated to your institution

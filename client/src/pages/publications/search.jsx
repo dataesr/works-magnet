@@ -333,8 +333,11 @@ export default function PublicationsSearch() {
           <Link href="/">
             Home
           </Link>
-          <Link current>
+          <Link href="/publications">
             Build my corpus of publications
+          </Link>
+          <Link current>
+            Search (from affiliations)
           </Link>
         </Breadcrumb>
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
