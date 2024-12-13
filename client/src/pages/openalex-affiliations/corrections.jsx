@@ -7,6 +7,7 @@ import HighchartsReact from 'highcharts-react-official';
 import Header from '../../layout/header';
 
 // const ODS_BY_PAGE = 100;
+const TOP_CONTRIBUTORS_LIMIT = 10;
 
 export default function Corrections() {
   // const [filter, setFilter] = useState([]);
@@ -30,22 +31,25 @@ export default function Corrections() {
   */
 
   const getFacets = async () => {
-    const url = 'https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/openalex-affiliations-corrections/facets';
-    const response = await fetch(url);
-    const { facets } = await response.json();
-    const domains = facets.find((facet) => facet.name === 'contact_domain').facets.slice(0, 10);
-    const categories = domains.map((domain) => domain.name);
-    const data = domains.map((domain) => domain.count);
+    const odsUrl = 'https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets';
+    const url = `${odsUrl}/openalex-affiliations-corrections/facets?facet=contact_domain`;
+    const { facets } = await (await fetch(url)).json();
+    const categories = facets.find((facet) => facet.name === 'contact_domain').facets.slice(0, TOP_CONTRIBUTORS_LIMIT).map((domain) => domain.name);
+    const promises = categories.map((category) => fetch(`${odsUrl}/openalex-affiliations-corrections/facets?refine=contact_domain:${category}&facet=state`));
+    const responses = (await Promise.all(promises)).map((response) => response.json());
+    const results = (await Promise.all(responses)).map((response) => response.facets[0].facets);
+    const closed = results.map((result) => result.find((item) => item.name === 'closed')?.count ?? 0);
+    const open = results.map((result) => result.find((item) => item.name === 'open')?.count ?? 0);
     setChartOptions({
       chart: { type: 'bar' },
       credits: { enabled: false },
-      legend: { enabled: false },
-      series: [{ data, name: 'Corrections' }],
+      plotOptions: { series: { stacking: 'normal', dataLabels: { enabled: true } } },
+      series: [{ color: '#6a618c', data: closed, name: 'Closed' }, { color: '#6e9879', data: open, name: 'Open' }],
       title: { text: 'Top 10 contributors' },
       xAxis: { categories },
       yAxis: { title: { text: 'Number of corrections requested' } },
     });
-    return facets;
+    return '';
   };
 
   const { error, isFetched, isFetching } = useQuery({
