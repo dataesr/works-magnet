@@ -1,15 +1,19 @@
 import { Col, Container, Link, Row, Spinner } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
 import Header from '../../layout/header';
 
-const ODS_BY_PAGE = 100;
+// const ODS_BY_PAGE = 100;
 
 export default function Corrections() {
-  const [filter, setFilter] = useState([]);
-  const [issues, setIssues] = useState([]);
+  // const [filter, setFilter] = useState([]);
+  // const [issues, setIssues] = useState([]);
+  const [chartOptions, setChartOptions] = useState({});
 
+  /*
   const getCorrections = async (page = 0) => {
     const offset = page * ODS_BY_PAGE;
     let corrections = [];
@@ -23,21 +27,41 @@ export default function Corrections() {
     }
     return corrections;
   };
+  */
 
-  const { data, error, isFetched, isFetching } = useQuery({
-    queryKey: ['corrections'],
-    queryFn: () => getCorrections(),
+  const getFacets = async () => {
+    const url = 'https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/openalex-affiliations-corrections/facets';
+    const response = await fetch(url);
+    const { facets } = await response.json();
+    const domains = facets.find((facet) => facet.name === 'contact_domain').facets.slice(0, 10);
+    const categories = domains.map((domain) => domain.name);
+    const data = domains.map((domain) => domain.count);
+    setChartOptions({
+      chart: { type: 'bar' },
+      credits: { enabled: false },
+      legend: { enabled: false },
+      series: [{ data, name: 'Corrections' }],
+      title: { text: 'Top 10 contributors' },
+      xAxis: { categories },
+      yAxis: { title: { text: 'Number of corrections requested' } },
+    });
+    return facets;
+  };
+
+  const { error, isFetched, isFetching } = useQuery({
+    queryKey: ['facets'],
+    queryFn: () => getFacets(),
   });
 
-  useEffect(() => {
-    setFilter('');
-    setIssues(data);
-  }, [data]);
+  // useEffect(() => {
+  //   setFilter('');
+  //   setIssues(data);
+  // }, [data]);
 
-  useEffect(() => {
-    const issuesTmp = issues.filter((issue) => issue?.contact_domain?.includes(filter));
-    setIssues(issuesTmp);
-  }, [filter, issues]);
+  // useEffect(() => {
+  //   const issuesTmp = issues.filter((issue) => issue?.contact_domain?.includes(filter));
+  //   setIssues(issuesTmp);
+  // }, [filter, issues]);
 
   return (
     <>
@@ -50,6 +74,7 @@ export default function Corrections() {
             </Col>
           </Row>
         )}
+
         {error && (
           <Row gutters className="fr-mb-16w">
             <Col xs="12">
@@ -60,6 +85,15 @@ export default function Corrections() {
             </Col>
           </Row>
         )}
+
+        {!isFetching && isFetched && (
+          <HighchartsReact
+            highcharts={Highcharts}
+            options={chartOptions}
+          />
+        )}
+
+        {/*
         {!isFetching && isFetched && (
           <>
             <input
@@ -111,6 +145,7 @@ export default function Corrections() {
             </ul>
           </>
         )}
+        */}
       </Container>
     </>
   );
