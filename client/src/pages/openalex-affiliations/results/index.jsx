@@ -47,6 +47,7 @@ export default function Affiliations() {
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingRor, setIsLoadingRor] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [ror, setRor] = useState('');
@@ -298,8 +299,10 @@ export default function Affiliations() {
   };
 
   const getCleanRor = async () => {
+    setIsLoadingRor(true);
     const cleanRorData = await getRorData(ror);
     setCleanRor(cleanRorData[0]);
+    setIsLoadingRor(false);
   };
 
   const setSelectAffiliations = (affiliationIds) => {
@@ -568,7 +571,7 @@ export default function Affiliations() {
                                   onChange={(e) => setRor(e.target.value)}
                                   value={ror}
                                   label="ROR"
-                                  hint="Enter a valid ROR id and 'check' it with ROR API"
+                                  hint='Enter a valid ROR id and "check" it with ROR API'
                                 />
                               </Col>
                               <Col md="3">
@@ -586,7 +589,7 @@ export default function Affiliations() {
                             </Row>
                             <Row>
                               <Col>
-                                {
+                                {isLoadingRor ? (<Spinner size={48} />) : (
                                   rorMessageType === 'valid' && cleanRor.rorName && cleanRor.rorCountry
                                   && (
                                     <>
@@ -602,7 +605,7 @@ export default function Affiliations() {
                                         className="fr-mt-3w"
                                         color="blue-ecume"
                                         disabled={['', 'error'].includes(rorMessageType) || !cleanRor.rorName || !cleanRor.rorCountry}
-                                        onClick={() => { addRor(); }}
+                                        onClick={() => addRor()}
                                         size="sm"
                                         title="Add ROR"
                                       >
@@ -610,7 +613,7 @@ export default function Affiliations() {
                                       </Button>
                                     </>
                                   )
-                                }
+                                )}
                               </Col>
                             </Row>
                           </Container>
