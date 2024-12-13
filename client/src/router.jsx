@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
+import About from './pages/about';
 import Layout from './layout';
 import DatasetsResults from './pages/datasets/results';
 import DatasetsSearch from './pages/datasets/search';
@@ -52,6 +53,7 @@ export default function Router() {
           }
         />
         <Route path="mentions" element={<Mentions />} />
+        <Route path="about" element={<About />} />
       </Route>
     </Routes>
   );

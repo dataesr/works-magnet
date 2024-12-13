@@ -23,6 +23,25 @@ export default function MainFooter() {
                     as="h3"
                     className={cn('fr-footer__top-cat', 'text-left')}
                   >
+                    About
+                  </Title>
+                  <ul className="fr-footer__top-list">
+                    <li>
+                      <Link
+                        className="fr-footer__top-link"
+                        href="/about"
+                        icon="mail-fill"
+                        iconPosition="left"
+                        target="_blank"
+                      >
+                        What is the Works-magnet?
+                      </Link>
+                    </li>
+                  </ul>
+                  <Title
+                    as="h3"
+                    className={cn('fr-footer__top-cat', 'text-left')}
+                  >
                     Contact
                   </Title>
                   <ul className="fr-footer__top-list">
