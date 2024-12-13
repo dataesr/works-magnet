@@ -42,7 +42,6 @@ export default function Affiliations() {
 
   const [addList, setAddList] = useState([]); // TODO: still used ?
   const [affiliations, setAffiliations] = useState([]);
-  const [body, setBody] = useState({});
   const [cleanRor, setCleanRor] = useState('');
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
@@ -50,6 +49,7 @@ export default function Affiliations() {
   const [isLoadingRor, setIsLoadingRor] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [options, setOptions] = useState({});
   const [ror, setRor] = useState('');
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
@@ -82,15 +82,15 @@ export default function Affiliations() {
   ];
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['openalex-affiliations', JSON.stringify(body)],
+    queryKey: ['works', JSON.stringify(options)],
     // Search for works from affiliations for each affiliation strictly longer than 2 letters
     queryFn: () => getWorks(
       {
-        ...body,
-        affiliationStrings: body.affiliations
+        ...options,
+        affiliationStrings: options.affiliations
           .filter((affiliation) => !affiliation.isDisabled)
           .map((affiliation) => affiliation.label),
-        rors: body.affiliations
+        rors: options.affiliations
           .filter((affiliation) => affiliation.isRor)
           .map((affiliation) => affiliation.label),
       },
@@ -174,14 +174,14 @@ export default function Affiliations() {
           queryParams.deletedAffiliations.push(normalize(item));
         }
       });
-      setBody(queryParams);
+      setOptions(queryParams);
     };
     getData();
   }, [searchParams]);
 
   useEffect(() => {
-    if (Object.keys(body).length > 0) refetch();
-  }, [body, refetch]);
+    if (Object.keys(options).length > 0) refetch();
+  }, [options, refetch]);
 
   useEffect(() => {
     setAffiliations(data?.affiliations?.filter(
@@ -449,10 +449,10 @@ export default function Affiliations() {
                           color="blue-cumulus"
                           key="openalex-affiliations-tag-year-start"
                         >
-                          {`Start: ${body.startYear}`}
+                          {`Start: ${options.startYear}`}
                         </Tag>
                         <Tag color="blue-cumulus" key="openalex-affiliations-tag-year-end">
-                          {`End: ${body.endYear}`}
+                          {`End: ${options.endYear}`}
                         </Tag>
                       </div>
                     </Col>
@@ -465,7 +465,7 @@ export default function Affiliations() {
                         Searched affiliations
                       </div>
                       <div className="wm-content">
-                        {body.affiliations.map((affiliation) => (
+                        {options.affiliations.map((affiliation) => (
                           <Row key={`openalex-affiliations-search-${affiliation.label}`}>
                             <Tag
                               className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
@@ -490,7 +490,7 @@ export default function Affiliations() {
                       </div>
                     </Col>
                   </Row>
-                  {(body.excludedRors.length > 0) && (
+                  {(options.excludedRors.length > 0) && (
                     <Row>
                       <Col>
                         <div className="wm-title">
@@ -500,7 +500,7 @@ export default function Affiliations() {
                           </span>
                         </div>
                         <div className="wm-content">
-                          {body.excludedRors.split(' ').map((excludedRor) => (
+                          {options.excludedRors.split(' ').map((excludedRor) => (
                             <Tag
                               className="fr-mr-1w"
                               color="green-archipel"
