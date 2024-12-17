@@ -6,19 +6,20 @@ import HighchartsReact from 'highcharts-react-official';
 
 import Header from '../../layout/header';
 
-// const ODS_BY_PAGE = 100;
+const ODS_BY_PAGE = 100;
+const ODS_URL = 'https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/openalex-affiliations-corrections';
 const TOP_CONTRIBUTORS_LIMIT = 10;
 
 export default function Corrections() {
   // const [filter, setFilter] = useState([]);
   // const [issues, setIssues] = useState([]);
-  const [chartOptions, setChartOptions] = useState({});
+  const [chartOptions1, setChartOptions1] = useState();
+  const [chartOptions2, setChartOptions2] = useState();
 
-  /*
   const getCorrections = async (page = 0) => {
     const offset = page * ODS_BY_PAGE;
     let corrections = [];
-    const url = `https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/openalex-affiliations-corrections/records?order_by=github_issue_id DESC&limit=${ODS_BY_PAGE}&offset=${offset}`;
+    const url = `${ODS_URL}/records?order_by=github_issue_id&limit=${ODS_BY_PAGE}&offset=${offset}`;
     const response = await fetch(url);
     const { results } = await response.json();
     corrections = corrections.concat(results);
@@ -28,25 +29,60 @@ export default function Corrections() {
     }
     return corrections;
   };
-  */
 
   const getFacets = async () => {
-    const odsUrl = 'https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets';
-    const url = `${odsUrl}/openalex-affiliations-corrections/facets?facet=contact_domain`;
+    const url = `${ODS_URL}/facets?facet=contact_domain`;
     const { facets } = await (await fetch(url)).json();
     const categories = facets.find((facet) => facet.name === 'contact_domain').facets.slice(0, TOP_CONTRIBUTORS_LIMIT).map((domain) => domain.name);
-    const promises = categories.map((category) => fetch(`${odsUrl}/openalex-affiliations-corrections/facets?refine=contact_domain:${category}&facet=state`));
+    const promises = categories.map((category) => fetch(`${ODS_URL}/facets?refine=contact_domain:${category}&facet=state`));
     const responses = (await Promise.all(promises)).map((response) => response.json());
     const results = (await Promise.all(responses)).map((response) => response.facets[0].facets);
     const closed = results.map((result) => result.find((item) => item.name === 'closed')?.count ?? 0);
     const open = results.map((result) => result.find((item) => item.name === 'open')?.count ?? 0);
-    setChartOptions({
+    setChartOptions1({
       chart: { type: 'bar' },
       credits: { enabled: false },
       plotOptions: { series: { stacking: 'normal', dataLabels: { enabled: true } } },
       series: [{ color: '#6a618c', data: closed, name: 'Closed' }, { color: '#6e9879', data: open, name: 'Open' }],
-      title: { text: 'Top 10 contributors' },
+      title: { text: `Top ${TOP_CONTRIBUTORS_LIMIT} contributors` },
       xAxis: { categories },
+      yAxis: { title: { text: 'Number of corrections requested' } },
+    });
+  };
+
+  const getCorrectionsAndFacets = async () => {
+    const queries = [getCorrections(), getFacets()];
+    const [corrections] = await Promise.all(queries);
+    let data = {};
+    corrections.forEach((correction) => {
+      const dateOpened = correction?.date_opened?.slice(0, 7);
+      const dateClosed = correction?.date_closed?.slice(0, 7);
+      if (dateOpened) {
+        if (!Object.keys(data).includes(dateOpened)) data[dateOpened] = { closed: 0, opened: 0 };
+        data[dateOpened].opened += 1;
+      }
+      if (dateClosed) {
+        if (!Object.keys(data).includes(dateClosed)) data[dateClosed] = { closed: 0, opened: 0 };
+        data[dateClosed].closed += 1;
+      }
+    });
+    data = Object.keys(data).sort().reduce((item, key) => ({ ...item, [key]: data[key] }), {});
+    const closed = [];
+    let closedSum = 0;
+    const opened = [];
+    let openedSum = 0;
+    Object.values(data).forEach((item) => {
+      closedSum += item.closed;
+      closed.push(closedSum);
+      openedSum += item.opened;
+      opened.push(openedSum);
+    });
+    setChartOptions2({
+      credits: { enabled: false },
+      plotOptions: { series: { dataLabels: { enabled: true } } },
+      series: [{ color: '#6a618c', data: closed, name: 'Closed' }, { color: '#6e9879', data: opened, name: 'Open' }],
+      title: { text: 'Number of corrections requested over time' },
+      xAxis: { categories: Object.keys(data) },
       yAxis: { title: { text: 'Number of corrections requested' } },
     });
     return '';
@@ -54,7 +90,7 @@ export default function Corrections() {
 
   const { error, isFetched, isFetching } = useQuery({
     queryKey: ['facets'],
-    queryFn: () => getFacets(),
+    queryFn: () => getCorrectionsAndFacets(),
   });
 
   // useEffect(() => {
@@ -90,10 +126,16 @@ export default function Corrections() {
           </Row>
         )}
 
-        {!isFetching && isFetched && (
+        {!isFetching && isFetched && chartOptions1 && (
           <HighchartsReact
             highcharts={Highcharts}
-            options={chartOptions}
+            options={chartOptions1}
+          />
+        )}
+        {!isFetching && isFetched && chartOptions2 && (
+          <HighchartsReact
+            highcharts={Highcharts}
+            options={chartOptions2}
           />
         )}
 
