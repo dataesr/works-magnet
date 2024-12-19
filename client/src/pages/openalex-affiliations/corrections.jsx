@@ -16,19 +16,23 @@ export default function Corrections() {
   const [chartOptions1, setChartOptions1] = useState();
   const [chartOptions2, setChartOptions2] = useState();
 
-  const getCorrections = async (page = 0) => {
+  const getCorrections = async (state, page = 0) => {
     const offset = page * ODS_BY_PAGE;
     let corrections = [];
-    const url = `${ODS_URL}/records?order_by=github_issue_id&limit=${ODS_BY_PAGE}&offset=${offset}`;
+    const url = `${ODS_URL}/records?order_by=github_issue_id&limit=${ODS_BY_PAGE}&offset=${offset}&refine=state%3A${state}`;
     const response = await fetch(url);
     const { results } = await response.json();
     corrections = corrections.concat(results);
     if (results.length === ODS_BY_PAGE) {
-      const c = await getCorrections(page + 1);
+      const c = await getCorrections(state, page + 1);
       corrections = corrections.concat(c);
     }
     return corrections;
   };
+
+  const getClosedCorrections = () => getCorrections('closed');
+
+  const getOpenedCorrections = () => getCorrections('open');
 
   const getFacets = async () => {
     const url = `${ODS_URL}/facets?facet=contact_domain`;
@@ -51,10 +55,10 @@ export default function Corrections() {
   };
 
   const getCorrectionsAndFacets = async () => {
-    const queries = [getCorrections(), getFacets()];
-    const [corrections] = await Promise.all(queries);
+    const queries = [getClosedCorrections(), getOpenedCorrections(), getFacets()];
+    const [closedCorrections, openedCorrections] = await Promise.all(queries);
     let data = {};
-    corrections.forEach((correction) => {
+    [...closedCorrections, ...openedCorrections].forEach((correction) => {
       const dateOpened = correction?.date_opened?.slice(0, 7);
       const dateClosed = correction?.date_closed?.slice(0, 7);
       if (dateOpened) {
