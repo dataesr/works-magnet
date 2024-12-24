@@ -6,9 +6,8 @@ const router = new express.Router();
 const key = process.env.OS_PASSWORD;
 const projectName = process.env.OS_PROJECT_NAME;
 const projectId = process.env.OS_TENANT_ID;
-const tenantName = process.env.OS_TENANT_NAME;
-const username = process.env.OS_USERNAME;
-const user = `${tenantName}:${username}`;
+
+const user = `${process.env.OS_TENANT_NAME}:${process.env.OS_USERNAME}`;
 
 router.route('/download')
   .get(async (_, res) => {

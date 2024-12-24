@@ -36,6 +36,40 @@ const timeout = (time) => {
   return controller;
 };
 
+const getAffiliations = async (body, toast) => {
+  const response = await fetch(`${VITE_API}/affiliations`, {
+    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    signal: timeout(1200).signal, // 20 minutes
+  });
+  if (!response.ok) {
+    throw new Error('Oops... FOSM API request did not work for works !');
+  }
+  const { affiliations, warnings } = await response.json();
+  const resAffiliations = await unzipAll(affiliations);
+  let warningMessage = '';
+  if (warnings?.isMaxFosmReached) {
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxFosmValue} publications found in French OSM, only the first ${warnings.maxFosmValue} were retrieved.\n`,
+    );
+  }
+  if (warnings?.isMaxOpenalexReached) {
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxOpenalexValue} publications found in OpenAlex, only the first ${warnings.maxOpenalexValue} were retrieved.\n`,
+    );
+  }
+  if (warningMessage) {
+    toast({
+      description: warningMessage,
+      id: 'tooManyPublications',
+      title: 'Too Many publications found',
+      toastType: 'error',
+    });
+  }
+  return { affiliations: resAffiliations, warnings };
+};
+
 const getIdLink = (type, id) => {
   let prefix = null;
   switch (type) {
@@ -78,7 +112,6 @@ const getMentions = async (options) => {
 };
 
 const getWorks = async (body, toast) => {
-  // TODO: Replace by useQuery
   const response = await fetch(`${VITE_API}/works`, {
     body: JSON.stringify(body),
     headers: { 'Content-Type': 'application/json' },
@@ -160,6 +193,7 @@ const renderButtonDataset = (selected, fn, label, icon) => (
 );
 
 export {
+  getAffiliations,
   getIdLink,
   getMentions,
   getWorks,

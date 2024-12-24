@@ -51,7 +51,7 @@ const chunkAndCompress = (data) => {
 
 const getWorks = async ({ options, resetCache = false }) => {
   const shasum = crypto.createHash('sha1');
-  shasum.update(JSON.stringify({ ...options, type: 'works' }));
+  shasum.update(JSON.stringify({ ...options, type: 'affiliations' }));
   const searchId = shasum.digest('hex');
   const start = new Date();
   const queryId = start
@@ -135,95 +135,34 @@ const getWorks = async ({ options, resetCache = false }) => {
   console.timeEnd(
     `3. Query ${queryId} | GroupBy ${options.affiliationStrings}`,
   );
-  // Sort between publications and datasets
-  console.time(
-    `4. Query ${queryId} | Sort works ${options.affiliationStrings}`,
-  );
-  const publications = [];
-  let datasets = [];
-  const deduplicatedWorksLength = deduplicatedWorks.length;
-  if (options.datasets) {
-    datasets = deduplicatedWorks;
-  } else {
-    for (let i = 0; i < deduplicatedWorksLength; i += 1) {
-      const deduplicatedWork = deduplicatedWorks[i];
-      if (datasetsType.includes(deduplicatedWork.type)) {
-        datasets.push(deduplicatedWork);
-      } else {
-        publications.push(deduplicatedWork);
-      }
-    }
-  }
-  console.timeEnd(
-    `4. Query ${queryId} | Sort works ${options.affiliationStrings}`,
-  );
-  console.time(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
-  const publicationsYears = countUniqueValues({
-    data: publications,
-    field: 'year',
-  });
-  const datasetsYears = countUniqueValues({ data: datasets, field: 'year' });
-  const publicationsTypes = countUniqueValues({
-    data: publications,
-    field: 'type',
-  });
-  const datasetsTypes = countUniqueValues({ data: datasets, field: 'type' });
-  const publicationsPublishers = countUniqueValues({
-    data: publications,
-    field: 'publisher',
-  });
-  const datasetsPublishers = countUniqueValues({
-    data: datasets,
-    field: 'publisher',
-  });
-  console.timeEnd(`5. Query ${queryId} | Facet ${options.affiliationStrings}`);
   // Build and serialize response
   console.time(
-    `6. Query ${queryId} | Serialization ${options.affiliationStrings}`,
+    `4. Query ${queryId} | Serialization ${options.affiliationStrings}`,
   );
   const affiliations = await chunkAndCompress(uniqueAffiliations);
   console.log(
     'serialization',
     `${uniqueAffiliations.length} affiliations serialized`,
   );
-  const datasetsResults = await chunkAndCompress(datasets);
-  console.log('serialization', `${datasets.length} datasets serialized`);
-  const publicationsResults = await chunkAndCompress(publications);
-  console.log(
-    'serialization',
-    `${publications.length} publications serialized`,
-  );
   const result = {
     affiliations,
-    datasets: {
-      results: datasetsResults,
-      publishers: datasetsPublishers,
-      types: datasetsTypes,
-      years: datasetsYears,
-    },
-    publications: {
-      results: publicationsResults,
-      publishers: publicationsPublishers,
-      types: publicationsTypes,
-      years: publicationsYears,
-    },
     extractionDate: Date.now(),
     warnings,
   };
   console.timeEnd(
-    `6. Query ${queryId} | Serialization ${options.affiliationStrings}`,
+    `4. Query ${queryId} | Serialization ${options.affiliationStrings}`,
   );
   console.time(
-    `7. Query ${queryId} | Save cache ${options.affiliationStrings}`,
+    `5. Query ${queryId} | Save cache ${options.affiliationStrings}`,
   );
   await saveCache({ queryId, result, searchId });
   console.timeEnd(
-    `7. Query ${queryId} | Save cache ${options.affiliationStrings}`,
+    `5. Query ${queryId} | Save cache ${options.affiliationStrings}`,
   );
   return result;
 };
 
-router.route('/works').post(async (req, res) => {
+router.route('/affiliations').post(async (req, res) => {
   try {
     const options = req?.body ?? {};
     if (!options?.affiliationStrings && !options?.rors) {
