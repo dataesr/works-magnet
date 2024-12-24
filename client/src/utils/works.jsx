@@ -36,8 +36,48 @@ const timeout = (time) => {
   return controller;
 };
 
-const getAffiliations = async (body, toast) => {
-  const response = await fetch(`${VITE_API}/affiliations`, {
+const getIdLink = (type, id) => {
+  let prefix = null;
+  switch (type) {
+  case 'doi':
+    prefix = 'https://doi.org/';
+    break;
+  case 'hal_id':
+    prefix = 'https://hal.science/';
+    break;
+  case 'openalex':
+    prefix = 'https://openalex.org/';
+    break;
+  case 'pmcid':
+    prefix = 'https://www.ncbi.nlm.nih.gov/pmc/articles/';
+    break;
+  case 'pmid':
+    prefix = 'https://pubmed.ncbi.nlm.nih.gov/';
+    break;
+  case 'orcid':
+    prefix = 'https://orcid.org/';
+    break;
+  default:
+  }
+  return prefix !== null ? `${prefix}${id}` : false;
+};
+
+const getMentions = async (options) => {
+  const response = await fetch(`${VITE_API}/mentions`, {
+    body: JSON.stringify(options),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    signal: timeout(1200).signal, // 20 minutes
+  });
+  if (!response.ok) {
+    throw new Error('Oops... FOSM API request did not work for mentions !');
+  }
+  const mentions = await response.json();
+  return mentions;
+};
+
+const getOpenAlexAffiliations = async (body, toast) => {
+  const response = await fetch(`${VITE_API}/openalex-affiliations`, {
     body: JSON.stringify(body),
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
@@ -68,47 +108,6 @@ const getAffiliations = async (body, toast) => {
     });
   }
   return { affiliations: resAffiliations, warnings };
-};
-
-const getIdLink = (type, id) => {
-  let prefix = null;
-  switch (type) {
-  case 'doi':
-    prefix = 'https://doi.org/';
-    break;
-  case 'hal_id':
-    prefix = 'https://hal.science/';
-    break;
-  case 'openalex':
-    prefix = 'https://openalex.org/';
-    break;
-  case 'pmcid':
-    prefix = 'https://www.ncbi.nlm.nih.gov/pmc/articles/';
-    break;
-  case 'pmid':
-    prefix = 'https://pubmed.ncbi.nlm.nih.gov/';
-    break;
-  case 'orcid':
-    prefix = 'https://orcid.org/';
-    break;
-  default:
-  }
-  return prefix !== null ? `${prefix}${id}` : false;
-};
-
-const getMentions = async (options) => {
-  // TODO: Replace by useQuery
-  const response = await fetch(`${VITE_API}/mentions`, {
-    body: JSON.stringify(options),
-    headers: { 'Content-Type': 'application/json' },
-    method: 'POST',
-    signal: timeout(1200).signal, // 20 minutes
-  });
-  if (!response.ok) {
-    throw new Error('Oops... FOSM API request did not work for mentions !');
-  }
-  const mentions = await response.json();
-  return mentions;
 };
 
 const getWorks = async (body, toast) => {
@@ -193,9 +192,9 @@ const renderButtonDataset = (selected, fn, label, icon) => (
 );
 
 export {
-  getAffiliations,
   getIdLink,
   getMentions,
+  getOpenAlexAffiliations,
   getWorks,
   normalizeName,
   range,

@@ -3,11 +3,9 @@ import express from 'express';
 
 import { getInstitutionIdFromRor } from '../utils/openalex';
 import { getCache, saveCache } from '../utils/s3';
-import { chunkArray, countUniqueValues, range } from '../utils/utils';
+import { chunkArray, range } from '../utils/utils';
 import {
-  datasetsType,
   deduplicateWorks,
-  getFosmWorks,
   getOpenAlexPublications,
   groupByAffiliations,
 } from '../utils/works';
@@ -49,9 +47,9 @@ const chunkAndCompress = (data) => {
   return Promise.all(chunks.map((c) => compressData(c)));
 };
 
-const getWorks = async ({ options, resetCache = false }) => {
+const getOpenAlexAffiliations = async ({ options, resetCache = false }) => {
   const shasum = crypto.createHash('sha1');
-  shasum.update(JSON.stringify({ ...options, type: 'affiliations' }));
+  shasum.update(JSON.stringify({ ...options, type: 'openalex-affiliations' }));
   const searchId = shasum.digest('hex');
   const start = new Date();
   const queryId = start
@@ -82,7 +80,6 @@ const getWorks = async ({ options, resetCache = false }) => {
     options.rorExclusions.map((ror) => getInstitutionIdFromRor(ror)),
   );
   const queries = [];
-  queries.push(getFosmWorks({ options }));
   const affiliationStringsChunks = chunkArray({
     array: options.affiliationStrings,
   });
@@ -104,11 +101,6 @@ const getWorks = async ({ options, resetCache = false }) => {
   });
   const responses = await Promise.all(queries);
   const warnings = {};
-  const MAX_FOSM = Number(process.env.ES_MAX_SIZE);
-  if (MAX_FOSM > 0 && responses.length > 0 && responses[0].length >= MAX_FOSM) {
-    warnings.isMaxFosmReached = true;
-    warnings.maxFosmValue = MAX_FOSM;
-  }
   const MAX_OPENALEX = Number(process.env.OPENALEX_MAX_SIZE);
   if (
     MAX_OPENALEX > 0
@@ -162,7 +154,7 @@ const getWorks = async ({ options, resetCache = false }) => {
   return result;
 };
 
-router.route('/affiliations').post(async (req, res) => {
+router.route('/openalex-affiliations').post(async (req, res) => {
   try {
     const options = req?.body ?? {};
     if (!options?.affiliationStrings && !options?.rors) {
@@ -170,7 +162,7 @@ router.route('/affiliations').post(async (req, res) => {
         message: 'You must provide at least one affiliation string or RoR.',
       });
     } else {
-      const compressedResult = await getWorks({ options });
+      const compressedResult = await getOpenAlexAffiliations({ options });
       res.status(200).json(compressedResult);
     }
   } catch (err) {

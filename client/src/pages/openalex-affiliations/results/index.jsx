@@ -24,7 +24,7 @@ import getFlagEmoji from '../../../utils/flags';
 import { getRorData, isRor } from '../../../utils/ror';
 import { normalize, removeDiacritics } from '../../../utils/strings';
 import { getTagColor } from '../../../utils/tags';
-import { getAffiliations } from '../../../utils/works';
+import { getOpenAlexAffiliations } from '../../../utils/works';
 import ExportErrorsButton from '../components/export-errors-button';
 import SendFeedbackButton from '../components/send-feedback-button';
 import ListView from './list-view';
@@ -83,9 +83,9 @@ export default function Affiliations() {
   ];
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['affiliations', JSON.stringify(options)],
+    queryKey: ['openalex-affiliations', JSON.stringify(options)],
     // Search for works from affiliations for each affiliation strictly longer than 2 letters
-    queryFn: () => getAffiliations(
+    queryFn: () => getOpenAlexAffiliations(
       {
         ...options,
         affiliationStrings: options.affiliations
