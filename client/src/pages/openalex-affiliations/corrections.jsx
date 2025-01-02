@@ -12,22 +12,22 @@ const TOP_CONTRIBUTORS_LIMIT = 10;
 
 export default function Corrections() {
   // const [filter, setFilter] = useState([]);
-  // const [issues, setIssues] = useState([]);
-  const [chartOptions1, setChartOptions1] = useState();
-  const [chartOptions2, setChartOptions2] = useState();
+  const [chartOptions1, setChartOptions1] = useState({});
+  const [chartOptions2, setChartOptions2] = useState({});
+  const [corrections, setCorrections] = useState([]);
 
   const getCorrections = async (state, page = 0) => {
     const offset = page * ODS_BY_PAGE;
-    let corrections = [];
+    let _corrections = [];
     const url = `${ODS_URL}/records?order_by=github_issue_id&limit=${ODS_BY_PAGE}&offset=${offset}&refine=state%3A${state}`;
     const response = await fetch(url);
     const { results } = await response.json();
-    corrections = corrections.concat(results);
+    _corrections = _corrections.concat(results);
     if (results.length === ODS_BY_PAGE) {
       const c = await getCorrections(state, page + 1);
-      corrections = corrections.concat(c);
+      _corrections = _corrections.concat(c);
     }
-    return corrections;
+    return _corrections;
   };
 
   const getClosedCorrections = () => getCorrections('closed');
@@ -58,7 +58,10 @@ export default function Corrections() {
     const queries = [getClosedCorrections(), getOpenedCorrections(), getFacets()];
     const [closedCorrections, openedCorrections] = await Promise.all(queries);
     let data = {};
-    [...closedCorrections, ...openedCorrections].forEach((correction) => {
+    const correctionsTmp = [...closedCorrections, ...openedCorrections];
+    correctionsTmp.reverse((a, b) => b.date_opened - a.date_opened);
+    setCorrections(correctionsTmp);
+    correctionsTmp.forEach((correction) => {
       const dateOpened = correction?.date_opened?.slice(0, 7);
       const dateClosed = correction?.date_closed?.slice(0, 7);
       if (dateOpened) {
@@ -130,6 +133,17 @@ export default function Corrections() {
           </Row>
         )}
 
+        {!isFetching && isFetched && corrections && (
+          <div>
+            <b>
+              {corrections.length}
+              {' '}
+              corrections
+            </b>
+            {' '}
+            requested until last night
+          </div>
+        )}
         {!isFetching && isFetched && chartOptions1 && (
           <HighchartsReact
             highcharts={Highcharts}
@@ -142,11 +156,9 @@ export default function Corrections() {
             options={chartOptions2}
           />
         )}
-
-        {/*
-        {!isFetching && isFetched && (
+        {!isFetching && isFetched && (corrections.length > 0) && (
           <>
-            <input
+            {/* <input
               onChange={(e) => setFilter(e.target.value)}
               style={{
                 border: '1px solid #ced4da',
@@ -156,36 +168,35 @@ export default function Corrections() {
                 backgroundColor: 'white',
               }}
               value={filter}
-            />
+            /> */}
             <ul>
-              {issues.map((issue, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <li className="fr-mb-2w list-none" key={`issue-${index}`}>
+              {corrections.map((correction) => (
+                <li className="fr-mb-2w list-none" key={correction.github_issue_id}>
                   <Row>
                     <Col xs="1">
-                      {issue.state === 'closed' ? <i className="ri-checkbox-circle-line" style={{ color: '#6a618c' }} /> : <i className="ri-record-circle-line" style={{ color: '#6e9879' }} />}
+                      {correction.state === 'closed' ? <i className="ri-checkbox-circle-line" style={{ color: '#6a618c' }} /> : <i className="ri-record-circle-line" style={{ color: '#6e9879' }} />}
                     </Col>
                     <Col>
                       <Row>
-                        <Link href={`https://github.com/dataesr/openalex-affiliations/issues/${issue.github_issue_id}`} target="_blank">
+                        <Link href={`https://github.com/dataesr/openalex-affiliations/issues/${correction.github_issue_id}`} target="_blank">
                           Correction for raw affiliation
                           {' '}
-                          {issue.raw_affiliation_name}
+                          {correction.raw_affiliation_name}
                         </Link>
                       </Row>
-                      <Row>{[...new Set(issue?.previous_rors?.split(';'), issue?.new_rors?.split(';'))].map((ror) => <span className="fr-mr-1w">{ror}</span>)}</Row>
+                      <Row>{[...new Set(correction?.previous_rors?.split(';'), correction?.new_rors?.split(';'))].map((ror) => <span className="fr-mr-1w">{ror}</span>)}</Row>
                       <Row>
                         <Col xs="2">
                           #
-                          {issue.github_issue_id}
+                          {correction.github_issue_id}
                         </Col>
                         <Col>
                           by
                           {' '}
-                          {issue.contact_domain}
+                          {correction.contact_domain}
                         </Col>
                         <Col xs="4">
-                          {issue.state === 'closed' ? `Closed on ${issue.date_closed}` : `Opened on ${issue.date_opened}`}
+                          {correction.state === 'closed' ? `Closed on ${correction.date_closed}` : `Opened on ${correction.date_opened}`}
                         </Col>
                       </Row>
                     </Col>
@@ -195,7 +206,6 @@ export default function Corrections() {
             </ul>
           </>
         )}
-        */}
       </Container>
     </>
   );
