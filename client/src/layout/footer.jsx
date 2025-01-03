@@ -38,7 +38,6 @@ export default function MainFooter() {
                         href="/about"
                         icon="mail-fill"
                         iconPosition="left"
-                        target="_blank"
                       >
                         What is the Works-magnet?
                       </Link>
