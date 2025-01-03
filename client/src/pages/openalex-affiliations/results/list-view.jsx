@@ -7,7 +7,6 @@ import {
   Row,
   Text,
 } from '@dataesr/dsfr-plus';
-import { Steps } from 'intro.js-react';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
@@ -56,51 +55,6 @@ export default function ListView({
   const sortedRor = Object.keys(rorCount).sort((a, b) => rorCount[b] - rorCount[a]);
   defineRorColor.push(...sortedRor.slice(0, 5).map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
 
-  const steps = [
-    {
-      element: '.step-affiliations-select',
-      intro: 'Select all affiliations',
-    },
-    {
-      element: '.step-affiliations-search',
-      intro: 'Search through affiliations names',
-    },
-    {
-      element: '.step-affiliations-sort',
-      intro: 'Open menu to filter affiliations by country and sort them',
-    },
-    {
-      element: '.step-affiliations-colors',
-      intro: 'Explanation about the colors of ROR',
-    },
-    {
-      element: '.step-affiliation-checkbox',
-      intro: 'Select affiliation one by one',
-    },
-    {
-      element: '.step-affiliation-badge',
-      intro: <ul>
-        <li>Colors are given to the most 5 frequent ROR</li>
-        <li>Click here to see the ROR matched</li>
-        <li>
-          <i className="fr-fi-filter-line fr-icon--sm" />
-          {' '}
-          Filter on this ROR
-        </li>
-        <li>
-          <i className="ri-file-copy-line" />
-          {' '}
-          Copy ROR
-        </li>
-        <li>
-          <i className="fr-fi-delete-line fr-icon--sm" />
-          {' '}
-          Delete this ROR from this affiliation
-        </li>
-      </ul>,
-    },
-  ];
-
   useEffect(() => {
     setIsLoading(true);
     // Deep copy of filteredAffiliations object
@@ -126,13 +80,6 @@ export default function ListView({
 
   return (
     <>
-      <Steps
-        enabled={stepsEnabledList}
-        initialStep={0}
-        onComplete={() => localStorage.setItem('works-magnet-tour-results', 'done')}
-        onExit={() => setStepsEnabledList(false)}
-        steps={steps}
-      />
       <div
         className="wm-internal-actions"
         style={{ position: 'sticky', top: '44px', zIndex: 10 }}

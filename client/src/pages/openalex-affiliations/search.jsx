@@ -11,7 +11,7 @@ import {
   SelectOption,
   TextInput,
 } from '@dataesr/dsfr-plus';
-import { Steps } from 'intro.js-react';
+import introJs from 'intro.js';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -43,36 +43,7 @@ export default function Search() {
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
-  const [stepsEnabled, setStepsEnabled] = useState(false);
   const [tags, setTags] = useState([]);
-
-  const steps = [
-    {
-      element: '.step-ror-to-add',
-      intro: <ul>
-        <li>Searched affiliations</li>
-        <li>Can be either ROR or string</li>
-        <li>Press ENTER to validate each seizure</li>
-        <li>OR boolean will be applied during the search</li>
-      </ul>,
-    },
-    {
-      element: '.step-ror-to-exclude',
-      intro: <ul>
-        <li>ROR to exclude</li>
-        <li>ROR only</li>
-        <li>Separate multiple ROR by space</li>
-      </ul>,
-    },
-    {
-      element: '.step-year-start',
-      intro: 'Filter on publication year between start and end',
-    },
-    {
-      element: '.step-search-works',
-      intro: 'Click here to run the search. ⏳ It can take a while',
-    },
-  ];
 
   useEffect(() => {
     if (searchParams.size < 4) {
@@ -192,9 +163,35 @@ export default function Search() {
   }, [currentSearchParams.getRorChildren, deletedAffiliations, searchedAffiliations]);
 
   useEffect(() => {
-    // Enable guided tour only for the first visit
-    if (localStorage.getItem('works-magnet-tour-search') !== 'done') setStepsEnabled(true);
-  }, [setStepsEnabled]);
+    introJs().setOptions({
+      dontShowAgain: true,
+      dontShowAgainCookie: 'introjs-dontShowAgain-search',
+      showStepNumbers: true,
+      steps: [
+        {
+          element: document.querySelector('.step-ror-to-add'),
+          intro: '<ul><li>Searched affiliations</li><li>Can be either ROR or string</li><li>Press ENTER to validate each seizure</li><li>OR boolean will be applied during the search</li></ul>',
+          title: 'Tutorial',
+        },
+        {
+          element: document.querySelector('.step-ror-to-exclude'),
+          intro: '<ul><li>ROR to exclude</li><li>ROR only</li><li>Separate multiple ROR by space</li></ul>',
+          title: 'Tutorial',
+        },
+        {
+          element: document.querySelector('.step-year-start'),
+          intro: 'Filter on publication year between start and end',
+          title: 'Tutorial',
+        },
+        {
+          element: document.querySelector('.step-search-works'),
+          intro: 'Click here to run the search. ⏳ It can take a while',
+          title: 'Tutorial',
+        },
+      ],
+    }).start();
+    document.getElementById('introjs-dontShowAgain')?.click();
+  }, []);
 
   const checkAndSendQuery = () => {
     if (onInputAffiliationsHandler) {
@@ -257,16 +254,6 @@ export default function Search() {
   return (
     <>
       <Header />
-      <Steps
-        enabled={stepsEnabled}
-        initialStep={0}
-        onComplete={() => localStorage.setItem('works-magnet-tour-search', 'done')}
-        onExit={() => {
-          setStepsEnabled(false);
-          localStorage.setItem('works-magnet-tour-search', 'done');
-        }}
-        steps={steps}
-      />
       <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
         <ModalContent>
           <Container as="section" className="filters fr-my-5w">

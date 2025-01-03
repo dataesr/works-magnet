@@ -14,7 +14,7 @@ import {
   TextInput,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
-import { Steps } from 'intro.js-react';
+import introJs from 'intro.js';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -32,6 +32,7 @@ import ListView from './list-view';
 import 'intro.js/introjs.css';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import '../../../styles/index.scss';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
@@ -55,174 +56,8 @@ export default function Affiliations() {
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
   const [rorsToRemove, setRorsToRemove] = useState([]);
-  const [stepsEnabled, setStepsEnabled] = useState(false);
   const [stepsEnabledList, setStepsEnabledList] = useState(false);
   const [uniqueRors, setUniqueRors] = useState({});
-
-  const steps = [
-    {
-      element: '.step-search-summary',
-      intro: 'Here is your search',
-    },
-    {
-      element: '.step-search-go-back',
-      intro: 'Click here to modify your search',
-    },
-    {
-      element: '.step-action-add-remove-ror',
-      intro: 'Click here to add or remove ROR from selected affiliations',
-    },
-    {
-      element: '.step-action-export',
-      intro: 'Click here to export corrections, choose between CSV and JSONL format',
-    },
-    {
-      element: '.step-action-feedback',
-      intro: 'Click here to send feedback to OpenAlex',
-    },
-  ];
-
-  const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['openalex-affiliations', JSON.stringify(options)],
-    // Search for works from affiliations for each affiliation strictly longer than 2 letters
-    queryFn: () => getOpenAlexAffiliations(
-      {
-        ...options,
-        affiliationStrings: options.affiliations
-          .filter((affiliation) => !affiliation.isDisabled)
-          .map((affiliation) => affiliation.label),
-        rors: options.affiliations
-          .filter((affiliation) => affiliation.isRor)
-          .map((affiliation) => affiliation.label),
-      },
-      toast,
-    ),
-    enabled: false,
-  });
-
-  useEffect(() => {
-    // Enable guided tour only for the first visit
-    if (localStorage.getItem('works-magnet-tour-results') !== 'done') setStepsEnabled(true);
-  }, [setStepsEnabled]);
-
-  useEffect(() => {
-    const get = async () => {
-      const addedRors = await Promise.all(
-        addList.map((add) => getRorData(add)),
-      );
-      const uniqueRorsTmp = {};
-      addedRors.flat().forEach((addedRor) => {
-        if (!Object.keys(uniqueRors).includes(addedRor.rorId)) {
-          uniqueRorsTmp[addedRor.rorId] = { ...addedRor };
-        }
-      });
-      setUniqueRors({ ...uniqueRors, ...uniqueRorsTmp });
-    };
-
-    get();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addList]);
-
-  useEffect(() => {
-    const getData = async () => {
-      const queryParams = {
-        endYear: searchParams.get('endYear') ?? '2023',
-        excludedRors: searchParams.get('excludedRors') ?? '',
-        getRorChildren: searchParams.get('getRorChildren') ?? '0',
-        startYear: searchParams.get('startYear') ?? '2023',
-      };
-      queryParams.deletedAffiliations = [];
-      queryParams.rorExclusions = [];
-      queryParams.affiliations = await Promise.all(
-        searchParams.getAll('affiliations').map(async (affiliation) => {
-          const label = normalize(affiliation);
-          const children = [];
-          // Compute rorNames
-          if (isRor(label)) {
-            const rors = await getRorData(label, queryParams.getRorChildren === '1');
-            rors
-              .forEach((item) => {
-                children.push({
-                  isDisabled: false,
-                  label: item.rorId,
-                  source: 'ror',
-                  type: 'rorId',
-                });
-                item.names.forEach((name) => {
-                  children.push({
-                    isDisabled: name.length < VITE_APP_TAG_LIMIT,
-                    label: name,
-                    source: 'ror',
-                    type: 'affiliationString',
-                  });
-                });
-              });
-          }
-          return {
-            children,
-            isDisabled: label.length < VITE_APP_TAG_LIMIT,
-            isRor: isRor(label),
-            label,
-            source: 'user',
-          };
-        }),
-      );
-
-      searchParams.getAll('deletedAffiliations').forEach((item) => {
-        if (isRor(item)) {
-          queryParams.rorExclusions.push(item);
-        } else {
-          queryParams.deletedAffiliations.push(normalize(item));
-        }
-      });
-      setOptions(queryParams);
-    };
-    getData();
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (Object.keys(options).length > 0) refetch();
-  }, [options, refetch]);
-
-  useEffect(() => {
-    setAffiliations(data?.affiliations?.filter(
-      (affiliation) => affiliation.source === 'OpenAlex',
-    ).map((affiliation) => ({
-      ...affiliation,
-      addList: [],
-      removeList: [],
-      selected: false,
-    })) ?? []);
-  }, [data]);
-
-  useEffect(() => {
-    setIsLoading(true);
-    const regex = new RegExp(removeDiacritics(filteredAffiliationName));
-    const filteredAffiliationsTmp = affiliations.filter(
-      (affiliation) => regex.test(
-        `${affiliation.key.replace('[ source: ', '').replace(' ]', '')} ${affiliation.rors.map((_ror) => _ror.rorId).join(' ')}`,
-      ),
-    );
-    setFilteredAffiliations(filteredAffiliationsTmp);
-    setIsLoading(false);
-  }, [affiliations, filteredAffiliationName]);
-
-  useEffect(() => {
-    if (ror === '') {
-      setRorMessage('');
-      setRorMessageType('');
-    } else if (!isRor(ror)) {
-      setRorMessage('Invalid ROR');
-      setRorMessageType('error');
-    } else if (Object.keys(uniqueRors).includes(ror)) {
-      setRorMessage('Already listed ROR');
-      setRorMessageType('error');
-    } else {
-      setRorMessage('Valid ROR');
-      setRorMessageType('valid');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ror]);
 
   const toggleRemovedRor = (affiliationId, rorId) => {
     const updatedAffiliations = affiliations.map((affiliation) => {
@@ -266,15 +101,8 @@ export default function Affiliations() {
       }
       return affiliation;
     });
-
     setAffiliations(updatedAffiliations);
   };
-
-  useEffect(() => {
-    if (rorMessageType !== 'valid') {
-      setCleanRor({});
-    }
-  }, [rorMessageType]);
 
   const addRor = () => {
     const updatedAffiliations = affiliations.map((affiliation) => {
@@ -361,6 +189,219 @@ export default function Affiliations() {
     setAffiliations(affiliationsTmp);
   };
 
+  const { data, error, isFetched, isFetching, refetch } = useQuery({
+    queryKey: ['openalex-affiliations', JSON.stringify(options)],
+    // Search for works from affiliations for each affiliation strictly longer than 2 letters
+    queryFn: () => getOpenAlexAffiliations(
+      {
+        ...options,
+        affiliationStrings: options.affiliations
+          .filter((affiliation) => !affiliation.isDisabled)
+          .map((affiliation) => affiliation.label),
+        rors: options.affiliations
+          .filter((affiliation) => affiliation.isRor)
+          .map((affiliation) => affiliation.label),
+      },
+      toast,
+    ),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    const get = async () => {
+      const addedRors = await Promise.all(
+        addList.map((add) => getRorData(add)),
+      );
+      const uniqueRorsTmp = {};
+      addedRors.flat().forEach((addedRor) => {
+        if (!Object.keys(uniqueRors).includes(addedRor.rorId)) {
+          uniqueRorsTmp[addedRor.rorId] = { ...addedRor };
+        }
+      });
+      setUniqueRors({ ...uniqueRors, ...uniqueRorsTmp });
+    };
+
+    get();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addList]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const queryParams = {
+        endYear: searchParams.get('endYear') ?? '2023',
+        excludedRors: searchParams.get('excludedRors') ?? '',
+        getRorChildren: searchParams.get('getRorChildren') ?? '0',
+        startYear: searchParams.get('startYear') ?? '2023',
+      };
+      queryParams.deletedAffiliations = [];
+      queryParams.rorExclusions = [];
+      queryParams.affiliations = await Promise.all(
+        searchParams.getAll('affiliations').map(async (affiliation) => {
+          const label = normalize(affiliation);
+          const children = [];
+          // Compute rorNames
+          if (isRor(label)) {
+            const rors = await getRorData(label, queryParams.getRorChildren === '1');
+            rors
+              .forEach((item) => {
+                children.push({
+                  isDisabled: false,
+                  label: item.rorId,
+                  source: 'ror',
+                  type: 'rorId',
+                });
+                item.names.forEach((name) => {
+                  children.push({
+                    isDisabled: name.length < VITE_APP_TAG_LIMIT,
+                    label: name,
+                    source: 'ror',
+                    type: 'affiliationString',
+                  });
+                });
+              });
+          }
+          return {
+            children,
+            isDisabled: label.length < VITE_APP_TAG_LIMIT,
+            isRor: isRor(label),
+            label,
+            source: 'user',
+          };
+        }),
+      );
+
+      searchParams.getAll('deletedAffiliations').forEach((item) => {
+        if (isRor(item)) {
+          queryParams.rorExclusions.push(item);
+        } else {
+          queryParams.deletedAffiliations.push(normalize(item));
+        }
+      });
+      setOptions(queryParams);
+    };
+    getData();
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (Object.keys(options).length > 0) refetch();
+  }, [options, refetch]);
+
+  useEffect(() => {
+    setAffiliations(data?.affiliations?.map((affiliation) => ({
+      ...affiliation,
+      addList: [],
+      removeList: [],
+      selected: false,
+    })) ?? []);
+  }, [data]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    if (filteredAffiliationName !== '') {
+      const regex = new RegExp(removeDiacritics(filteredAffiliationName));
+      const filteredAffiliationsTmp = affiliations.filter(
+        (affiliation) => regex.test(
+          `${affiliation.key.replace('[ source: ', '').replace(' ]', '')} ${affiliation.rors.map((_ror) => _ror.rorId).join(' ')}`,
+        ),
+      );
+      setFilteredAffiliations(filteredAffiliationsTmp);
+    } else {
+      setFilteredAffiliations(affiliations);
+    }
+    setIsLoading(false);
+  }, [affiliations, filteredAffiliationName]);
+
+  useEffect(() => {
+    if (ror === '') {
+      setRorMessage('');
+      setRorMessageType('');
+    } else if (!isRor(ror)) {
+      setRorMessage('Invalid ROR');
+      setRorMessageType('error');
+    } else if (Object.keys(uniqueRors).includes(ror)) {
+      setRorMessage('Already listed ROR');
+      setRorMessageType('error');
+    } else {
+      setRorMessage('Valid ROR');
+      setRorMessageType('valid');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ror]);
+
+  useEffect(() => {
+    if (rorMessageType !== 'valid') {
+      setCleanRor({});
+    }
+  }, [rorMessageType]);
+
+  useEffect(() => {
+    if (filteredAffiliations.length > 0) {
+      introJs().setOptions({
+        dontShowAgain: true,
+        dontShowAgainCookie: 'introjs-dontShowAgain-results',
+        showStepNumbers: true,
+        steps: [
+          {
+            element: document.querySelector('.step-search-summary'),
+            intro: 'Here is your search',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-search-go-back'),
+            intro: 'Click here to modify your search',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-action-add-remove-ror'),
+            intro: 'Click here to add or remove ROR from selected affiliations',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-action-export'),
+            intro: 'Click here to export corrections, choose between CSV and JSONL format',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-action-feedback'),
+            intro: 'Click here to send feedback to OpenAlex',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-affiliations-select'),
+            intro: 'Select all affiliations',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-affiliations-search'),
+            intro: 'Search through affiliations names',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-affiliations-sort'),
+            intro: 'Open menu to filter affiliations by country and sort them',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-affiliations-colors'),
+            intro: 'Explanation about the colors of ROR',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-affiliation-checkbox'),
+            intro: 'Select affiliation one by one',
+            title: 'Tutorial',
+          },
+          {
+            element: document.querySelector('.step-affiliation-badge'),
+            intro: '<ul><li>Colors are given to the most 5 frequent ROR</li><li>Click here to see the ROR matched</li><li><i className="fr-fi-filter-line fr-icon--sm" /> Filter on this ROR</li><li><i className="ri-file-copy-line" /> Copy ROR</li><li><i className="fr-fi-delete-line fr-icon--sm" /> Delete this ROR from this affiliation</li></ul>',
+            title: 'Tutorial',
+          },
+        ],
+      }).start();
+      document.getElementById('introjs-dontShowAgain')?.click();
+    }
+  }, [filteredAffiliations]);
+
   return (
     <>
       <Header />
@@ -401,15 +442,6 @@ export default function Affiliations() {
 
         {!isFetching && isFetched && (
           <>
-            <Steps
-              enabled={stepsEnabled}
-              initialStep={0}
-              onExit={() => {
-                setStepsEnabled(false);
-                setStepsEnabledList(true);
-              }}
-              steps={steps}
-            />
             <Row>
               <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w fr-ml-8w">
                 <Link href="/">

@@ -17,7 +17,7 @@
     "classnames": "^2.3.2",
     "highcharts": "^11.4.8",
     "highcharts-react-official": "^3.2.1",
-    "intro.js-react": "^1.0.0",
+    "intro.js": "^7.2.0",
     "papaparse": "^5.4.1",
     "primereact": "^9.6.0",
     "prop-types": "^15.8.1",

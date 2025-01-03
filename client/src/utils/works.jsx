@@ -84,7 +84,7 @@ const getOpenAlexAffiliations = async (body, toast) => {
     signal: timeout(1200).signal, // 20 minutes
   });
   if (!response.ok) {
-    throw new Error('Oops... FOSM API request did not work for works !');
+    throw new Error('Oops... Error while computing OpenAlex affiliations !');
   }
   const { affiliations, warnings } = await response.json();
   const resAffiliations = await unzipAll(affiliations);
