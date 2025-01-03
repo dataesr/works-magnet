@@ -8,7 +8,10 @@ import {
   FooterTop,
 } from '../components/footer/index';
 
-const version = import.meta.env.VITE_VERSION;
+const {
+  VITE_MINISTER_NAME,
+  VITE_VERSION,
+} = import.meta.env;
 
 export default function MainFooter() {
   return (
@@ -266,8 +269,8 @@ export default function MainFooter() {
       </FooterTop>
       <FooterBody description="Retrieve the scholarly works of your institution">
         <Logo
-          splitCharacter="|"
-          text="Ministère|de l'enseignement|supérieur|et de la recherche"
+          splitCharacter="<br>"
+          text={VITE_MINISTER_NAME}
         />
         <Link
           className="fr-footer__content-link"
@@ -317,9 +320,9 @@ export default function MainFooter() {
           target="_blank"
           rel="noreferer noopenner"
           className="fr-footer__bottom-link"
-          href={`https://github.com/dataesr/works-magnet/releases/tag/v${version}`}
+          href={`https://github.com/dataesr/works-magnet/releases/tag/v${VITE_VERSION}`}
         >
-          {`App version v${version}`}
+          {`App version v${VITE_VERSION}`}
         </Link>
       </FooterBottom>
     </Footer>
