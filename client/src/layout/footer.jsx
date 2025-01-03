@@ -1,5 +1,6 @@
 import { Col, Container, Link, Logo, Row, Title } from '@dataesr/dsfr-plus';
 import cn from 'classnames';
+import { useIntl } from 'react-intl';
 
 import {
   Footer,
@@ -14,6 +15,8 @@ const {
 } = import.meta.env;
 
 export default function MainFooter() {
+  const intl = useIntl();
+
   return (
     <Footer fluid>
       <FooterTop>
@@ -267,7 +270,7 @@ export default function MainFooter() {
           </Row>
         </Container>
       </FooterTop>
-      <FooterBody description="Retrieve the scholarly works of your institution">
+      <FooterBody description={intl.formatMessage({ id: 'tagline' })}>
         <Logo
           splitCharacter="<br>"
           text={VITE_MINISTER_NAME}

@@ -7,7 +7,7 @@
 ![website](https://img.shields.io/website?url=https%3A%2F%2Fworks-magnet.esr.gouv.fr)
 [![SWH](https://archive.softwareheritage.org/badge/origin/https://github.com/dataesr/works-magnet)](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/dataesr/works-magnet)
 
-Retrieve the scholarly works of your institution.
+Retrieve and promote the scholarly works of your institution.
 
 ## Build for production
 
