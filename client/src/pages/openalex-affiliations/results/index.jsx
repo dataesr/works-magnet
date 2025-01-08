@@ -612,12 +612,17 @@ export default function Affiliations() {
                             <Row verticalAlign="bottom">
                               <Col>
                                 <TextInput
-                                  messageType={rorMessageType}
-                                  message={rorMessage}
-                                  onChange={(e) => setRor(e.target.value)}
-                                  value={ror}
-                                  label="ROR"
                                   hint='Enter a valid ROR id and "check" it with ROR API'
+                                  label="ROR"
+                                  message={rorMessage}
+                                  messageType={rorMessageType}
+                                  onChange={(e) => setRor(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && ror.length > 0) {
+                                      getCleanRor();
+                                    }
+                                  }}
+                                  value={ror}
                                 />
                               </Col>
                               <Col md="3">

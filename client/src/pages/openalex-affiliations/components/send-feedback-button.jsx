@@ -93,6 +93,11 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
           <TextInput
             label="Please indicate your email. Only an encrypted version of your email will be public."
             onChange={(e) => setUserEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && corrections.length > 0 && validEmail) {
+                sendFeedback();
+              }
+            }}
             required
             type="email"
           />
