@@ -39,7 +39,11 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
 
   const sendFeedback = async () => {
     try {
-      sendJsonMessage({ data: corrections, email: userEmail, type: 'openalex-affiliations' });
+      const data = corrections.map((correction) => ({
+        ...correction,
+        rors: [...correction.rors, ...correction.addList].filter((ror) => !correction.removeList.includes(ror.rorId)),
+      }));
+      sendJsonMessage({ data, email: userEmail, type: 'openalex-affiliations' });
       toast({
         autoDismissAfter: 5000,
         description: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
