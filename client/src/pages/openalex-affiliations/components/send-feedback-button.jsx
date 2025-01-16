@@ -8,6 +8,7 @@ import {
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
 import useToast from '../../../hooks/useToast';
@@ -15,6 +16,7 @@ import useToast from '../../../hooks/useToast';
 const { VITE_WS_HOST } = import.meta.env;
 
 export default function SendFeedbackButton({ className, corrections, resetCorrections }) {
+  const [searchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [validEmail, setValidEmail] = useState(null);
@@ -41,7 +43,9 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
     try {
       const data = corrections.map((correction) => ({
         ...correction,
+        endYear: searchParams.get('endYear') ?? '2023',
         rors: [...correction.rors, ...correction.addList].filter((ror) => !correction.removeList.includes(ror.rorId)),
+        startYear: searchParams.get('startYear') ?? '2023',
       }));
       sendJsonMessage({ data, email: userEmail, type: 'openalex-affiliations' });
       toast({

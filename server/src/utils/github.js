@@ -44,25 +44,35 @@ const encrypt = (text) => {
 };
 
 const createIssueOpenAlexAffiliations = ({ email, issue }) => {
-  let title = `Correction for raw affiliation ${issue.name}`;
+  const {
+    name,
+    endYear = '',
+    rors = [],
+    rorsToCorrect = [],
+    startYear = '',
+    worksExample = [],
+    worksOpenAlex = [],
+  } = issue;
+  let title = `Correction for raw affiliation ${name}`;
   if (title.length > 1000) {
     title = `${title.slice(0, 1000)}...`;
   }
-  let body = `Correction needed for raw affiliation ${issue.name}\n`;
-  body += `raw_affiliation_name: ${issue.name}\n`;
-  body += `new_rors: ${issue.rorsToCorrect.map((ror) => ror.rorId).join(';')}\n`;
-  body += `previous_rors: ${issue.rors.map((ror) => ror.rorId).join(';')}\n`;
+  let body = `Correction needed for raw affiliation ${name}\n`;
+  body += `raw_affiliation_name: ${name}\n`;
+  body += `new_rors: ${rorsToCorrect.map((ror) => ror.rorId).join(';')}\n`;
+  body += `previous_rors: ${rors.map((ror) => ror.rorId).join(';')}\n`;
   let workIds = '';
-  if (issue.worksExample) {
-    workIds = issue.worksExample
+  if (worksExample) {
+    workIds = worksExample
       .filter((e) => e.id_type === 'openalex')
       .map((e) => e.id_value)
       .join(';');
   }
-  if (issue.worksOpenAlex) {
-    workIds = issue.worksOpenAlex.join(';');
+  if (worksOpenAlex) {
+    workIds = worksOpenAlex.join(';');
   }
   body += `works_examples: ${workIds}\n`;
+  body += `searched between: ${startYear} - ${endYear}\n`;
   body += `contact: ${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}\n`;
   return octokit.rest.issues.create({
     body,
