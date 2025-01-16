@@ -42,10 +42,13 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
   const sendFeedback = async () => {
     try {
       const data = corrections.map((correction) => ({
-        ...correction,
         endYear: searchParams.get('endYear') ?? '2023',
+        name: correction.name,
         rors: [...correction.rors, ...correction.addList].filter((ror) => !correction.removeList.includes(ror.rorId)),
+        rorsToCorrect: correction.rorsToCorrect,
         startYear: searchParams.get('startYear') ?? '2023',
+        worksExample: correction.worksExample,
+        worksOpenAlex: correction.worksOpenAlex,
       }));
       sendJsonMessage({ data, email: userEmail, type: 'openalex-affiliations' });
       toast({
@@ -124,7 +127,7 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
 SendFeedbackButton.propTypes = {
   className: PropTypes.string,
   corrections: PropTypes.arrayOf(PropTypes.shape({
-    addList: PropTypes.arrayOf(PropTypes.string).isRequired,
+    addList: PropTypes.arrayOf(PropTypes.object).isRequired,
     hasCorrection: PropTypes.bool.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,

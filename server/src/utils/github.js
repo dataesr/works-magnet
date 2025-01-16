@@ -45,8 +45,8 @@ const encrypt = (text) => {
 
 const createIssueOpenAlexAffiliations = ({ email, issue }) => {
   const {
-    name,
     endYear = '',
+    name,
     rors = [],
     rorsToCorrect = [],
     startYear = '',

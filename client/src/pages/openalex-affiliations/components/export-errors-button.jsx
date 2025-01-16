@@ -22,7 +22,7 @@ export default function ExportErrorsButton({
 ExportErrorsButton.propTypes = {
   className: PropTypes.string,
   corrections: PropTypes.arrayOf(PropTypes.shape({
-    addList: PropTypes.arrayOf(PropTypes.string).isRequired,
+    addList: PropTypes.arrayOf(PropTypes.object).isRequired,
     hasCorrection: PropTypes.bool.isRequired,
     name: PropTypes.string.isRequired,
     nameHtml: PropTypes.string.isRequired,
