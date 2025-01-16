@@ -41,14 +41,14 @@ export default function Header({ isExpanded, id }) {
                     ' ',
                   )}`}
                 >
-                  <p className="fr-header__service-title">
+                  <div className="fr-header__service-title">
                     {VITE_APP_NAME}
                     {VITE_HEADER_TAG && (
                       <Badge noIcon size="sm" variant={VITE_HEADER_TAG_COLOR}>
                         {VITE_HEADER_TAG}
                       </Badge>
                     )}
-                  </p>
+                  </div>
                 </a>
                 <p className="fr-header__service-tagline">
                   <FormattedMessage id="tagline" />
