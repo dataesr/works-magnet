@@ -56,7 +56,6 @@ export default function Affiliations() {
   const [rorMessage, setRorMessage] = useState('');
   const [rorMessageType, setRorMessageType] = useState('');
   const [rorsToRemove, setRorsToRemove] = useState([]);
-  const [stepsEnabledList, setStepsEnabledList] = useState(false);
   const [uniqueRors, setUniqueRors] = useState({});
 
   const toggleRemovedRor = (affiliationId, rorId) => {
@@ -214,7 +213,7 @@ export default function Affiliations() {
   });
 
   useEffect(() => {
-    const get = async () => {
+    const getUniquesRors = async () => {
       const addedRors = await Promise.all(
         addList.map((add) => getRorData(add)),
       );
@@ -227,7 +226,7 @@ export default function Affiliations() {
       setUniqueRors({ ...uniqueRors, ...uniqueRorsTmp });
     };
 
-    get();
+    getUniquesRors();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addList]);
 
@@ -791,18 +790,14 @@ export default function Affiliations() {
                       />
                     </div>
                   </div>
-                  {filteredAffiliations.length === 0 ? (
-                    <Spinner size={48} /> // TODO replace spinner by skeleton
-                  ) : (
-                    <ListView
-                      affiliationsCount={affiliations.length}
-                      filteredAffiliations={filteredAffiliations}
-                      removeRorFromAddList={removeRorFromAddList}
-                      setFilteredAffiliationName={setFilteredAffiliationName}
-                      setSelectAffiliations={setSelectAffiliations}
-                      toggleRemovedRor={toggleRemovedRor}
-                    />
-                  )}
+                  <ListView
+                    affiliationsCount={affiliations.length}
+                    filteredAffiliations={filteredAffiliations}
+                    removeRorFromAddList={removeRorFromAddList}
+                    setFilteredAffiliationName={setFilteredAffiliationName}
+                    setSelectAffiliations={setSelectAffiliations}
+                    toggleRemovedRor={toggleRemovedRor}
+                  />
                 </div>
               </Col>
             </Row>
