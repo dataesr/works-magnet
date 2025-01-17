@@ -339,15 +339,12 @@ export default function ListView({
               <select
                 className="fr-select"
                 id="select-sort-on-number-of-rors"
-                onChange={(e) => {
-                  setSelectSortOnNumberOfRors(e.target.value);
-                }}
+                onChange={(e) => setSelectSortOnNumberOfRors(e.target.value)}
                 value={selectSortOnNumberOfRors}
               >
                 <option value="default">Works descending (default)</option>
                 <option value="numberASC">ROR ascending</option>
                 <option value="numberDESC">ROR descending</option>
-                {/* <option value="empty">No ROR detected</option> */}
               </select>
             </label>
           </div>
@@ -389,9 +386,7 @@ export default function ListView({
               <select
                 className="fr-select"
                 id="select-ror-country"
-                onChange={(e) => {
-                  setSelectRorCountry(e.target.value);
-                }}
+                onChange={(e) => setSelectRorCountry(e.target.value)}
                 value={selectRorCountry}
               >
                 <option value="all">All countries</option>

@@ -240,14 +240,12 @@ export default function DatasetsSearch() {
                       buttonLabel={currentSearchParams.startYear}
                       label="Start year"
                       onSelectionChange={(startYear) => setSearchParams({ ...currentSearchParams, startYear })}
+                      selectedKey={currentSearchParams.startYear}
                     >
                       {years.map((year) => (
                         <SelectOption
                           color="blue-cumulus"
                           key={year.value}
-                          selected={
-                            year.value === currentSearchParams.startYear
-                          }
                         >
                           {year.label}
                         </SelectOption>
@@ -260,14 +258,12 @@ export default function DatasetsSearch() {
                       buttonLabel={currentSearchParams.endYear}
                       label="End year"
                       onSelectionChange={(endYear) => setSearchParams({ ...currentSearchParams, endYear })}
+                      selectedKey={currentSearchParams.endYear}
                     >
                       {years.map((year) => (
                         <SelectOption
                           color="blue-cumulus"
                           key={year.value}
-                          selected={
-                            year.value === currentSearchParams.startYear
-                          }
                         >
                           {year.label}
                         </SelectOption>
@@ -365,12 +361,12 @@ export default function DatasetsSearch() {
                   buttonLabel={currentSearchParams.startYear}
                   label="Start year"
                   onSelectionChange={(startYear) => setSearchParams({ ...currentSearchParams, startYear })}
+                  selectedKey={currentSearchParams.startYear}
                 >
                   {years.map((year) => (
                     <SelectOption
                       color="blue-cumulus"
                       key={year.value}
-                      selected={year.value === currentSearchParams.startYear}
                     >
                       {year.label}
                     </SelectOption>
@@ -383,12 +379,12 @@ export default function DatasetsSearch() {
                   buttonLabel={currentSearchParams.endYear}
                   label="End year"
                   onSelectionChange={(endYear) => setSearchParams({ ...currentSearchParams, endYear })}
+                  selectedKey={currentSearchParams.endYear}
                 >
                   {years.map((year) => (
                     <SelectOption
                       color="blue-cumulus"
                       key={year.value}
-                      selected={year.value === currentSearchParams.startYear}
                     >
                       {year.label}
                     </SelectOption>

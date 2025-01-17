@@ -1,8 +1,10 @@
+import { Badge, Button, Col, Row, Text } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Badge, Button, Col, Link, Row, Text } from '@dataesr/dsfr-plus';
+
 import { getIdLink } from '../../utils/works';
 
-export default function MentionListItem({ mention, index, selected, toggleToSelected }) {
+export default function MentionListItem({ mention }) {
   const [expanded, setExpanded] = useState(false);
 
   const getIdLinkDisplay = (idType, idValue) => {
@@ -15,10 +17,9 @@ export default function MentionListItem({ mention, index, selected, toggleToSele
 
   return (
     <li key={mention.id}>
-
       <Row>
         <Col>
-          <input type="checkbox" selected={selected} />
+          <input type="checkbox" selected={mention.selected} />
         </Col>
         <Col md={8}>
           <strong>
@@ -108,3 +109,7 @@ export default function MentionListItem({ mention, index, selected, toggleToSele
     </li>
   );
 }
+
+MentionListItem.propTypes = {
+  mention: PropTypes.object.isRequired,
+};

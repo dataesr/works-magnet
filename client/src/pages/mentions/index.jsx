@@ -852,9 +852,8 @@ export default function Mentions() {
               </Button>
             </div>
             <ul style={{ listStyle: 'none' }}>
-              {mentions.map((mention, index) => (
+              {mentions.map((mention) => (
                 <MentionListItem
-                  index={index}
                   key={mention.id}
                   mention={mention}
                 />
