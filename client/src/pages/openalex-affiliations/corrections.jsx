@@ -12,29 +12,24 @@ const TOP_CONTRIBUTORS_LIMIT = 10;
 
 export default function Corrections() {
   // const [filter, setFilter] = useState([]);
-  const [chartOptions1, setChartOptions1] = useState({});
-  const [chartOptions2, setChartOptions2] = useState({});
+  const [chartOptionsDomains, setChartOptionsDomains] = useState({});
+  const [chartOptionsDates, setChartOptionsDates] = useState({});
   const [corrections, setCorrections] = useState([]);
 
   const getCorrections = async (state, page = 0) => {
     const offset = page * ODS_BY_PAGE;
     let _corrections = [];
     const url = `${ODS_URL}/records?order_by=github_issue_id&limit=${ODS_BY_PAGE}&offset=${offset}&refine=state%3A${state}`;
-    const response = await fetch(url);
-    const { results } = await response.json();
+    const { results } = await (await fetch(url)).json();
     _corrections = _corrections.concat(results);
-    if (results.length === ODS_BY_PAGE) {
-      const c = await getCorrections(state, page + 1);
-      _corrections = _corrections.concat(c);
-    }
+    // if (results.length === ODS_BY_PAGE) {
+    //   const c = await getCorrections(state, page + 1);
+    //   _corrections = _corrections.concat(c);
+    // }
     return _corrections;
   };
 
-  const getClosedCorrections = () => getCorrections('closed');
-
-  const getOpenedCorrections = () => getCorrections('open');
-
-  const getFacets = async () => {
+  const getFacetDomains = async () => {
     const url = `${ODS_URL}/facets?facet=contact_domain`;
     const { facets } = await (await fetch(url)).json();
     const categories = facets.find((facet) => facet.name === 'contact_domain').facets.slice(0, TOP_CONTRIBUTORS_LIMIT).map((domain) => domain.name);
@@ -43,53 +38,77 @@ export default function Corrections() {
     const results = (await Promise.all(responses)).map((response) => response.facets[0].facets);
     const closed = results.map((result) => result.find((item) => item.name === 'closed')?.count ?? 0);
     const open = results.map((result) => result.find((item) => item.name === 'open')?.count ?? 0);
-    setChartOptions1({
+    setChartOptionsDomains({
       chart: { type: 'bar' },
       credits: { enabled: false },
       plotOptions: { series: { stacking: 'normal', dataLabels: { enabled: true } } },
       series: [{ color: '#6a618c', data: closed, name: 'Closed' }, { color: '#6e9879', data: open, name: 'Open' }],
-      title: { text: `Top ${TOP_CONTRIBUTORS_LIMIT} contributors` },
+      title: { text: `Top ${TOP_CONTRIBUTORS_LIMIT} contributors' domain` },
       xAxis: { categories },
       yAxis: { title: { text: 'Number of corrections requested' } },
     });
   };
 
+  const getFacetDate = async (field) => {
+    const dates = ['2024/03', '2024/04', '2024/05', '2024/06', '2024/07', '2024/08', '2024/09', '2024/10', '2024/11', '2024/12', '2025/01'];
+    const url2024 = `https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?refine.${field}=2024&facet=${field}&dataset=openalex-affiliations-corrections&rows=0`;
+    const { facet_groups: facetGroups2024 } = await (await fetch(url2024)).json();
+    const closedDateFacet2024 = facetGroups2024.find((facet) => facet.name === field)?.facets?.map((facet) => facet.facets).flat();
+    const url2025 = `https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?refine.${field}=2025&facet=${field}&dataset=openalex-affiliations-corrections&rows=0`;
+    const { facet_groups: facetGroups2025 } = await (await fetch(url2025)).json();
+    const closedDateFacet2025 = facetGroups2025.find((facet) => facet.name === field)?.facets?.map((facet) => facet.facets).flat();
+    const closedDateFacet = [...closedDateFacet2024, ...closedDateFacet2025];
+    return dates.map((date) => closedDateFacet.find((item) => item.path === date)?.count ?? 0);
+  };
+
   const getCorrectionsAndFacets = async () => {
-    const queries = [getClosedCorrections(), getOpenedCorrections(), getFacets()];
+    getFacetDomains();
+    const tmpClosed = await getFacetDate('date_closed');
+    const closed = tmpClosed.reduce((acc, cur, index) => {
+      acc.push((acc[index - 1] || 0) + cur);
+      return acc;
+    }, []);
+    const tmpOpened = await getFacetDate('date_opened');
+    const opened = tmpOpened.reduce((acc, cur, index) => {
+      acc.push((acc[index - 1] || 0) + cur);
+      return acc;
+    }, []);
+    const queries = [getCorrections('closed'), getCorrections('open')];
     const [closedCorrections, openedCorrections] = await Promise.all(queries);
-    let data = {};
     const correctionsTmp = [...closedCorrections, ...openedCorrections];
     correctionsTmp.reverse((a, b) => b.date_opened - a.date_opened);
     setCorrections(correctionsTmp);
-    correctionsTmp.forEach((correction) => {
-      const dateOpened = correction?.date_opened?.slice(0, 7);
-      const dateClosed = correction?.date_closed?.slice(0, 7);
-      if (dateOpened) {
-        if (!Object.keys(data).includes(dateOpened)) data[dateOpened] = { closed: 0, opened: 0 };
-        data[dateOpened].opened += 1;
-      }
-      if (dateClosed) {
-        if (!Object.keys(data).includes(dateClosed)) data[dateClosed] = { closed: 0, opened: 0 };
-        data[dateClosed].closed += 1;
-      }
-    });
-    data = Object.keys(data).sort().reduce((item, key) => ({ ...item, [key]: data[key] }), {});
-    const closed = [];
-    let closedSum = 0;
-    const opened = [];
-    let openedSum = 0;
-    Object.values(data).forEach((item) => {
-      closedSum += item.closed;
-      closed.push(closedSum);
-      openedSum += item.opened;
-      opened.push(openedSum);
-    });
-    setChartOptions2({
+    // let data = {};
+    // correctionsTmp.forEach((correction) => {
+    //   const dateOpened = correction?.date_opened?.slice(0, 7);
+    //   const dateClosed = correction?.date_closed?.slice(0, 7);
+    //   if (dateOpened) {
+    //     if (!Object.keys(data).includes(dateOpened)) data[dateOpened] = { closed: 0, opened: 0 };
+    //     data[dateOpened].opened += 1;
+    //   }
+    //   if (dateClosed) {
+    //     if (!Object.keys(data).includes(dateClosed)) data[dateClosed] = { closed: 0, opened: 0 };
+    //     data[dateClosed].closed += 1;
+    //   }
+    // });
+    // data = Object.keys(data).sort().reduce((item, key) => ({ ...item, [key]: data[key] }), {});
+    // const closed = [];
+    // let closedSum = 0;
+    // const opened = [];
+    // let openedSum = 0;
+    // Object.values(data).forEach((item) => {
+    //   closedSum += item.closed;
+    //   closed.push(closedSum);
+    //   openedSum += item.opened;
+    //   opened.push(openedSum);
+    // });
+    const categories = ['2024/03', '2024/04', '2024/05', '2024/06', '2024/07', '2024/08', '2024/09', '2024/10', '2024/11', '2024/12', '2025/01'];
+    setChartOptionsDates({
       credits: { enabled: false },
       plotOptions: { series: { dataLabels: { enabled: true } } },
       series: [{ color: '#6a618c', data: closed, name: 'Closed' }, { color: '#6e9879', data: opened, name: 'Open' }],
       title: { text: 'Number of corrections requested over time' },
-      xAxis: { categories: Object.keys(data) },
+      xAxis: { categories },
       yAxis: { title: { text: 'Number of corrections requested' } },
     });
     return '';
@@ -144,16 +163,16 @@ export default function Corrections() {
             requested until last night
           </div>
         )}
-        {!isFetching && isFetched && chartOptions1 && (
+        {!isFetching && isFetched && chartOptionsDomains && (
           <HighchartsReact
             highcharts={Highcharts}
-            options={chartOptions1}
+            options={chartOptionsDomains}
           />
         )}
-        {!isFetching && isFetched && chartOptions2 && (
+        {!isFetching && isFetched && chartOptionsDates && (
           <HighchartsReact
             highcharts={Highcharts}
-            options={chartOptions2}
+            options={chartOptionsDates}
           />
         )}
         {!isFetching && isFetched && (corrections.length > 0) && (
