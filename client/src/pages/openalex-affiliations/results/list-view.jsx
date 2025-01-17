@@ -3,7 +3,10 @@ import {
   Button,
   Checkbox,
   Col,
-  Modal, ModalContent, ModalFooter, ModalTitle,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalTitle,
   Row,
   Text,
 } from '@dataesr/dsfr-plus';
@@ -23,26 +26,26 @@ export default function ListView({
   removeRorFromAddList,
   setFilteredAffiliationName,
   setSelectAffiliations,
-  setStepsEnabledList,
-  stepsEnabledList,
   toggleRemovedRor,
 }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isColorInfoModalOpen, setIsColorInfoModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [selectSortOnNumberOfRors, setSelectSortOnNumberOfRors] = useState('default');
-  const [selectShowAffiliations, setSelectShowAffiliations] = useState('all');
   const [selectRorCountry, setSelectRorCountry] = useState('all');
+  const [selectRorMatched, setSelectRorMatched] = useState('all');
+  const [selectShowAffiliations, setSelectShowAffiliations] = useState('all');
+  const [selectSortOnNumberOfRors, setSelectSortOnNumberOfRors] = useState('default');
+  const [sortedOrFilteredAffiliations, setSortedOrFilteredAffiliations] = useState(filteredAffiliations);
   const [sortsAndFilters, setSortsAndFilters] = useState({
     rorCountry: 'all',
+    rorMatched: 'all',
     showAffiliations: 'all',
     sortOnNumberOfRors: 'default',
   });
-  const [sortedOrFilteredAffiliations, setSortedOrFilteredAffiliations] = useState(filteredAffiliations);
 
   const defineRorColor = [];
   const dsColors = ['green-archipel', 'purple-glycine', 'pink-tuile', 'green-menthe', 'brown-cafe-creme'];
+
   const rorCount = {};
   sortedOrFilteredAffiliations.forEach((affiliation) => {
     affiliation.rors.forEach((ror) => {
@@ -57,14 +60,14 @@ export default function ListView({
   defineRorColor.push(...sortedRor.slice(0, 5).map((ror, index) => ({ ror, color: dsColors[index % dsColors.length] })));
 
   useEffect(() => {
-    setIsLoading(true);
     // Deep copy of filteredAffiliations object
     let initialAffiliations = JSON.parse(JSON.stringify(filteredAffiliations));
     if (sortsAndFilters.sortOnNumberOfRors === 'numberASC') {
       initialAffiliations.sort((a, b) => a.rors.length - b.rors.length);
     } else if (sortsAndFilters.sortOnNumberOfRors === 'numberDESC') {
       initialAffiliations.sort((a, b) => b.rors.length - a.rors.length);
-    } else if (sortsAndFilters.sortOnNumberOfRors === 'empty') {
+    }
+    if (sortsAndFilters.rorMatched === 'noRor') {
       initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.rors.length === 0);
     }
     if (sortsAndFilters.showAffiliations === 'onlyWithCorrections') {
@@ -76,7 +79,6 @@ export default function ListView({
       initialAffiliations = initialAffiliations.filter((affiliation) => affiliation.rors.some((ror) => ror.rorCountry === sortsAndFilters.rorCountry));
     }
     setSortedOrFilteredAffiliations(initialAffiliations);
-    setIsLoading(false);
   }, [filteredAffiliations, sortsAndFilters]);
 
   const checkUncheckAll = () => {
@@ -100,7 +102,6 @@ export default function ListView({
             <Checkbox
               checked={sortedOrFilteredAffiliations.filter((affiliation) => !affiliation.selected).length === 0}
               onChange={() => checkUncheckAll()}
-              // onChange={() => setSelectAffiliations(sortedOrFilteredAffiliations.map((affiliation) => affiliation.id))}
             />
             <span className="wm-text fr-mb-3w fr-ml-6w">
               <Badge color="brown-opera">
@@ -121,11 +122,11 @@ export default function ListView({
                 }
               }}
               style={{
+                backgroundColor: 'white',
                 border: '1px solid #ced4da',
                 borderRadius: '4px',
                 padding: '0.375rem 0.75rem',
                 width: '600px',
-                backgroundColor: 'white',
               }}
               value={search}
             />
@@ -277,7 +278,7 @@ export default function ListView({
                       <tbody>
                         {affiliation.rorsToCorrect.map((rorToCorrect) => (
                           <tr key={`openalex-affiliations-affiliations-${rorToCorrect.rorId}`}>
-                            <td>
+                            <td aria-label="Badge of the ROR affiliation">
                               <RorBadge
                                 className="step-affiliation-badge"
                                 isRemoved={affiliation.removeList.includes(rorToCorrect.rorId)}
@@ -329,9 +330,12 @@ export default function ListView({
           Sorts & filters
         </ModalTitle>
         <ModalContent>
-          <div className="fr-select-group fr-mt-7w">
+          <div>
+            <h3>Sorts</h3>
+          </div>
+          <div className="fr-select-group">
             <label className="fr-label" htmlFor="select-sort-on-number-of-rors">
-              Sort on number of ROR
+              Sort on number of
               <select
                 className="fr-select"
                 id="select-sort-on-number-of-rors"
@@ -340,29 +344,46 @@ export default function ListView({
                 }}
                 value={selectSortOnNumberOfRors}
               >
-                <option value="default">Default</option>
-                <option value="numberASC">Ascending</option>
-                <option value="numberDESC">Descending</option>
-                <option value="empty">No ROR detected</option>
+                <option value="default">Works descending (default)</option>
+                <option value="numberASC">ROR ascending</option>
+                <option value="numberDESC">ROR descending</option>
+                {/* <option value="empty">No ROR detected</option> */}
               </select>
             </label>
           </div>
-          <div className="fr-select-group fr-mt-7w">
-            <label className="fr-label" htmlFor="select-show-affiliations">
+          <div>
+            <h3>Filters</h3>
+          </div>
+          <div className="fr-select-group">
+            <label className="fr-label" htmlFor="select-ror-matched">
+              Filter on ROR matched
+              <select
+                className="fr-select"
+                id="select-ror-matched"
+                onChange={(e) => setSelectRorMatched(e.target.value)}
+                value={selectRorMatched}
+              >
+                <option value="all">All affiliations</option>
+                <option value="noRor">Affiliations with no ROR matched</option>
+              </select>
+            </label>
+          </div>
+          <div className="fr-select-group">
+            <label className="fr-label" htmlFor="select-corrected-affiliations">
               Filter on affiliations corrections
               <select
                 className="fr-select"
-                id="select-show-affiliations"
+                id="select-corrected-affiliations"
                 onChange={(e) => setSelectShowAffiliations(e.target.value)}
                 value={selectShowAffiliations}
               >
                 <option value="all">All affiliations</option>
-                <option value="onlyWithCorrections">Only those with corrections</option>
-                <option value="onlyWithNoCorrection">Only those without corrections</option>
+                <option value="onlyWithCorrections">Affiliations with corrections</option>
+                <option value="onlyWithNoCorrection">Affiliations without a correction</option>
               </select>
             </label>
           </div>
-          <div className="fr-select-group fr-mt-7w">
+          <div className="fr-select-group">
             <label className="fr-label" htmlFor="select-ror-country">
               Filter by ROR country
               <select
@@ -399,6 +420,7 @@ export default function ListView({
               setSelectRorCountry('all');
               setSelectShowAffiliations('all');
               setSelectSortOnNumberOfRors('default');
+              setSelectRorMatched('all');
             }}
           >
             Reset to default
@@ -407,6 +429,7 @@ export default function ListView({
             onClick={() => {
               setSortsAndFilters({
                 rorCountry: selectRorCountry,
+                rorMatched: selectRorMatched,
                 showAffiliations: selectShowAffiliations,
                 sortOnNumberOfRors: selectSortOnNumberOfRors,
               });
@@ -436,7 +459,5 @@ ListView.propTypes = {
   removeRorFromAddList: PropTypes.func.isRequired,
   setFilteredAffiliationName: PropTypes.func.isRequired,
   setSelectAffiliations: PropTypes.func.isRequired,
-  setStepsEnabledList: PropTypes.func.isRequired,
-  stepsEnabledList: PropTypes.bool.isRequired,
   toggleRemovedRor: PropTypes.func.isRequired,
 };

@@ -800,8 +800,6 @@ export default function Affiliations() {
                       removeRorFromAddList={removeRorFromAddList}
                       setFilteredAffiliationName={setFilteredAffiliationName}
                       setSelectAffiliations={setSelectAffiliations}
-                      setStepsEnabledList={setStepsEnabledList}
-                      stepsEnabledList={stepsEnabledList}
                       toggleRemovedRor={toggleRemovedRor}
                     />
                   )}
