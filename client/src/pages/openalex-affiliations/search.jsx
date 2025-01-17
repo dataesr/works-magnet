@@ -24,6 +24,7 @@ import 'intro.js/introjs.css';
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
 const START_YEAR = 2010;
+const DEFAULT_YEAR = '2024';
 // Generate an array of objects with all years from START_YEAR
 const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
   .sort((a, b) => b - a)
@@ -52,10 +53,10 @@ export default function Search() {
       setSearchParams({
         affiliations: searchParams.getAll('affiliations') ?? [],
         deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
-        endYear: searchParams.get('endYear') ?? '2023',
+        endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
         excludedRors: searchParams.get('excludedRors') ?? '',
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
-        startYear: searchParams.get('startYear') ?? '2023',
+        startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
       });
       setTags([]);
     } else {
@@ -65,10 +66,10 @@ export default function Search() {
       setCurrentSearchParams({
         affiliations,
         deletedAffiliations: deletedAffiliations1,
-        endYear: searchParams.get('endYear') ?? '2023',
+        endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
         excludedRors: searchParams.get('excludedRors') ?? '',
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
-        startYear: searchParams.get('startYear') ?? '2023',
+        startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
       });
       setExcludedRors(currentSearchParams.excludedRors);
       const newSearchedAffiliations = affiliations.filter(
