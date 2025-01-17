@@ -16,6 +16,7 @@ import RorName from '../components/ror-name';
 import WorksList from '../components/works-list';
 
 import 'intro.js/introjs.css';
+
 export default function ListView({
   affiliationsCount,
   filteredAffiliations,
@@ -78,6 +79,16 @@ export default function ListView({
     setIsLoading(false);
   }, [filteredAffiliations, sortsAndFilters]);
 
+  const checkUncheckAll = () => {
+    if (sortedOrFilteredAffiliations.filter((affiliation) => affiliation.selected).length < sortedOrFilteredAffiliations.length) {
+      // if at leat one affiliation is not selected, select all
+      setSelectAffiliations(filteredAffiliations.map((affiliation) => affiliation.id));
+    } else {
+      // if all affiliations are selected, unselect all
+      setSelectAffiliations([]);
+    }
+  };
+
   return (
     <>
       <div
@@ -87,8 +98,9 @@ export default function ListView({
         <Row>
           <Col className="step-affiliations-select" xs="3">
             <Checkbox
-              checked={sortedOrFilteredAffiliations.find((affiliation) => !affiliation.selected) === undefined}
-              onChange={() => setSelectAffiliations(sortedOrFilteredAffiliations.map((affiliation) => affiliation.id))}
+              checked={sortedOrFilteredAffiliations.filter((affiliation) => !affiliation.selected).length === 0}
+              onChange={() => checkUncheckAll()}
+              // onChange={() => setSelectAffiliations(sortedOrFilteredAffiliations.map((affiliation) => affiliation.id))}
             />
             <span className="wm-text fr-mb-3w fr-ml-6w">
               <Badge color="brown-opera">

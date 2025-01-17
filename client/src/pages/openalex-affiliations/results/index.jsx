@@ -136,10 +136,16 @@ export default function Affiliations() {
 
   const setSelectAffiliations = (affiliationIds) => {
     const updatedAffiliations = affiliations.map((affiliation) => {
-      if (affiliationIds.includes(affiliation.id)) {
-        return { ...affiliation, selected: !affiliation.selected };
+      if (affiliationIds.length === 1) {
+        if (affiliationIds[0] === affiliation.id) {
+          return { ...affiliation, selected: !affiliation.selected };
+        }
+        return affiliation;
+      } // check/uncheck all
+      if (affiliationIds.length > 1 && affiliationIds.includes(affiliation.id)) {
+        return { ...affiliation, selected: true };
       }
-      return affiliation;
+      return { ...affiliation, selected: false };
     });
     setAffiliations(updatedAffiliations);
   };
