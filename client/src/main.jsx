@@ -53,6 +53,7 @@ function RouterLink({ href, replace, target, ...props }) {
 }
 
 document.documentElement.setAttribute('data-fr-scheme', 'light');
+document.documentElement.setAttribute('data-fr-theme', 'light');
 
 function App() {
   useEffect(() => {
