@@ -131,6 +131,7 @@ const getOpenAlexAffiliations = async ({ options, resetCache = false }) => {
   console.time(
     `4. Query ${queryId} | Serialization ${options.affiliationStrings}`,
   );
+  uniqueAffiliations.sort((a, b) => b.worksNumber - a.worksNumber);
   const affiliations = await chunkAndCompress(uniqueAffiliations);
   console.log(
     'serialization',

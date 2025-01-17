@@ -1,4 +1,4 @@
-# Works magnet
+# Works-magnet
 
 [![Discord Follow](https://dcbadge.vercel.app/api/server/TudsqDqTqb?style=flat)](https://discord.gg/TudsqDqTqb)
 ![license](https://img.shields.io/github/license/dataesr/works-magnet)
