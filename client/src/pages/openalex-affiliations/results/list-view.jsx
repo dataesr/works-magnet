@@ -297,7 +297,7 @@ export default function ListView({
                         ))}
                         {affiliation.addList.map((ror) => (
                           <tr key={`openalex-affiliations-affiliations-${ror.rorId}`}>
-                            <td>
+                            <td aria-label="Added ROR information">
                               <RorBadge
                                 className="step-affiliation-badge"
                                 removeRor={() => removeRorFromAddList(affiliation.id, ror.rorId)}
