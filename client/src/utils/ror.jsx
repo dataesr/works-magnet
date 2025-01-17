@@ -48,4 +48,8 @@ const getRorData = async (affiliation, getChildren = false) => {
   return topLevel.concat(childrenRes.flat());
 };
 
-export { cleanRor, getRorData, isRor };
+export {
+  cleanRor,
+  getRorData,
+  isRor,
+};

@@ -24,7 +24,7 @@ export default function RorName({ isRemoved, ror }) {
           ror.rorName
         )}
       </span>
-      {getFlagEmoji(ror.rorCountry)}
+      {getFlagEmoji(ror?.rorCountry)}
       {isRemoved && (
         <Badge
           className="fr-ml-1w"
@@ -44,7 +44,7 @@ RorName.defaultProps = {
 RorName.propTypes = {
   isRemoved: PropTypes.bool,
   ror: PropTypes.shape({
-    rorCountry: PropTypes.string.isRequired,
+    rorCountry: PropTypes.string,
     rorName: PropTypes.string.isRequired,
   }).isRequired,
 };
