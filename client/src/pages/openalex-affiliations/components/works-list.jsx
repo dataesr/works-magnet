@@ -9,6 +9,12 @@ export default function WorksList({ works }) {
 
   const displayedWorks = showMore ? works : works.slice(0, SEE_MORE_AFTER);
 
+  const getUrlFromWork = (work) => {
+    if (work.startsWith('10.')) return `https://doi.org/${work}`;
+    if (work.startsWith('hal-')) return `https://hal.science/${work}`;
+    return work;
+  };
+
   return (
     <Text className="fr-my-1w fr-pl-1w" size="sm" style={{ borderLeft: '5px solid #aaa' }}>
       <i>
@@ -16,7 +22,12 @@ export default function WorksList({ works }) {
           Works:
         </span>
         {displayedWorks.map((work) => (
-          <Link className="fr-mr-1w" href={`https://doi.org/${work}`} key={`works-list-${work}`} target="_blank">
+          <Link
+            className="fr-mr-1w"
+            href={getUrlFromWork(work)}
+            key={`works-list-${work}`}
+            target="_blank"
+          >
             {work}
           </Link>
         ))}
