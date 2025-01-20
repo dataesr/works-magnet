@@ -268,14 +268,12 @@ export default function Search() {
                       buttonLabel={currentSearchParams.startYear}
                       label="Start year"
                       onSelectionChange={(startYear) => setSearchParams({ ...currentSearchParams, startYear })}
+                      selectedKey={currentSearchParams.startYear}
                     >
                       {years.map((year) => (
                         <SelectOption
                           color="blue-cumulus"
                           key={year.value}
-                          selected={
-                            year.value === currentSearchParams.startYear
-                          }
                         >
                           {year.label}
                         </SelectOption>
@@ -288,14 +286,12 @@ export default function Search() {
                       buttonLabel={currentSearchParams.endYear}
                       label="End year"
                       onSelectionChange={(endYear) => setSearchParams({ ...currentSearchParams, endYear })}
+                      selectedKey={currentSearchParams.endYear}
                     >
                       {years.map((year) => (
                         <SelectOption
                           color="blue-cumulus"
                           key={year.value}
-                          selected={
-                            year.value === currentSearchParams.startYear
-                          }
                         >
                           {year.label}
                         </SelectOption>
@@ -355,7 +351,7 @@ export default function Search() {
       </Container>
       <Container as="section" className="filters fr-my-5w">
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
-          <Col className="step-ror-to-add" xs="8" style={{ minHeight: '200px' }}>
+          <Col className="step-ror-to-add" xs={12} md={8} style={{ minHeight: '200px' }}>
             <TagInput
               getRorChildren={currentSearchParams.getRorChildren === '1'}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
@@ -375,7 +371,7 @@ export default function Search() {
               tags={tags}
             />
           </Col>
-          <Col offsetXs="1" className="text-right fr-pl-3w fr-mt-4w" style={{ minHeight: '180px' }}>
+          <Col offsetMd="1" className="fr-mt-4w" style={{ minHeight: '180px' }}>
             <Row gutters verticalAlign="bottom">
               <Col className="step-year-start">
                 <Select
@@ -417,7 +413,7 @@ export default function Search() {
           </Col>
         </Row>
         <Row className="fr-p-2w fr-pt-0" style={{ minHeight: '150px' }}>
-          <Col className="step-ror-to-exclude" xs="8">
+          <Col className="step-ror-to-exclude" xs={12} md={8}>
             <TextInput
               hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
               label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
