@@ -285,7 +285,7 @@ export default function ListView({
                                 removeRor={() => toggleRemovedRor(affiliation.id, rorToCorrect.rorId)}
                                 ror={rorToCorrect}
                                 rorColor={defineRorColor.find((item) => item.ror === rorToCorrect.rorId)?.color || 'beige-gris-galet'}
-                                setFilteredAffiliationName={setFilteredAffiliationName}
+                                setFilteredAffiliationName={setSearch}
                               />
                               <br />
                               <RorName
@@ -303,7 +303,7 @@ export default function ListView({
                                 removeRor={() => removeRorFromAddList(affiliation.id, ror.rorId)}
                                 ror={ror}
                                 rorColor={defineRorColor.find((item) => item.ror === ror.rorId)?.color || 'beige-gris-galet'}
-                                setFilteredAffiliationName={setFilteredAffiliationName}
+                                setFilteredAffiliationName={setSearch}
                               />
                               <br />
                               <RorName ror={ror} />
