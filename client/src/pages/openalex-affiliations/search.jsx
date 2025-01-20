@@ -254,7 +254,7 @@ export default function Search() {
   }
 
   return (
-    <>
+    <div style={{ minHeight: '700px' }}>
       <Header />
       <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
         <ModalContent>
@@ -268,12 +268,14 @@ export default function Search() {
                       buttonLabel={currentSearchParams.startYear}
                       label="Start year"
                       onSelectionChange={(startYear) => setSearchParams({ ...currentSearchParams, startYear })}
-                      selectedKey={currentSearchParams.startYear}
                     >
                       {years.map((year) => (
                         <SelectOption
                           color="blue-cumulus"
                           key={year.value}
+                          selected={
+                            year.value === currentSearchParams.startYear
+                          }
                         >
                           {year.label}
                         </SelectOption>
@@ -286,12 +288,14 @@ export default function Search() {
                       buttonLabel={currentSearchParams.endYear}
                       label="End year"
                       onSelectionChange={(endYear) => setSearchParams({ ...currentSearchParams, endYear })}
-                      selectedKey={currentSearchParams.endYear}
                     >
                       {years.map((year) => (
                         <SelectOption
                           color="blue-cumulus"
                           key={year.value}
+                          selected={
+                            year.value === currentSearchParams.startYear
+                          }
                         >
                           {year.label}
                         </SelectOption>
@@ -339,7 +343,7 @@ export default function Search() {
           </Container>
         </ModalContent>
       </Modal>
-      <Container as="section" className="filters fr-my-5w">
+      <Container>
         <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
           <Link href="/">
             Home
@@ -348,8 +352,10 @@ export default function Search() {
             Search raw affiliations and ROR in OpenAlex
           </Link>
         </Breadcrumb>
+      </Container>
+      <Container as="section" className="filters fr-my-5w">
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
-          <Col className="step-ror-to-add" xs="8">
+          <Col className="step-ror-to-add" xs="8" style={{ minHeight: '200px' }}>
             <TagInput
               getRorChildren={currentSearchParams.getRorChildren === '1'}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
@@ -369,7 +375,7 @@ export default function Search() {
               tags={tags}
             />
           </Col>
-          <Col offsetXs="1" className="text-right fr-pl-3w fr-mt-4w">
+          <Col offsetXs="1" className="text-right fr-pl-3w fr-mt-4w" style={{ minHeight: '180px' }}>
             <Row gutters verticalAlign="bottom">
               <Col className="step-year-start">
                 <Select
@@ -377,12 +383,12 @@ export default function Search() {
                   buttonLabel={currentSearchParams.startYear}
                   label="Start year"
                   onSelectionChange={(startYear) => setSearchParams({ ...currentSearchParams, startYear })}
-                  selectedKey={currentSearchParams.startYear}
                 >
                   {years.map((year) => (
                     <SelectOption
                       color="blue-cumulus"
                       key={year.value}
+                      selected={year.value === currentSearchParams.startYear}
                     >
                       {year.label}
                     </SelectOption>
@@ -395,12 +401,12 @@ export default function Search() {
                   buttonLabel={currentSearchParams.endYear}
                   label="End year"
                   onSelectionChange={(endYear) => setSearchParams({ ...currentSearchParams, endYear })}
-                  selectedKey={currentSearchParams.endYear}
                 >
                   {years.map((year) => (
                     <SelectOption
                       color="blue-cumulus"
                       key={year.value}
+                      selected={year.value === currentSearchParams.startYear}
                     >
                       {year.label}
                     </SelectOption>
@@ -410,20 +416,21 @@ export default function Search() {
             </Row>
           </Col>
         </Row>
-        <Row className="fr-pt-0 fr-pr-2w fr-pb-2w fr-pl-2w">
+        <Row className="fr-p-2w fr-pt-0" style={{ minHeight: '150px' }}>
           <Col className="step-ror-to-exclude" xs="8">
             <TextInput
               hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
               label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
-              onChange={(e) => {
-                setExcludedRors(e.target.value);
-              }}
+              messageType=""
+              onChange={(e) => { setExcludedRors(e.target.value); }}
               value={excludedRors}
             />
           </Col>
-          <Col offsetXs="1" className="fr-pl-3w fr-mt-7w step-search-works text-right">
+        </Row>
+        <Row>
+          <Col className="fr-pl-3w fr-my-3w step-search-works text-right">
             <Button
-              className="fr-mt-2w"
+              color="blue-ecume"
               disabled={searchParams.getAll('affiliations').length === 0}
               icon="search-line"
               onClick={checkAndSendQuery}
@@ -433,6 +440,6 @@ export default function Search() {
           </Col>
         </Row>
       </Container>
-    </>
+    </div>
   );
 }
