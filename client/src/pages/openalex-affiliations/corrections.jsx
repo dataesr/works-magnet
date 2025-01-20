@@ -15,18 +15,19 @@ export default function Corrections() {
   const [chartOptionsDomains, setChartOptionsDomains] = useState({});
   const [chartOptionsDates, setChartOptionsDates] = useState({});
   const [corrections, setCorrections] = useState([]);
+  const [numberOfCorrections, setNumberOfCorrections] = useState(0);
 
   const getCorrections = async (state, page = 0) => {
     const offset = page * ODS_BY_PAGE;
     let _corrections = [];
     const url = `${ODS_URL}/records?order_by=github_issue_id&limit=${ODS_BY_PAGE}&offset=${offset}&refine=state%3A${state}`;
-    const { results } = await (await fetch(url)).json();
+    const { results, total_count: totalCount } = await (await fetch(url)).json();
     _corrections = _corrections.concat(results);
     // if (results.length === ODS_BY_PAGE) {
     //   const c = await getCorrections(state, page + 1);
     //   _corrections = _corrections.concat(c);
     // }
-    return _corrections;
+    return { corrections: _corrections, totalCount };
   };
 
   const getFacetDomains = async () => {
@@ -75,7 +76,8 @@ export default function Corrections() {
     }, []);
     const queries = [getCorrections('closed'), getCorrections('open')];
     const [closedCorrections, openedCorrections] = await Promise.all(queries);
-    const correctionsTmp = [...closedCorrections, ...openedCorrections];
+    const correctionsTmp = [...closedCorrections.corrections, ...openedCorrections.corrections];
+    setNumberOfCorrections(closedCorrections.totalCount + openedCorrections.totalCount);
     correctionsTmp.reverse((a, b) => b.date_opened - a.date_opened);
     setCorrections(correctionsTmp);
     // let data = {};
@@ -155,12 +157,12 @@ export default function Corrections() {
         {!isFetching && isFetched && corrections && (
           <div>
             <b>
-              {corrections.length}
+              {numberOfCorrections.toLocaleString()}
               {' '}
               corrections
             </b>
             {' '}
-            requested until last night
+            requested until last night.
           </div>
         )}
         {!isFetching && isFetched && chartOptionsDomains && (
@@ -177,6 +179,7 @@ export default function Corrections() {
         )}
         {!isFetching && isFetched && (corrections.length > 0) && (
           <>
+            <h5 className="text-center fr-mt-5w">Corrections requested</h5>
             {/* <input
               onChange={(e) => setFilter(e.target.value)}
               style={{
@@ -203,7 +206,10 @@ export default function Corrections() {
                           {correction.raw_affiliation_name}
                         </Link>
                       </Row>
-                      <Row>{[...new Set(correction?.previous_rors?.split(';'), correction?.new_rors?.split(';'))].map((ror) => <span className="fr-mr-1w">{ror}</span>)}</Row>
+                      <Row>
+                        {[...new Set(correction?.previous_rors?.split(';'), correction?.new_rors?.split(';'))]
+                          .map((ror) => <span className="fr-mr-1w" key={`ror-${ror}`}>{ror}</span>)}
+                      </Row>
                       <Row>
                         <Col xs="2">
                           #
