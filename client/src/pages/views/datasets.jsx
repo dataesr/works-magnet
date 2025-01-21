@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
+  Breadcrumb,
+  Link,
   Row,
   Col,
   SegmentedControl,
@@ -9,8 +11,8 @@ import {
   Title,
 } from '@dataesr/dsfr-plus';
 import ActionsDatasets from '../actions/actionsDatasets';
-import DatasetsTab from '../datasetsTab';
-import DatasetsYearlyDistribution from '../datasetsYearlyDistribution';
+import DatasetsTab from '../datasets/datasetsTab';
+import DatasetsYearlyDistribution from '../datasets/datasetsYearlyDistribution';
 import AffiliationsTab from '../affiliationsTab';
 import ActionsAffiliations from '../actions/actionsAffiliations';
 
@@ -27,12 +29,23 @@ export default function Datasets({
 }) {
   const [tab, setTab] = useState('selectAffiliations');
 
-  if (!allDatasets || allDatasets?.length === 0) {
-    return <div>No datasets detected</div>;
+  if (allDatasets?.length === 0) {
+    return <div>No datasets detected.</div>;
   }
   return (
     <>
       <Row>
+        <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
+          <Link href="/">
+            Home
+          </Link>
+          <Link href="/datasets">
+            Build my corpus of datasets from repositories
+          </Link>
+          <Link current>
+            Select the affiliations and build the corpus
+          </Link>
+        </Breadcrumb>
         <Col>
           <Title as="h2" look="h6" className="fr-mt-1w">
             🗃 Find the datasets affiliated to your institution

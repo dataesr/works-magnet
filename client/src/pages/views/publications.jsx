@@ -1,7 +1,9 @@
 /* eslint-disable max-len */
 import {
+  Breadcrumb,
   Row,
   Col,
+  Link,
   SegmentedControl,
   SegmentedElement,
   Title,
@@ -12,7 +14,7 @@ import { useState } from 'react';
 import ActionsAffiliations from '../actions/actionsAffiliations';
 import ActionsPublications from '../actions/actionsPublications';
 import AffiliationsTab from '../affiliationsTab';
-import PublicationsTab from '../publicationsTab';
+import PublicationsTab from '../publications/publicationsTab';
 
 export default function Publications({
   allAffiliations,
@@ -28,11 +30,25 @@ export default function Publications({
 }) {
   const [tab, setTab] = useState('selectAffiliations');
 
-  if (!allPublications || allPublications?.length === 0) {
-    return <div>No publications detected</div>;
+  if (allPublications?.length === 0) {
+    return <div>No publications detected.</div>;
   }
+
   return (
     <div>
+      <Row>
+        <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
+          <Link href="/">
+            Home
+          </Link>
+          <Link href="/publications">
+            Build my corpus of publications
+          </Link>
+          <Link current>
+            Select the affiliations and build the corpus
+          </Link>
+        </Breadcrumb>
+      </Row>
       {options.datasets ? (
         <>
           <Title as="h2" look="h6">

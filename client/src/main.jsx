@@ -8,9 +8,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Link, useLocation } from 'react-router-dom';
 
 import { ToastContextProvider } from './hooks/useToast';
+import messagesEn from './i18n/en.json';
+import messagesFr from './i18n/fr.json';
 import Router from './router';
 
 import 'react-tooltip/dist/react-tooltip.css';
@@ -50,25 +53,36 @@ function RouterLink({ href, replace, target, ...props }) {
 }
 
 document.documentElement.setAttribute('data-fr-scheme', 'light');
+document.documentElement.setAttribute('data-fr-theme', 'light');
 
 function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-fr-scheme', 'light');
   }, []);
+  const defaultLocale = 'en';
+  let locale = navigator?.language?.slice(0, 2) ?? defaultLocale;
+  const messages = {
+    en: messagesEn,
+    fr: messagesFr,
+  };
+  // If browser language is not an existing translation, fallback to default language
+  if (!Object.keys(messages).includes(locale)) locale = defaultLocale;
 
   return (
     <MatomoProvider value={matomo}>
-      <DSFRConfig routerComponent={RouterLink}>
-        <BrowserRouter>
-          <PageTracker />
-          <ToastContextProvider>
-            <QueryClientProvider client={queryClient}>
-              <ReactQueryDevtools />
-              <Router />
-            </QueryClientProvider>
-          </ToastContextProvider>
-        </BrowserRouter>
-      </DSFRConfig>
+      <IntlProvider messages={messages[locale]} locale={locale} defaultLocale={defaultLocale}>
+        <DSFRConfig routerComponent={RouterLink}>
+          <BrowserRouter>
+            <PageTracker />
+            <ToastContextProvider>
+              <QueryClientProvider client={queryClient}>
+                <ReactQueryDevtools />
+                <Router />
+              </QueryClientProvider>
+            </ToastContextProvider>
+          </BrowserRouter>
+        </DSFRConfig>
+      </IntlProvider>
     </MatomoProvider>
   );
 }

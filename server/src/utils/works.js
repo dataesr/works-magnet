@@ -93,6 +93,9 @@ const getFosmQuery = (options, pit, searchAfter) => {
       },
     });
   }
+  if (options?.excludedRors?.length > 0) {
+    query.query.bool.must_not.push({ terms: { 'rors.keyword': options.excludedRors.split(' ') } });
+  }
   return query;
 };
 
@@ -208,7 +211,7 @@ const formatFosmResult = (result, options) => {
 };
 
 const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, pit, searchAfter }) => {
-  console.log('getFosmWorksByYear', `MAX_FOSM = ${MAX_FOSM}`); 
+  console.log('getFosmWorksByYear', `MAX_FOSM = ${MAX_FOSM}`);
   if (!pit) {
     const response = await fetch(
       `${process.env.ES_URL}/${process.env.ES_INDEX}/_pit?keep_alive=${process.env.ES_PIT_KEEP_ALIVE}`,
@@ -333,7 +336,7 @@ const getOpenAlexAffiliations = (work) => {
         const rorId = (matchedInstitution.ror).replace('https://ror.org/', '').replace('ror.org/', '');
         key = `${label}##${rorId}`;
         rors.push({ rorCountry: matchedInstitution.country_code, rorId, rorName: matchedInstitution.display_name });
-        rorsToCorrect.push(rorId);
+        rorsToCorrect.push({ rorCountry: matchedInstitution.country_code, rorId, rorName: matchedInstitution.display_name });
       }
       return { key, label, rawAffiliation, rors, rorsToCorrect, source };
     });
@@ -358,6 +361,9 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   }
   if (options.openAlexExclusions.length) {
     url += `,${options.openAlexExclusions.map((institutionId) => `authorships.institutions.lineage:!${institutionId}`).join()}`;
+  }
+  if (options?.excludedRors?.length) {
+    url += `,${options.excludedRors.split(' ').map((excludedRor) => `institutions.ror:!${excludedRor}`).join()}`;
   }
   // Polite mode https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#the-polite-pool
   if (process?.env?.OPENALEX_KEY) {
@@ -483,7 +489,7 @@ const groupByAffiliations = ({ options, works }) => {
             nameHtml: toKeep[normalizedAffiliation].displayAffiliation,
             rors: affiliation.rors || [],
             rorsNumber: affiliation.rors?.length || 0,
-            rorsToCorrect: (affiliation.rorsToCorrect || []).join(';'),
+            rorsToCorrect: affiliation.rorsToCorrect,
             source: affiliation.source,
             status: 'tobedecided',
             works: [id],

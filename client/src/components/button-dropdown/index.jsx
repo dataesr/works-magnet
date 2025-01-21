@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import useToast from '../../hooks/useToast';
 import { export2Csv, export2FosmCsv, export2jsonl } from '../../utils/files';
-import { capitalize } from '../../utils/works';
+import { capitalize } from '../../utils/strings';
 
 import './index.scss';
 
@@ -31,6 +31,7 @@ export default function ButtonDropdown({ className, data, label, searchParams })
   return (
     <div className={_className}>
       <Button
+        color="blue-ecume"
         disabled={!data.length}
         icon="save-line"
         size="sm"
@@ -39,12 +40,14 @@ export default function ButtonDropdown({ className, data, label, searchParams })
       </Button>
       <div className="dropdown-content">
         <Button
+          color="blue-ecume"
           onClick={() => { export2Csv({ data, label, searchParams }); toastExport(); }}
           size="sm"
         >
           Export in CSV (minimal data)
         </Button>
         <Button
+          color="blue-ecume"
           onClick={() => { export2jsonl({ data, label, searchParams }); toastExport(); }}
           size="sm"
         >
@@ -52,6 +55,7 @@ export default function ButtonDropdown({ className, data, label, searchParams })
         </Button>
         {['publications', 'datasets'].includes(label) && (
           <Button
+            color="blue-ecume"
             onClick={() => {
               const numberOfLines = export2FosmCsv({ data, label, searchParams });
               toastExport(numberOfLines);

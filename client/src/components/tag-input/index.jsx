@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   Button,
-  Row, Col,
+  Col,
+  DismissibleTag,
+  Row,
   Spinner,
-  TagGroup, DismissibleTag,
+  TagGroup,
   TextInput,
 } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+
+import { getTagColor } from '../../utils/tags';
 
 import './index.scss';
 
@@ -15,6 +19,7 @@ const { VITE_APP_TAG_LIMIT } = import.meta.env;
 const SEE_MORE_AFTER = 3;
 
 export default function TagInput({
+  className,
   deletedTags,
   getRorChildren,
   hint,
@@ -26,9 +31,10 @@ export default function TagInput({
   onInputHandler,
   onTagsChange,
   placeholder,
+  removeAllAffiliations,
   seeMoreAction,
   seeMoreAfter,
-  setGetRorChildren,
+  switchGetRorChildren,
   tags,
 }) {
   const [excludedValues, setExcludedValues] = useState(deletedTags);
@@ -36,12 +42,6 @@ export default function TagInput({
   const [seeMore, setSeeMore] = useState(false);
   const [values, setValues] = useState(tags);
   const _seeMoreAction = seeMoreAction || (() => setSeeMore((prev) => !prev));
-
-  const getTagColor = (tag) => {
-    if (tag.disable) return 'beige-gris-galet';
-    if (tag.source === 'ror') return 'brown-caramel';
-    return 'brown-cafe-creme';
-  };
 
   const handleDeleteClick = (tag) => {
     const deletedValues = excludedValues;
@@ -60,7 +60,7 @@ export default function TagInput({
         return;
       }
       const inputLabel = input.trim();
-      const newValues = [...values, { disable: inputLabel.length < VITE_APP_TAG_LIMIT, label: inputLabel, source: 'user' }];
+      const newValues = [...values, { isDisabled: inputLabel.length < VITE_APP_TAG_LIMIT, label: inputLabel, source: 'user' }];
       setValues(newValues);
       setInput('');
       onTagsChange(newValues, excludedValues);
@@ -98,7 +98,7 @@ export default function TagInput({
 
   return (
     <>
-      <Row verticalAlign="bottom">
+      <Row className={className} verticalAlign="bottom">
         <Col className="fr-pb-2w">
           <TextInput
             hint={hint}
@@ -106,10 +106,11 @@ export default function TagInput({
               <>
                 {label}
                 <Button
+                  aria-label="Remove all affiliations"
                   className="fr-ml-1w"
                   color="yellow-tournesol"
                   icon="delete-line"
-                  onClick={() => onTagsChange([], tags)}
+                  onClick={() => removeAllAffiliations()}
                   size="sm"
                   title="Remove all affiliations"
                   variant="text"
@@ -135,16 +136,16 @@ export default function TagInput({
               <Col>
                 <Row>
                   <TagGroup>
-                    {currentTags.map((tag) => (
+                    {currentTags.map((currentTag) => (
                       <DismissibleTag
-                        className={`fr-mr-1w ${tag.disable ? 'scratched' : ''}`}
-                        color={getTagColor(tag)}
-                        key={tag.label}
-                        onClick={() => handleDeleteClick(tag)}
+                        className={`fr-mr-1w ${currentTag.isDisabled ? 'scratched' : ''}`}
+                        color={getTagColor(currentTag)}
+                        key={currentTag.label}
+                        onClick={() => handleDeleteClick(currentTag)}
                         size="sm"
-                        title={`${tag.label}${tag.disable ? ' (not searched)' : ''}`}
+                        title={`${currentTag.label}${currentTag.isDisabled ? ' (not searched)' : ''}`}
                       >
-                        {tag.label}
+                        {currentTag.label}
                       </DismissibleTag>
 
                     ))}
@@ -154,7 +155,7 @@ export default function TagInput({
                       className="fr-mr-1w"
                       // eslint-disable-next-line react/no-array-index-key
                       key={`tags-ror-${index}`}
-                      onClick={() => setGetRorChildren(!getRorChildren)}
+                      onClick={() => switchGetRorChildren()}
                       size="sm"
                       variant="text"
                     >
@@ -199,6 +200,7 @@ export default function TagInput({
 }
 
 TagInput.propTypes = {
+  className: PropTypes.string,
   deletedTags: PropTypes.arrayOf(PropTypes.object),
   getRorChildren: PropTypes.bool,
   hint: PropTypes.string,
@@ -210,13 +212,15 @@ TagInput.propTypes = {
   onInputHandler: PropTypes.func,
   onTagsChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
+  removeAllAffiliations: PropTypes.func.isRequired,
   seeMoreAction: PropTypes.func,
   seeMoreAfter: PropTypes.number,
-  setGetRorChildren: PropTypes.func,
+  switchGetRorChildren: PropTypes.func,
   tags: PropTypes.arrayOf(PropTypes.object),
 };
 
 TagInput.defaultProps = {
+  className: '',
   deletedTags: [],
   getRorChildren: false,
   hint: 'Press "ENTER" to search for several terms',
@@ -228,6 +232,6 @@ TagInput.defaultProps = {
   placeholder: '',
   seeMoreAfter: SEE_MORE_AFTER,
   seeMoreAction: undefined,
-  setGetRorChildren: () => { },
+  switchGetRorChildren: () => { },
   tags: [],
 };

@@ -44,26 +44,35 @@ const encrypt = (text) => {
 };
 
 const createIssueOpenAlexAffiliations = ({ email, issue }) => {
-  let title = `Correction for raw affiliation ${issue.rawAffiliationString}`;
+  const {
+    endYear = '',
+    name,
+    rors = [],
+    rorsToCorrect = [],
+    startYear = '',
+    worksExample = [],
+    worksOpenAlex = [],
+  } = issue;
+  let title = `Correction for raw affiliation ${name}`;
   if (title.length > 1000) {
     title = `${title.slice(0, 1000)}...`;
   }
-  let body = `Correction needed for raw affiliation ${issue.rawAffiliationString}\n`;
-  body += `raw_affiliation_name: ${issue.rawAffiliationString}\n`;
-  body += `new_rors: ${issue.correctedRors}\n`;
-  const previousRoRs = issue.rorsInOpenAlex.map((e) => e.rorId).join(';');
-  body += `previous_rors: ${previousRoRs}\n`;
+  let body = `Correction needed for raw affiliation ${name}\n`;
+  body += `raw_affiliation_name: ${name}\n`;
+  body += `new_rors: ${rorsToCorrect.map((ror) => ror.rorId).join(';')}\n`;
+  body += `previous_rors: ${rors.map((ror) => ror.rorId).join(';')}\n`;
   let workIds = '';
-  if (issue.worksExample) {
-    workIds = issue.worksExample
+  if (worksExample) {
+    workIds = worksExample
       .filter((e) => e.id_type === 'openalex')
       .map((e) => e.id_value)
       .join(';');
   }
-  if (issue.worksOpenAlex) {
-    workIds = issue.worksOpenAlex.join(';');
+  if (worksOpenAlex) {
+    workIds = worksOpenAlex.join(';');
   }
   body += `works_examples: ${workIds}\n`;
+  body += `searched between: ${startYear} - ${endYear}\n`;
   body += `contact: ${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}\n`;
   return octokit.rest.issues.create({
     body,
@@ -75,14 +84,9 @@ const createIssueOpenAlexAffiliations = ({ email, issue }) => {
 
 const createIssueMentionsCharacterizations = ({ email, issue }) => {
   const title = `Correction for mention ${issue.id}`;
-  const user = `${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}`;
   // eslint-disable-next-line no-param-reassign
-  issue.texts[0].class_attributes.classification.used.user = user;
-  // eslint-disable-next-line no-param-reassign
-  issue.texts[0].class_attributes.classification.created.user = user;
-  // eslint-disable-next-line no-param-reassign
-  issue.texts[0].class_attributes.classification.shared.user = user;
-  const body = JSON.stringify(issue, null, 4);
+  issue.user = `${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}`;
+  const body = `\`\`\`\n${JSON.stringify(issue, null, 4)}\n\`\`\``;
   return octokit.rest.issues.create({
     body,
     owner: 'dataesr',
@@ -98,11 +102,11 @@ const createIssue = ({ email, issue, type }) => {
     case 'openalex-affiliations':
       return createIssueOpenAlexAffiliations({ email, issue });
     default:
-      console.error(`Error wile creating Github issue as "type" should be one of ["mentions-characterizations", "openalex-affiliations"] instead of "${type}".`);
+      console.error(
+        `Error wile creating Github issue as "type" should be one of ["mentions-characterizations", "openalex-affiliations"] instead of "${type}".`,
+      );
       return false;
   }
 };
 
-export {
-  createIssue,
-};
+export { createIssue };

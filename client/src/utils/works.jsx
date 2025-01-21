@@ -4,8 +4,6 @@ import { status } from '../config';
 
 const { VITE_API } = import.meta.env;
 
-const capitalize = (str) => (str && str.length > 0 ? str.charAt(0).toUpperCase() + str.slice(1) : '');
-
 const b64decode = (str) => {
   const binaryString = window.atob(str);
   const len = binaryString.length;
@@ -27,7 +25,7 @@ const unzipData = async (compressedBase64) => {
   return JSON.parse(await resp.text());
 };
 
-const decompressAll = async (chunks) => {
+const unzipAll = async (chunks) => {
   const res = await Promise.all(chunks.map(async (c) => unzipData(c)));
   return res.flat();
 };
@@ -61,7 +59,7 @@ const getIdLink = (type, id) => {
     break;
   default:
   }
-  return (prefix !== null) ? `${prefix}${id}` : false;
+  return prefix !== null ? `${prefix}${id}` : false;
 };
 
 const getMentions = async (options) => {
@@ -78,9 +76,43 @@ const getMentions = async (options) => {
   return mentions;
 };
 
-const getWorks = async (options, toast) => {
+const getOpenAlexAffiliations = async (body, toast) => {
+  const response = await fetch(`${VITE_API}/openalex-affiliations`, {
+    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    signal: timeout(1200).signal, // 20 minutes
+  });
+  if (!response.ok) {
+    throw new Error('Oops... Error while computing OpenAlex affiliations !');
+  }
+  const { affiliations, warnings } = await response.json();
+  const resAffiliations = await unzipAll(affiliations);
+  let warningMessage = '';
+  if (warnings?.isMaxFosmReached) {
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxFosmValue} publications found in French OSM, only the first ${warnings.maxFosmValue} were retrieved.\n`,
+    );
+  }
+  if (warnings?.isMaxOpenalexReached) {
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxOpenalexValue} publications found in OpenAlex, only the first ${warnings.maxOpenalexValue} were retrieved.\n`,
+    );
+  }
+  if (warningMessage) {
+    toast({
+      description: warningMessage,
+      id: 'tooManyPublications',
+      title: 'Too Many publications found',
+      toastType: 'error',
+    });
+  }
+  return { affiliations: resAffiliations, warnings };
+};
+
+const getWorks = async (body, toast) => {
   const response = await fetch(`${VITE_API}/works`, {
-    body: JSON.stringify(options),
+    body: JSON.stringify(body),
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
     signal: timeout(1200).signal, // 20 minutes
@@ -89,15 +121,19 @@ const getWorks = async (options, toast) => {
     throw new Error('Oops... FOSM API request did not work for works !');
   }
   const { affiliations, datasets, publications, warnings } = await response.json();
-  const resAffiliations = await decompressAll(affiliations);
-  datasets.results = await decompressAll(datasets.results);
-  publications.results = await decompressAll(publications.results);
+  const resAffiliations = await unzipAll(affiliations);
+  datasets.results = await unzipAll(datasets.results);
+  publications.results = await unzipAll(publications.results);
   let warningMessage = '';
   if (warnings?.isMaxFosmReached) {
-    warningMessage = warningMessage.concat(`More than ${warnings.maxFosmValue} publications found in French OSM, only the first ${warnings.maxFosmValue} were retrieved.\n`);
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxFosmValue} publications found in French OSM, only the first ${warnings.maxFosmValue} were retrieved.\n`,
+    );
   }
   if (warnings?.isMaxOpenalexReached) {
-    warningMessage = warningMessage.concat(`More than ${warnings.maxOpenalexValue} publications found in OpenAlex, only the first ${warnings.maxOpenalexValue} were retrieved.\n`);
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxOpenalexValue} publications found in OpenAlex, only the first ${warnings.maxOpenalexValue} were retrieved.\n`,
+    );
   }
   if (warningMessage) {
     toast({
@@ -120,20 +156,23 @@ const normalizeName = (name) => name
 const range = (startYear, endYear = new Date().getFullYear()) => {
   const start = Number(startYear);
   const end = Number(endYear);
-  return (start === end) ? [start] : [start, ...range(start + 1, end)];
+  return start === end ? [start] : [start, ...range(start + 1, end)];
 };
 
 const renderButtons = (selected, fn) => Object.values(status).map((st) => (
   <Button
     className="fr-mb-1w fr-pl-1w button"
+    color="blue-ecume"
     disabled={!selected.length}
     key={st.id}
     onClick={() => fn(selected, st.id)}
     size="lg"
     style={{ display: 'block', width: '100%', textAlign: 'left' }}
-    color="blue-ecume"
   >
-    <i className={`${st.buttonIcon} fr-mr-2w`} style={{ color: st.iconColor }} />
+    <i
+      className={`${st.buttonIcon} fr-mr-2w`}
+      style={{ color: st.iconColor }}
+    />
     {st.buttonLabel}
   </Button>
 ));
@@ -146,17 +185,19 @@ const renderButtonDataset = (selected, fn, label, icon) => (
     size="sm"
   >
     <i className={`${icon} fr-mr-1w`} />
-    {`Validate ${selected.length} dataset${selected.length === 1 ? '' : 's'} ${label}`}
+    {`Validate ${selected.length} dataset${
+      selected.length === 1 ? '' : 's'
+    } ${label}`}
   </Button>
 );
 
 export {
-  capitalize,
   getIdLink,
   getMentions,
+  getOpenAlexAffiliations,
   getWorks,
   normalizeName,
   range,
-  renderButtons,
   renderButtonDataset,
+  renderButtons,
 };

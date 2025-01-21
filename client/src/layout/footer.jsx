@@ -1,5 +1,6 @@
 import { Col, Container, Link, Logo, Row, Title } from '@dataesr/dsfr-plus';
 import cn from 'classnames';
+import { useIntl } from 'react-intl';
 
 import {
   Footer,
@@ -14,6 +15,8 @@ const {
 } = import.meta.env;
 
 export default function MainFooter() {
+  const intl = useIntl();
+
   return (
     <Footer fluid>
       <FooterTop>
@@ -22,6 +25,24 @@ export default function MainFooter() {
             <Col xs={12} lg={4}>
               <Row horizontalAlign="left">
                 <div className="text-left">
+                  <Title
+                    as="h3"
+                    className={cn('fr-footer__top-cat', 'text-left')}
+                  >
+                    About
+                  </Title>
+                  <ul className="fr-footer__top-list">
+                    <li>
+                      <Link
+                        className="fr-footer__top-link"
+                        href="/about"
+                        icon="mail-fill"
+                        iconPosition="left"
+                      >
+                        What is the Works-magnet?
+                      </Link>
+                    </li>
+                  </ul>
                   <Title
                     as="h3"
                     className={cn('fr-footer__top-cat', 'text-left')}
@@ -248,7 +269,7 @@ export default function MainFooter() {
           </Row>
         </Container>
       </FooterTop>
-      <FooterBody description="Retrieve the scholarly works of your institution">
+      <FooterBody description={intl.formatMessage({ id: 'tagline' })}>
         <Logo
           splitCharacter="<br>"
           text={VITE_MINISTER_NAME}

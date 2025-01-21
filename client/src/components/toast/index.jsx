@@ -53,6 +53,7 @@ function Toast({
         }
       </div>
       <button
+        aria-label="Close toast"
         className="toast-btn-close"
         onClick={() => remove(id)}
         type="button"
@@ -65,9 +66,7 @@ function Toast({
         </Row>
         {description && (
           <Row>
-            <Text spacing="mb-2w" size="sm">
-              <div dangerouslySetInnerHTML={{ __html: description }} />
-            </Text>
+            <p dangerouslySetInnerHTML={{ __html: description }} />
           </Row>
         )}
       </Container>

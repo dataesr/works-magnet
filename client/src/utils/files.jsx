@@ -71,7 +71,12 @@ const export2Csv = ({ data, label, searchParams }) => {
     delete work.authors;
     delete work.datasource;
     delete work.id;
-    ['fr_authors_orcid', 'fr_publications_linked', 'rorsInOpenAlex', 'worksExample'].forEach((field) => {
+    delete work.hasCorrection;
+    delete work.key;
+    delete work.nameHtml;
+    delete work.selected;
+    delete work.status;
+    ['fr_authors_orcid', 'fr_publications_linked', 'rorsInOpenAlex', 'worksExample', 'rors', 'rorsToCorrect', 'addList', 'removeList'].forEach((field) => {
       if ((work?.[field] ?? []).length > 0) {
         work[field] = JSON.stringify(work[field]);
       }

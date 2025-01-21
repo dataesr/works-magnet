@@ -1,38 +1,24 @@
-import PropTypes from 'prop-types';
-import './tiles.scss';
+import { FormattedMessage } from 'react-intl';
 
-export default function OpenalexTile({ setView }) {
+export default function OpenalexTile() {
   return (
-    <div
-      className="fr-tile fr-tile--horizontal click"
-      size="sm"
-      onClick={() => setView('openalex')}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          setView('openalex');
-        }
-      }}
-      role="button"
-      tabIndex={0}
-    >
+    <div className="fr-enlarge-link fr-tile fr-tile--horizontal" size="sm">
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <p>✏️ Improve ROR matching in OpenAlex - Provide your feedback!</p>
+            <a href="./openalex-affiliations/search" label="OpenAlex ROR search">
+              <FormattedMessage id="openalex-tile-title" />
+            </a>
           </h3>
           <p className="fr-tile__detail">
-            🔎 Analyze the most frequent raw affiliation strings retrieved in OpenAlex for your query.
+            <FormattedMessage id="openalex-tile-detail-1" />
             <br />
-            🤖 Check the ROR automatically computed by OpenAlex. Sometimes, they can be inaccurate or missing.
+            <FormattedMessage id="openalex-tile-detail-2" />
             <br />
-            ✏️  Correct the errors (inaccurate or missing RORs) and send feedback to OpenAlex.
+            <FormattedMessage id="openalex-tile-detail-3" />
           </p>
         </div>
       </div>
     </div>
   );
 }
-
-OpenalexTile.propTypes = {
-  setView: PropTypes.func.isRequired,
-};

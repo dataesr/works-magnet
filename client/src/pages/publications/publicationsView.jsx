@@ -13,7 +13,7 @@ import {
   datasourceTemplate,
   statusRowFilterTemplate,
   statusTemplate,
-} from '../utils/templates';
+} from '../../utils/templates';
 
 export default function PublicationsView({
   filteredAffiliationName,

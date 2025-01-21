@@ -1,7 +1,7 @@
 import { WebSocketServer } from 'ws';
 
-import { chunkArray } from './utils/utils';
 import { createIssue } from './utils/github';
+import { chunkArray } from './utils/utils';
 
 const webSocketServer = new WebSocketServer({ noServer: true, path: '/ws' });
 
@@ -42,10 +42,14 @@ webSocketServer.on('connection', (webSocket) => {
       webSocket.send(JSON.stringify(toast));
     } else {
       toast = {
-        description: `${data.length} correction${data.length > 1 ? 's' : ''} to ${type.replace('-', ' ')} have been saved -
+        description: `${data.length} correction${
+          data.length > 1 ? 's' : ''
+        } to ${type.replace('-', ' ')} have been saved -
           see <a href="https://github.com/dataesr/${type}/issues" target="_blank">https://github.com/dataesr/${type}/issues</a>`,
         id: 'successCorrections',
-        title: `${type.replace('-', ' ')} correction${data.length > 1 ? 's' : ''} sent`,
+        title: `${type.replace('-', ' ')} correction${
+          data.length > 1 ? 's' : ''
+        } sent`,
         toastType: 'success',
       };
       webSocket.send(JSON.stringify(toast));
