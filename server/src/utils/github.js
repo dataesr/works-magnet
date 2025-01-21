@@ -59,8 +59,8 @@ const createIssueOpenAlexAffiliations = ({ email, issue }) => {
   }
   let body = `Correction needed for raw affiliation ${name}\n`;
   body += `raw_affiliation_name: ${name}\n`;
-  body += `new_rors: ${rorsToCorrect.map((ror) => ror.rorId).join(';')}\n`;
-  body += `previous_rors: ${rors.map((ror) => ror.rorId).join(';')}\n`;
+  body += `new_rors: ${rors.map((ror) => ror.rorId).join(';')}\n`;
+  body += `previous_rors: ${rorsToCorrect.map((ror) => ror.rorId).join(';')}\n`;
   let workIds = '';
   if (worksExample) {
     workIds = worksExample
