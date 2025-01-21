@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "version": "0.7.15",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "scripts": {
