@@ -71,7 +71,7 @@ export default function Search() {
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
       });
-      setExcludedRors(currentSearchParams.excludedRors);
+      setExcludedRors(searchParams.get('excludedRors') ?? '');
       const newSearchedAffiliations = affiliations.filter(
         (affiliation) => !searchedAffiliations.includes(affiliation),
       );
