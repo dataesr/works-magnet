@@ -1,9 +1,9 @@
+import PropTypes from 'prop-types';
 import { useId } from 'react';
 
 import useLocalStorage from '../../hooks/useLocalStorage';
 
 export default function SwitchLanguage({ languages }) {
-  // const { locale, setLocale } = useDSFRConfig();
   const id = useId();
   const [locale, setLocale] = useLocalStorage('works-magnet-locale', 'en');
   const currentLanguage = languages.find(({ key }) => key === locale);
@@ -53,3 +53,11 @@ export default function SwitchLanguage({ languages }) {
     </nav>
   );
 }
+
+SwitchLanguage.defaultProps = {
+  languages: [],
+};
+
+SwitchLanguage.propTypes = {
+  languages: PropTypes.array,
+};

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import SwitchLanguage from '../switch-language';
-import useLocalStorage from '../../hooks/useLocalStorage';
 
 export function FooterTop({ children }) {
   return <div className="fr-footer__top">{children}</div>;
@@ -63,8 +62,6 @@ export function FooterBody({
   children,
   description,
 }) {
-  const [locale, setLocale] = useLocalStorage('works-magnet-locale', 'en');
-
   const languages = [
     { shortName: 'FR', fullName: 'Français', key: 'fr' },
     { shortName: 'EN', fullName: 'English', key: 'en' },
@@ -86,13 +83,6 @@ export function FooterBody({
         {description ? (
           <p className="fr-footer__content-desc">{description}</p>
         ) : null}
-        {/* <div>
-          Language:
-          {' '}
-          {locale}
-          <button onClick={() => setLocale('fr')} type="button">Set language FR</button>
-          <button onClick={() => setLocale('en')} type="button">Set language EN</button>
-        </div> */}
         <SwitchLanguage languages={languages} />
         {links.length ? (
           <ul className="fr-footer__content-list">
@@ -107,6 +97,7 @@ export function FooterBody({
     </div>
   );
 }
+
 FooterBody.defaultProps = {
   description: undefined,
 };

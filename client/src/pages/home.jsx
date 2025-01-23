@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { Col, Container, Row, Title } from '@dataesr/dsfr-plus';
+import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import DatasetsTile from '../components/tiles/datasets';
@@ -11,9 +11,7 @@ import Header from '../layout/header';
 export default function Home() {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
+  const toggleExpand = () => setIsExpanded(!isExpanded);
 
   return (
     <>
