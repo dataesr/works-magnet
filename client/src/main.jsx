@@ -12,6 +12,7 @@ import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Link, useLocation } from 'react-router-dom';
 
 import { ToastContextProvider } from './hooks/useToast';
+import useLocalStorage from './hooks/useLocalStorage';
 import messagesEn from './i18n/en.json';
 import messagesFr from './i18n/fr.json';
 import Router from './router';
@@ -57,10 +58,7 @@ function App() {
     en: messagesEn,
     fr: messagesFr,
   };
-  const defaultLocale = 'en';
-  let locale = navigator?.language?.slice(0, 2) ?? defaultLocale;
-  // If browser language is not an existing translation, fallback to default language
-  if (!Object.keys(messages).includes(locale)) locale = defaultLocale;
+  const [locale] = useLocalStorage('works-magnet-locale', 'en');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-fr-scheme', 'light');
@@ -69,7 +67,7 @@ function App() {
 
   return (
     <MatomoProvider value={matomo}>
-      <IntlProvider messages={messages[locale]} locale={locale} defaultLocale={defaultLocale}>
+      <IntlProvider messages={messages[locale]} locale={locale} defaultLocale="en">
         <DSFRConfig routerComponent={RouterLink}>
           <BrowserRouter>
             <PageTracker />
