@@ -1,14 +1,12 @@
 import { FormattedMessage } from 'react-intl';
 
-import { isInProduction } from '../../utils/helpers';
-
 export default function MentionsTile() {
   return (
     <div className="fr-enlarge-link fr-tile fr-tile--horizontal" size="sm">
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <a href={isInProduction() ? null : './mentions'} label="Mentions search">
+            <a href="./mentions" label="Mentions search">
               <FormattedMessage id="mentions-tile-title" />
             </a>
           </h3>
