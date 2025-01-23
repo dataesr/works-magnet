@@ -52,21 +52,20 @@ function RouterLink({ href, replace, target, ...props }) {
   return <Link to={href} replace={replace} {...props} />;
 }
 
-document.documentElement.setAttribute('data-fr-scheme', 'light');
-document.documentElement.setAttribute('data-fr-theme', 'light');
-
 function App() {
-  useEffect(() => {
-    document.documentElement.setAttribute('data-fr-scheme', 'light');
-  }, []);
-  const defaultLocale = 'en';
-  let locale = navigator?.language?.slice(0, 2) ?? defaultLocale;
   const messages = {
     en: messagesEn,
     fr: messagesFr,
   };
+  const defaultLocale = 'en';
+  let locale = navigator?.language?.slice(0, 2) ?? defaultLocale;
   // If browser language is not an existing translation, fallback to default language
   if (!Object.keys(messages).includes(locale)) locale = defaultLocale;
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-fr-scheme', 'light');
+    document.documentElement.setAttribute('data-fr-theme', 'light');
+  }, []);
 
   return (
     <MatomoProvider value={matomo}>

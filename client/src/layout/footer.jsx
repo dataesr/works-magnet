@@ -1,11 +1,18 @@
-import { Col, Container, Link, Logo, Row, Title } from '@dataesr/dsfr-plus';
-import { useIntl } from 'react-intl';
+import {
+  Col,
+  Container,
+  Link,
+  Logo,
+  Row,
+  Title,
+} from '@dataesr/dsfr-plus';
+
 import {
   Footer,
   FooterBody,
   FooterBottom,
   FooterTop,
-} from '../components/footer/index';
+} from '../components/footer';
 
 const {
   VITE_MINISTER_NAME,
@@ -13,7 +20,6 @@ const {
 } = import.meta.env;
 
 export default function MainFooter() {
-  const intl = useIntl();
   return (
     <Footer fluid>
       <FooterTop>
@@ -198,7 +204,7 @@ export default function MainFooter() {
           </Row>
         </Container>
       </FooterTop>
-      <FooterBody description={intl.formatMessage({ id: 'tagline' })}>
+      <FooterBody>
         <Logo
           splitCharacter="<br>"
           text={VITE_MINISTER_NAME}
