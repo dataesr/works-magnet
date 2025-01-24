@@ -30,7 +30,7 @@ export default function Home() {
               </p>
             )}
             <button onClick={toggleExpand} type="button">
-              {isExpanded ? 'Afficher moins' : 'En savoir plus'}
+              {isExpanded ? <FormattedMessage id="show-less" /> : <FormattedMessage id="read-more" />}
             </button>
           </p>
         </Row>
