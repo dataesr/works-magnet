@@ -9,9 +9,7 @@ import {
   Row,
   Select,
   SelectOption,
-  TextInput,
 } from '@dataesr/dsfr-plus';
-import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -22,8 +20,10 @@ import { cleanRor, getRorData, isRor } from '../../utils/ror';
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
 const START_YEAR = 2010;
+const DEFAULT_YEAR = '2024';
 // Generate an array of objects with all years from START_YEAR
 const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
+  .sort((a, b) => b - a)
   .map((year) => (year + START_YEAR).toString())
   .map((year) => ({ label: year, value: year }));
 
@@ -31,55 +31,42 @@ export default function DatasetsSearch() {
   // State
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [deletedAffiliations, setDeletedAffiliations] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [getRorChildren, setGetRorChildren] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
-  const [rorExclusions, setRorExclusions] = useState('');
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
   const [tags, setTags] = useState([]);
 
   // Hooks
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
-  const { data, error, isFetching, refetch } = useQuery({
-    queryKey: [
-      'ror',
-      deletedAffiliations.join(),
-      searchedAffiliations.join(),
-      getRorChildren,
-    ],
-    queryFn: () => {
-      const queries = searchedAffiliations
-        .filter((affiliation) => !deletedAffiliations.includes(affiliation))
-        .map((affiliation) => getRorData(affiliation, getRorChildren));
-      return Promise.all(queries);
-    },
-    enabled: false,
-  });
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Effects
   useEffect(() => {
-    if (searchParams.size < 2) {
+    if (searchParams.size < 3) {
       // Set default params values
       const searchParamsTmp = {
         affiliations: searchParams.getAll('affiliations') ?? [],
         deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
-        endYear: searchParams.get('endYear') ?? '2023',
-        startYear: searchParams.get('startYear') ?? '2023',
+        endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
+        getRorChildren: searchParams.get('getRorChildren') ?? '0',
+        startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
       };
       setSearchParams(searchParamsTmp);
       setTags([]);
     } else {
+      setIsLoading(true);
       const affiliations = searchParams.getAll('affiliations') || [];
       const deletedAffiliations1 = searchParams.getAll('deletedAffiliations') || [];
       setCurrentSearchParams({
         affiliations,
         deletedAffiliations: deletedAffiliations1,
-        endYear: searchParams.get('endYear', '2023'),
-        startYear: searchParams.get('startYear', '2023'),
+        endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
+        getRorChildren: searchParams.get('getRorChildren') ?? '0',
+        startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
       });
       const newSearchedAffiliations = affiliations.filter(
         (affiliation) => !searchedAffiliations.includes(affiliation),
@@ -96,47 +83,44 @@ export default function DatasetsSearch() {
       if (newDeletedAffiliations.length > 0) {
         setDeletedAffiliations(deletedAffiliations1);
       }
+      setIsLoading(false);
     }
-  }, [
-    deletedAffiliations,
-    getRorChildren,
-    searchedAffiliations,
-    searchParams,
-    setSearchParams,
-  ]);
+  }, [deletedAffiliations, searchedAffiliations, searchParams, setSearchParams]);
 
   useEffect(() => {
-    refetch();
-  }, [deletedAffiliations, refetch, searchedAffiliations]);
-
-  useEffect(() => {
-    if (data) {
-      const rorNames = data.filter(
+    const getData = async () => {
+      setIsLoading(true);
+      const filteredSearchedAffiliation = searchedAffiliations.filter(
+        (affiliation) => !deletedAffiliations.includes(affiliation),
+      );
+      const queries = filteredSearchedAffiliation.map((affiliation) => getRorData(affiliation, currentSearchParams.getRorChildren === '1'));
+      let rorNames = await Promise.all(queries);
+      rorNames = rorNames.filter(
         (rorName) => !deletedAffiliations.includes(rorName),
       );
+
       const allTags = [];
       const knownTags = {};
-      searchedAffiliations
-        .filter((affiliation) => !deletedAffiliations.includes(affiliation))
-        .forEach((affiliation) => {
-          const label = cleanRor(affiliation);
-          if (isRor(label)) {
-            allTags.push({
-              disable: label.length < VITE_APP_TAG_LIMIT,
-              label,
-              source: 'user',
-              type: 'rorId',
-            });
-          } else {
-            allTags.push({
-              disable: affiliation.length < VITE_APP_TAG_LIMIT,
-              label: affiliation,
-              source: 'user',
-              type: 'affiliationString',
-            });
-          }
-          knownTags[label.toLowerCase()] = 1;
-        });
+
+      filteredSearchedAffiliation.forEach((affiliation) => {
+        const label = cleanRor(affiliation);
+        if (isRor(label)) {
+          allTags.push({
+            disable: label.length < VITE_APP_TAG_LIMIT,
+            label,
+            source: 'user',
+            type: 'rorId',
+          });
+        } else {
+          allTags.push({
+            disable: affiliation.length < VITE_APP_TAG_LIMIT,
+            label: affiliation,
+            source: 'user',
+            type: 'affiliationString',
+          });
+        }
+        knownTags[label.toLowerCase()] = 1;
+      });
       rorNames.flat().forEach((rorElt) => {
         if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
           if (!deletedAffiliations.includes(rorElt.rorId)) {
@@ -167,8 +151,11 @@ export default function DatasetsSearch() {
         });
       });
       setTags(allTags);
-    }
-  }, [data, deletedAffiliations, searchedAffiliations]);
+      setIsLoading(false);
+    };
+
+    getData();
+  }, [currentSearchParams.getRorChildren, deletedAffiliations, searchedAffiliations]);
 
   const onTagsChange = async (_affiliations, _deletedAffiliations) => {
     const affiliations = _affiliations
@@ -217,6 +204,8 @@ export default function DatasetsSearch() {
     });
     setSearchedAffiliations([]);
   };
+
+  const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
 
   const NB_TAGS_STICKY = 2;
   const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
@@ -274,9 +263,9 @@ export default function DatasetsSearch() {
               </Col>
               <Col xs="12">
                 <TagInput
-                  getRorChildren={getRorChildren}
+                  getRorChildren={currentSearchParams.getRorChildren === '1'}
                   hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-                  isLoading={isFetching}
+                  isLoading={isLoading}
                   isRequired
                   label="Affiliation name, ROR of your institution"
                   message={message}
@@ -285,16 +274,8 @@ export default function DatasetsSearch() {
                   onTagsChange={onTagsChange}
                   removeAllAffiliations={removeAllAffiliations}
                   seeMoreAfter={0}
-                  setGetRorChildren={setGetRorChildren}
+                  switchGetRorChildren={switchGetRorChildren}
                   tags={tags}
-                />
-              </Col>
-              <Col xs="12">
-                <TextInput
-                  hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
-                  label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
-                  onChange={(e) => setRorExclusions(e.target.value)}
-                  value={rorExclusions}
                 />
               </Col>
               <Col xs="12">
@@ -311,18 +292,6 @@ export default function DatasetsSearch() {
           </Container>
         </ModalContent>
       </Modal>
-
-      {error && (
-        <Row gutters className="fr-mb-16w">
-          <Col xs="12">
-            <div>
-              Error while fetching data, please try again later or contact the
-              team (see footer).
-            </div>
-          </Col>
-        </Row>
-      )}
-
       <Container as="section" className="filters fr-my-5w">
         <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
           <Link href="/">
@@ -335,9 +304,9 @@ export default function DatasetsSearch() {
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput
-              getRorChildren={getRorChildren}
+              getRorChildren={currentSearchParams.getRorChildren === '1'}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
-              isLoading={isFetching}
+              isLoading={isLoading}
               isRequired
               label="Affiliation name, ROR of your institution"
               message={message}
@@ -349,7 +318,7 @@ export default function DatasetsSearch() {
                 setIsOpen(true);
                 e.preventDefault();
               }}
-              setGetRorChildren={setGetRorChildren}
+              switchGetRorChildren={switchGetRorChildren}
               tags={tags}
             />
           </Col>

@@ -5,7 +5,8 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 
 export default function SwitchLanguage({ languages }) {
   const id = useId();
-  const [locale, setLocale] = useLocalStorage('works-magnet-locale', 'en');
+  const defaultLocale = navigator?.language?.slice(0, 2)?.toLowerCase() ?? 'fr';
+  const [locale, setLocale] = useLocalStorage('works-magnet-locale', defaultLocale);
   const currentLanguage = languages.find(({ key }) => key === locale);
 
   return (

@@ -89,7 +89,7 @@ export default function Search() {
       }
       setIsLoading(false);
     }
-  }, [deletedAffiliations, searchedAffiliations, searchParams, setSearchParams, currentSearchParams.excludedRors]);
+  }, [currentSearchParams.excludedRors, deletedAffiliations, searchedAffiliations, searchParams, setSearchParams]);
 
   useEffect(() => {
     const getData = async () => {
