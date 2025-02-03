@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
 import Ribbon from '../components/ribbon';
+import SwitchLanguage from '../components/switch-language';
 
 const {
   VITE_APP_NAME,
@@ -16,7 +17,12 @@ const {
 } = import.meta.env;
 
 // TODO : all, Link from dsfr-plus
-export default function Header({ isExpanded, id }) {
+export default function Header({ isExpanded }) {
+  const languages = [
+    { shortName: 'FR', fullName: 'Français', key: 'fr' },
+    { shortName: 'EN', fullName: 'English', key: 'en' },
+  ];
+
   return isExpanded ? (
     <header role="banner" className="fr-header expanded">
       <Ribbon />
@@ -55,6 +61,9 @@ export default function Header({ isExpanded, id }) {
                 </p>
               </div>
             </div>
+            <div>
+              <SwitchLanguage languages={languages} />
+            </div>
           </div>
         </div>
       </div>
@@ -85,15 +94,9 @@ export default function Header({ isExpanded, id }) {
             </Title>
           </a>
         </Col>
-        {
-          id && (
-            <Col xs="9">
-              <Title as="h2" look="h6" className="fr-mb-1w">
-                <FormattedMessage id={id} />
-              </Title>
-            </Col>
-          )
-        }
+        <Col offsetXs="8" xs="1">
+          <SwitchLanguage languages={languages} />
+        </Col>
       </Row>
     </Container>
   );
@@ -101,9 +104,7 @@ export default function Header({ isExpanded, id }) {
 
 Header.defaultProps = {
   isExpanded: false,
-  id: '',
 };
 Header.propTypes = {
   isExpanded: PropTypes.bool,
-  id: PropTypes.string,
 };
