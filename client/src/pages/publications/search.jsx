@@ -291,18 +291,17 @@ export default function PublicationsSearch() {
           </Container>
         </ModalContent>
       </Modal>
-      <Container as="section" className="filters fr-my-5w">
+      <Container>
         <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
           <Link href="/">
             Home
           </Link>
-          <Link href="/publications">
-            Build my corpus of publications
-          </Link>
           <Link current>
-            Search (from affiliations)
+            Build my corpus of publications (from repositories)
           </Link>
         </Breadcrumb>
+      </Container>
+      <Container as="section" className="filters fr-my-5w">
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput

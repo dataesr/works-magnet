@@ -214,7 +214,7 @@ export default function DatasetsSearch() {
   }
 
   return (
-    <>
+    <div style={{ minHeight: '700px' }}>
       <Header />
       <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
         <ModalContent>
@@ -291,15 +291,17 @@ export default function DatasetsSearch() {
           </Container>
         </ModalContent>
       </Modal>
-      <Container as="section" className="filters fr-my-5w">
+      <Container>
         <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
           <Link href="/">
             Home
           </Link>
           <Link current>
-            Build my corpus of datasets from repositories
+            Build my corpus of datasets (from repositories)
           </Link>
         </Breadcrumb>
+      </Container>
+      <Container as="section" className="filters fr-my-5w">
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
           <Col xs="8">
             <TagInput
@@ -375,6 +377,6 @@ export default function DatasetsSearch() {
           </Col>
         </Row>
       </Container>
-    </>
+    </div>
   );
 }
