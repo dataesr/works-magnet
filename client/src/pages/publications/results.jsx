@@ -16,6 +16,8 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 const { VITE_APP_TAG_LIMIT } = import.meta.env;
 
+const DEFAULT_YEAR = '2024';
+
 export default function Affiliations() {
   const [searchParams] = useSearchParams();
 
@@ -26,8 +28,8 @@ export default function Affiliations() {
   const { toast } = useToast();
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['works', JSON.stringify(options)],
-    queryFn: () => getWorks({ options, toast }),
+    queryKey: ['publications', JSON.stringify(options)],
+    queryFn: () => getWorks({ options, toast, type: 'publications' }),
     enabled: false,
   });
 
@@ -66,8 +68,8 @@ export default function Affiliations() {
 
   useEffect(() => {
     const queryParams = {
-      endYear: searchParams.get('endYear') ?? '2023',
-      startYear: searchParams.get('startYear') ?? '2023',
+      endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
+      startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
     };
     queryParams.affiliationStrings = [];
     queryParams.deletedAffiliations = [];
@@ -135,7 +137,6 @@ export default function Affiliations() {
             allAffiliations={affiliations}
             allPublications={data?.publications?.results ?? []}
             data={data}
-            options={options}
             selectedAffiliations={selectedAffiliations}
             selectedPublications={selectedPublications}
             setSelectedAffiliations={setSelectedAffiliations}

@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 import {
   Breadcrumb,
-  Row,
   Col,
   Link,
+  Row,
   SegmentedControl,
   SegmentedElement,
   Title,
@@ -20,7 +20,6 @@ export default function Publications({
   allAffiliations,
   allPublications,
   data,
-  options,
   selectedAffiliations,
   selectedPublications,
   setSelectedAffiliations,
@@ -49,120 +48,100 @@ export default function Publications({
           </Link>
         </Breadcrumb>
       </Row>
-      {options.datasets ? (
-        <>
-          <Title as="h2" look="h6">
-            You did not search for publications
+      <Row>
+        <Col>
+          <Title as="h2" look="h6" className="fr-mt-1w">
+            📑 Find the publications affiliated to your institution
           </Title>
+        </Col>
+        <Col className="text-right">
+          <SegmentedControl
+            className="fr-mb-1w"
+            name="tabSelector"
+            onChangeValue={(value) => setTab(value)}
+          >
+            <SegmentedElement
+              checked={tab === 'selectAffiliations'}
+              label="Select the raw affiliations for your institution"
+              value="selectAffiliations"
+            />
+            <SegmentedElement
+              checked={tab === 'listOfPublications'}
+              label="List of publications"
+              value="listOfPublications"
+            />
+          </SegmentedControl>
+        </Col>
+      </Row>
+      {tab === 'selectAffiliations' && (
+        <>
           <Row>
             <Col xs="12">
-              <div className="fr-callout fr-mb-16w">
+              <div className="fr-callout fr-callout--pink-tuile">
+                <Title as="h3" look="h6">
+                  Select the raw affiliations corresponding to your
+                  institution
+                </Title>
                 <p className="fr-callout__text fr-text--sm">
-                  To search for publications, please disable the "Search for
-                  datasets only" option
+                  🔎 The array below summarizes the most frequent raw
+                  affiliation strings retrieved in the French Open Science
+                  Monitor data and in OpenAlex for your query.
+                  <br />
+                  🤔 You can validate ✅ or exclude ❌ each of them, whether
+                  it actually corresponds to your institution or not. If an
+                  affiliation is validated, it will also validate all the
+                  works with that affiliation string.
+                  <br />
+                  🤖 The second column indicates the ROR automatically
+                  computed by OpenAlex. Sometimes, they can be inaccurate or
+                  missing. If any errors, please use the first tab to send
+                  feedback.
+                  <br />
+                  💾 You can save (export to a file) those decisions, and
+                  restore them later on.
                 </p>
               </div>
             </Col>
           </Row>
-        </>
-      ) : (
-        <>
           <Row>
             <Col>
-              <Title as="h2" look="h6" className="fr-mt-1w">
-                📑 Find the publications affiliated to your institution
-              </Title>
-            </Col>
-            <Col className="text-right">
-              <SegmentedControl
-                className="fr-mb-1w"
-                name="tabSelector"
-                onChangeValue={(value) => setTab(value)}
-              >
-                <SegmentedElement
-                  checked={tab === 'selectAffiliations'}
-                  label="Select the raw affiliations for your institution"
-                  value="selectAffiliations"
-                />
-                <SegmentedElement
-                  checked={tab === 'listOfPublications'}
-                  label="List of publications"
-                  value="listOfPublications"
-                />
-              </SegmentedControl>
-            </Col>
-          </Row>
-          {tab === 'selectAffiliations' && (
-            <>
-              <Row>
-                <Col xs="12">
-                  <div className="fr-callout fr-callout--pink-tuile">
-                    <Title as="h3" look="h6">
-                      Select the raw affiliations corresponding to your
-                      institution
-                    </Title>
-                    <p className="fr-callout__text fr-text--sm">
-                      🔎 The array below summarizes the most frequent raw
-                      affiliation strings retrieved in the French Open Science
-                      Monitor data and in OpenAlex for your query.
-                      <br />
-                      🤔 You can validate ✅ or exclude ❌ each of them, whether
-                      it actually corresponds to your institution or not. If an
-                      affiliation is validated, it will also validate all the
-                      works with that affiliation string.
-                      <br />
-                      🤖 The second column indicates the ROR automatically
-                      computed by OpenAlex. Sometimes, they can be inaccurate or
-                      missing. If any errors, please use the first tab to send
-                      feedback.
-                      <br />
-                      💾 You can save (export to a file) those decisions, and
-                      restore them later on.
-                    </p>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <ActionsAffiliations
-                    allAffiliations={allAffiliations}
-                    tagAffiliations={tagAffiliations}
-                  />
-                </Col>
-              </Row>
-            </>
-          )}
-          <Row>
-            <Col xs="12">
-              {tab === 'selectAffiliations' && (
-                <AffiliationsTab
-                  affiliations={allAffiliations}
-                  selectedAffiliations={selectedAffiliations}
-                  setSelectedAffiliations={setSelectedAffiliations}
-                  tagAffiliations={tagAffiliations}
-                />
-              )}
-              {tab === 'listOfPublications' && (
-                <>
-                  <ActionsPublications
-                    allPublications={allPublications}
-                    className="fr-pb-1w"
-                  />
-                  <PublicationsTab
-                    publishers={data.publications?.publishers || []}
-                    publications={allPublications}
-                    selectedPublications={selectedPublications}
-                    setSelectedPublications={setSelectedPublications}
-                    tagPublications={tagPublications}
-                    types={data.publications?.types || []}
-                    years={data.publications?.years || []}
-                  />
-                </>
-              )}
+              <ActionsAffiliations
+                allAffiliations={allAffiliations}
+                tagAffiliations={tagAffiliations}
+              />
             </Col>
           </Row>
         </>
       )}
+      <Row>
+        <Col xs="12">
+          {tab === 'selectAffiliations' && (
+            <AffiliationsTab
+              affiliations={allAffiliations}
+              selectedAffiliations={selectedAffiliations}
+              setSelectedAffiliations={setSelectedAffiliations}
+              tagAffiliations={tagAffiliations}
+            />
+          )}
+          {tab === 'listOfPublications' && (
+            <>
+              <ActionsPublications
+                allPublications={allPublications}
+                className="fr-pb-1w"
+              />
+              <PublicationsTab
+                publishers={data.publications?.publishers || []}
+                publications={allPublications}
+                selectedPublications={selectedPublications}
+                setSelectedPublications={setSelectedPublications}
+                tagPublications={tagPublications}
+                types={data.publications?.types || []}
+                years={data.publications?.years || []}
+              />
+            </>
+          )}
+        </Col>
+      </Row>
     </div>
   );
 }

@@ -3,8 +3,7 @@ import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics } from './ut
 const MAX_FOSM = Number(process.env.ES_MAX_SIZE);
 const MAX_OPENALEX = Number(process.env.OPENALEX_MAX_SIZE);
 
-const datasetsType = ['dataset', 'physicalobject', 'collection', 'audiovisual', 'sound',
-  'software', 'computationalnotebook', 'film', 'image'];
+const datasetsType = ['audiovisual', 'collection', 'computationalnotebook', 'dataset', 'film', 'image', 'physicalobject', 'software', 'sound'];
 
 const getFormat = (formats) => {
   const formatsMapping = {
@@ -59,7 +58,7 @@ const deduplicateWorks = (works) => {
   return Object.values(deduplicatedWorks);
 };
 
-const getFosmQuery = (options, pit, searchAfter) => {
+const getFosmQuery = ({ options, pit, searchAfter }) => {
   const query = { size: process.env.ES_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
   options.affiliationStrings.forEach((affiliation) => {
     query.query.bool.should.push({ match: { 'affiliations.name': { query: `"${affiliation}"`, operator: 'and' } } });
@@ -86,8 +85,14 @@ const getFosmQuery = (options, pit, searchAfter) => {
     query.search_after = searchAfter;
     query.track_total_hits = false;
   }
-  if (options.datasets) {
+  if (options?.type === 'datasets') {
     query.query.bool.must.push({
+      terms: {
+        genre_raw: datasetsType,
+      },
+    });
+  } else if (options?.type === 'publications') {
+    query.query.bool.must_not.push({
       terms: {
         genre_raw: datasetsType,
       },
@@ -210,8 +215,8 @@ const formatFosmResult = (result, options) => {
   return answer;
 };
 
-const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, pit, searchAfter }) => {
-  console.log('getFosmWorksByYear', `MAX_FOSM = ${MAX_FOSM}`);
+const getFosmWorksByYear = async ({ options, pit, remainingTries = 3, results = [], searchAfter }) => {
+  console.log('getFosmWorksByYear', `MAX_FOSM = ${MAX_FOSM}`, `type = ${options?.type}`);
   if (!pit) {
     const response = await fetch(
       `${process.env.ES_URL}/${process.env.ES_INDEX}/_pit?keep_alive=${process.env.ES_PIT_KEEP_ALIVE}`,
@@ -220,7 +225,7 @@ const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, p
     // eslint-disable-next-line no-param-reassign
     pit = (await response.json()).id;
   }
-  const body = getFosmQuery(options, pit, searchAfter);
+  const body = getFosmQuery({ options, pit, searchAfter });
   const params = {
     body: JSON.stringify(body),
     headers: {
@@ -244,7 +249,7 @@ const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, p
       if (hits.length > 0 && (MAX_FOSM === 0 || results.length < MAX_FOSM)) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
-        return getFosmWorksByYear({ results, options, pit, searchAfter });
+        return getFosmWorksByYear({ options, pit, results, searchAfter });
       }
       if (pit) {
         fetch(
@@ -261,7 +266,7 @@ const getFosmWorksByYear = async ({ remainingTries = 3, results = [], options, p
     .catch((error) => {
       if (remainingTries > 0) {
         return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000)))
-          .then(() => getFosmWorksByYear({ remainingTries: remainingTries - 1, results, options, pit, searchAfter }));
+          .then(() => getFosmWorksByYear({ options, pit, remainingTries: remainingTries - 1, results, searchAfter }));
       }
       console.error(`Error while fetching ${url} :`);
       console.error(error);
@@ -345,8 +350,8 @@ const getOpenAlexAffiliations = (work) => {
   return affiliations.flat().flat().flat().filter((affiliation) => !!affiliation.rawAffiliation);
 };
 
-const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse = [], remainingTries = 3) => {
-  console.log('getOpenAlexPublicationsByYear', `MAX_OPENALEX = ${MAX_OPENALEX}, currentResponseLength = ${previousResponse.length}`);
+const getOpenAlexWorksByYear = (options, cursor = '*', previousResponse = [], remainingTries = 3) => {
+  console.log('getOpenAlexWorksByYear', `MAX_OPENALEX = ${MAX_OPENALEX}, currentResponseLength = ${previousResponse.length}`);
   let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
@@ -356,8 +361,10 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
   if (options.rors.length) {
     url += `,institutions.ror:${options.rors.join('|')}`;
   }
-  if (options.datasets) {
+  if (options?.type === 'datasets') {
     url += ',type:dataset';
+  } else if (options?.type === 'publications') {
+    url += ',type:!dataset';
   }
   if (options.openAlexExclusions.length) {
     url += `,${options.openAlexExclusions.map((institutionId) => `authorships.institutions.lineage:!${institutionId}`).join()}`;
@@ -377,7 +384,7 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
       if (response.ok) return response.json();
       if (response.status === 429) {
         console.log('Error 429', 'Getting error 429 from OpenAlex');
-        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse));
+        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getOpenAlexWorksByYear(options, cursor, previousResponse));
       }
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
@@ -407,14 +414,14 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
       }));
       const nextCursor = response?.meta?.next_cursor;
       if (nextCursor && hits.length > 0 && (MAX_OPENALEX === 0 || results.length < MAX_OPENALEX)) {
-        return getOpenAlexPublicationsByYear(options, nextCursor, results);
+        return getOpenAlexWorksByYear(options, nextCursor, results);
       }
       return results;
     })
     .catch((error) => {
       if (remainingTries > 0) {
         return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000)))
-          .then(() => getOpenAlexPublicationsByYear(options, cursor, previousResponse, remainingTries - 1));
+          .then(() => getOpenAlexWorksByYear(options, cursor, previousResponse, remainingTries - 1));
       }
       console.error(`Error while fetching ${url} :`);
       console.error(error);
@@ -422,8 +429,8 @@ const getOpenAlexPublicationsByYear = (options, cursor = '*', previousResponse =
     });
 };
 
-const getOpenAlexPublications = async ({ options }) => {
-  const promises = options.years.map((year) => getOpenAlexPublicationsByYear({ ...options, year }));
+const getOpenAlexWorks = async ({ options }) => {
+  const promises = options.years.map((year) => getOpenAlexWorksByYear({ ...options, year }));
   const results = await Promise.all(promises);
   return results.flat();
 };
@@ -521,6 +528,6 @@ export {
   datasetsType,
   deduplicateWorks,
   getFosmWorks,
-  getOpenAlexPublications,
+  getOpenAlexWorks,
   groupByAffiliations,
 };

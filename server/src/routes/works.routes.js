@@ -5,10 +5,9 @@ import { getInstitutionIdFromRor } from '../utils/openalex';
 import { getCache, saveCache } from '../utils/s3';
 import { chunkArray, countUniqueValues, range } from '../utils/utils';
 import {
-  datasetsType,
   deduplicateWorks,
   getFosmWorks,
-  getOpenAlexPublications,
+  getOpenAlexWorks,
   groupByAffiliations,
 } from '../utils/works';
 
@@ -51,7 +50,7 @@ const chunkAndCompress = (data) => {
 
 const getWorks = async ({ options, resetCache = false }) => {
   const shasum = crypto.createHash('sha1');
-  shasum.update(JSON.stringify({ ...options, type: 'works' }));
+  shasum.update(JSON.stringify({ ...options }));
   const searchId = shasum.digest('hex');
   const start = new Date();
   const queryId = start
@@ -90,14 +89,14 @@ const getWorks = async ({ options, resetCache = false }) => {
   // Separate RoRs from Affiliations strings to query OpenAlex
   affiliationStringsChunks.forEach((affiliationStrings) => {
     queries.push(
-      getOpenAlexPublications({
+      getOpenAlexWorks({
         options: { ...options, affiliationStrings, rors: [] },
       }),
     );
   });
   rorsChunks.forEach((rors) => {
     queries.push(
-      getOpenAlexPublications({
+      getOpenAlexWorks({
         options: { ...options, rors, affiliationStrings: [] },
       }),
     );
@@ -139,20 +138,12 @@ const getWorks = async ({ options, resetCache = false }) => {
   console.time(
     `4. Query ${queryId} | Sort works ${options.affiliationStrings}`,
   );
-  const publications = [];
   let datasets = [];
-  const deduplicatedWorksLength = deduplicatedWorks.length;
-  if (options.datasets) {
+  let publications = [];
+  if (options?.type === 'datasets') {
     datasets = deduplicatedWorks;
-  } else {
-    for (let i = 0; i < deduplicatedWorksLength; i += 1) {
-      const deduplicatedWork = deduplicatedWorks[i];
-      if (datasetsType.includes(deduplicatedWork.type)) {
-        datasets.push(deduplicatedWork);
-      } else {
-        publications.push(deduplicatedWork);
-      }
-    }
+  } else if (options?.type === 'publications') {
+    publications = deduplicatedWorks;
   }
   console.timeEnd(
     `4. Query ${queryId} | Sort works ${options.affiliationStrings}`,
@@ -228,7 +219,11 @@ router.route('/works').post(async (req, res) => {
     const options = req?.body ?? {};
     if (!options?.affiliationStrings && !options?.rors) {
       res.status(400).json({
-        message: 'You must provide at least one affiliation string or RoR.',
+        message: 'You must provide at least one affiliation string or a RoR.',
+      });
+    } else if (!['datasets', 'publications'].includes(options?.type)) {
+      res.status(400).json({
+        message: 'You must provide a type in ["datasets", "publications"]',
       });
     } else {
       const compressedResult = await getWorks({ options });

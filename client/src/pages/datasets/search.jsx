@@ -192,8 +192,7 @@ export default function DatasetsSearch() {
     }
     setMessageType('');
     setMessage('');
-    const queryParams = search.length === 0 ? '?datasets=true' : `${search}&datasets=true`;
-    navigate(`/${pathname.split('/')[1]}/results${queryParams}`);
+    navigate(`/${pathname.split('/')[1]}/results${search}`);
   };
 
   const removeAllAffiliations = () => {

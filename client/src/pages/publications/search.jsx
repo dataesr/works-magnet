@@ -214,7 +214,7 @@ export default function PublicationsSearch() {
   }
 
   return (
-    <>
+    <div style={{ minHeight: '700px' }}>
       <Header />
       <Modal isOpen={isOpen} hide={() => setIsOpen(false)} size="xl">
         <ModalContent>
@@ -378,6 +378,6 @@ export default function PublicationsSearch() {
           </Col>
         </Row>
       </Container>
-    </>
+    </div>
   );
 }

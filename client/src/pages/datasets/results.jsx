@@ -28,8 +28,8 @@ export default function Affiliations() {
   const { toast } = useToast();
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
-    queryKey: ['works', JSON.stringify(options)],
-    queryFn: () => getWorks({ options, toast }),
+    queryKey: ['datasets', JSON.stringify(options)],
+    queryFn: () => getWorks({ options, toast, type: 'datasets' }),
     enabled: false,
   });
 

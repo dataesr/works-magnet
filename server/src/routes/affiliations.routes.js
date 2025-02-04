@@ -6,7 +6,7 @@ import { getCache, saveCache } from '../utils/s3';
 import { chunkArray, range } from '../utils/utils';
 import {
   deduplicateWorks,
-  getOpenAlexPublications,
+  getOpenAlexWorks,
   groupByAffiliations,
 } from '../utils/works';
 
@@ -87,14 +87,14 @@ const getOpenAlexAffiliations = async ({ options, resetCache = false }) => {
   // Separate RoRs from Affiliations strings to query OpenAlex
   affiliationStringsChunks.forEach((affiliationStrings) => {
     queries.push(
-      getOpenAlexPublications({
+      getOpenAlexWorks({
         options: { ...options, affiliationStrings, rors: [] },
       }),
     );
   });
   rorsChunks.forEach((rors) => {
     queries.push(
-      getOpenAlexPublications({
+      getOpenAlexWorks({
         options: { ...options, rors, affiliationStrings: [] },
       }),
     );
