@@ -110,9 +110,9 @@ const getOpenAlexAffiliations = async (body, toast) => {
   return { affiliations: resAffiliations, warnings };
 };
 
-const getWorks = async (body, toast) => {
+const getWorks = async ({ options, toast }) => {
   const response = await fetch(`${VITE_API}/works`, {
-    body: JSON.stringify(body),
+    body: JSON.stringify(options),
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
     signal: timeout(1200).signal, // 20 minutes

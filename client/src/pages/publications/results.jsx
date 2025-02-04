@@ -27,7 +27,7 @@ export default function Affiliations() {
 
   const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['works', JSON.stringify(options)],
-    queryFn: () => getWorks(options, toast),
+    queryFn: () => getWorks({ options, toast }),
     enabled: false,
   });
 
