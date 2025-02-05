@@ -165,13 +165,6 @@ export default function Datasets({
                       field="client_id"
                     />
                   </Col>
-                  <Col xs="6">
-                    <DatasetsYearlyDistribution
-                      allDatasets={allDatasets}
-                      field="affiliations"
-                      subfield="rawAffiliation"
-                    />
-                  </Col>
                 </Row>
               ) : (
                 <div className="fr-callout fr-icon-information-line">
