@@ -85,22 +85,25 @@ const getWorks = async ({ options, resetCache = false }) => {
   const affiliationStringsChunks = chunkArray({
     array: options.affiliationStrings,
   });
-  const rorsChunks = chunkArray({ array: options.rors });
-  // Separate RoRs from Affiliations strings to query OpenAlex
-  affiliationStringsChunks.forEach((affiliationStrings) => {
-    queries.push(
-      getOpenAlexWorks({
-        options: { ...options, affiliationStrings, rors: [] },
-      }),
-    );
-  });
-  rorsChunks.forEach((rors) => {
-    queries.push(
-      getOpenAlexWorks({
-        options: { ...options, rors, affiliationStrings: [] },
-      }),
-    );
-  });
+  // Query OpenAlex only for publications
+  if (options.type === 'publications') {
+    const rorsChunks = chunkArray({ array: options.rors });
+    // Separate RoRs from Affiliations strings to query OpenAlex
+    affiliationStringsChunks.forEach((affiliationStrings) => {
+      queries.push(
+        getOpenAlexWorks({
+          options: { ...options, affiliationStrings, rors: [] },
+        }),
+      );
+    });
+    rorsChunks.forEach((rors) => {
+      queries.push(
+        getOpenAlexWorks({
+          options: { ...options, rors, affiliationStrings: [] },
+        }),
+      );
+    });
+  }
   const responses = await Promise.all(queries);
   const warnings = {};
   const MAX_FOSM = Number(process.env.ES_MAX_SIZE);
