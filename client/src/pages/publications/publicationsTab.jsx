@@ -50,7 +50,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
           <span className="number">
             {selectedPublications.length}
           </span>
-          {`selected publication${selectedPublications.length === 1 ? '' : 's'}`}
+          {` selected publication${selectedPublications.length === 1 ? '' : 's'}`}
         </div>
         {renderButtons(selectedPublications, tagPublications)}
         <div className="text-right">
