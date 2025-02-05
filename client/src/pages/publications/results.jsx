@@ -83,20 +83,16 @@ export default function Affiliations() {
           queryParams.affiliationStrings.push(normalize(item));
         }
       });
-      let rorNames = await Promise.all(queryParams.rors.map((ror) => getRorData(ror, searchParams.get('getRorChildren') === '1')));
-      rorNames = rorNames
+      const rorData = await Promise.all(queryParams.rors.map((ror) => getRorData(ror, searchParams.get('getRorChildren') === '1')));
+      const rorChildren = rorData
+        .flat()
+        .map((ror) => ror.rorId);
+      queryParams.rors = queryParams.rors.concat(rorChildren);
+      const rorNames = rorData
         .flat()
         .map((ror) => ror.names)
-        .flat()
-        .filter((rorName) => !searchParams.getAll('deletedAffiliations').includes(rorName));
+        .flat();
       queryParams.affiliationStrings = queryParams.affiliationStrings.concat(rorNames);
-      searchParams.getAll('deletedAffiliations').forEach((item) => {
-        if (isRor(item)) {
-          queryParams.rorExclusions.push(item);
-        } else {
-          queryParams.deletedAffiliations.push(normalize(item));
-        }
-      });
       if (
         queryParams.affiliationStrings.length === 0
         && queryParams.rors.length === 0
