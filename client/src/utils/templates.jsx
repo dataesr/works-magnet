@@ -116,7 +116,8 @@ const worksExampleTemplate = (rowData) => getIdsTemplate(
 
 const linkedORCIDTemplate = (rowData) => {
   let html = '<ul>';
-  const frOrcid = rowData.fr_authors_orcid || [];
+  let frOrcid = rowData.fr_authors_orcid || [];
+  if (typeof frOrcid === 'string') frOrcid = JSON.parse(frOrcid);
   frOrcid.forEach((id) => {
     html += `<li key="${id.orcid}">`;
     const idLink = getIdLink('orcid', id.orcid);
