@@ -712,6 +712,13 @@ export default function Affiliations() {
                                     <ul>
                                       {rorsToRemove.map((_ror) => (
                                         <li key={`openalex-affiliations-remove-${_ror.rorId}`} style={{ listStyle: 'none', marginBottom: '16px' }}>
+                                          <button
+                                            aria-label="Remove this ROR"
+                                            className={`fr-icon fr-icon--md  ${_ror.removed ? 'fr-fi-arrow-go-back-line' : 'fr-fi-delete-line'}`}
+                                            onClick={() => setRorsToRemove(rorsToRemove.map((_r) => (_r.rorId === _ror.rorId ? { ..._r, removed: !_r.removed } : _r)))}
+                                            title="Remove this ROR"
+                                            type="button"
+                                          />
                                           <img
                                             alt="ROR logo"
                                             className="vertical-middle fr-mx-1w"
@@ -731,13 +738,6 @@ export default function Affiliations() {
                                               </Link>
                                             )
                                           }
-                                          <button
-                                            aria-label="Remove this ROR"
-                                            className={`fr-icon fr-icon--sm  ${_ror.removed ? 'fr-fi-arrow-go-back-line' : 'fr-fi-delete-line'}`}
-                                            onClick={() => setRorsToRemove(rorsToRemove.map((_r) => (_r.rorId === _ror.rorId ? { ..._r, removed: !_r.removed } : _r)))}
-                                            title="Remove this ROR"
-                                            type="button"
-                                          />
                                           <br />
                                           {
                                             _ror.removed ? (
@@ -769,7 +769,7 @@ export default function Affiliations() {
                             </Row>
                             <Row>
                               <Col>
-                                <Button color="pink-tuile" onClick={removeRorMultiple}>
+                                <Button color="pink-tuile" disabled={rorsToRemove.filter((_ror) => _ror.removed).length === 0} onClick={removeRorMultiple}>
                                   Apply to selected affiliations
                                 </Button>
                               </Col>
