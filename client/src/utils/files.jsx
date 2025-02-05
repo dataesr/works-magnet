@@ -60,22 +60,14 @@ const export2FosmCsv = ({ data, label, searchParams }) => {
 };
 
 const export2Csv = ({ data, label, searchParams }) => {
+  const deletedFields = ['affiliations', 'affiliationsHtml', 'affiliationsTooltip', 'allIds', 'allInfos', 'authors', 'datasource', 'id', 'hasCorrection', 'key', 'nameHtml', 'selected'];
+  const stringifiedFields = ['addList', 'fr_authors_orcid', 'fr_publications_linked', 'removeList', 'rors', 'rorsInOpenAlex', 'rorsToCorrect', 'worksExample'];
   data.forEach((work) => {
     work.allIds?.forEach((id) => {
       work[id.id_type] = id.id_value;
     });
-    delete work.affiliations;
-    delete work.affiliationsHtml;
-    delete work.affiliationsTooltip;
-    delete work.allIds;
-    delete work.authors;
-    delete work.datasource;
-    delete work.id;
-    delete work.hasCorrection;
-    delete work.key;
-    delete work.nameHtml;
-    delete work.selected;
-    ['fr_authors_orcid', 'fr_publications_linked', 'rorsInOpenAlex', 'worksExample', 'rors', 'rorsToCorrect', 'addList', 'removeList'].forEach((field) => {
+    deletedFields.forEach((field) => delete work[field]);
+    stringifiedFields.forEach((field) => {
       if ((work?.[field] ?? []).length > 0) {
         work[field] = JSON.stringify(work[field]);
       }
@@ -93,7 +85,11 @@ const export2Csv = ({ data, label, searchParams }) => {
 
 const export2json = ({ data, label, searchParams }) => {
   const link = document.createElement('a');
-  link.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+  const exportedData = data.map((work) => {
+    delete work.allInfos;
+    return work;
+  });
+  link.href = URL.createObjectURL(new Blob([JSON.stringify(exportedData, null, 2)], { type: 'application/json' }));
   const fileName = getFileName({ extension: 'json', label, searchParams });
   link.setAttribute('download', fileName);
   document.body.appendChild(link);
