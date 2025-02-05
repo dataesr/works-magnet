@@ -50,7 +50,7 @@ const chunkAndCompress = (data) => {
 
 const getWorks = async ({ options, resetCache = false }) => {
   const shasum = crypto.createHash('sha1');
-  shasum.update(JSON.stringify({ ...options }));
+  shasum.update(JSON.stringify(options));
   const searchId = shasum.digest('hex');
   const start = new Date();
   const queryId = start

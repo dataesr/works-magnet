@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import { status } from '../../config';
 import useToast from '../../hooks/useToast';
 import Header from '../../layout/header';
-import { isRor } from '../../utils/ror';
+import { getRorData, isRor } from '../../utils/ror';
 import { normalize } from '../../utils/strings';
 import { getWorks } from '../../utils/works';
 import Datasets from '../views/datasets';
@@ -67,38 +67,49 @@ export default function Affiliations() {
   };
 
   useEffect(() => {
-    const queryParams = {
-      endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
-      startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
+    const getData = async () => {
+      const queryParams = {
+        endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
+        startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
+      };
+      queryParams.affiliationStrings = [];
+      queryParams.deletedAffiliations = [];
+      queryParams.rors = [];
+      queryParams.rorExclusions = [];
+      searchParams.getAll('affiliations').forEach((item) => {
+        if (isRor(item)) {
+          queryParams.rors.push(item);
+        } else {
+          queryParams.affiliationStrings.push(normalize(item));
+        }
+      });
+      let rorNames = await Promise.all(queryParams.rors.map((ror) => getRorData(ror, searchParams.get('getRorChildren') === '1')));
+      rorNames = rorNames
+        .flat()
+        .map((ror) => ror.names)
+        .flat()
+        .filter((rorName) => !searchParams.getAll('deletedAffiliations').includes(rorName));
+      queryParams.affiliationStrings = queryParams.affiliationStrings.concat(rorNames);
+      searchParams.getAll('deletedAffiliations').forEach((item) => {
+        if (isRor(item)) {
+          queryParams.rorExclusions.push(item);
+        } else {
+          queryParams.deletedAffiliations.push(normalize(item));
+        }
+      });
+      if (
+        queryParams.affiliationStrings.length === 0
+        && queryParams.rors.length === 0
+      ) {
+        console.error(
+          `You must provide at least one affiliation longer than ${VITE_APP_TAG_LIMIT} letters.`,
+        );
+        return;
+      }
+      setOptions(queryParams);
     };
-    queryParams.affiliationStrings = [];
-    queryParams.deletedAffiliations = [];
-    queryParams.rors = [];
-    queryParams.rorExclusions = [];
-    searchParams.getAll('affiliations').forEach((item) => {
-      if (isRor(item)) {
-        queryParams.rors.push(item);
-      } else {
-        queryParams.affiliationStrings.push(normalize(item));
-      }
-    });
-    searchParams.getAll('deletedAffiliations').forEach((item) => {
-      if (isRor(item)) {
-        queryParams.rorExclusions.push(item);
-      } else {
-        queryParams.deletedAffiliations.push(normalize(item));
-      }
-    });
-    if (
-      queryParams.affiliationStrings.length === 0
-      && queryParams.rors.length === 0
-    ) {
-      console.error(
-        `You must provide at least one affiliation longer than ${VITE_APP_TAG_LIMIT} letters.`,
-      );
-      return;
-    }
-    setOptions(queryParams);
+
+    getData();
   }, [searchParams]);
 
   useEffect(() => {
