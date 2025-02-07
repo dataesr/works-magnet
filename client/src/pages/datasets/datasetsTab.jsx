@@ -94,7 +94,7 @@ export default function DatasetsTab({
           className={`selected-item ${selectedDatasets.length && 'selected'}`}
         >
           <span className="number">{selectedDatasets.length}</span>
-          {` selected dataset${selectedDatasets.length === 1 ? '' : 's'}`}
+          {`selected dataset${selectedDatasets.length === 1 ? '' : 's'}`}
         </div>
         {renderButtons(selectedDatasets, tagDatasets)}
         <div className="text-right">
