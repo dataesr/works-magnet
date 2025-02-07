@@ -78,7 +78,7 @@ export default function ActionsAffiliations({
                 <File
                   accept=".json"
                   label="Restore affiliations from saved file"
-                  onChange={(e) => { onImport(e); }}
+                  onChange={(e) => onImport(e)}
                 />
               </Col>
             </Row>

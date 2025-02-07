@@ -47,10 +47,7 @@ export default function Affiliations() {
       affiliations
         .map((affiliation) => {
           if (affiliationIds.includes(affiliation.id)) {
-            return ({
-              ...affiliation,
-              status: action,
-            });
+            affiliation.status = action;
           }
           return affiliation;
         }),
