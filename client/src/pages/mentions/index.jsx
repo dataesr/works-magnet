@@ -613,11 +613,11 @@ export default function Mentions() {
 
         {searchParams.get('view') === 'table' && (
           <Tabs
-            defaultActiveIndex={urlSearchParams.type === 'software' ? 0 : 1}
+            defaultActiveIndex={searchParams.get('type') === 'software' ? 0 : 1}
             onTabChange={(index) => onTabChange(index)}
           >
             <Tab label="Software">
-              {urlSearchParams.type === 'software' && (
+              {searchParams.get('type') === 'software' && (
                 <DataTable
                   currentPageReportTemplate="{first} to {last} of {totalRecords}"
                   dataKey="id"
@@ -722,7 +722,7 @@ export default function Mentions() {
               )}
             </Tab>
             <Tab label="Datasets">
-              {urlSearchParams.type === 'datasets' && (
+              {searchParams.get('type') === 'datasets' && (
                 <DataTable
                   currentPageReportTemplate="{first} to {last} of {totalRecords}"
                   dataKey="id"
