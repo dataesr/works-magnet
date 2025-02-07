@@ -522,7 +522,7 @@ export default function Mentions() {
               }.`}
             <TextInput
               className="fr-mt-1w"
-              label="Please indicate your email. Only an encrypted version of your email </Modal>will be public."
+              label="Please indicate your email. Only an encrypted version of your email will be public."
               onChange={(e) => setUserEmail(e.target.value)}
               required
               type="email"
