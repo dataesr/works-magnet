@@ -6,6 +6,7 @@ const getMentionsCorrections = (mentions) => mentions
       corrections.push({
         id: mention.id,
         doi: mention.doi,
+        text: mention.context,
         type: mention.type,
         previousType: mention.type_original,
       });
