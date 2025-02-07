@@ -209,7 +209,7 @@ export default function Mentions() {
 
   // Templates
   const contextTemplate = (rowData) => (
-    <span dangerouslySetInnerHTML={{ __html: decodeURIComponent(escape(rowData.context)) }} />
+    <span dangerouslySetInnerHTML={{ __html: rowData.context }} />
   );
 
   const createdTemplate = (rowData) => (

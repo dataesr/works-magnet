@@ -2,6 +2,17 @@ import express from 'express';
 
 const router = new express.Router();
 
+const getMentionContext = (mention) => {
+  if (mention?.highlight?.context) {
+    return mention.highlight.context;
+  }
+  try {
+    return decodeURIComponent(escape(mention._source.context));
+  } catch (_) {
+    return mention._source.context;
+  }
+};
+
 const getMentionsQuery = ({ options }) => {
   const {
     from, search, size, sortBy, sortOrder, type,
@@ -107,7 +118,7 @@ const getMentions = async ({ query }) => {
       mention._source?.authors
         ?.map((_author) => _author.full_name)
         .filter((_author) => !!_author) ?? [],
-    context: mention?.highlight?.context ?? mention._source.context,
+    context: getMentionContext(mention),
     id: mention._id,
     mention_context_original: mention._source.mention_context,
     rawForm:
