@@ -34,7 +34,6 @@ export default function ButtonDropdown({ className, data, label, searchParams })
         color="blue-ecume"
         disabled={!data.length}
         icon="save-line"
-        size="sm"
       >
         {`Export ${label} (${data.length})`}
       </Button>
@@ -42,14 +41,12 @@ export default function ButtonDropdown({ className, data, label, searchParams })
         <Button
           color="blue-ecume"
           onClick={() => { export2Csv({ data, label, searchParams }); toastExport(); }}
-          size="sm"
         >
           Export in CSV (minimal data)
         </Button>
         <Button
           color="blue-ecume"
           onClick={() => { export2jsonl({ data, label, searchParams }); toastExport(); }}
-          size="sm"
         >
           Export in JSONL (complete data)
         </Button>
@@ -60,7 +57,6 @@ export default function ButtonDropdown({ className, data, label, searchParams })
               const numberOfLines = export2FosmCsv({ data, label, searchParams });
               toastExport(numberOfLines);
             }}
-            size="sm"
           >
             Custom export for French OSM
           </Button>

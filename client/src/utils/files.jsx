@@ -60,9 +60,11 @@ const export2FosmCsv = ({ data, label, searchParams }) => {
 };
 
 const export2Csv = ({ data, label, searchParams }) => {
+  // Deep copy of data
+  const dataCopy = JSON.parse(JSON.stringify(data));
   const deletedFields = ['affiliations', 'affiliationsHtml', 'affiliationsTooltip', 'allIds', 'allInfos', 'authors', 'datasource', 'id', 'hasCorrection', 'key', 'nameHtml', 'selected'];
   const stringifiedFields = ['addList', 'fr_authors_orcid', 'fr_publications_linked', 'removeList', 'rors', 'rorsInOpenAlex', 'rorsToCorrect', 'worksExample'];
-  data.forEach((work) => {
+  dataCopy.forEach((work) => {
     work.allIds?.forEach((id) => {
       work[id.id_type] = id.id_value;
     });
@@ -73,7 +75,7 @@ const export2Csv = ({ data, label, searchParams }) => {
       }
     });
   });
-  const csvFile = Papa.unparse(data, { skipEmptyLines: 'greedy' });
+  const csvFile = Papa.unparse(dataCopy, { skipEmptyLines: 'greedy' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csvFile], { type: 'text/csv;charset=utf-8' }));
   const fileName = getFileName({ extension: 'csv', label, searchParams });
@@ -84,12 +86,13 @@ const export2Csv = ({ data, label, searchParams }) => {
 };
 
 const export2json = ({ data, label, searchParams }) => {
-  const link = document.createElement('a');
-  const exportedData = data.map((work) => {
+  // Deep copy of data
+  const dataCopy = JSON.parse(JSON.stringify(data));
+  dataCopy.forEach((work) => {
     delete work.allInfos;
-    return work;
   });
-  link.href = URL.createObjectURL(new Blob([JSON.stringify(exportedData, null, 2)], { type: 'application/json' }));
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([JSON.stringify(dataCopy, null, 2)], { type: 'application/json' }));
   const fileName = getFileName({ extension: 'json', label, searchParams });
   link.setAttribute('download', fileName);
   document.body.appendChild(link);
@@ -98,8 +101,13 @@ const export2json = ({ data, label, searchParams }) => {
 };
 
 const export2jsonl = ({ data, label, searchParams }) => {
+  // Deep copy of data
+  const dataCopy = JSON.parse(JSON.stringify(data));
+  dataCopy.forEach((work) => {
+    delete work.allInfos;
+  });
   const link = document.createElement('a');
-  link.href = URL.createObjectURL(new Blob([data.map(JSON.stringify).join('\n')], { type: 'application/jsonl+json' }));
+  link.href = URL.createObjectURL(new Blob([dataCopy.map(JSON.stringify).join('\n')], { type: 'application/jsonl+json' }));
   const fileName = getFileName({ extension: 'jsonl', label, searchParams });
   link.setAttribute('download', fileName);
   document.body.appendChild(link);
