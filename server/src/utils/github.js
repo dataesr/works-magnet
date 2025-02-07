@@ -74,6 +74,7 @@ const createIssueOpenAlexAffiliations = ({ email, issue }) => {
   body += `works_examples: ${workIds}\n`;
   body += `searched between: ${startYear} - ${endYear}\n`;
   body += `contact: ${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}\n`;
+  body += `version: ${process.env.npm_package_version}-${process.env.NODE_ENV}`;
   return octokit.rest.issues.create({
     body,
     owner: 'dataesr',
@@ -86,6 +87,8 @@ const createIssueMentionsCharacterizations = ({ email, issue }) => {
   const title = `Correction for mention ${issue.id}`;
   // eslint-disable-next-line no-param-reassign
   issue.user = `${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}`;
+  // eslint-disable-next-line no-param-reassign
+  issue.version = `${process.env.npm_package_version}-${process.env.NODE_ENV}`;
   const body = `\`\`\`\n${JSON.stringify(issue, null, 4)}\n\`\`\``;
   return octokit.rest.issues.create({
     body,
