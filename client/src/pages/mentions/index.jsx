@@ -432,19 +432,16 @@ export default function Mentions() {
           </Col>
         </Row>
 
-        {/*
         <Row className="fr-mb-2w">
           <Button
             disabled={!corrections.length > 0}
             onClick={switchSendModal}
-            size="sm"
           >
             {`Send ${corrections.length} correction${
               corrections.length > 1 ? 's' : ''
             }`}
           </Button>
         </Row>
-        */}
 
         <Modal
           isOpen={isModalCharacterizationsOpen}
@@ -595,15 +592,6 @@ export default function Mentions() {
             </Col>
           </Row>
         )}
-
-        <Button
-          disabled={!corrections.length > 0}
-          onClick={switchSendModal}
-          size="sm"
-        >
-          {`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''
-            }`}
-        </Button>
 
         {searchParams.get('view') === 'table' && (
           <Tabs
