@@ -123,11 +123,11 @@ export default function Mentions() {
           mention.mention_context.shared = correctionsShared;
         }
         mention.hasCorrection = mention.mention_context.used
-            !== mention.mention_context_original.used
+          !== mention.mention_context_original.used
           || mention.mention_context.created
-            !== mention.mention_context_original.created
+          !== mention.mention_context_original.created
           || mention.mention_context.shared
-            !== mention.mention_context_original.shared
+          !== mention.mention_context_original.shared
           || mention.type !== mention.type_original;
         return mention;
       }),
@@ -192,11 +192,11 @@ export default function Mentions() {
           mention.type = correctionsType;
         }
         mention.hasCorrection = mention.mention_context.used
-            !== mention.mention_context_original.used
+          !== mention.mention_context_original.used
           || mention.mention_context.created
-            !== mention.mention_context_original.created
+          !== mention.mention_context_original.created
           || mention.mention_context.shared
-            !== mention.mention_context_original.shared
+          !== mention.mention_context_original.shared
           || mention.type !== mention.type_original;
         mention.hasCorrectionType = mention.type !== mention.type_original;
         return mention;
@@ -214,32 +214,28 @@ export default function Mentions() {
 
   const createdTemplate = (rowData) => (
     <i
-      className={`fr-mr-1w ${
-        rowData.mention_context.created
-          ? 'fr-icon-check-line'
-          : 'fr-icon-close-line'
-      } ${
-        rowData.mention_context.created
-        !== rowData.mention_context_original.created
+      className={`fr-mr-1w ${rowData.mention_context.created
+        ? 'fr-icon-check-line'
+        : 'fr-icon-close-line'
+        } ${rowData.mention_context.created
+          !== rowData.mention_context_original.created
           ? 'fr-icon--lg'
           : 'fr-icon'
-      }`}
+        }`}
       style={{ color: rowData.mention_context.created ? '#8dc572' : '#be6464' }}
     />
   );
 
   const sharedTemplate = (rowData) => (
     <i
-      className={`fr-mr-1w ${
-        rowData.mention_context.shared
-          ? 'fr-icon-check-line'
-          : 'fr-icon-close-line'
-      } ${
-        rowData.mention_context.shared
-        !== rowData.mention_context_original.shared
+      className={`fr-mr-1w ${rowData.mention_context.shared
+        ? 'fr-icon-check-line'
+        : 'fr-icon-close-line'
+        } ${rowData.mention_context.shared
+          !== rowData.mention_context_original.shared
           ? 'fr-icon--lg'
           : 'fr-icon'
-      }`}
+        }`}
       style={{ color: rowData.mention_context.shared ? '#8dc572' : '#be6464' }}
     />
   );
@@ -252,15 +248,13 @@ export default function Mentions() {
 
   const usedTemplate = (rowData) => (
     <i
-      className={`fr-mr-1w fr-icon ${
-        rowData.mention_context.used
-          ? 'fr-icon-check-line'
-          : 'fr-icon-close-line'
-      } ${
-        rowData.mention_context.used !== rowData.mention_context_original.used
+      className={`fr-mr-1w fr-icon ${rowData.mention_context.used
+        ? 'fr-icon-check-line'
+        : 'fr-icon-close-line'
+        } ${rowData.mention_context.used !== rowData.mention_context_original.used
           ? 'fr-icon--lg'
           : 'fr-icon'
-      }`}
+        }`}
       style={{ color: rowData.mention_context.used ? '#8dc572' : '#be6464' }}
     />
   );
@@ -387,9 +381,8 @@ export default function Mentions() {
             onClick={switchTypesModal}
             size="lg"
             style={{ display: 'block', width: '100%', textAlign: 'left' }}
-            title={`Switch type from ${capitalize(urlSearchParams.type)} to ${
-              urlSearchParams.type === 'software' ? 'Datasets' : 'Software'
-            }`}
+            title={`Switch type from ${capitalize(urlSearchParams.type)} to ${urlSearchParams.type === 'software' ? 'Datasets' : 'Software'
+              }`}
           >
             <i
               className="fr-icon-file-line fr-mr-2w"
@@ -468,9 +461,8 @@ export default function Mentions() {
               title="Used"
             >
               <i
-                className={`${
-                  correctionsUsed ? 'fr-icon-check-line' : 'fr-icon-close-line'
-                }`}
+                className={`${correctionsUsed ? 'fr-icon-check-line' : 'fr-icon-close-line'
+                  }`}
                 style={{ color: correctionsUsed ? '#8dc572' : '#be6464' }}
               />
               {' '}
@@ -485,11 +477,10 @@ export default function Mentions() {
               title="Created"
             >
               <i
-                className={`${
-                  correctionsCreated
-                    ? 'fr-icon-check-line'
-                    : 'fr-icon-close-line'
-                }`}
+                className={`${correctionsCreated
+                  ? 'fr-icon-check-line'
+                  : 'fr-icon-close-line'
+                  }`}
                 style={{ color: correctionsCreated ? '#8dc572' : '#be6464' }}
               />
               {' '}
@@ -504,11 +495,10 @@ export default function Mentions() {
               title="Shared"
             >
               <i
-                className={`${
-                  correctionsShared
-                    ? 'fr-icon-check-line'
-                    : 'fr-icon-close-line'
-                }`}
+                className={`${correctionsShared
+                  ? 'fr-icon-check-line'
+                  : 'fr-icon-close-line'
+                  }`}
                 style={{ color: correctionsShared ? '#8dc572' : '#be6464' }}
               />
               {' '}
@@ -518,9 +508,8 @@ export default function Mentions() {
           <ModalFooter>
             <Button
               onClick={addCorrections}
-              title={`Validate modification${
-                corrections.length > 1 ? 's' : ''
-              }`}
+              title={`Validate modification${corrections.length > 1 ? 's' : ''
+                }`}
             >
               {`Validate modification${corrections.length > 1 ? 's' : ''}`}
             </Button>
@@ -529,9 +518,8 @@ export default function Mentions() {
         <Modal isOpen={isModalSendOpen} hide={switchSendModal}>
           <ModalTitle>Send mentions corrections</ModalTitle>
           <ModalContent>
-            {`You corrected ${corrections.length} mention${
-              corrections.length > 1 ? 's' : ''
-            }.`}
+            {`You corrected ${corrections.length} mention${corrections.length > 1 ? 's' : ''
+              }.`}
             <TextInput
               className="fr-mt-1w"
               label="Please indicate your email. Only an encrypted version of your email </Modal>will be public."
@@ -544,13 +532,11 @@ export default function Mentions() {
             <Button
               disabled={!corrections.length > 0 || !validEmail}
               onClick={feedback}
-              title={`Send ${corrections.length} correction${
-                corrections.length > 1 ? 's' : ''
-              }`}
+              title={`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''
+                }`}
             >
-              {`Send ${corrections.length} correction${
-                corrections.length > 1 ? 's' : ''
-              }`}
+              {`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''
+                }`}
             </Button>
           </ModalFooter>
         </Modal>
@@ -570,9 +556,8 @@ export default function Mentions() {
           <ModalFooter>
             <Button
               onClick={switchType}
-              title={`Validate modification${
-                corrections.length > 1 ? 's' : ''
-              }`}
+              title={`Validate modification${corrections.length > 1 ? 's' : ''
+                }`}
             >
               {`Validate modification${corrections.length > 1 ? 's' : ''}`}
             </Button>
@@ -610,6 +595,15 @@ export default function Mentions() {
             </Col>
           </Row>
         )}
+
+        <Button
+          disabled={!corrections.length > 0}
+          onClick={switchSendModal}
+          size="sm"
+        >
+          {`Send ${corrections.length} correction${corrections.length > 1 ? 's' : ''
+            }`}
+        </Button>
 
         {searchParams.get('view') === 'table' && (
           <Tabs
@@ -829,37 +823,14 @@ export default function Mentions() {
           </Tabs>
         )}
         {searchParams.get('view') === 'grid' && (
-          <>
-            <div
-              style={{
-                display: 'flex',
-                backgroundColor: '#eee',
-                borderBottom: '2px solid #000',
-              }}
-              className="fr-py-1w"
-            >
-              <div className="fr-pl-2w">
-                <input type="checkbox" />
-              </div>
-              <Button
-                disabled={!corrections.length > 0}
-                onClick={switchSendModal}
-                size="sm"
-              >
-                {`Send ${corrections.length} correction${
-                  corrections.length > 1 ? 's' : ''
-                }`}
-              </Button>
-            </div>
-            <ul style={{ listStyle: 'none' }}>
-              {mentions.map((mention) => (
-                <MentionListItem
-                  key={mention.id}
-                  mention={mention}
-                />
-              ))}
-            </ul>
-          </>
+          <ul style={{ listStyle: 'none' }}>
+            {mentions.map((mention) => (
+              <MentionListItem
+                key={mention.id}
+                mention={mention}
+              />
+            ))}
+          </ul>
         )}
       </Container>
     </>
