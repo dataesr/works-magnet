@@ -249,12 +249,6 @@ export default function Affiliations() {
             const rors = await getRorData(label, queryParams.getRorChildren === '1');
             rors
               .forEach((item) => {
-                children.push({
-                  isDisabled: false,
-                  label: item.rorId,
-                  source: 'ror',
-                  type: 'rorId',
-                });
                 item.names.forEach((name) => {
                   children.push({
                     isDisabled: name.length < VITE_APP_TAG_LIMIT,
@@ -519,7 +513,8 @@ export default function Affiliations() {
                         {options.affiliations.map((affiliation) => (
                           <Row key={`openalex-affiliations-search-${affiliation.label}`}>
                             <Tag
-                              className={`fr-mr-1w ${affiliation.isDisabled ? 'scratched' : ''
+                              as="button"
+                              className={`fr-mr-1w fr-mt-1w ${affiliation.isDisabled ? 'scratched' : ''
                                 }`}
                               color={getTagColor(affiliation)}
                               key={`openalex-affiliations-tag-${affiliation.label}`}
@@ -528,6 +523,7 @@ export default function Affiliations() {
                             </Tag>
                             {affiliation.children.map((child) => (
                               <Tag
+                                as="button"
                                 className={`fr-mr-1w fr-mt-1w ${child.isDisabled ? 'scratched' : ''
                                   }`}
                                 color={getTagColor(child)}
