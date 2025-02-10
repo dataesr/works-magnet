@@ -378,7 +378,11 @@ export default function Mentions() {
             color="blue-ecume"
             disabled={!selectedMentions.length}
             key="switch-type"
-            onClick={switchTypesModal}
+            onClick={() => {
+              if (searchParams.get('type') === 'datasets') setCorrectionsType('dataset');
+              if (searchParams.get('type') === 'software') setCorrectionsType('software');
+              switchTypesModal();
+            }}
             size="lg"
             style={{ display: 'block', width: '100%', textAlign: 'left' }}
             title={`Switch type from ${capitalize(urlSearchParams.type)} to ${urlSearchParams.type === 'software' ? 'Datasets' : 'Software'
@@ -553,8 +557,7 @@ export default function Mentions() {
           <ModalFooter>
             <Button
               onClick={switchType}
-              title={`Validate modification${corrections.length > 1 ? 's' : ''
-                }`}
+              title={`Validate modification${corrections.length > 1 ? 's' : ''}`}
             >
               {`Validate modification${corrections.length > 1 ? 's' : ''}`}
             </Button>
