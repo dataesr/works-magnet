@@ -34,7 +34,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import '../../../styles/index.scss';
 
-const { VITE_APP_TAG_LIMIT } = import.meta.env;
+const { VITE_APP_DEFAULT_YEAR, VITE_APP_TAG_LIMIT } = import.meta.env;
 
 export default function Affiliations() {
   const { pathname, search } = useLocation();
@@ -233,10 +233,10 @@ export default function Affiliations() {
   useEffect(() => {
     const getData = async () => {
       const queryParams = {
-        endYear: searchParams.get('endYear') ?? '2023',
+        endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
         excludedRors: searchParams.get('excludedRors') ?? '',
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
-        startYear: searchParams.get('startYear') ?? '2023',
+        startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
       };
       queryParams.deletedAffiliations = [];
       queryParams.rorExclusions = [];

@@ -9,10 +9,12 @@ import { useSearchParams } from 'react-router-dom';
 
 import { range } from '../../utils/works';
 
+const { VITE_APP_DEFAULT_YEAR } = import.meta.env;
+
 export default function DatasetsYearlyDistribution({ allDatasets, field, subfield = undefined }) {
   const [searchParams] = useSearchParams();
 
-  const categories = range(searchParams.get('startYear', 2023), searchParams.get('endYear', 2023));
+  const categories = range(searchParams.get('startYear', VITE_APP_DEFAULT_YEAR), searchParams.get('endYear', VITE_APP_DEFAULT_YEAR));
   const allFields = {};
   allDatasets.filter((dataset) => dataset.status === 'validated').forEach((dataset) => {
     const publicationYear = dataset?.year;

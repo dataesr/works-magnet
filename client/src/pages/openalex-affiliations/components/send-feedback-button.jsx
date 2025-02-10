@@ -13,7 +13,7 @@ import useWebSocket from 'react-use-websocket';
 
 import useToast from '../../../hooks/useToast';
 
-const { VITE_WS_HOST } = import.meta.env;
+const { VITE_APP_DEFAULT_YEAR, VITE_WS_HOST } = import.meta.env;
 
 export default function SendFeedbackButton({ className, corrections, resetCorrections }) {
   const [searchParams] = useSearchParams();
@@ -42,11 +42,11 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
   const sendFeedback = async () => {
     try {
       const data = corrections.map((correction) => ({
-        endYear: searchParams.get('endYear') ?? '2023',
+        endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
         name: correction.name,
         rors: [...correction.rors, ...correction.addList].filter((ror) => !correction.removeList.includes(ror.rorId)),
         rorsToCorrect: correction.rorsToCorrect,
-        startYear: searchParams.get('startYear') ?? '2023',
+        startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
         worksExample: correction.worksExample,
         worksOpenAlex: correction.worksOpenAlex,
       }));

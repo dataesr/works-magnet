@@ -17,14 +17,12 @@ import TagInput from '../../components/tag-input';
 import Header from '../../layout/header';
 import { cleanRor, getRorData, isRor } from '../../utils/ror';
 
-const { VITE_APP_TAG_LIMIT } = import.meta.env;
+const { VITE_APP_DEFAULT_YEAR, VITE_APP_START_YEAR, VITE_APP_TAG_LIMIT } = import.meta.env;
 
-const START_YEAR = 2010;
-const DEFAULT_YEAR = '2024';
-// Generate an array of objects with all years from START_YEAR
-const years = [...Array(new Date().getFullYear() - START_YEAR + 1).keys()]
+// Generate an array of objects with all years from VITE_APP_START_YEAR
+const years = [...Array(new Date().getFullYear() - Number(VITE_APP_START_YEAR) + 1).keys()]
   .sort((a, b) => b - a)
-  .map((year) => (year + START_YEAR).toString())
+  .map((year) => (year + Number(VITE_APP_START_YEAR)).toString())
   .map((year) => ({ label: year, value: year }));
 
 export default function PublicationsSearch() {
@@ -51,9 +49,9 @@ export default function PublicationsSearch() {
       const searchParamsTmp = {
         affiliations: searchParams.getAll('affiliations') ?? [],
         deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
-        endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
+        endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
-        startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
+        startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
       };
       setSearchParams(searchParamsTmp);
       setTags([]);
@@ -64,9 +62,9 @@ export default function PublicationsSearch() {
       setCurrentSearchParams({
         affiliations,
         deletedAffiliations: deletedAffiliations1,
-        endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
+        endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
-        startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
+        startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
       });
       const newSearchedAffiliations = affiliations.filter(
         (affiliation) => !searchedAffiliations.includes(affiliation),
