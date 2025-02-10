@@ -52,7 +52,7 @@ FooterBottom.defaultProps = {
   copy: undefined,
 };
 FooterBottom.propTypes = {
-  children: PropTypes.object.isRequired,
+  children: PropTypes.array.isRequired,
   copy: PropTypes.string,
 };
 
