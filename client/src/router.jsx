@@ -6,11 +6,14 @@ import DatasetsResults from './pages/datasets/results';
 import DatasetsSearch from './pages/datasets/search';
 import Home from './pages/home';
 import Mentions from './pages/mentions';
+
 import OpenalexAffiliationsCorrections from './pages/openalex-affiliations/corrections';
 import OpenalexaffiliationsResults from './pages/openalex-affiliations/results';
 import OpenalexAffiliationsSearch from './pages/openalex-affiliations/search';
 import PublicationsResults from './pages/publications/results';
 import PublicationsSearch from './pages/publications/search';
+import MentionsSearch from './pages/mentions/search';
+import MentionsResults from './pages/mentions/results';
 
 export default function Router() {
   // TODO: Merge nested routes
@@ -53,6 +56,8 @@ export default function Router() {
           }
         />
         <Route path="mentions" element={<Mentions />} />
+        <Route path="/mentions/search" element={<MentionsSearch />} />
+        <Route path="/mentions/results" element={<MentionsResults />} />
         <Route path="about" element={<About />} />
       </Route>
     </Routes>
