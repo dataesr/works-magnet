@@ -1,7 +1,16 @@
 import { Breadcrumb, Button, Col, Container, Link, Row, TextInput } from '@dataesr/dsfr-plus';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import Header from '../../layout/header';
 
+const DEFAULT_SEARCH = '';
+
 export default function MentionsSearch() {
+  const [search, setSearch] = useState(DEFAULT_SEARCH);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
   return (
     <div style={{ minHeight: '700px' }}>
       <Header />
@@ -21,21 +30,24 @@ export default function MentionsSearch() {
             <TextInput
               hint='Example "Coq" or "Cern"'
               label="Search mentions"
-              // message="message"
               messageType=""
-              // onChange={(e) => setInput(e.target.value)}
-              // onKeyDown={handleKeyDown}
-              // placeholder={placeholder}
-              // required={isRequired}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if ([9, 13].includes(e.keyCode) && search) {
+                  e.preventDefault();
+                  navigate(`/${pathname.split('/')[1]}/results?search=${search}`);
+                }
+              }}
               type="text"
-              // value={input}
+              value={search}
             />
           </Col>
           <Col xs="2">
             <Button
               className="fr-mt-7w"
+              disabled={search.length === 0}
               icon="search-line"
-              // onClick={() => removeAllAffiliations()}
+              onClick={() => navigate(`/${pathname.split('/')[1]}/results?search=${search}`)}
               title="Search"
             >
               Search
