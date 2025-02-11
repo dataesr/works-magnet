@@ -14,9 +14,7 @@ import Publications from '../views/publications';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
-const { VITE_APP_TAG_LIMIT } = import.meta.env;
-
-const DEFAULT_YEAR = '2024';
+const { VITE_APP_DEFAULT_YEAR, VITE_APP_TAG_LIMIT } = import.meta.env;
 
 export default function Affiliations() {
   const [searchParams] = useSearchParams();
@@ -66,8 +64,8 @@ export default function Affiliations() {
   useEffect(() => {
     const getData = async () => {
       const queryParams = {
-        endYear: searchParams.get('endYear') ?? DEFAULT_YEAR,
-        startYear: searchParams.get('startYear') ?? DEFAULT_YEAR,
+        endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
+        startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
       };
       queryParams.affiliationStrings = [];
       queryParams.deletedAffiliations = [];

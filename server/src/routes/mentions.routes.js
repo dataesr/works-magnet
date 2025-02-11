@@ -132,7 +132,7 @@ const getMentions = async ({ query }) => {
 };
 
 const getMentionsCount = async ({ query }) => {
-  ['_source', 'from', 'highlight', 'size'].forEach((item) => {
+  ['_source', 'from', 'highlight', 'size', 'sort'].forEach((item) => {
     // eslint-disable-next-line no-param-reassign
     delete query?.[item];
   });
