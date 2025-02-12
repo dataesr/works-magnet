@@ -119,6 +119,7 @@ export default function Corrections() {
   const { error, isFetched, isFetching } = useQuery({
     queryKey: ['facets'],
     queryFn: () => getCorrectionsAndFacets(),
+    refetchOnWindowFocus: false,
   });
 
   // useEffect(() => {
