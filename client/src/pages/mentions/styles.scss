@@ -1,0 +1,42 @@
+.wm-mentions{
+  .actions {
+    border: #777 1px solid;
+    background-color: #eee;
+    // border-top-right-radius: 15px;
+    // border-top-left-radius: 15px;
+    padding: 10px;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .results {
+    border: #777 1px solid;
+    background-color: #eee;
+    font-size: 14px;
+    .mentions-list {
+      padding: 10px;
+      thead{
+        position: sticky;
+        top: 46px;
+        z-index: 1000;
+        background-color: #eee;
+      }
+      th{
+        text-align: left;
+        vertical-align: bottom;
+      }
+      .mention {
+        border-bottom: 1px solid #ddd;
+        &:hover {
+          background-color: #ddd;
+          cursor: pointer;
+        }
+        &.selected {
+          background-color: #ddd;
+        }
+      }
+    }
+  }
+}

@@ -7,12 +7,14 @@ import Header from '../../layout/header';
 import MentionsList from './components/mentions-list.tsx';
 // import { getMentions } from '../../utils/works';
 
+import './styles.scss';
+
 // const DEFAULT_CORRECTION = false;
 const DEFAULT_FROM = 0;
 const DEFAULT_SEARCH = '';
 const DEFAULT_SIZE = 50;
-const DEFAULT_SORTBY = '';
-const DEFAULT_SORTORDER = '';
+const DEFAULT_SORTBY = 'doi';
+const DEFAULT_SORTORDER = 'asc';
 const DEFAULT_TYPE = 'software';
 
 const { VITE_API } = import.meta.env;
@@ -82,9 +84,9 @@ export default function MentionsResults() {
         )}
 
         {!isLoading && data && (
-          <Container>
+          <Container fluid className="wm-mentions fr-mx-5w">
             <Row>
-              <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w fr-ml-8w">
+              <Breadcrumb className="fr-my-1w">
                 <Link href="/">
                   Home
                 </Link>
@@ -96,13 +98,20 @@ export default function MentionsResults() {
                 </Link>
               </Breadcrumb>
             </Row>
-            <Row>
+            <Row className="actions fr-mb-1w">
               <Col>
                 {
                   `${mentions.length} / ${data.count}`
                 }
-                <br />
-                <MentionsList mentions={mentions} />
+              </Col>
+            </Row>
+            <Row className="results">
+              <Col>
+                <MentionsList
+                  mentions={mentions}
+                  params={params}
+                  setParams={setParams}
+                />
               </Col>
             </Row>
 
