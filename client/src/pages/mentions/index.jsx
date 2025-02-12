@@ -786,7 +786,7 @@ export default function Mentions() {
                     sortable
                   />
                   <Column
-                    body={hasCorrectionTemplate}
+                    body={(rowData) => hasCorrectionTemplate(rowData, undo)}
                     field="hasCorrection"
                     header="Modified by user?"
                     sortable
