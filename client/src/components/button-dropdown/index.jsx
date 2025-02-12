@@ -9,7 +9,7 @@ import { capitalize } from '../../utils/strings';
 
 import './index.scss';
 
-export default function ButtonDropdown({ className, data, label, searchParams }) {
+export default function ButtonDropdown({ className, data, label, searchParams, size }) {
   const { toast } = useToast();
 
   const _className = classNames(
@@ -34,6 +34,7 @@ export default function ButtonDropdown({ className, data, label, searchParams })
         color="blue-ecume"
         disabled={!data.length}
         icon="save-line"
+        size={size}
       >
         {`Export ${label} (${data.length})`}
       </Button>
@@ -68,6 +69,7 @@ export default function ButtonDropdown({ className, data, label, searchParams })
 
 ButtonDropdown.defaultProps = {
   className: '',
+  size: 'md',
 };
 
 ButtonDropdown.propTypes = {
@@ -75,4 +77,5 @@ ButtonDropdown.propTypes = {
   data: PropTypes.array.isRequired,
   label: PropTypes.string.isRequired,
   searchParams: PropTypes.object.isRequired,
+  size: PropTypes.string,
 };
