@@ -81,7 +81,6 @@ export default function Affiliations() {
           ...affiliation,
           addList: affiliation.addList.filter((item) => !selectedRorIds.includes(item.rorId)),
           removeList: [...new Set([...affiliation.removeList, ...selectedRorIds])].filter((item) => affiliation.rors.map((_ror) => _ror.rorId).includes(item)),
-          selected: false,
         };
       }
       return affiliation;
@@ -112,13 +111,9 @@ export default function Affiliations() {
         return {
           ...affiliation,
           addList: [...affiliation.addList, cleanRor],
-          selected: false,
         };
       }
-      return {
-        ...affiliation,
-        selected: false,
-      };
+      return affiliation;
     });
     setAffiliations(updatedAffiliations);
     setRor('');
