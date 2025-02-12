@@ -54,7 +54,7 @@ const getMentionsQuery = ({ options }) => {
       require_field_match: 'true',
       fields: [
         {
-          context: { pre_tags: ['<b>'], post_tags: ['</b>'] },
+          context: { pre_tags: ['<strong>'], post_tags: ['</strong>'] },
         },
       ],
     },
