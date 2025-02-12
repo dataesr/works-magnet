@@ -15,6 +15,7 @@ export default function ExportErrorsButton({
       data={corrections}
       label="OpenAlex corrections"
       searchParams={searchParams}
+      size="sm"
     />
   );
 }
