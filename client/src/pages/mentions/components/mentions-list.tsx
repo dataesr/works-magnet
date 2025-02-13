@@ -103,7 +103,7 @@ export default function MentionsList({ mentions, params, setParams }) {
             style={{ writingMode: "vertical-rl", transform: "rotate(210deg)" }}
           >
             <SortButton
-              id="used"
+              id="mention.mention_context.used"
               label="Used"
               params={params}
               setParams={setParams}
@@ -113,7 +113,7 @@ export default function MentionsList({ mentions, params, setParams }) {
             style={{ writingMode: "vertical-rl", transform: "rotate(210deg)" }}
           >
             <SortButton
-              id="created"
+              id="mention.mention_context.created"
               label="Created"
               params={params}
               setParams={setParams}
@@ -123,7 +123,7 @@ export default function MentionsList({ mentions, params, setParams }) {
             style={{ writingMode: "vertical-rl", transform: "rotate(210deg)" }}
           >
             <SortButton
-              id="shared"
+              id="mention.mention_context.shared"
               label="Shared"
               params={params}
               setParams={setParams}
