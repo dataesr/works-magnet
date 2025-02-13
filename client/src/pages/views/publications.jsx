@@ -159,7 +159,6 @@ Publications.propTypes = {
   setSelectedAffiliations: PropTypes.func.isRequired,
   selectedAffiliations: PropTypes.arrayOf(PropTypes.object).isRequired,
   tagAffiliations: PropTypes.func.isRequired,
-  options: PropTypes.object.isRequired,
   allPublications: PropTypes.arrayOf(PropTypes.object).isRequired,
   data: PropTypes.object.isRequired,
   selectedPublications: PropTypes.arrayOf(PropTypes.object).isRequired,
