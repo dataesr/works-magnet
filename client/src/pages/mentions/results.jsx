@@ -46,11 +46,11 @@ export default function MentionsResults() {
   useEffect(() => {
     if (data && data.mentions && data.mentions.length > 0) {
       // first call
-      if (params.from === 0) {
+      if (Number(params.from) === 0) {
         setMentions(data.mentions);
       }
       // next calls
-      if (params.from >= mentions.length && mentions.length < data.count) {
+      if (Number(params.from) >= mentions.length && mentions.length < data.count) {
         setMentions([...mentions, ...data.mentions]);
       }
     }
