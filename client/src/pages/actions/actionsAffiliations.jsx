@@ -21,8 +21,12 @@ export default function ActionsAffiliations({
 }) {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
-  const decidedAffiliations = allAffiliations?.filter((affiliation) => affiliation.status !== status.tobedecided.id) || [];
+  const decidedAffiliations = allAffiliations?.filter((affiliation) => affiliation.status !== status.tobedecided.id)?.map((affiliation) => {
+    delete affiliation.id;
+    return affiliation;
+  }) || [];
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const onExport = () => {
     export2json({ data: decidedAffiliations, label: 'affiliations', searchParams });
     toast({
