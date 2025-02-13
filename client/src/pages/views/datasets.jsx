@@ -32,6 +32,7 @@ export default function Datasets({
   if (allDatasets?.length === 0) {
     return <div>No datasets detected.</div>;
   }
+
   return (
     <>
       <Row>
@@ -195,14 +196,11 @@ Datasets.propTypes = {
   ).isRequired,
   allDatasets: PropTypes.arrayOf(
     PropTypes.shape({
+      client_id: PropTypes.string.isRequired,
+      format: PropTypes.string.isRequired,
       id: PropTypes.string.isRequired,
       status: PropTypes.string.isRequired,
       type: PropTypes.string.isRequired,
-      format: PropTypes.string.isRequired,
-      client_id: PropTypes.string.isRequired,
-      rawAffiliation: PropTypes.string.isRequired,
-      validatedAffiliation: PropTypes.string.isRequired,
-      validated: PropTypes.bool.isRequired,
     }),
   ).isRequired,
   data: PropTypes.shape({
