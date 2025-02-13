@@ -1,15 +1,13 @@
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Breadcrumb, Button, Col, Container, Link, Row, Text } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
-import { Breadcrumb, Button, Col, Container, Link, Row, Spinner, Text } from '@dataesr/dsfr-plus';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import Header from '../../layout/header';
 import MentionsList from './components/mentions-list.tsx';
-// import { getMentions } from '../../utils/works';
 
 import './styles.scss';
 
-// const DEFAULT_CORRECTION = false;
 const DEFAULT_FROM = 0;
 const DEFAULT_SEARCH = '';
 const DEFAULT_SIZE = 50;
@@ -20,39 +18,66 @@ const DEFAULT_TYPE = 'software';
 const { VITE_API } = import.meta.env;
 
 export default function MentionsResults() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [mentions, setMentions] = useState([]);
   const [params, setParams] = useState({
-    search: searchParams.get('search') || DEFAULT_SEARCH,
-    from: searchParams.get('from') || DEFAULT_FROM,
-    size: searchParams.get('size') || DEFAULT_SIZE,
-    sortBy: searchParams.get('sortby') || DEFAULT_SORTBY,
-    sortOrder: searchParams.get('sortorder') || DEFAULT_SORTORDER,
-    type: searchParams.get('type') || DEFAULT_TYPE,
+    from: DEFAULT_FROM,
+    search: DEFAULT_SEARCH,
+    size: DEFAULT_SIZE,
+    sortBy: DEFAULT_SORTBY,
+    sortOrder: DEFAULT_SORTORDER,
+    type: DEFAULT_TYPE,
   });
 
-  const [mentions, setMentions] = useState([]);
-
-  const getMentions = async () => {
+  const getMentions = async (options) => {
     const response = await fetch(`${VITE_API}/mentions`, {
-      body: JSON.stringify(params),
+      body: JSON.stringify(options),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
     });
     return response.json();
   };
 
-  const { data, error, isLoading } = useQuery(['mentions', params], () => getMentions());
+  const { data, error, isLoading } = useQuery(['mentions', JSON.stringify(params)], () => {
+    if (params?.search.length > 0) return getMentions(params);
+    return {};
+  });
 
-  if (data && data.mentions && data.mentions.length > 0) {
-    // first call
-    if (params.from === 0 && mentions.length === 0) {
-      setMentions(data.mentions);
+  useEffect(() => {
+    if (data && data.mentions && data.mentions.length > 0) {
+      // first call
+      if (params.from === 0) {
+        setMentions(data.mentions);
+      }
+      // next calls
+      if (params.from >= mentions.length && mentions.length < data.count) {
+        setMentions([...mentions, ...data.mentions]);
+      }
     }
-    // // next calls
-    if (params.from >= mentions.length && mentions.length < data.count) {
-      setMentions([...mentions, ...data.mentions]);
+  }, [data, mentions, params.from]);
+
+  useEffect(() => {
+    // Set default params values
+    if (searchParams.size === 0) {
+      setSearchParams({
+        from: DEFAULT_FROM,
+        search: DEFAULT_SEARCH,
+        size: DEFAULT_SIZE,
+        'sort-by': DEFAULT_SORTBY,
+        'sort-order': DEFAULT_SORTORDER,
+        type: DEFAULT_TYPE,
+      });
+    } else {
+      setParams({
+        from: searchParams.get('from') || DEFAULT_FROM,
+        search: searchParams.get('search') || DEFAULT_SEARCH,
+        size: searchParams.get('size') || DEFAULT_SIZE,
+        sortBy: searchParams.get('sort-by') || DEFAULT_SORTBY,
+        sortOrder: searchParams.get('sort-order') || DEFAULT_SORTORDER,
+        type: searchParams.get('type') || DEFAULT_TYPE,
+      });
     }
-  }
+  }, [searchParams, setSearchParams]);
 
   return (
     <div style={{ minHeight: '700px' }}>
@@ -109,8 +134,8 @@ export default function MentionsResults() {
               <Col>
                 <MentionsList
                   mentions={mentions}
-                  params={params}
-                  setParams={setParams}
+                  searchParams={searchParams}
+                  setSearchParams={setSearchParams}
                 />
               </Col>
             </Row>

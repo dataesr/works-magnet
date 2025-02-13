@@ -1,4 +1,4 @@
-import { Button, Col, Container, Link, Row } from "@dataesr/dsfr-plus";
+import { Button, Link } from "@dataesr/dsfr-plus";
 import React from "react";
 
 const LimitedList = ({ list, max }) => {
@@ -37,65 +37,51 @@ function CheckIcon({ checked }) {
   );
 }
 
-function SortButton({ id, label, params, setParams }) {
+function SortButton({ label, searchParams, setSearchParams, sortBy }) {
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       <Button
         className="fr-ml-1v"
         color="beige-gris-galet"
         onClick={() => {
-          setParams({
-            ...params,
-            sortBy: id,
-            sortOrder: "asc",
-          });
+          if (searchParams.get('sort-by') !== sortBy) {
+            searchParams.set('sort-order', 'asc');
+          } else {
+            searchParams.set('sort-order', searchParams.get('sort-order') === 'asc' ? 'desc' : 'asc')
+          }
+          searchParams.set('sort-by', sortBy);
+          setSearchParams(searchParams);
         }}
         size="sm"
         variant="text"
       >
         {label}
+        {searchParams.get('sort-by') === sortBy && searchParams.get('sort-order') === 'asc' && <>▲</>}
+        {searchParams.get('sort-by') === sortBy && searchParams.get('sort-order') === 'desc' && <>▼</>}
       </Button>
-      {params.sortBy === id && (
-        <Button
-          className="fr-ml-1v"
-          color="beige-gris-galet"
-          onClick={() => {
-            setParams({
-              ...params,
-              sortBy: id,
-              sortOrder: params.sortOrder === "asc" ? "desc" : "asc",
-            });
-          }}
-          size="sm"
-          variant="text"
-        >
-          {params.sortBy === id && params.sortOrder === "asc" && <>▲</>}
-          {params.sortBy === id && params.sortOrder === "desc" && <>▼</>}
-        </Button>
-      )}
     </div>
   );
 }
 
-export default function MentionsList({ mentions, params, setParams }) {
+export default function MentionsList({ mentions, searchParams, setSearchParams }) {
   return (
     <table className="mentions-list">
       <thead>
         <tr>
           <th>
             <SortButton
-              id="doi"
               label="DOI"
-              params={params}
-              setParams={setParams}
+              searchParams={searchParams}
+              setSearchParams={setSearchParams}
+              sortBy="doi"
             />
           </th>
           <th>
             <SortButton
-              id="rawForm"
               label="Raw form"
-              params={params}
-              setParams={setParams}
+              searchParams={searchParams}
+              setSearchParams={setSearchParams}
+              sortBy="rawForm"
             />
           </th>
           <th>Context</th>
@@ -103,30 +89,30 @@ export default function MentionsList({ mentions, params, setParams }) {
             style={{ writingMode: "vertical-rl", transform: "rotate(210deg)" }}
           >
             <SortButton
-              id="mention.mention_context.used"
               label="Used"
-              params={params}
-              setParams={setParams}
+              searchParams={searchParams}
+              setSearchParams={setSearchParams}
+              sortBy="mention.mention_context.used"
             />
           </th>
           <th
             style={{ writingMode: "vertical-rl", transform: "rotate(210deg)" }}
           >
             <SortButton
-              id="mention.mention_context.created"
               label="Created"
-              params={params}
-              setParams={setParams}
+              searchParams={searchParams}
+              setSearchParams={setSearchParams}
+              sortBy="mention.mention_context.created"
             />
           </th>
           <th
             style={{ writingMode: "vertical-rl", transform: "rotate(210deg)" }}
           >
             <SortButton
-              id="mention.mention_context.shared"
               label="Shared"
-              params={params}
-              setParams={setParams}
+              searchParams={searchParams}
+              setSearchParams={setSearchParams}
+              sortBy="mention.mention_context.shared"
             />
           </th>
           <th>Affiliations</th>
