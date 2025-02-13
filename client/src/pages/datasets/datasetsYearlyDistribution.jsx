@@ -3,11 +3,16 @@ import {
   Row,
 } from '@dataesr/dsfr-plus';
 import Highcharts from 'highcharts';
+import HCExportingData from 'highcharts/modules/export-data';
+import HCExporting from 'highcharts/modules/exporting';
 import HighchartsReact from 'highcharts-react-official';
 import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
 
 import { range } from '../../utils/works';
+
+HCExporting(Highcharts);
+HCExportingData(Highcharts);
 
 const { VITE_APP_DEFAULT_YEAR } = import.meta.env;
 
