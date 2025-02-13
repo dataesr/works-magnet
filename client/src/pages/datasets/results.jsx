@@ -40,27 +40,33 @@ export default function Affiliations() {
   };
 
   const tagAffiliations = (_affiliations, action) => {
-    if (action !== status.excluded.id) {
-      const worksIds = _affiliations
-        .map((affiliation) => affiliation.works)
-        .flat();
-      data?.datasets?.results
-        ?.filter((dataset) => worksIds.includes(dataset.id))
-        .map((dataset) => (dataset.status = action));
+    if (_affiliations.length > 0) {
+      // If no affiliationIds, it means it comes from a restored file so d o a match on affiliation key
+      if (_affiliations?.[0]?.id === undefined) {
+        const affiliationKeys = _affiliations.map((affiliation) => affiliation?.key).filter((key) => !!key);
+        // eslint-disable-next-line no-param-reassign
+        _affiliations = affiliations.filter((aff) => affiliationKeys.includes(aff.key));
+      }
+      if (action !== status.excluded.id) {
+        const worksIds = _affiliations
+          .map((affiliation) => affiliation.works)
+          .flat();
+        data?.datasets?.results
+          ?.filter((dataset) => worksIds.includes(dataset.id))
+          .map((dataset) => (dataset.status = action));
+      }
+      // Filter non existing ids
+      const affiliationIds = _affiliations.map((affiliation) => affiliation.id).filter((id) => !!id);
+      setAffiliations(
+        affiliations
+          .map((affiliation) => {
+            if (affiliationIds.includes(affiliation.id)) {
+              affiliation.status = action;
+            }
+            return affiliation;
+          }),
+      );
     }
-    const affiliationIds = _affiliations.map((affiliation) => affiliation.id);
-    setAffiliations(
-      affiliations
-        .map((affiliation) => {
-          if (affiliationIds.includes(affiliation.id)) {
-            return ({
-              ...affiliation,
-              status: action,
-            });
-          }
-          return affiliation;
-        }),
-    );
     setSelectedAffiliations([]);
   };
 

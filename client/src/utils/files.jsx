@@ -119,14 +119,11 @@ const importJson = (e, tagAffiliations) => {
   const fileReader = new FileReader();
   fileReader.readAsText(e.target.files[0], 'UTF-8');
   fileReader.onload = (f) => {
-    const allAffiliations = JSON.parse(f.target.result);
-    const decidedAffiliations = allAffiliations?.filter((affiliation) => affiliation.status !== status.tobedecided.id) || [];
-    if (decidedAffiliations) {
-      const validatedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === status.validated.id);
-      tagAffiliations(validatedAffiliations, status.validated.id);
-      const excludedAffiliations = decidedAffiliations.filter((decidedAffiliation) => decidedAffiliation.status === status.excluded.id);
-      tagAffiliations(excludedAffiliations, status.excluded.id);
-    }
+    const affiliations = JSON.parse(f.target.result);
+    const validatedAffiliations = affiliations.filter((decidedAffiliation) => decidedAffiliation.status === status.validated.id);
+    if (validatedAffiliations.length > 0) tagAffiliations(validatedAffiliations, status.validated.id);
+    const excludedAffiliations = affiliations.filter((decidedAffiliation) => decidedAffiliation.status === status.excluded.id);
+    if (excludedAffiliations.length > 0) tagAffiliations(excludedAffiliations, status.excluded.id);
   };
 };
 
