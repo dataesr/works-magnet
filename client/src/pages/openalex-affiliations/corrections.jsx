@@ -17,6 +17,27 @@ export default function Corrections() {
   const [corrections, setCorrections] = useState([]);
   const [numberOfCorrections, setNumberOfCorrections] = useState(0);
 
+  const DATES = [];
+  const startYear = 2024;
+  const startMonth = 3;
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  Object.values([...Array(currentYear - startYear + 1).keys()].map((year) => `${year + startYear}`)).forEach((year) => {
+    Object.values([...Array(12).keys()].map((month) => `0${month + 1}`.slice(-2))).forEach((month) => {
+      if (Number(year) === startYear) {
+        if (Number(month >= startMonth)) {
+          DATES.push(`${year}/${month}`);
+        }
+      } else if (Number(year) === currentYear) {
+        if (Number(month) <= currentMonth) {
+          DATES.push(`${year}/${month}`);
+        }
+      } else {
+        DATES.push(`${year}/${month}`);
+      }
+    });
+  });
+
   const getCorrections = async (state, page = 0) => {
     const offset = page * ODS_BY_PAGE;
     let _corrections = [];
@@ -51,15 +72,14 @@ export default function Corrections() {
   };
 
   const getFacetDate = async (field) => {
-    const dates = ['2024/03', '2024/04', '2024/05', '2024/06', '2024/07', '2024/08', '2024/09', '2024/10', '2024/11', '2024/12', '2025/01'];
     const url2024 = `https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?refine.${field}=2024&facet=${field}&dataset=openalex-affiliations-corrections&rows=0`;
     const { facet_groups: facetGroups2024 } = await (await fetch(url2024)).json();
-    const closedDateFacet2024 = facetGroups2024.find((facet) => facet.name === field)?.facets?.map((facet) => facet.facets).flat();
+    const datesFacet2024 = facetGroups2024.find((facet) => facet.name === field)?.facets?.map((facet) => facet.facets).flat();
     const url2025 = `https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?refine.${field}=2025&facet=${field}&dataset=openalex-affiliations-corrections&rows=0`;
     const { facet_groups: facetGroups2025 } = await (await fetch(url2025)).json();
-    const closedDateFacet2025 = facetGroups2025.find((facet) => facet.name === field)?.facets?.map((facet) => facet.facets).flat();
-    const closedDateFacet = [...closedDateFacet2024, ...closedDateFacet2025];
-    return dates.map((date) => closedDateFacet.find((item) => item.path === date)?.count ?? 0);
+    const datesFacet2025 = facetGroups2025.find((facet) => facet.name === field)?.facets?.map((facet) => facet.facets).flat();
+    const datesFacet = [...datesFacet2024, ...datesFacet2025];
+    return DATES.map((date) => datesFacet.find((item) => item.path === date)?.count ?? 0);
   };
 
   const getCorrectionsAndFacets = async () => {
@@ -104,13 +124,12 @@ export default function Corrections() {
     //   openedSum += item.opened;
     //   opened.push(openedSum);
     // });
-    const categories = ['2024/03', '2024/04', '2024/05', '2024/06', '2024/07', '2024/08', '2024/09', '2024/10', '2024/11', '2024/12', '2025/01'];
     setChartOptionsDates({
       credits: { enabled: false },
       plotOptions: { series: { dataLabels: { enabled: true } } },
       series: [{ color: '#6a618c', data: closed, name: 'Closed' }, { color: '#6e9879', data: opened, name: 'Open' }],
       title: { text: 'Number of corrections requested over time' },
-      xAxis: { categories },
+      xAxis: { categories: DATES },
       yAxis: { title: { text: 'Number of corrections requested' } },
     });
     return '';
