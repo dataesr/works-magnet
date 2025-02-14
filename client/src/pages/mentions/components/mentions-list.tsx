@@ -44,30 +44,41 @@ function SortButton({ label, searchParams, setSearchParams, sortBy }) {
         className="fr-ml-1v"
         color="beige-gris-galet"
         onClick={() => {
-          if (searchParams.get('sort-by') !== sortBy) {
-            searchParams.set('sort-order', 'asc');
+          if (searchParams.get("sort-by") !== sortBy) {
+            searchParams.set("sort-order", "asc");
           } else {
-            searchParams.set('sort-order', searchParams.get('sort-order') === 'asc' ? 'desc' : 'asc')
+            searchParams.set(
+              "sort-order",
+              searchParams.get("sort-order") === "asc" ? "desc" : "asc"
+            );
           }
-          searchParams.set('sort-by', sortBy);
+          searchParams.set("sort-by", sortBy);
           setSearchParams(searchParams);
         }}
         size="sm"
         variant="text"
       >
         {label}
-        {searchParams.get('sort-by') === sortBy && searchParams.get('sort-order') === 'asc' && <>▲</>}
-        {searchParams.get('sort-by') === sortBy && searchParams.get('sort-order') === 'desc' && <>▼</>}
+        {searchParams.get("sort-by") === sortBy &&
+          searchParams.get("sort-order") === "asc" && <>▲</>}
+        {searchParams.get("sort-by") === sortBy &&
+          searchParams.get("sort-order") === "desc" && <>▼</>}
       </Button>
     </div>
   );
 }
 
-export default function MentionsList({ mentions, searchParams, setSearchParams }) {
+export default function MentionsList({
+  mentions,
+  searchParams,
+  setSearchParams,
+  setSelectedMentions,
+}) {
   return (
     <table className="mentions-list">
       <thead>
         <tr>
+          <th />
           <th>
             <SortButton
               label="DOI"
@@ -121,7 +132,33 @@ export default function MentionsList({ mentions, searchParams, setSearchParams }
       </thead>
       <tbody>
         {mentions.map((mention) => (
-          <tr key={mention.id} className="mention">
+          <tr
+            className="mention"
+            key={mention.id}
+            onClick={() => {
+              setSelectedMentions(
+                mentions.map((m) =>
+                  m.id === mention.id ? { ...m, selected: !m.selected } : m
+                )
+              );
+            }}
+          >
+            <td
+              onClick={(e) => e.stopPropagation()}
+              style={{ width: "40px", textAlign: "center" }}
+            >
+              <input
+                type="checkbox"
+                checked={mention.selected}
+                onChange={() => {
+                  setSelectedMentions(
+                    mentions.map((m) =>
+                      m.id === mention.id ? { ...m, selected: !m.selected } : m
+                    )
+                  );
+                }}
+              />
+            </td>
             <td>
               <Link
                 href={`https://doi.org/${mention.doi}`}

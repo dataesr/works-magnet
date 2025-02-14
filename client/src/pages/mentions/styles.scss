@@ -9,6 +9,17 @@
     position: sticky;
     top: 0;
     z-index: 1000;
+
+    .corrections-box{
+      background-color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      select{
+        width: 200px;
+      }
+    }
   }
 
   .results {
@@ -19,7 +30,7 @@
       padding: 10px;
       thead{
         position: sticky;
-        top: 46px;
+        top: 106px;
         z-index: 1000;
         background-color: #eee;
       }
