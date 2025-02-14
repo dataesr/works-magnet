@@ -60,7 +60,8 @@ export default function MentionsResults() {
         setMentions([...mentions, ...data.mentions]);
       }
     }
-  }, [data, mentions, params.from]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, params.from]);
 
   useEffect(() => {
     // Set default params values
