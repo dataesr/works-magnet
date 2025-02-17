@@ -17,7 +17,7 @@ const LimitedList = ({ list, max }) => {
 
   return (
     <>
-      <ul>
+      <ul className="fr-m-0">
         {limitedList.map((item, index) => (
           <li key={index}>{item}</li>
         ))}
@@ -70,6 +70,7 @@ function SortButton({ label, searchParams, setSearchParams, sortBy }) {
 
 export default function MentionsList({
   mentions,
+  mentionsWithCorrection,
   searchParams,
   setSearchParams,
   setSelectedMentions,
@@ -183,10 +184,10 @@ export default function MentionsList({
               <CheckIcon checked={mention.mention_context.shared} />
             </td>
             <td>
-              <LimitedList list={mention.affiliations} max={3} />
+              <LimitedList list={mention.affiliations} max={1} />
             </td>
             <td>
-              <LimitedList list={mention.authors} max={5} />
+              <LimitedList list={mention.authors} max={2} />
             </td>
           </tr>
         ))}

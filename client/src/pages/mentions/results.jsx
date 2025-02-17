@@ -87,7 +87,7 @@ export default function MentionsResults() {
   }, [searchParams, setSearchParams]);
 
   const updateMentions = () => {
-    // update selected mentions with values of used, created, shared and type
+    // Update selected mentions with values of used, created, shared and type
     const updatedMentions = mentions.filter((mention) => mention.selected).map((mention) => ({
       ...mention,
       mention_context: {
@@ -97,7 +97,19 @@ export default function MentionsResults() {
       },
       type,
     }));
-    setMentionsWithCorrection(updatedMentions);
+
+    // Update existing corrections or add new ones
+    const newMentionsWithCorrection = [...mentionsWithCorrection];
+    updatedMentions.forEach((updatedMention) => {
+      const existingIndex = newMentionsWithCorrection.findIndex((m) => m.id === updatedMention.id);
+      if (existingIndex !== -1) {
+        newMentionsWithCorrection[existingIndex] = updatedMention;
+      } else {
+        newMentionsWithCorrection.push(updatedMention);
+      }
+    });
+
+    setMentionsWithCorrection(newMentionsWithCorrection);
   };
 
   return (
@@ -172,8 +184,7 @@ export default function MentionsResults() {
               <Col>
                 <MentionsList
                   mentions={mentions}
-                  // params={params}
-                  // setParams={setParams}
+                  mentionsWithCorrection={mentionsWithCorrection}
                   setSelectedMentions={setMentions}
                   searchParams={searchParams}
                   setSearchParams={setSearchParams}
