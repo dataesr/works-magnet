@@ -151,7 +151,13 @@ export default function MentionsResults() {
                   <Col md={7}>
                     <div className="corrections-box">
                       <span>
-                        {`${mentions.filter((mention) => mention?.selected).length} selected mentions`}
+                        <strong>
+                          {mentions.filter((mention) => mention?.selected).length}
+                        </strong>
+                        {' '}
+                        {mentions.filter((mention) => mention?.selected).length <= 1 ? 'mention' : 'mentions'}
+                        {' '}
+                        selected
                       </span>
                       <select className="fr-select" onChange={(e) => setType(e.target.value)} value={type}>
                         <option value="software">Software</option>
@@ -172,7 +178,9 @@ export default function MentionsResults() {
                     <i>
                       <strong>{mentions.length}</strong>
                       {' '}
-                      mentions displayed out of
+                      {mentions.length === 1 ? 'mention' : 'mentions'}
+                      {' '}
+                      displayed out of
                       {' '}
                       <strong>{data.count}</strong>
                       {' '}
