@@ -110,6 +110,15 @@ export default function MentionsResults() {
     });
 
     setMentionsWithCorrection(newMentionsWithCorrection);
+
+    // Reset values
+    setType(DEFAULT_TYPE);
+    setUsed(false);
+    setCreated(false);
+    setShared(false);
+
+    // unselect all mentions
+    setMentions(mentions.map((mention) => ({ ...mention, selected: false })));
   };
 
   return (
@@ -159,14 +168,41 @@ export default function MentionsResults() {
                         {' '}
                         selected
                       </span>
-                      <select className="fr-select" onChange={(e) => setType(e.target.value)} value={type}>
+                      <select
+                        className="fr-select"
+                        disabled={mentions.filter((mention) => mention?.selected).length === 0}
+                        onChange={(e) => setType(e.target.value)}
+                        value={type}
+                      >
                         <option value="software">Software</option>
                         <option value="dataset">Dataset</option>
                       </select>
-                      <Toggle checked={used} label="Used" onChange={(e) => setUsed(e.target.checked)} />
-                      <Toggle checked={created} label="Created" onChange={(e) => setCreated(e.target.checked)} />
-                      <Toggle checked={shared} label="Shared" onChange={(e) => setShared(e.target.checked)} />
-                      <Button color="green-bourgeon" onClick={() => { updateMentions(); }} size="sm">Apply corrections</Button>
+                      <Toggle
+                        checked={used}
+                        disabled={mentions.filter((mention) => mention?.selected).length === 0}
+                        label="Used"
+                        onChange={(e) => setUsed(e.target.checked)}
+                      />
+                      <Toggle
+                        checked={created}
+                        disabled={mentions.filter((mention) => mention?.selected).length === 0}
+                        label="Created"
+                        onChange={(e) => setCreated(e.target.checked)}
+                      />
+                      <Toggle
+                        checked={shared}
+                        disabled={mentions.filter((mention) => mention?.selected).length === 0}
+                        label="Shared"
+                        onChange={(e) => setShared(e.target.checked)}
+                      />
+                      <Button
+                        color="green-bourgeon"
+                        disabled={mentions.filter((mention) => mention?.selected).length === 0}
+                        onClick={() => { updateMentions(); }}
+                        size="sm"
+                      >
+                        Apply corrections
+                      </Button>
                     </div>
                   </Col>
                   <Col className="text-right">
