@@ -7,9 +7,16 @@ import Header from '../../layout/header';
 const DEFAULT_SEARCH = '';
 
 export default function MentionsSearch() {
-  const [search, setSearch] = useState(DEFAULT_SEARCH);
+  const [searchInput, setSearchInput] = useState(DEFAULT_SEARCH);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialSearch = searchParams.get('search') || DEFAULT_SEARCH;
+  useState(() => {
+    setSearchInput(initialSearch);
+  }, []);
 
   return (
     <div style={{ minHeight: '700px' }}>
@@ -31,23 +38,23 @@ export default function MentionsSearch() {
               hint='Example "Coq" or "Cern"'
               label="Search mentions"
               messageType=""
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={(e) => {
-                if ([9, 13].includes(e.keyCode) && search) {
+                if ([9, 13].includes(e.keyCode) && searchInput) {
                   e.preventDefault();
-                  navigate(`/${pathname.split('/')[1]}/results?search=${search}`);
+                  navigate(`/${pathname.split('/')[1]}/results?search=${searchInput}`);
                 }
               }}
               type="text"
-              value={search}
+              value={searchInput}
             />
           </Col>
           <Col xs="2">
             <Button
               className="fr-mt-7w"
-              disabled={search.length === 0}
+              disabled={searchInput.length === 0}
               icon="search-line"
-              onClick={() => navigate(`/${pathname.split('/')[1]}/results?search=${search}`)}
+              onClick={() => navigate(`/${pathname.split('/')[1]}/results?search=${searchInput}`)}
               title="Search"
             >
               Search
