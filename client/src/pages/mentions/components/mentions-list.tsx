@@ -105,6 +105,7 @@ export default function MentionsList({
               sortBy="doi"
             />
           </th>
+          <th>Type</th>
           <th>
             <SortButton
               label="Raw form"
@@ -195,7 +196,8 @@ export default function MentionsList({
                   {mention.doi}
                 </Link>
               </td>
-              <td>{mention.rawForm}</td>
+              <td className="text-center">{mention.type_original}</td>
+              <td className="text-center">{mention.rawForm}</td>
               <td
                 style={{ width: "20%" }}
                 dangerouslySetInnerHTML={{ __html: mention.context }}
@@ -227,7 +229,7 @@ export default function MentionsList({
                   <td className="text-center">
                     <span className="fr-icon-edit-line" aria-hidden="true" />
                   </td>
-                  <td colSpan={3}>
+                  <td colSpan={4}>
                     {mentionsWithCorrection.find(
                       (el) =>
                         el.id === mention.id && el.type !== el.type_original
