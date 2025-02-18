@@ -1,8 +1,24 @@
+import {
+  Breadcrumb,
+  Button,
+  Col,
+  Container,
+  Link,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalTitle,
+  Row,
+  Text,
+  TextInput,
+  Toggle,
+} from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Breadcrumb, Button, Col, Container, Link, Row, Text, Toggle } from '@dataesr/dsfr-plus';
+import useWebSocket from 'react-use-websocket';
 
+import useToast from '../../hooks/useToast';
 import Header from '../../layout/header';
 import MentionsList from './components/mentions-list.tsx';
 
@@ -15,10 +31,16 @@ const DEFAULT_SORTBY = 'doi';
 const DEFAULT_SORTORDER = 'asc';
 const DEFAULT_TYPE = 'software';
 
-const { VITE_API } = import.meta.env;
+const { VITE_API, VITE_WS_HOST } = import.meta.env;
 
 export default function MentionsResults() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { toast } = useToast();
+
+  const [created, setCreated] = useState(false);
+  const [isCorrectionsModalOpen, setIsCorrectionsModalOpen] = useState(false);
+  const [mentions, setMentions] = useState([]);
+  const [mentionsWithCorrection, setMentionsWithCorrection] = useState([]);
   const [params, setParams] = useState({
     from: DEFAULT_FROM,
     search: DEFAULT_SEARCH,
@@ -27,13 +49,56 @@ export default function MentionsResults() {
     sortOrder: DEFAULT_SORTORDER,
     type: DEFAULT_TYPE,
   });
-
-  const [mentions, setMentions] = useState([]);
-  const [mentionsWithCorrection, setMentionsWithCorrection] = useState([]);
+  const [shared, setShared] = useState(false);
   const [type, setType] = useState(params.type);
   const [used, setUsed] = useState(false);
-  const [created, setCreated] = useState(false);
-  const [shared, setShared] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
+  const [validEmail, setValidEmail] = useState(null);
+
+  const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
+    onError: (event) => console.error(event),
+    onMessage: (event) => {
+      const { autoDismissAfter, description, title, toastType } = JSON.parse(
+        event.data,
+      );
+      return toast({
+        autoDismissAfter: autoDismissAfter ?? 10000,
+        description: description ?? '',
+        id: 'websocket',
+        title: title ?? 'Message returned by the WebSocket',
+        toastType: toastType ?? 'info',
+      });
+    },
+    shouldReconnect: () => true,
+  });
+
+  const switchCorrectionsModal = () => setIsCorrectionsModalOpen((previousState) => !previousState);
+
+  const sendFeedback = async () => {
+    try {
+      sendJsonMessage({
+        data: mentionsWithCorrection,
+        email: userEmail,
+        type: 'mentions-characterizations',
+      });
+      toast({
+        autoDismissAfter: 5000,
+        description:
+          'Your corrections are currently submitted to the <a href="https://github.com/dataesr/mentions-characterizations/issues" target="_blank">Github repository</a>',
+        id: 'initMentions',
+        title: 'Mentions characterizations submitted',
+      });
+    } catch (e) {
+      toast({
+        description: e.message,
+        id: 'errorMentions',
+        title: 'Error while sending mentions characterizations',
+        toastType: 'error',
+      });
+    } finally {
+      switchCorrectionsModal();
+    }
+  };
 
   const getMentions = async (options) => {
     const response = await fetch(`${VITE_API}/mentions`, {
@@ -42,6 +107,38 @@ export default function MentionsResults() {
       method: 'POST',
     });
     return response.json();
+  };
+
+  const updateMentions = () => {
+    // Update selected mentions with values of used, created, shared and type
+    const updatedMentions = mentions.filter((mention) => mention.selected).map((mention) => ({
+      ...mention,
+      mention_context: {
+        created,
+        shared,
+        used,
+      },
+      type,
+    }));
+
+    // Update existing corrections or add new ones
+    const newMentionsWithCorrection = [...mentionsWithCorrection];
+    updatedMentions.forEach((updatedMention) => {
+      const existingIndex = newMentionsWithCorrection.findIndex((m) => m.id === updatedMention.id);
+      if (existingIndex !== -1) {
+        newMentionsWithCorrection[existingIndex] = updatedMention;
+      } else {
+        newMentionsWithCorrection.push(updatedMention);
+      }
+    });
+    setMentionsWithCorrection(newMentionsWithCorrection);
+    // Reset values
+    setCreated(false);
+    setShared(false);
+    setType(DEFAULT_TYPE);
+    setUsed(false);
+    // unselect all mentions
+    setMentions(mentions.map((mention) => ({ ...mention, selected: false })));
   };
 
   const { data, error, isLoading } = useQuery(['mentions', JSON.stringify(params)], () => {
@@ -86,44 +183,46 @@ export default function MentionsResults() {
     }
   }, [searchParams, setSearchParams]);
 
-  const updateMentions = () => {
-    // Update selected mentions with values of used, created, shared and type
-    const updatedMentions = mentions.filter((mention) => mention.selected).map((mention) => ({
-      ...mention,
-      mention_context: {
-        used,
-        created,
-        shared,
-      },
-      type,
-    }));
-
-    // Update existing corrections or add new ones
-    const newMentionsWithCorrection = [...mentionsWithCorrection];
-    updatedMentions.forEach((updatedMention) => {
-      const existingIndex = newMentionsWithCorrection.findIndex((m) => m.id === updatedMention.id);
-      if (existingIndex !== -1) {
-        newMentionsWithCorrection[existingIndex] = updatedMention;
-      } else {
-        newMentionsWithCorrection.push(updatedMention);
-      }
-    });
-
-    setMentionsWithCorrection(newMentionsWithCorrection);
-
-    // Reset values
-    setType(DEFAULT_TYPE);
-    setUsed(false);
-    setCreated(false);
-    setShared(false);
-
-    // unselect all mentions
-    setMentions(mentions.map((mention) => ({ ...mention, selected: false })));
-  };
+  useEffect(() => {
+    const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+    const testEmail = (email) => setValidEmail(emailRegex.test(email) ? email : null);
+    const timeOutId = setTimeout(() => testEmail(userEmail), 500);
+    return () => clearTimeout(timeOutId);
+  }, [userEmail]);
 
   return (
     <div style={{ minHeight: '700px' }}>
       <Header />
+
+      <Modal isOpen={isCorrectionsModalOpen} hide={switchCorrectionsModal}>
+        <ModalTitle>Improve Mentions metadata</ModalTitle>
+        <ModalContent>
+          {`You corrected ${mentionsWithCorrection.length} mention${mentionsWithCorrection.length > 1 ? 's' : ''}.`}
+          <TextInput
+            className="fr-mt-1w"
+            label="Please indicate your email. Only an encrypted version of your email will be public."
+            onChange={(e) => setUserEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && mentionsWithCorrection.length > 0 && validEmail) {
+                sendFeedback();
+              }
+            }}
+            required
+            type="email"
+          />
+        </ModalContent>
+        <ModalFooter>
+          <Button
+            aria-label={`Send ${mentionsWithCorrection.length} correction${mentionsWithCorrection.length > 1 ? 's' : ''}`}
+            disabled={!mentionsWithCorrection.length > 0 || !validEmail}
+            onClick={sendFeedback}
+            title={`Send ${mentionsWithCorrection.length} correction${mentionsWithCorrection.length > 1 ? 's' : ''}`}
+          >
+            {`Send ${mentionsWithCorrection.length} correction${mentionsWithCorrection.length > 1 ? 's' : ''}`}
+          </Button>
+        </ModalFooter>
+      </Modal>
+
       <main className="wm-bg">
         {(isLoading) && (
           <Container style={{ textAlign: 'center', minHeight: '600px' }} className="fr-pt-5w wm-font">
@@ -206,7 +305,13 @@ export default function MentionsResults() {
                     </div>
                   </Col>
                   <Col className="text-right">
-                    <Button onClick={() => { console.log('Send corrections'); }} size="sm">Send corrections</Button>
+                    <Button
+                      disabled={mentionsWithCorrection.length === 0}
+                      onClick={() => { switchCorrectionsModal(); }}
+                      size="sm"
+                    >
+                      {`Send ${mentionsWithCorrection.length} correction${mentionsWithCorrection.length > 1 ? 's' : ''}`}
+                    </Button>
                   </Col>
                 </Row>
                 <Row>
@@ -232,10 +337,10 @@ export default function MentionsResults() {
                 <MentionsList
                   mentions={mentions}
                   mentionsWithCorrection={mentionsWithCorrection}
-                  setMentionsWithCorrection={setMentionsWithCorrection}
-                  setSelectedMentions={setMentions}
                   searchParams={searchParams}
+                  setMentionsWithCorrection={setMentionsWithCorrection}
                   setSearchParams={setSearchParams}
+                  setSelectedMentions={setMentions}
                 />
               </Col>
             </Row>
