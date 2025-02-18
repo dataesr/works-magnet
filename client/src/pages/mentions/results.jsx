@@ -169,12 +169,15 @@ export default function MentionsResults() {
                 </Row>
                 <Row>
                   <Col>
-                    <strong>{mentions.length}</strong>
-                    {' '}
-                    mentions displayed out of
-                    <strong>{data.count}</strong>
-                    {' '}
-                    detected
+                    <i>
+                      <strong>{mentions.length}</strong>
+                      {' '}
+                      mentions displayed out of
+                      {' '}
+                      <strong>{data.count}</strong>
+                      {' '}
+                      detected
+                    </i>
                   </Col>
                 </Row>
               </Col>
@@ -185,6 +188,7 @@ export default function MentionsResults() {
                 <MentionsList
                   mentions={mentions}
                   mentionsWithCorrection={mentionsWithCorrection}
+                  setMentionsWithCorrection={setMentionsWithCorrection}
                   setSelectedMentions={setMentions}
                   searchParams={searchParams}
                   setSearchParams={setSearchParams}

@@ -68,15 +68,32 @@ function SortButton({ label, searchParams, setSearchParams, sortBy }) {
   );
 }
 
+function CorrectionColumn({ mention, mentionsWithCorrection, field }) {
+  const correctedMention = mentionsWithCorrection.find(
+    (el) => el.id === mention.id
+  );
+
+  if (!correctedMention) return null;
+
+  const hasFieldChanged =
+    correctedMention.mention_context[field] !==
+    correctedMention.mention_context_original[field];
+
+  if (!hasFieldChanged) return null;
+
+  return <CheckIcon checked={correctedMention.mention_context[field]} />;
+}
+
 export default function MentionsList({
   mentions,
   mentionsWithCorrection,
+  setMentionsWithCorrection,
   searchParams,
   setSearchParams,
   setSelectedMentions,
 }) {
   return (
-    <table className="mentions-list">
+    <table className="mentions-list" style={{ borderSpacing: 0 }}>
       <thead>
         <tr>
           <th />
@@ -133,63 +150,141 @@ export default function MentionsList({
       </thead>
       <tbody>
         {mentions.map((mention) => (
-          <tr
-            className="mention"
-            key={mention.id}
-            onClick={() => {
-              setSelectedMentions(
-                mentions.map((m) =>
-                  m.id === mention.id ? { ...m, selected: !m.selected } : m
-                )
-              );
-            }}
-          >
-            <td
-              onClick={(e) => e.stopPropagation()}
-              style={{ width: "40px", textAlign: "center" }}
+          <>
+            <tr
+              className="mention"
+              key={mention.id}
+              onClick={() => {
+                setSelectedMentions(
+                  mentions.map((m) =>
+                    m.id === mention.id ? { ...m, selected: !m.selected } : m
+                  )
+                );
+              }}
             >
-              <input
-                type="checkbox"
-                checked={mention.selected}
-                onChange={() => {
-                  setSelectedMentions(
-                    mentions.map((m) =>
-                      m.id === mention.id ? { ...m, selected: !m.selected } : m
-                    )
-                  );
-                }}
-              />
-            </td>
-            <td>
-              <Link
-                href={`https://doi.org/${mention.doi}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <td
+                onClick={(e) => e.stopPropagation()}
+                style={{ width: "40px", textAlign: "center" }}
+                className={
+                  mentionsWithCorrection.find((el) => el.id === mention.id)
+                    ? "isCorrected"
+                    : ""
+                }
               >
-                {mention.doi}
-              </Link>
-            </td>
-            <td>{mention.rawForm}</td>
-            <td
-              style={{ width: "20%" }}
-              dangerouslySetInnerHTML={{ __html: mention.context }}
-            />
-            <td>
-              <CheckIcon checked={mention.mention_context.used} />
-            </td>
-            <td>
-              <CheckIcon checked={mention.mention_context.created} />
-            </td>
-            <td>
-              <CheckIcon checked={mention.mention_context.shared} />
-            </td>
-            <td>
-              <LimitedList list={mention.affiliations} max={1} />
-            </td>
-            <td>
-              <LimitedList list={mention.authors} max={2} />
-            </td>
-          </tr>
+                <input
+                  type="checkbox"
+                  checked={mention.selected}
+                  onChange={() => {
+                    setSelectedMentions(
+                      mentions.map((m) =>
+                        m.id === mention.id
+                          ? { ...m, selected: !m.selected }
+                          : m
+                      )
+                    );
+                  }}
+                  style={{ display: "block", margin: "auto" }}
+                />
+              </td>
+              <td>
+                <Link
+                  href={`https://doi.org/${mention.doi}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {mention.doi}
+                </Link>
+              </td>
+              <td>{mention.rawForm}</td>
+              <td
+                style={{ width: "20%" }}
+                dangerouslySetInnerHTML={{ __html: mention.context }}
+              />
+              <td className="text-center">
+                <CheckIcon checked={mention.mention_context_original.used} />
+              </td>
+              <td className="text-center">
+                <CheckIcon checked={mention.mention_context_original.created} />
+              </td>
+              <td className="text-center">
+                <CheckIcon checked={mention.mention_context_original.shared} />
+              </td>
+              <td>
+                <LimitedList list={mention.affiliations} max={1} />
+              </td>
+              <td>
+                <LimitedList list={mention.authors} max={2} />
+              </td>
+            </tr>
+            {mentionsWithCorrection.find((el) => el.id === mention.id) && (
+              <>
+                <tr
+                  style={{
+                    background: "linear-gradient(to right, #447049,#eee)",
+                    color: "#fff",
+                  }}
+                >
+                  <td className="text-center">
+                    <span className="fr-icon-edit-line" aria-hidden="true" />
+                  </td>
+                  <td colSpan={3}>
+                    {mentionsWithCorrection.find(
+                      (el) =>
+                        el.id === mention.id && el.type !== el.type_original
+                    ) ? (
+                      <span>
+                        New type ={" "}
+                        {
+                          mentionsWithCorrection.find(
+                            (el) => el.id === mention.id
+                          ).type
+                        }
+                      </span>
+                    ) : null}
+                  </td>
+                  <td className="text-center">
+                    <CorrectionColumn
+                      mention={mention}
+                      mentionsWithCorrection={mentionsWithCorrection}
+                      field="used"
+                    />
+                  </td>
+                  <td className="text-center">
+                    <CorrectionColumn
+                      mention={mention}
+                      mentionsWithCorrection={mentionsWithCorrection}
+                      field="created"
+                    />
+                  </td>
+                  <td className="text-center">
+                    <CorrectionColumn
+                      mention={mention}
+                      mentionsWithCorrection={mentionsWithCorrection}
+                      field="shared"
+                    />
+                  </td>
+                  <td colSpan={2}>
+                    <Button
+                      color="blue-cumulus"
+                      icon="arrow-go-back-fill"
+                      onClick={() => {
+                        setMentionsWithCorrection(
+                          mentionsWithCorrection.filter(
+                            (el) => el.id !== mention.id
+                          )
+                        );
+                      }}
+                      size="sm"
+                      variant="text"
+                    />
+                  </td>
+                </tr>
+                <tr style={{ height: "6px" }}>
+                  <td colSpan={9} />
+                </tr>
+              </>
+            )}
+          </>
         ))}
       </tbody>
     </table>

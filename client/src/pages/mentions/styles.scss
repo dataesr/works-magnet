@@ -11,7 +11,7 @@
     z-index: 1000;
 
     .corrections-box{
-      background-color: #ddd;
+      background-color: #A0B4A2;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -38,6 +38,7 @@
         text-align: left;
         vertical-align: bottom;
       }
+      
       .mention {
         border-bottom: 1px solid #ddd;
         &:hover {
@@ -47,6 +48,9 @@
         &.selected {
           background-color: #ddd;
         }
+      }
+      .isCorrected {
+        border-left: 6px solid #447049;
       }
     }
   }
