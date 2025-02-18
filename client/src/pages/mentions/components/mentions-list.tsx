@@ -1,4 +1,4 @@
-import { Button, Link } from "@dataesr/dsfr-plus";
+import { Button, Checkbox, Link } from "@dataesr/dsfr-plus";
 import React from "react";
 
 const LimitedList = ({ list, max }) => {
@@ -165,16 +165,15 @@ export default function MentionsList({
             >
               <td
                 onClick={(e) => e.stopPropagation()}
-                style={{ width: "40px", textAlign: "center" }}
                 className={
                   mentionsWithCorrection.find((el) => el.id === mention.id)
                     ? "isCorrected"
                     : ""
                 }
               >
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={mention.selected}
+                  className="fr-ml-1w"
                   onChange={() => {
                     setSelectedMentions(
                       mentions.map((m) =>
@@ -184,7 +183,6 @@ export default function MentionsList({
                       )
                     );
                   }}
-                  style={{ display: "block", margin: "auto" }}
                 />
               </td>
               <td>

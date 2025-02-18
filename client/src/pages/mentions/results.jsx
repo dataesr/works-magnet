@@ -242,7 +242,13 @@ export default function MentionsResults() {
 
             {data.count > mentions.length && (
               <div className="text-center">
-                <Button onClick={() => setParams({ ...params, from: params.from + params.size })}>Load more mentions</Button>
+                <Button
+                  className="fr-mt-2w"
+                  onClick={() => setParams({ ...params, from: params.from + params.size })}
+                  size="sm"
+                >
+                  Load more mentions
+                </Button>
               </div>
             )}
           </Container>
