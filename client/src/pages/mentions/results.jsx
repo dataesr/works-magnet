@@ -75,9 +75,53 @@ export default function MentionsResults() {
   const switchCorrectionsModal = () => setIsCorrectionsModalOpen((previousState) => !previousState);
 
   const sendFeedback = async () => {
+    const data = [];
+    mentionsWithCorrection.forEach((mentionWithCorrection) => {
+      if (mentionWithCorrection.type_original !== mentionWithCorrection.type) {
+        data.push({
+          doi: mentionWithCorrection.doi,
+          id: mentionWithCorrection.id,
+          previousType: mentionWithCorrection.type_original,
+          text: mentionWithCorrection.context,
+          type: mentionWithCorrection.type,
+        });
+      }
+      if (
+        mentionWithCorrection.mention_context.created !== mentionWithCorrection.mention_context_original.created
+        || mentionWithCorrection.mention_context.shared !== mentionWithCorrection.mention_context_original.shared
+        || mentionWithCorrection.mention_context.used !== mentionWithCorrection.mention_context_original.used
+      ) {
+        data.push({
+          doi: mentionWithCorrection.doi,
+          id: mentionWithCorrection.id,
+          texts: [{
+            text: [mentionWithCorrection.context],
+            class_attributes: {
+              classification: {
+                created: {
+                  previousValue: mentionWithCorrection.mention_context_original.created,
+                  score: 1,
+                  value: mentionWithCorrection.mention_context.created,
+                },
+                shared: {
+                  previousValue: mentionWithCorrection.mention_context_original.shared,
+                  score: 1,
+                  value: mentionWithCorrection.mention_context.shared,
+                },
+                used: {
+                  previousValue: mentionWithCorrection.mention_context_original.used,
+                  score: 1,
+                  value: mentionWithCorrection.mention_context.used,
+                },
+              },
+            },
+          }],
+        });
+      }
+    });
     try {
       sendJsonMessage({
-        data: mentionsWithCorrection,
+        data,
         email: userEmail,
         type: 'mentions-characterizations',
       });
