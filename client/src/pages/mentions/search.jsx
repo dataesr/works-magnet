@@ -20,7 +20,11 @@ export default function MentionsSearch() {
   const [shared, setShared] = useState(false);
   const [searchInputAuthor, setSearchInputAuthor] = useState('');
   const [searchInputAffiliation, setSearchInputAffiliation] = useState('');
-  const [advancedParams, setAdvancedParams] = useState([]);
+  const [searchInputAllFields, setSearchInputAllFields] = useState('');
+  const [searchInputDoi, setSearchInputDoi] = useState('');
+  const [searchInputMention, setSearchInputMention] = useState('');
+
+  const [advancedQuery, setAdvancedQuery] = useState([]);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -29,25 +33,53 @@ export default function MentionsSearch() {
     setSearchInput(initialSearch);
   }, []);
 
-  const addParameter = () => {
-    if (field === 'Type of mention') {
-      setAdvancedParams([...advancedParams, { field, operator, value: type }]);
-      setType('dataset');
-      document.getElementById('mentionType').querySelector('select').focus();
-    } else if (field === 'Charaterization') {
-      setAdvancedParams([...advancedParams, { field, operator, used, created, shared }]);
-      setUsed(false);
-      setCreated(false);
-      setShared(false);
-      document.getElementById('mentionCharaterization').querySelector('input').focus();
-    } else if (field === 'Author') {
-      setAdvancedParams([...advancedParams, { field, operator, value: searchInputAuthor }]);
-      setSearchInputAuthor('');
-      document.getElementById('mentionAuthor').querySelector('input').focus();
-    } else if (field === 'Affiliation') {
-      setAdvancedParams([...advancedParams, { field, operator, value: searchInputAffiliation }]);
+  /*
+all
+affiliation
+author
+
+mention
+doi
+mentionType
+*/
+
+  const addToQuery = () => {
+    if (field === 'all') {
+      setAdvancedQuery([...advancedQuery, { field, operator, value: searchInputAllFields }]);
+      setSearchInputAllFields('');
+      document.getElementById('mentionAllFields').querySelector('input').focus();
+    } else if (field === 'affiliation') {
+      setAdvancedQuery([...advancedQuery, { field, operator, value: searchInputAffiliation }]);
       setSearchInputAffiliation('');
       document.getElementById('mentionAffiliation').querySelector('input').focus();
+    } else if (field === 'author') {
+      setAdvancedQuery([...advancedQuery, { field, operator, value: searchInputAuthor }]);
+      setSearchInputAuthor('');
+      document.getElementById('mentionAuthor').querySelector('input').focus();
+    } else if (field === 'used') {
+      setAdvancedQuery([...advancedQuery, { field, operator, value: used }]);
+      setUsed(false);
+      document.getElementById('used').querySelector('input').focus();
+    } else if (field === 'created') {
+      setAdvancedQuery([...advancedQuery, { field, operator, value: created }]);
+      setCreated(false);
+      document.getElementById('created').querySelector('input').focus();
+    } else if (field === 'shared') {
+      setAdvancedQuery([...advancedQuery, { field, operator, value: shared }]);
+      setShared(false);
+      document.getElementById('shared').querySelector('input').focus();
+    } else if (field === 'mention') {
+      setAdvancedQuery([...advancedQuery, { field, operator, value: searchInputMention }]);
+      setSearchInputMention('');
+      document.getElementById('mention').querySelector('input').focus();
+    } else if (field === 'doi') {
+      setAdvancedQuery([...advancedQuery, { field, operator, value: searchInputDoi }]);
+      setSearchInputDoi('');
+      document.getElementById('mentionDoi').querySelector('input').focus();
+    } else if (field === 'mentionType') {
+      setAdvancedQuery([...advancedQuery, { field, operator, value: type }]);
+      setType('dataset');
+      document.getElementById('mentionType').querySelector('select').focus();
     }
   };
 
@@ -68,6 +100,7 @@ export default function MentionsSearch() {
         <Row className="fr-m-5w" gutters>
           <Col>
             <TextInput
+              disabled={showAdvanced}
               hint='Example "Coq" or "Cern"'
               label="Search mentions"
               messageType=""
@@ -90,7 +123,7 @@ export default function MentionsSearch() {
               variant="secondary"
               onClick={() => setShowAdvanced(!showAdvanced)}
             >
-              {showAdvanced ? 'Hide advanced search' : 'Advanced search'}
+              {showAdvanced ? 'Switch to simple search' : 'Switch to Advanced search'}
             </Button>
           </Col>
         </Row>
@@ -101,33 +134,38 @@ export default function MentionsSearch() {
             maxHeight: showAdvanced ? '600px' : '0',
             overflow: 'hidden',
             transition: 'max-height 0.8s ease-in-out',
-            borderLeft: '6px solid #6A6156',
           }}
         >
           <Row className="fr-ml-1w fr-mr-5w" gutters>
             <Col>
               <Title as="h2" look="h6">
-                Advanced parameters
+                Advanced search
               </Title>
-              Add terms to refine your search
+              This advanced search replaces the search above.
+              <br />
+              You can add terms to refine an advanced search
               <Row gutters>
                 <Col md={3}>
                   <select
-                    className="fr-select"
+                    className="fr-select fr-mt-1w"
                     onChange={(e) => setField(e.target.value)}
                     value={field}
                   >
-                    <option value="-">All fields</option>
-                    <option value="Type of mention">Type of mention</option>
-                    <option value="Charaterization">Charaterization</option>
-                    <option value="Author">Author</option>
-                    <option value="Affiliation">Affiliation</option>
+                    <option value="-">Select a field</option>
+                    <option value="all">Search in all fields</option>
+                    <option value="affiliation">Affiliation</option>
+                    <option value="author">Author</option>
+                    <option value="used">Charaterization - Used</option>
+                    <option value="created">Charaterization - Created</option>
+                    <option value="shared">Charaterization - Shared</option>
+                    <option value="mention">Mention</option>
+                    <option value="doi">DOI</option>
+                    <option value="mentionType">Type of mention</option>
                   </select>
                 </Col>
                 <Col md={2}>
-
                   <select
-                    className="fr-select"
+                    className="fr-select fr-mt-1w"
                     id="operator"
                     onChange={(e) => setOperator(e.target.value)}
                     value={operator}
@@ -137,27 +175,25 @@ export default function MentionsSearch() {
                     <option value="not">NOT</option>
                   </select>
                 </Col>
-                <Col>
+                <Col md={5}>
                   {
-                    (field !== '-') && (
-                      <Button
-                        color="beige-gris-galet"
-                        onClick={() => { addParameter(); }}
-                        title="Add"
-                      >
-                        Add
-                      </Button>
+                    (field === 'all') && (
+                      <div id="mentionAuthor">
+                        <TextInput
+                          message=""
+                          placeholder='All fields -Example "Coq" or "Cern"'
+                          onChange={(e) => setSearchInputAllFields(e.target.value)}
+                          type="text"
+                          value={searchInputAllFields}
+                        />
+                      </div>
                     )
                   }
-                </Col>
-              </Row>
-              <Row gutters>
-                <Col md={6}>
                   {
-                    (field === 'Type of mention') && (
+                    (field === 'mentionType') && (
                       <div id="mentionType">
                         <select
-                          className="fr-select"
+                          className="fr-select fr-mt-1w"
                           onChange={(e) => setType(e.target.value)}
                           value={type}
                         >
@@ -169,18 +205,56 @@ export default function MentionsSearch() {
                     )
                   }
                   {
-                    (field === 'Charaterization') && (
+                    (field === 'mention') && (
+                      <div id="mention">
+                        <TextInput
+                          message=""
+                          onChange={(e) => setSearchInputMention(e.target.value)}
+                          type="text"
+                          value={searchInputMention}
+                        />
+                      </div>
+                    )
+                  }
+                  {
+                    (field === 'doi') && (
+                      <div id="mentionDoi">
+                        <TextInput
+                          message=""
+                          placeholder='DOI - example "10.1109/5.771073"'
+                          onChange={(e) => setSearchInputDoi(e.target.value)}
+                          type="text"
+                          value={searchInputDoi}
+                        />
+                      </div>
+                    )
+                  }
+
+                  {
+                    (field === 'used') && (
                       <div id="mentionCharaterization" style={{ display: 'flex', gap: '1rem' }}>
                         <Toggle
                           checked={used}
                           label="Used"
                           onChange={(e) => setUsed(e.target.checked)}
                         />
+                      </div>
+                    )
+                  }
+                  {
+                    (field === 'shared') && (
+                      <div id="mentionCharaterization" style={{ display: 'flex', gap: '1rem' }}>
                         <Toggle
                           checked={shared}
                           label="Shared"
                           onChange={(e) => setShared(e.target.checked)}
                         />
+                      </div>
+                    )
+                  }
+                  {
+                    (field === 'created') && (
+                      <div id="mentionCharaterization" style={{ display: 'flex', gap: '1rem' }}>
                         <Toggle
                           checked={created}
                           label="Created"
@@ -190,12 +264,11 @@ export default function MentionsSearch() {
                     )
                   }
                   {
-                    (field === 'Author') && (
+                    (field === 'author') && (
                       <div id="mentionAuthor">
                         <TextInput
-                          hint='Example "John Doe"'
-                          label="Author"
-                          messageType=""
+                          message=""
+                          placeholder='Author - example "John Doe"'
                           onChange={(e) => setSearchInputAuthor(e.target.value)}
                           type="text"
                           value={searchInputAuthor}
@@ -204,12 +277,11 @@ export default function MentionsSearch() {
                     )
                   }
                   {
-                    (field === 'Affiliation') && (
+                    (field === 'affiliation') && (
                       <div id="mentionAffiliation">
                         <TextInput
-                          hint='Example "Cern"'
-                          label="Affiliation"
-                          messageType=""
+                          message=""
+                          placeholder='Affiliation - example "Cern"'
                           onChange={(e) => setSearchInputAffiliation(e.target.value)}
                           type="text"
                           value={searchInputAffiliation}
@@ -218,21 +290,36 @@ export default function MentionsSearch() {
                     )
                   }
                 </Col>
+                <Col className="text-right fr-mr-5w" style={{ width: '100%' }}>
+                  {
+                    (field !== '-') && (
+                      <Button
+                        className="fr-mt-1w"
+                        color="beige-gris-galet"
+                        onClick={() => { addToQuery(); }}
+                        style={{ width: '100%' }}
+                        title="Add"
+                      >
+                        + Add
+                      </Button>
+                    )
+                  }
+                </Col>
               </Row>
               {
-                advancedParams.length > 0 && (
+                advancedQuery.length > 0 && (
                   <Row className="fr-mt-2w">
                     <Col>
                       <i>
-                        <strong>{advancedParams.length}</strong>
+                        <strong>{advancedQuery.length}</strong>
                         {' '}
-                        {advancedParams.length === 1 ? 'parameter' : 'parameters'}
+                        {advancedQuery.length === 1 ? 'parameter' : 'parameters'}
                         {' '}
                         added
                       </i>
                       <ul>
                         {
-                          advancedParams.map((param, index) => (
+                          advancedQuery.map((param, index) => (
                             <li>
                               {param.operator.toUpperCase()}
                               {' '}
@@ -248,17 +335,11 @@ export default function MentionsSearch() {
                                 icon="close-line"
                                 title="Remove"
                                 onClick={() => {
-                                  setAdvancedParams(advancedParams.filter((_, i) => i !== index));
+                                  setAdvancedQuery(advancedQuery.filter((_, i) => i !== index));
                                 }}
                                 size="sm"
                                 variant="text"
                               />
-
-                              {/*
-                              TODO: Manage the display of booleans
-                              {param.used && 'Used'}
-                              {param.created && 'Created'}
-                              {param.shared && 'Shared'} */}
                             </li>
                           ))
                         }
@@ -271,12 +352,13 @@ export default function MentionsSearch() {
           </Row>
         </div>
         <Row className="fr-m-5w" gutters>
-          <Col className="text-right fr-mr-5w">
+          <Col offsetMd={10} className="text-right fr-mr-5w">
             <Button
               color="blue-ecume"
               disabled={searchInput.length === 0}
               icon="search-line"
               onClick={() => navigate(`/${pathname.split('/')[1]}/results?search=${searchInput}`)}
+              style={{ width: '100%' }}
               title="Search"
             >
               Search
