@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import './styles.scss';
 
 export default function CustomToggle({ checked, disabled, label, onChange }) {
@@ -22,3 +23,14 @@ export default function CustomToggle({ checked, disabled, label, onChange }) {
     </div>
   );
 }
+
+CustomToggle.propTypes = {
+  checked: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool,
+  label: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+CustomToggle.defaultProps = {
+  disabled: false,
+};
