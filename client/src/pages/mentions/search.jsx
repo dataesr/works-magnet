@@ -33,16 +33,6 @@ export default function MentionsSearch() {
     setSearchInput(initialSearch);
   }, []);
 
-  /*
-all
-affiliation
-author
-
-mention
-doi
-mentionType
-*/
-
   const addToQuery = () => {
     if (field === 'all') {
       setAdvancedQuery([...advancedQuery, { field, operator, value: searchInputAllFields }]);

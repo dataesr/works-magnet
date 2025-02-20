@@ -23,6 +23,7 @@ import Header from '../../layout/header';
 import MentionsList from './components/mentions-list.tsx';
 
 import './styles.scss';
+import CustomToggle from './components/custom-toggle/index';
 
 const DEFAULT_FROM = 0;
 const DEFAULT_SEARCH = '';
@@ -320,24 +321,25 @@ export default function MentionsResults() {
                         <option value="software">Software</option>
                         <option value="dataset">Dataset</option>
                       </select>
-                      <Toggle
+                      <CustomToggle
                         checked={used}
                         disabled={mentions.filter((mention) => mention?.selected).length === 0}
                         label="Used"
                         onChange={(e) => setUsed(e.target.checked)}
                       />
-                      <Toggle
+                      <CustomToggle
                         checked={created}
                         disabled={mentions.filter((mention) => mention?.selected).length === 0}
                         label="Created"
                         onChange={(e) => setCreated(e.target.checked)}
                       />
-                      <Toggle
+                      <CustomToggle
                         checked={shared}
                         disabled={mentions.filter((mention) => mention?.selected).length === 0}
                         label="Shared"
                         onChange={(e) => setShared(e.target.checked)}
                       />
+
                       <Button
                         color="green-bourgeon"
                         disabled={mentions.filter((mention) => mention?.selected).length === 0}
