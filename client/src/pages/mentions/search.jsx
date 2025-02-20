@@ -1,5 +1,5 @@
 import { Breadcrumb, Button, Col, Container, Link, Row, Text, TextInput, Title, Toggle } from '@dataesr/dsfr-plus';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Header from '../../layout/header';
@@ -23,12 +23,13 @@ export default function MentionsSearch() {
   const [searchInputAllFields, setSearchInputAllFields] = useState('');
   const [searchInputDoi, setSearchInputDoi] = useState('');
   const [searchInputMention, setSearchInputMention] = useState('');
-
   const [advancedQuery, setAdvancedQuery] = useState([]);
+  const [esQuery, setEsQuery] = useState('');
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const initialSearch = searchParams.get('search') || DEFAULT_SEARCH;
+
   useState(() => {
     setSearchInput(initialSearch);
   }, []);
@@ -72,6 +73,38 @@ export default function MentionsSearch() {
       document.getElementById('mentionType').querySelector('select').focus();
     }
   };
+
+  useEffect(() => {
+    if (showAdvanced) {
+      let esQueryTmp = '';
+      advancedQuery.forEach((param, index) => {
+        if (index > 0) esQueryTmp += ` ${param.operator.toUpperCase()} `;
+        if (param.field === 'all') {
+          esQueryTmp += '*';
+        } else if (param.field === 'mention') {
+          esQueryTmp += 'context';
+        } else if (param.field === 'doi') {
+          esQueryTmp += 'doi';
+        } else if (param.field === 'affiliation') {
+          esQueryTmp += 'affiliations.*';
+        } else if (param.field === 'author') {
+          esQueryTmp += 'authors.*';
+        } else if (param.field === 'used') {
+          esQueryTmp += 'mention_context.used';
+        } else if (param.field === 'created') {
+          esQueryTmp += 'mention_context.created';
+        } else if (param.field === 'shared') {
+          esQueryTmp += 'mention_context.shared';
+        } else if (param.field === 'mentionType') {
+          esQueryTmp += 'type';
+        }
+        esQueryTmp += `:${param.value}`;
+      });
+      setEsQuery(esQueryTmp);
+    } else {
+      setEsQuery(searchInput);
+    }
+  }, [advancedQuery, searchInput, showAdvanced]);
 
   return (
     <div style={{ minHeight: '700px' }}>
@@ -153,25 +186,13 @@ export default function MentionsSearch() {
                     <option value="mentionType">Type of mention</option>
                   </select>
                 </Col>
-                <Col md={2}>
-                  <select
-                    className="fr-select fr-mt-1w"
-                    id="operator"
-                    onChange={(e) => setOperator(e.target.value)}
-                    value={operator}
-                  >
-                    <option value="and">AND</option>
-                    <option value="or">OR</option>
-                    <option value="not">NOT</option>
-                  </select>
-                </Col>
                 <Col md={5}>
                   {
                     (field === 'all') && (
-                      <div id="mentionAuthor">
+                      <div id="mentionAllFields">
                         <TextInput
                           message=""
-                          placeholder='All fields -Example "Coq" or "Cern"'
+                          placeholder='All fields - Example "Coq" or "Cern"'
                           onChange={(e) => setSearchInputAllFields(e.target.value)}
                           type="text"
                           value={searchInputAllFields}
@@ -219,7 +240,6 @@ export default function MentionsSearch() {
                       </div>
                     )
                   }
-
                   {
                     (field === 'used') && (
                       <div id="mentionCharaterization" style={{ display: 'flex', gap: '1rem' }}>
@@ -280,13 +300,25 @@ export default function MentionsSearch() {
                     )
                   }
                 </Col>
+                <Col md={2}>
+                  <select
+                    className="fr-select fr-mt-1w"
+                    id="operator"
+                    onChange={(e) => setOperator(e.target.value)}
+                    value={operator}
+                  >
+                    <option value="and">AND</option>
+                    <option value="or">OR</option>
+                    <option value="not">NOT</option>
+                  </select>
+                </Col>
                 <Col className="text-right fr-mr-5w" style={{ width: '100%' }}>
                   {
                     (field !== '-') && (
                       <Button
                         className="fr-mt-1w"
                         color="beige-gris-galet"
-                        onClick={() => { addToQuery(); }}
+                        onClick={() => addToQuery()}
                         style={{ width: '100%' }}
                         title="Add"
                       >
@@ -310,7 +342,8 @@ export default function MentionsSearch() {
                       <ul>
                         {
                           advancedQuery.map((param, index) => (
-                            <li>
+                            // eslint-disable-next-line react/no-array-index-key
+                            <li key={`param-${index}`}>
                               {param.operator.toUpperCase()}
                               {' '}
                               <strong>
@@ -342,12 +375,19 @@ export default function MentionsSearch() {
           </Row>
         </div>
         <Row className="fr-m-5w" gutters>
+          <Col className="fr-mr-5w">
+            <Text>
+              {esQuery}
+            </Text>
+          </Col>
+        </Row>
+        <Row className="fr-m-5w" gutters>
           <Col offsetMd={10} className="text-right fr-mr-5w">
             <Button
               color="blue-ecume"
-              disabled={searchInput.length === 0}
+              disabled={esQuery.length === 0}
               icon="search-line"
-              onClick={() => navigate(`/${pathname.split('/')[1]}/results?search=${searchInput}`)}
+              onClick={() => navigate(`/${pathname.split('/')[1]}/results?search=${esQuery}`)}
               style={{ width: '100%' }}
               title="Search"
             >
@@ -355,7 +395,6 @@ export default function MentionsSearch() {
             </Button>
           </Col>
         </Row>
-
       </Container>
     </div>
   );

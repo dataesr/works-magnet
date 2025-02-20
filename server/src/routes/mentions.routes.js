@@ -60,7 +60,7 @@ const getMentionsQuery = ({ options }) => {
     },
   };
   if (search?.length > 0) {
-    body.query.bool.must.push({ simple_query_string: { query: search } });
+    body.query.bool.must.push({ query_string: { query: search } });
   }
   if (sortBy && sortOrder) {
     let sortFields = sortBy;
