@@ -315,7 +315,6 @@ export default function MentionsSearch() {
                     >
                       <option value="and">AND</option>
                       <option value="or">OR</option>
-                      <option value="not">NOT</option>
                     </select>
                   </Col>
                 )}
@@ -337,16 +336,18 @@ export default function MentionsSearch() {
               </Row>
             </Col>
           </Row>
-          <Row className="fr-ml-1w fr-mr-5w fr-mt-3w" gutters>
-            <Col className="fr-mr-5w es-query">
-              <span className="title">
-                Query
-              </span>
-              <div className="content">
-                {esQuery}
-              </div>
-            </Col>
-          </Row>
+          {(esQuery.length > 0) && (
+            <Row className="fr-ml-1w fr-mr-5w fr-mt-3w" gutters>
+              <Col className="fr-mr-5w es-query">
+                <span className="title">
+                  Query
+                </span>
+                <div className="content">
+                  {esQuery}
+                </div>
+              </Col>
+            </Row>
+          )}
         </div>
         <Row className="fr-m-5w" gutters>
           <Col offsetMd={10} className="text-right fr-mr-5w">
