@@ -48,7 +48,6 @@ export default function MentionsResults() {
     size: DEFAULT_SIZE,
     sortBy: DEFAULT_SORTBY,
     sortOrder: DEFAULT_SORTORDER,
-    type: DEFAULT_TYPE,
   });
   const [shared, setShared] = useState(false);
   const [type, setType] = useState(params.type);
@@ -215,7 +214,6 @@ export default function MentionsResults() {
         size: DEFAULT_SIZE,
         'sort-by': DEFAULT_SORTBY,
         'sort-order': DEFAULT_SORTORDER,
-        type: DEFAULT_TYPE,
       });
     } else {
       setParams({
@@ -225,7 +223,6 @@ export default function MentionsResults() {
         size: searchParams.get('size') || DEFAULT_SIZE,
         sortBy: searchParams.get('sort-by') || DEFAULT_SORTBY,
         sortOrder: searchParams.get('sort-order') || DEFAULT_SORTORDER,
-        type: searchParams.get('type') || DEFAULT_TYPE,
       });
     }
   }, [searchParams, setSearchParams]);
