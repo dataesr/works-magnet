@@ -1,37 +1,60 @@
-import { Breadcrumb, Button, Col, Container, Link, Row, Text, TextInput, Title, Toggle } from '@dataesr/dsfr-plus';
+import { Breadcrumb, Button, Col, Container, Link, Row, TextInput, Title, Toggle } from '@dataesr/dsfr-plus';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Header from '../../layout/header';
 
 const DEFAULT_SEARCH = '';
 
 export default function MentionsSearch() {
-  const [searchInput, setSearchInput] = useState(DEFAULT_SEARCH);
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const [advancedQuery, setAdvancedQuery] = useState([]);
+  const [created, setCreated] = useState(false);
+  const [esQuery, setEsQuery] = useState('');
   const [field, setField] = useState('field');
   const [operator, setOperator] = useState('and');
-  const [type, setType] = useState('dataset');
-  const [used, setUsed] = useState(false);
-  const [created, setCreated] = useState(false);
-  const [shared, setShared] = useState(false);
-  const [searchInputAuthor, setSearchInputAuthor] = useState('');
+  const [searchInput, setSearchInput] = useState(DEFAULT_SEARCH);
   const [searchInputAffiliation, setSearchInputAffiliation] = useState('');
   const [searchInputAllFields, setSearchInputAllFields] = useState('');
+  const [searchInputAuthor, setSearchInputAuthor] = useState('');
   const [searchInputDoi, setSearchInputDoi] = useState('');
   const [searchInputMention, setSearchInputMention] = useState('');
-  const [advancedQuery, setAdvancedQuery] = useState([]);
-  const [esQuery, setEsQuery] = useState('');
-
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const initialSearch = searchParams.get('search') || DEFAULT_SEARCH;
+  const [shared, setShared] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [type, setType] = useState('dataset');
+  const [used, setUsed] = useState(false);
 
   useState(() => {
-    setSearchInput(initialSearch);
+    if (searchParams.get('advanced') === '1') {
+      const searchTmp = searchParams.get('search') || DEFAULT_SEARCH;
+      const [esField, valueTmp] = searchTmp.split(':');
+      let fieldTmp = '';
+      if (esField === '*') {
+        fieldTmp = 'all';
+      } else if (esField === 'context') {
+        fieldTmp = 'mention';
+      } else if (esField === 'doi') {
+        fieldTmp = 'doi';
+      } else if (esField === 'affiliations.*') {
+        fieldTmp = 'affiliation';
+      } else if (esField === 'authors.*') {
+        fieldTmp = 'author';
+      } else if (esField === 'mention_context.used') {
+        fieldTmp = 'used';
+      } else if (esField === 'mention_context.created') {
+        fieldTmp = 'created';
+      } else if (esField === 'mention_context.shared') {
+        fieldTmp = 'shared';
+      } else if (esField === 'type') {
+        fieldTmp = 'mentionType';
+      }
+      setAdvancedQuery([{ field: fieldTmp, operator: 'and', value: valueTmp }]);
+      setShowAdvanced(true);
+    } else {
+      setSearchInput(searchParams.get('search') || DEFAULT_SEARCH);
+    }
   }, []);
 
   const addToQuery = () => {
@@ -136,7 +159,7 @@ export default function MentionsSearch() {
                 onKeyDown={(e) => {
                   if ([9, 13].includes(e.keyCode) && searchInput) {
                     e.preventDefault();
-                    navigate(`/${pathname.split('/')[1]}/results?search=${searchInput}`);
+                    navigate(`/mentions/results?search=${searchInput}`);
                   }
                 }}
                 type="text"
@@ -152,7 +175,7 @@ export default function MentionsSearch() {
               variant="secondary"
               onClick={() => setShowAdvanced(!showAdvanced)}
             >
-              {showAdvanced ? 'Switch to simple search' : 'Switch to Advanced search'}
+              {showAdvanced ? 'Switch to simple search' : 'Switch to advanced search'}
             </Button>
           </Col>
         </Row>
@@ -355,7 +378,7 @@ export default function MentionsSearch() {
               color="blue-ecume"
               disabled={esQuery.length === 0}
               icon="search-line"
-              onClick={() => navigate(`/${pathname.split('/')[1]}/results?search=${esQuery}`)}
+              onClick={() => navigate(`/mentions/results?search=${esQuery}${showAdvanced ? '&advanced=1' : ''}`)}
               style={{ width: '100%' }}
               title="Search"
             >

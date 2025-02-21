@@ -11,7 +11,6 @@ import {
   Row,
   Text,
   TextInput,
-  Toggle,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -25,6 +24,7 @@ import MentionsList from './components/mentions-list.tsx';
 import './styles.scss';
 import CustomToggle from './components/custom-toggle/index';
 
+const DEFAULT_ADVANCED = 0;
 const DEFAULT_FROM = 0;
 const DEFAULT_SEARCH = '';
 const DEFAULT_SIZE = 50;
@@ -209,6 +209,7 @@ export default function MentionsResults() {
     // Set default params values
     if (searchParams.size === 0) {
       setSearchParams({
+        advanced: DEFAULT_ADVANCED,
         from: DEFAULT_FROM,
         search: DEFAULT_SEARCH,
         size: DEFAULT_SIZE,
@@ -218,6 +219,7 @@ export default function MentionsResults() {
       });
     } else {
       setParams({
+        advanced: searchParams.get('advanced') || DEFAULT_ADVANCED,
         from: searchParams.get('from') || DEFAULT_FROM,
         search: searchParams.get('search') || DEFAULT_SEARCH,
         size: searchParams.get('size') || DEFAULT_SIZE,
@@ -293,7 +295,7 @@ export default function MentionsResults() {
             <Row>
               <Breadcrumb className="fr-my-1w">
                 <Link href="/">Home</Link>
-                <Link href={`/mentions/search?search=${params.search}`}>Search software and dataset mentions in the full-text</Link>
+                <Link href={`/mentions/search?search=${params.search}${params.advanced ? '&advanced=1' : ''}`}>Search software and dataset mentions in the full-text</Link>
                 <Link current>See results and make corrections</Link>
               </Breadcrumb>
             </Row>
