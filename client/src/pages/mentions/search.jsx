@@ -332,59 +332,19 @@ export default function MentionsSearch() {
                   }
                 </Col>
               </Row>
-              {
-                advancedQuery.length > 0 && (
-                  <Row className="fr-mt-2w">
-                    <Col>
-                      <i>
-                        <strong>{advancedQuery.length}</strong>
-                        {' '}
-                        {advancedQuery.length === 1 ? 'parameter' : 'parameters'}
-                        {' '}
-                        added
-                      </i>
-                      <ul>
-                        {
-                          advancedQuery.map((param, index) => (
-                            // eslint-disable-next-line react/no-array-index-key
-                            <li key={`param-${index}`}>
-                              {param.operator.toUpperCase()}
-                              {' '}
-                              <strong>
-                                {param.field}
-                              </strong>
-                              {' = '}
-                              <i>
-                                {`"${param.value}"`}
-                              </i>
-                              <Button
-                                color="pink-tuile"
-                                icon="close-line"
-                                title="Remove"
-                                onClick={() => {
-                                  setAdvancedQuery(advancedQuery.filter((_, i) => i !== index));
-                                }}
-                                size="sm"
-                                variant="text"
-                              />
-                            </li>
-                          ))
-                        }
-                      </ul>
-                    </Col>
-                  </Row>
-                )
-              }
+            </Col>
+          </Row>
+          <Row className="fr-ml-1w fr-mr-5w fr-mt-3w" gutters>
+            <Col className="fr-mr-5w es-query">
+              <span className="title">
+                Query
+              </span>
+              <div className="content">
+                {esQuery}
+              </div>
             </Col>
           </Row>
         </div>
-        <Row className="fr-m-5w" gutters>
-          <Col className="fr-mr-5w">
-            <Text>
-              {esQuery}
-            </Text>
-          </Col>
-        </Row>
         <Row className="fr-m-5w" gutters>
           <Col offsetMd={10} className="text-right fr-mr-5w">
             <Button
