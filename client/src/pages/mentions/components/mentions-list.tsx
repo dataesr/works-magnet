@@ -114,7 +114,7 @@ export default function MentionsList({
               sortBy="rawForm"
             />
           </th>
-          <th>Context</th>
+          <th>Mention</th>
           <th
             style={{ writingMode: "vertical-rl", transform: "rotate(210deg)" }}
           >

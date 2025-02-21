@@ -338,7 +338,6 @@ export default function MentionsResults() {
                         label="Shared"
                         onChange={(e) => setShared(e.target.checked)}
                       />
-
                       <Button
                         color="green-bourgeon"
                         disabled={mentions.filter((mention) => mention?.selected).length === 0}

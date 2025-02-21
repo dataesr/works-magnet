@@ -13,7 +13,7 @@ export default function MentionsSearch() {
   const [advancedQuery, setAdvancedQuery] = useState([]);
   const [created, setCreated] = useState(false);
   const [esQuery, setEsQuery] = useState('');
-  const [field, setField] = useState('field');
+  const [field, setField] = useState('all');
   const [operator, setOperator] = useState('and');
   const [searchInput, setSearchInput] = useState(DEFAULT_SEARCH);
   const [searchInputAffiliation, setSearchInputAffiliation] = useState('');
@@ -215,14 +215,14 @@ export default function MentionsSearch() {
                     value={field}
                   >
                     <option value="all">All fields</option>
+                    <option value="doi">DOI</option>
+                    <option value="mentionType">Type of mention</option>
+                    <option value="mention">Mention</option>
                     <option value="affiliation">Affiliation</option>
                     <option value="author">Author</option>
                     <option value="used">Charaterization - Used</option>
                     <option value="created">Charaterization - Created</option>
                     <option value="shared">Charaterization - Shared</option>
-                    <option value="mention">Mention</option>
-                    <option value="doi">DOI</option>
-                    <option value="mentionType">Type of mention</option>
                   </select>
                 </Col>
                 <Col md={5}>
