@@ -78,7 +78,9 @@ export default function MentionsSearch() {
     if (showAdvanced) {
       let esQueryTmp = '';
       advancedQuery.forEach((param, index) => {
-        if (index > 0) esQueryTmp += ` ${param.operator.toUpperCase()} `;
+        if (index > 0) {
+          esQueryTmp = `(${esQueryTmp} ${param.operator.toUpperCase()} `;
+        }
         if (param.field === 'all') {
           esQueryTmp += '*';
         } else if (param.field === 'mention') {
@@ -99,6 +101,9 @@ export default function MentionsSearch() {
           esQueryTmp += 'type';
         }
         esQueryTmp += `:${param.value}`;
+        if (index > 0) {
+          esQueryTmp += ')';
+        }
       });
       setEsQuery(esQueryTmp);
     } else {
@@ -210,7 +215,6 @@ export default function MentionsSearch() {
                         >
                           <option value="dataset">Dataset</option>
                           <option value="software">Software</option>
-                          <option value="none">Neither</option>
                         </select>
                       </div>
                     )
