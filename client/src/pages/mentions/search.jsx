@@ -28,29 +28,40 @@ export default function MentionsSearch() {
 
   useState(() => {
     if (searchParams.get('advanced') === '1') {
-      const searchTmp = searchParams.get('search') || DEFAULT_SEARCH;
-      const [esField, valueTmp] = searchTmp.split(':');
-      let fieldTmp = '';
-      if (esField === '*') {
-        fieldTmp = 'all';
-      } else if (esField === 'context') {
-        fieldTmp = 'mention';
-      } else if (esField === 'doi') {
-        fieldTmp = 'doi';
-      } else if (esField === 'affiliations.*') {
-        fieldTmp = 'affiliation';
-      } else if (esField === 'authors.*') {
-        fieldTmp = 'author';
-      } else if (esField === 'mention_context.used') {
-        fieldTmp = 'used';
-      } else if (esField === 'mention_context.created') {
-        fieldTmp = 'created';
-      } else if (esField === 'mention_context.shared') {
-        fieldTmp = 'shared';
-      } else if (esField === 'type') {
-        fieldTmp = 'mentionType';
-      }
-      setAdvancedQuery([{ field: fieldTmp, operator: 'and', value: valueTmp }]);
+      const advancedQueryTmp = [];
+      const searchedFields = (searchParams.get('search') || DEFAULT_SEARCH).toLowerCase().split(/(and|or)/).map((item) => item.trim().replace(/^(\()*/, '').replace(/(\))*$/, ''));
+      searchedFields.forEach((item, index) => {
+        if (index % 2 === 0) {
+          const [esField, valueTmp] = item.split(':');
+          let fieldTmp = '';
+          if (esField === '*') {
+            fieldTmp = 'all';
+          } else if (esField === 'context') {
+            fieldTmp = 'mention';
+          } else if (esField === 'doi') {
+            fieldTmp = 'doi';
+          } else if (esField === 'affiliations.*') {
+            fieldTmp = 'affiliation';
+          } else if (esField === 'authors.*') {
+            fieldTmp = 'author';
+          } else if (esField === 'mention_context.used') {
+            fieldTmp = 'used';
+          } else if (esField === 'mention_context.created') {
+            fieldTmp = 'created';
+          } else if (esField === 'mention_context.shared') {
+            fieldTmp = 'shared';
+          } else if (esField === 'type') {
+            fieldTmp = 'mentionType';
+          }
+          if (index === 0) {
+            advancedQueryTmp.push({ field: fieldTmp, value: valueTmp });
+          } else {
+            const operatorTmp = searchedFields[index - 1];
+            advancedQueryTmp.push({ field: fieldTmp, operator: operatorTmp, value: valueTmp });
+          }
+        }
+      });
+      setAdvancedQuery(advancedQueryTmp);
       setShowAdvanced(true);
     } else {
       setSearchInput(searchParams.get('search') || DEFAULT_SEARCH);
