@@ -19,10 +19,11 @@ import useWebSocket from 'react-use-websocket';
 
 import useToast from '../../hooks/useToast';
 import Header from '../../layout/header';
+import { export2Csv } from '../../utils/files';
+import CustomToggle from './components/custom-toggle/index';
 import MentionsList from './components/mentions-list.tsx';
 
 import './styles.scss';
-import CustomToggle from './components/custom-toggle/index';
 
 const DEFAULT_ADVANCED = 0;
 const DEFAULT_FROM = 0;
@@ -319,6 +320,7 @@ export default function MentionsResults() {
                       >
                         <option value="software">Software</option>
                         <option value="dataset">Dataset</option>
+                        <option value="none">None</option>
                       </select>
                       <CustomToggle
                         checked={used}
@@ -350,8 +352,15 @@ export default function MentionsResults() {
                   </Col>
                   <Col className="text-right">
                     <Button
+                      disabled={mentions.length === 0}
+                      onClick={() => export2Csv({ data: mentions, label: 'mentions', searchParams })}
+                      size="sm"
+                    >
+                      Export mentions
+                    </Button>
+                    <Button
                       disabled={mentionsWithCorrection.length === 0}
-                      onClick={() => { switchCorrectionsModal(); }}
+                      onClick={() => switchCorrectionsModal()}
                       size="sm"
                     >
                       {`Send ${mentionsWithCorrection.length} correction${mentionsWithCorrection.length > 1 ? 's' : ''}`}
