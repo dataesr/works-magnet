@@ -242,7 +242,7 @@ export default function MentionsSearch() {
                   }
                   {
                     (field === 'used') && (
-                      <div id="mentionCharaterization" style={{ display: 'flex', gap: '1rem' }}>
+                      <div id="used" style={{ display: 'flex', gap: '1rem' }}>
                         <Toggle
                           checked={used}
                           label="Used"
@@ -253,7 +253,7 @@ export default function MentionsSearch() {
                   }
                   {
                     (field === 'shared') && (
-                      <div id="mentionCharaterization" style={{ display: 'flex', gap: '1rem' }}>
+                      <div id="shared" style={{ display: 'flex', gap: '1rem' }}>
                         <Toggle
                           checked={shared}
                           label="Shared"
@@ -264,7 +264,7 @@ export default function MentionsSearch() {
                   }
                   {
                     (field === 'created') && (
-                      <div id="mentionCharaterization" style={{ display: 'flex', gap: '1rem' }}>
+                      <div id="created" style={{ display: 'flex', gap: '1rem' }}>
                         <Toggle
                           checked={created}
                           label="Created"
