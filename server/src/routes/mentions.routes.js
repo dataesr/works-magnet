@@ -41,7 +41,7 @@ const getMentionsQuery = ({ options }) => {
     },
   };
   if (search?.length > 0) {
-    body.query = { bool: { must: [{ query_string: { query: search } }] } };
+    body.query = { bool: { must: [{ query_string: { query: search.replaceAll('*', '\\*') } }] } };
   }
   if (sortBy && sortOrder) {
     let sortFields = sortBy;

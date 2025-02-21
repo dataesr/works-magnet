@@ -29,7 +29,7 @@ export default function MentionsSearch() {
   useState(() => {
     if (searchParams.get('advanced') === '1') {
       const advancedQueryTmp = [];
-      const searchedFields = (searchParams.get('search') || DEFAULT_SEARCH).toLowerCase().split(/(and|or)/).map((item) => item.trim().replace(/^(\()*/, '').replace(/(\))*$/, ''));
+      const searchedFields = (searchParams.get('search') || DEFAULT_SEARCH).toLowerCase().split(/( and | or )/).map((item) => item.trim().replace(/^(\()*/, '').replace(/(\))*$/, ''));
       searchedFields.forEach((item, index) => {
         if (index % 2 === 0) {
           const [esField, valueTmp] = item.split(':');
