@@ -126,23 +126,24 @@ export default function MentionsSearch() {
       </Container>
       <Container as="section" className="filters fr-my-5w">
         <Row className="fr-m-5w" gutters>
-          <Col>
-            <TextInput
-              disabled={showAdvanced}
-              hint='Example "Coq" or "Cern"'
-              label="Search mentions"
-              messageType=""
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if ([9, 13].includes(e.keyCode) && searchInput) {
-                  e.preventDefault();
-                  navigate(`/${pathname.split('/')[1]}/results?search=${searchInput}`);
-                }
-              }}
-              type="text"
-              value={searchInput}
-            />
-          </Col>
+          {!showAdvanced && (
+            <Col>
+              <TextInput
+                hint='Example "Coq" or "Cern"'
+                label="Search mentions"
+                messageType=""
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if ([9, 13].includes(e.keyCode) && searchInput) {
+                    e.preventDefault();
+                    navigate(`/${pathname.split('/')[1]}/results?search=${searchInput}`);
+                  }
+                }}
+                type="text"
+                value={searchInput}
+              />
+            </Col>
+          )}
           <Col className="text-right fr-mr-5w" md={3}>
             <Button
               className="fr-mt-7w"
@@ -161,7 +162,7 @@ export default function MentionsSearch() {
           style={{
             maxHeight: showAdvanced ? '600px' : '0',
             overflow: 'hidden',
-            transition: 'max-height 0.8s ease-in-out',
+            transition: 'max-height 0.5s ease-in-out',
           }}
         >
           <Row className="fr-ml-1w fr-mr-5w" gutters>
@@ -179,8 +180,7 @@ export default function MentionsSearch() {
                     onChange={(e) => setField(e.target.value)}
                     value={field}
                   >
-                    <option value="-">Select a field</option>
-                    <option value="all">Search in all fields</option>
+                    <option value="all">All fields</option>
                     <option value="affiliation">Affiliation</option>
                     <option value="author">Author</option>
                     <option value="used">Charaterization - Used</option>
@@ -197,8 +197,8 @@ export default function MentionsSearch() {
                       <div id="mentionAllFields">
                         <TextInput
                           message=""
-                          placeholder='All fields - Example "Coq" or "Cern"'
                           onChange={(e) => setSearchInputAllFields(e.target.value)}
+                          placeholder="Coq or Cern"
                           type="text"
                           value={searchInputAllFields}
                         />
@@ -225,6 +225,7 @@ export default function MentionsSearch() {
                         <TextInput
                           message=""
                           onChange={(e) => setSearchInputMention(e.target.value)}
+                          placeholder="Coq"
                           type="text"
                           value={searchInputMention}
                         />
@@ -236,8 +237,8 @@ export default function MentionsSearch() {
                       <div id="mentionDoi">
                         <TextInput
                           message=""
-                          placeholder='DOI - example "10.1109/5.771073"'
                           onChange={(e) => setSearchInputDoi(e.target.value)}
+                          placeholder="10.1109/5.771073"
                           type="text"
                           value={searchInputDoi}
                         />
@@ -282,8 +283,8 @@ export default function MentionsSearch() {
                       <div id="mentionAuthor">
                         <TextInput
                           message=""
-                          placeholder='Author - example "John Doe"'
                           onChange={(e) => setSearchInputAuthor(e.target.value)}
+                          placeholder="John Doe"
                           type="text"
                           value={searchInputAuthor}
                         />
@@ -295,8 +296,8 @@ export default function MentionsSearch() {
                       <div id="mentionAffiliation">
                         <TextInput
                           message=""
-                          placeholder='Affiliation - example "Cern"'
                           onChange={(e) => setSearchInputAffiliation(e.target.value)}
+                          placeholder="Cern"
                           type="text"
                           value={searchInputAffiliation}
                         />
@@ -304,21 +305,23 @@ export default function MentionsSearch() {
                     )
                   }
                 </Col>
-                <Col md={2}>
-                  <select
-                    className="fr-select fr-mt-1w"
-                    id="operator"
-                    onChange={(e) => setOperator(e.target.value)}
-                    value={operator}
-                  >
-                    <option value="and">AND</option>
-                    <option value="or">OR</option>
-                    <option value="not">NOT</option>
-                  </select>
-                </Col>
-                <Col className="text-right fr-mr-5w" style={{ width: '100%' }}>
+                {(advancedQuery.length > 0) && (
+                  <Col md={2}>
+                    <select
+                      className="fr-select fr-mt-1w"
+                      id="operator"
+                      onChange={(e) => setOperator(e.target.value)}
+                      value={operator}
+                    >
+                      <option value="and">AND</option>
+                      <option value="or">OR</option>
+                      <option value="not">NOT</option>
+                    </select>
+                  </Col>
+                )}
+                <Col className="text-right fr-mr-5w" md={2} style={{ width: '100%' }}>
                   {
-                    (field !== '-') && (
+                    (field !== '') && (
                       <Button
                         className="fr-mt-1w"
                         color="beige-gris-galet"
