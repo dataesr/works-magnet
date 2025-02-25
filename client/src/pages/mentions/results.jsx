@@ -19,7 +19,7 @@ import useWebSocket from 'react-use-websocket';
 
 import useToast from '../../hooks/useToast';
 import Header from '../../layout/header';
-import { export2Csv } from '../../utils/files';
+import ButtonDropdown from '../../components/button-dropdown';
 import CustomToggle from './components/custom-toggle/index';
 import MentionsList from './components/mentions-list.tsx';
 
@@ -351,15 +351,11 @@ export default function MentionsResults() {
                     </div>
                   </Col>
                   <Col className="text-right">
+                    <ButtonDropdown data={mentions} label="mentions" searchParams={searchParams} size="sm" />
                     <Button
-                      disabled={mentions.length === 0}
-                      onClick={() => export2Csv({ data: mentions, label: 'mentions', searchParams })}
-                      size="sm"
-                    >
-                      Export mentions
-                    </Button>
-                    <Button
+                      color="blue-ecume"
                       disabled={mentionsWithCorrection.length === 0}
+                      icon="send-plane-fill"
                       onClick={() => switchCorrectionsModal()}
                       size="sm"
                     >
