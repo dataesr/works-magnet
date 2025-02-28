@@ -64,8 +64,13 @@ function FieldSelector({ term, index, setAdvancedSearchTermKeys }) {
   return (
     <select
       className="fr-select fr-mt-1w"
-      onChange={(e) => (setAdvancedSearchTermKeys(term, index, e.target.value, (e.target.value === 'used' || e.target.value === 'created' || e.target.value === 'shared') ? false : ''))}
-      value={term.field}
+      onChange={(e) => (setAdvancedSearchTermKeys(
+        term,
+        index,
+        e.target.value,
+        (e.target.value === 'used' || e.target.value === 'created' || e.target.value === 'shared') ? false : term.value,
+      ))}
+      value={term.key}
     >
       <option value="all">All fields</option>
       <option value="doi">DOI</option>
@@ -82,7 +87,7 @@ function FieldSelector({ term, index, setAdvancedSearchTermKeys }) {
 
 FieldSelector.propTypes = {
   term: PropTypes.shape({
-    field: PropTypes.string.isRequired,
+    key: PropTypes.string.isRequired,
   }).isRequired,
   index: PropTypes.number.isRequired,
   setAdvancedSearchTermKeys: PropTypes.func.isRequired,

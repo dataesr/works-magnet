@@ -11,9 +11,7 @@ export default function MentionsSearch() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const [advancedQuery, setAdvancedQuery] = useState([]);
   const [esQuery, setEsQuery] = useState('');
-  const [operator, setOperator] = useState('and');
   const [searchInput, setSearchInput] = useState(DEFAULT_SEARCH);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -62,25 +60,43 @@ export default function MentionsSearch() {
   }, [terms]);
 
   useEffect(() => {
-    // URLSearchParams to esQuery if advanced search
     if (searchParams.get('advanced') === '1') {
       const advancedQueryTmp = [];
-      const search = searchParams.get('search');
-      if (search) {
-        const termsArray = search.match(/\(([^)]+)\)/g) || [search];
-        termsArray.forEach((term, index) => {
-          const [key, value] = term.replace(/[()]/g, '').split(':');
-          advancedQueryTmp.push({
-            key: key === '*' ? 'all' : key,
-            operator: index === 0 ? null : 'and',
-            value,
-            order: index,
-          });
-        });
-      }
+      const searchedFields = (searchParams.get('search') || DEFAULT_SEARCH).toLowerCase().split(/( and | or )/).map((item) => item.trim().replace(/^(\()*/, '').replace(/(\))*$/, ''));
+      searchedFields.forEach((item, index) => {
+        if (index % 2 === 0) {
+          const [esField, valueTmp] = item.split(':');
+          let fieldTmp = '';
+          if (esField === '*') {
+            fieldTmp = 'all';
+          } else if (esField === 'context') {
+            fieldTmp = 'mention';
+          } else if (esField === 'doi') {
+            fieldTmp = 'doi';
+          } else if (esField === 'affiliations.*') {
+            fieldTmp = 'affiliation';
+          } else if (esField === 'authors.*') {
+            fieldTmp = 'author';
+          } else if (esField === 'mention_context.used') {
+            fieldTmp = 'used';
+          } else if (esField === 'mention_context.created') {
+            fieldTmp = 'created';
+          } else if (esField === 'mention_context.shared') {
+            fieldTmp = 'shared';
+          } else if (esField === 'type') {
+            fieldTmp = 'mentionType';
+          }
+          if (index === 0) {
+            advancedQueryTmp.push({ key: fieldTmp, value: valueTmp, operator: null, order: 0 });
+          } else {
+            const operatorTmp = searchedFields[index - 1];
+            advancedQueryTmp.push({ key: fieldTmp, operator: operatorTmp.toUpperCase(), value: valueTmp, order: index / 2 });
+          }
+        }
+      });
       setTerms(advancedQueryTmp);
-      updateQuery();
-    } else { // else to searchInput
+      setShowAdvanced(true);
+    } else {
       setSearchInput(searchParams.get('search') || DEFAULT_SEARCH);
     }
   }, []);
@@ -104,8 +120,6 @@ export default function MentionsSearch() {
     });
     setTerms(newTerms);
   };
-
-  console.log('terms', terms);
 
   return (
     <div style={{ minHeight: '700px' }}>
@@ -192,9 +206,9 @@ export default function MentionsSearch() {
               </Row>
               {
                 terms.map((term, index) => (
-                  <Row gutters>
+                  <Row gutters key={term.order}>
                     {
-                      term.order > 0 && (
+                      index > 0 && (
                         <Col md={2}>
                           <select
                             className="fr-select fr-mt-4w fr-ml-5w"
@@ -215,28 +229,14 @@ export default function MentionsSearch() {
                       )
                     }
                     <Col className="fr-ml-5w">
-                      <FieldFromKey term={term} setAdvancedSearchTermValues={setAdvancedSearchTermValues} />
+                      <FieldFromKey term={term} index={index} setAdvancedSearchTermValues={setAdvancedSearchTermValues} />
                     </Col>
                     <Col className="fr-mt-3w" md={term.order > 0 ? 2 : 13}>
                       <FieldSelector term={term} index={index} setAdvancedSearchTermKeys={setAdvancedSearchTermKeys} />
                     </Col>
                     <Col className="fr-pt-5w">
                       {
-                        (term.order === terms.length - 1) ? (
-                          <Button
-                            color="beige-gris-galet"
-                            onClick={() => {
-                              setTerms([...terms, {
-                                key: 'all',
-                                operator: 'and',
-                                order: terms.length,
-                                value: '',
-                              }]);
-                            }}
-                          >
-                            + Add
-                          </Button>
-                        ) : (
+                        (index !== 0) && (
                           <Button
                             color="beige-gris-galet"
                             icon="delete-line"
@@ -252,6 +252,26 @@ export default function MentionsSearch() {
                   </Row>
                 ))
               }
+              <Row className="fr-mt-3w">
+                <Col className="fr-ml-5w">
+                  <Button
+                    color="beige-gris-galet"
+                    onClick={() => {
+                      setTerms([...terms, {
+                        key: 'all',
+                        operator: 'and',
+                        order: terms.length,
+                        value: '',
+                      }]);
+                    }}
+                    size="sm"
+                    variant="tertiary"
+                  >
+                    + Add new criteria
+                  </Button>
+                </Col>
+              </Row>
+
               {(esQuery.length > 0) && (
                 <Row className="fr-ml-1w fr-mr-5w fr-mt-3w" gutters>
                   <Col className="fr-mr-5w es-query">
