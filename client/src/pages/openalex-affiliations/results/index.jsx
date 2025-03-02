@@ -192,18 +192,24 @@ export default function Affiliations() {
   const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['openalex-affiliations', JSON.stringify(options)],
     // Search for works from affiliations for each affiliation strictly longer than 2 letters
-    queryFn: () => getOpenAlexAffiliations(
-      {
-        ...options,
-        affiliationStrings: options.affiliations
-          .filter((affiliation) => !affiliation.isDisabled)
-          .map((affiliation) => affiliation.label),
-        rors: options.affiliations
-          .filter((affiliation) => affiliation.isRor)
-          .map((affiliation) => affiliation.label),
-      },
-      toast,
-    ),
+    queryFn: () => {
+      const affiliationStrings = options.affiliations
+        .filter((affiliation) => !affiliation.isDisabled)
+        .map((affiliation) => {
+          const childernLabels = affiliation.children.filter((child) => !child.isDisabled).map((child) => child.label);
+          return [affiliation.label, ...childernLabels];
+        }).flat();
+      return getOpenAlexAffiliations(
+        {
+          ...options,
+          affiliationStrings,
+          rors: options.affiliations
+            .filter((affiliation) => affiliation.isRor)
+            .map((affiliation) => affiliation.label),
+        },
+        toast,
+      );
+    },
     enabled: false,
   });
 
