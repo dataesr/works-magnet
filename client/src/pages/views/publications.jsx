@@ -34,7 +34,7 @@ export default function Publications({
   }
 
   return (
-    <div>
+    <>
       <Row>
         <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">
           <Link href="/">
@@ -135,14 +135,14 @@ export default function Publications({
                 selectedPublications={selectedPublications}
                 setSelectedPublications={setSelectedPublications}
                 tagPublications={tagPublications}
-                types={data.publications?.types || []}
-                years={data.publications?.years || []}
+                types={data.publications?.types ?? {}}
+                years={data.publications?.years ?? {}}
               />
             </>
           )}
         </Col>
       </Row>
-    </div>
+    </>
   );
 }
 

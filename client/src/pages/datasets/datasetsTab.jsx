@@ -97,6 +97,7 @@ export default function DatasetsTab({
           {` selected dataset${selectedDatasets.length === 1 ? '' : 's'}`}
         </div>
         {renderButtons(selectedDatasets, tagDatasets)}
+        {/*
         <div className="text-right">
           <Button
             onClick={() => setFixedMenu(!fixedMenu)}
@@ -110,6 +111,7 @@ export default function DatasetsTab({
             )}
           </Button>
         </div>
+        */}
       </div>
       <Row gutters>
         <Col xs="12" className="text-right">

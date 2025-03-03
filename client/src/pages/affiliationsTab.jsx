@@ -46,6 +46,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
           {` selected affiliation${selectedAffiliations.length === 1 ? '' : 's'}`}
         </div>
         {renderButtons(selectedAffiliations, tagAffiliations)}
+        {/*
         <div className="text-right">
           <Button
             onClick={() => setFixedMenu(!fixedMenu)}
@@ -55,6 +56,7 @@ export default function AffiliationsTab({ affiliations, selectedAffiliations, se
             {fixedMenu ? <i className="ri-pushpin-fill" /> : <i className="ri-pushpin-line" />}
           </Button>
         </div>
+        */}
       </div>
       <Row>
         <Col>

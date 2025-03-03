@@ -47,12 +47,14 @@ export default function Datasets({
             Select the affiliations and build the corpus
           </Link>
         </Breadcrumb>
+      </Row>
+      <Row>
         <Col>
           <Title as="h2" look="h6" className="fr-mt-1w">
             🗃 Find the datasets affiliated to your institution
           </Title>
         </Col>
-        <Col>
+        <Col className="text-right">
           <SegmentedControl
             className="fr-mb-1w"
             name="tabSelector"
@@ -80,7 +82,7 @@ export default function Datasets({
         <>
           <Row>
             <Col xs="12">
-              <div className="fr-callout  fr-callout--pink-tuile">
+              <div className="fr-callout fr-callout--pink-tuile">
                 <Title as="h3" look="h6">
                   Select the raw affiliations corresponding to your institution
                 </Title>
@@ -126,7 +128,10 @@ export default function Datasets({
           )}
           {tab === 'listOfDatasets' && (
             <>
-              <ActionsDatasets allDatasets={allDatasets} />
+              <ActionsDatasets
+                allDatasets={allDatasets}
+                className="fr-pb-1w"
+              />
               <DatasetsTab
                 datasets={allDatasets}
                 publishers={data?.datasets?.publishers ?? {}}

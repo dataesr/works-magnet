@@ -53,6 +53,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
           {` selected publication${selectedPublications.length === 1 ? '' : 's'}`}
         </div>
         {renderButtons(selectedPublications, tagPublications)}
+        {/*
         <div className="text-right">
           <Button
             onClick={() => setFixedMenu(!fixedMenu)}
@@ -62,6 +63,7 @@ export default function PublicationsTab({ publications, publishers, selectedPubl
             {fixedMenu ? <i className="ri-pushpin-fill" /> : <i className="ri-pushpin-line" />}
           </Button>
         </div>
+        */}
       </div>
       <Row gutters>
         <Col xs="12">
