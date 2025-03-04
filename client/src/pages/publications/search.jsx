@@ -370,7 +370,7 @@ export default function PublicationsSearch() {
               icon="search-line"
               onClick={checkAndSendQuery}
             >
-              Search works
+              Search publications
             </Button>
           </Col>
         </Row>

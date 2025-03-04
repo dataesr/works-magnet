@@ -370,7 +370,7 @@ export default function DatasetsSearch() {
               icon="search-line"
               onClick={checkAndSendQuery}
             >
-              Search works
+              Search datasets
             </Button>
           </Col>
         </Row>

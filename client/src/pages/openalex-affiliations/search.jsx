@@ -430,7 +430,7 @@ export default function Search() {
               icon="search-line"
               onClick={checkAndSendQuery}
             >
-              Search works
+              Search affiliations
             </Button>
           </Col>
         </Row>
