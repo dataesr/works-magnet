@@ -46,6 +46,63 @@ export default function Search() {
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
   const [tags, setTags] = useState([]);
 
+  const NB_TAGS_STICKY = 2;
+  const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
+
+  const checkAndSendQuery = () => {
+    if (onInputAffiliationsHandler) {
+      setMessageType('error');
+      setMessage(
+        "Don't forget to validate the Affiliations input by pressing the return key.",
+      );
+      return;
+    }
+    if (searchedAffiliations.length === 0) {
+      setMessageType('error');
+      setMessage('You must provide at least one affiliation.');
+      return;
+    }
+    setMessageType('');
+    setMessage('');
+    const _searchParams = new URLSearchParams(search);
+    _searchParams.set('excludedRors', excludedRors);
+    navigate(`/openalex-affiliations/results?${_searchParams.toString()}`);
+  };
+
+  const clearSearch = () => {
+    setSearchParams({
+      affiliations: [],
+      deletedAffiliations: [],
+      endYear: VITE_APP_DEFAULT_YEAR,
+      excludedRors: '',
+      getRorChildren: '0',
+      startYear: VITE_APP_DEFAULT_YEAR,
+    });
+    setSearchedAffiliations([]);
+  };
+
+  const onTagsChange = async (_affiliations, _deletedAffiliations) => {
+    const affiliations = _affiliations
+      .filter((affiliation) => affiliation.source === 'user')
+      .map((affiliation) => affiliation.label);
+    const deletedAffiliations1 = [
+      ...new Set(
+        _deletedAffiliations
+          .map((affiliation) => affiliation.label)
+          .concat(currentSearchParams.deletedAffiliations || []),
+      ),
+    ].filter(
+      (item) => !_affiliations.map((affiliation) => affiliation.label).includes(item),
+    );
+    setSearchParams({
+      ...currentSearchParams,
+      affiliations,
+      deletedAffiliations: deletedAffiliations1,
+    });
+  };
+
+  const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
+
   useEffect(() => {
     if (searchParams.size < 4) {
       // Set default params values
@@ -61,10 +118,10 @@ export default function Search() {
     } else {
       setIsLoading(true);
       const affiliations = searchParams.getAll('affiliations') || [];
-      const deletedAffiliations1 = searchParams.getAll('deletedAffiliations') || [];
+      const _deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
       setCurrentSearchParams({
         affiliations,
-        deletedAffiliations: deletedAffiliations1,
+        deletedAffiliations: _deletedAffiliations,
         endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
         excludedRors: searchParams.get('excludedRors') ?? '',
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
@@ -77,14 +134,14 @@ export default function Search() {
       if (newSearchedAffiliations.length > 0) {
         setSearchedAffiliations(affiliations);
       }
-      const newDeletedAffiliations = deletedAffiliations1.filter(
+      const newDeletedAffiliations = _deletedAffiliations.filter(
         (affiliation) => !deletedAffiliations.includes(affiliation),
       )
         + deletedAffiliations.filter(
-          (affiliation) => !deletedAffiliations1.includes(affiliation),
+          (affiliation) => !_deletedAffiliations.includes(affiliation),
         );
       if (newDeletedAffiliations.length > 0) {
-        setDeletedAffiliations(deletedAffiliations1);
+        setDeletedAffiliations(_deletedAffiliations);
       }
       setIsLoading(false);
     }
@@ -193,51 +250,6 @@ export default function Search() {
     }).start();
     document.getElementById('introjs-dontShowAgain')?.click();
   }, []);
-
-  const checkAndSendQuery = () => {
-    if (onInputAffiliationsHandler) {
-      setMessageType('error');
-      setMessage(
-        "Don't forget to validate the Affiliations input by pressing the return key.",
-      );
-      return;
-    }
-    if (searchedAffiliations.length === 0) {
-      setMessageType('error');
-      setMessage('You must provide at least one affiliation.');
-      return;
-    }
-    setMessageType('');
-    setMessage('');
-    const _searchParams = new URLSearchParams(search);
-    _searchParams.set('excludedRors', excludedRors);
-    navigate(`/openalex-affiliations/results?${_searchParams.toString()}`);
-  };
-
-  const onTagsChange = async (_affiliations, _deletedAffiliations) => {
-    const affiliations = _affiliations
-      .filter((affiliation) => affiliation.source === 'user')
-      .map((affiliation) => affiliation.label);
-    const deletedAffiliations1 = [
-      ...new Set(
-        _deletedAffiliations
-          .map((affiliation) => affiliation.label)
-          .concat(currentSearchParams.deletedAffiliations || []),
-      ),
-    ].filter(
-      (item) => !_affiliations.map((affiliation) => affiliation.label).includes(item),
-    );
-    setSearchParams({
-      ...currentSearchParams,
-      affiliations,
-      deletedAffiliations: deletedAffiliations1,
-    });
-  };
-
-  const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
-
-  const NB_TAGS_STICKY = 2;
-  const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
 
   if (tags.length > NB_TAGS_STICKY) {
     tagsDisplayed.push({ label: '...' });
@@ -414,10 +426,21 @@ export default function Search() {
         <Row>
           <Col className="fr-pl-3w fr-my-3w step-search-works text-right">
             <Button
-              color="blue-ecume"
+              aria-label="Clear search"
+              className="fr-mr-md-1w"
+              disabled={searchParams.getAll('affiliations').length === 0}
+              icon="delete-line"
+              onClick={clearSearch}
+              title="Clear search"
+            >
+              Clear search
+            </Button>
+            <Button
+              aria-label="Search affiliations"
               disabled={searchParams.getAll('affiliations').length === 0}
               icon="search-line"
               onClick={checkAndSendQuery}
+              title="Search affiliations"
             >
               Search affiliations
             </Button>
