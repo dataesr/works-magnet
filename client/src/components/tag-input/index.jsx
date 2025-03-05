@@ -31,7 +31,6 @@ export default function TagInput({
   onInputHandler,
   onTagsChange,
   placeholder,
-  removeAllAffiliations,
   seeMoreAction,
   seeMoreAfter,
   switchGetRorChildren,
@@ -102,21 +101,7 @@ export default function TagInput({
         <Col className="fr-pb-2w">
           <TextInput
             hint={hint}
-            label={(
-              <>
-                {label}
-                <Button
-                  aria-label="Remove all affiliations"
-                  className="fr-ml-1w"
-                  color="yellow-tournesol"
-                  icon="delete-line"
-                  onClick={() => removeAllAffiliations()}
-                  size="sm"
-                  title="Remove all affiliations"
-                  variant="text"
-                />
-              </>
-            )}
+            label={label}
             message={message}
             messageType={messageType}
             onChange={(e) => setInput(e.target.value)}
@@ -212,7 +197,6 @@ TagInput.propTypes = {
   onInputHandler: PropTypes.func,
   onTagsChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  removeAllAffiliations: PropTypes.func.isRequired,
   seeMoreAction: PropTypes.func,
   seeMoreAfter: PropTypes.number,
   switchGetRorChildren: PropTypes.func,

@@ -193,15 +193,6 @@ export default function PublicationsSearch() {
     navigate(`/${pathname.split('/')[1]}/results${search}`);
   };
 
-  const removeAllAffiliations = () => {
-    setSearchParams({
-      ...currentSearchParams,
-      affiliations: [],
-      deletedAffiliations: [],
-    });
-    setSearchedAffiliations([]);
-  };
-
   const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
 
   const NB_TAGS_STICKY = 2;
@@ -269,7 +260,6 @@ export default function PublicationsSearch() {
                   messageType={messageType}
                   onInputHandler={setOnInputAffiliationsHandler}
                   onTagsChange={onTagsChange}
-                  removeAllAffiliations={removeAllAffiliations}
                   seeMoreAfter={0}
                   switchGetRorChildren={switchGetRorChildren}
                   tags={tags}
@@ -312,7 +302,6 @@ export default function PublicationsSearch() {
               messageType={messageType}
               onInputHandler={setOnInputAffiliationsHandler}
               onTagsChange={onTagsChange}
-              removeAllAffiliations={removeAllAffiliations}
               seeMoreAction={(e) => {
                 setIsOpen(true);
                 e.preventDefault();
