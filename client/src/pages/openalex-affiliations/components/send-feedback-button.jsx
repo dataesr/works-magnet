@@ -6,6 +6,7 @@ import {
   ModalTitle,
   TextInput,
 } from '@dataesr/dsfr-plus';
+import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -18,7 +19,7 @@ const { VITE_APP_DEFAULT_YEAR, VITE_WS_HOST } = import.meta.env;
 export default function SendFeedbackButton({ className, corrections, resetCorrections }) {
   const [searchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState(null);
+  const [userEmail, setUserEmail] = useState(Cookies.get('works-magnet-user-email'), '');
   const [validEmail, setValidEmail] = useState(null);
   const { toast } = useToast();
 
@@ -54,6 +55,7 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
 
   const sendFeedback = async () => {
     try {
+      Cookies.set('works-magnet-user-email', userEmail);
       const data = corrections.map((correction) => ({
         endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
         name: correction.name,
@@ -120,6 +122,7 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
             }}
             required
             type="email"
+            value={userEmail}
           />
         </ModalContent>
         <ModalFooter>

@@ -18,6 +18,7 @@ import {
   TextInput,
 } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
+import Cookies from 'js-cookie';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { useEffect, useState } from 'react';
@@ -73,7 +74,7 @@ export default function Mentions() {
     type: DEFAULT_TYPE,
     view: DEFAULT_VIEW,
   });
-  const [userEmail, setUserEmail] = useState(null);
+  const [userEmail, setUserEmail] = useState(Cookies.get('works-magnet-user-email'), '');
   const [validEmail, setValidEmail] = useState(null);
 
   const switchCharacterizationsModal = () => setIsModalCharacterizationsOpen((previousState) => !previousState);
@@ -155,6 +156,7 @@ export default function Mentions() {
 
   const feedback = async () => {
     try {
+      Cookies.set('works-magnet-user-email', userEmail);
       sendJsonMessage({
         data: corrections,
         email: userEmail,
@@ -540,6 +542,7 @@ export default function Mentions() {
               onChange={(e) => setUserEmail(e.target.value)}
               required
               type="email"
+              value={userEmail}
             />
           </ModalContent>
           <ModalFooter>

@@ -8,7 +8,7 @@ import {
   TextInput,
 } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { getTagColor } from '../../utils/tags';
 
@@ -188,7 +188,7 @@ TagInput.propTypes = {
   className: PropTypes.string,
   deletedTags: PropTypes.arrayOf(PropTypes.object),
   getRorChildren: PropTypes.bool,
-  hint: PropTypes.string,
+  hint: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   isLoading: PropTypes.bool,
   isRequired: PropTypes.bool,
   label: PropTypes.string.isRequired,
