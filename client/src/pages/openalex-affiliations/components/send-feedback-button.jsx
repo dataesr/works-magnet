@@ -49,8 +49,6 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
         toastType: toastType ?? 'info',
       });
     },
-    reconnectAttempts: 3,
-    shouldReconnect: () => true,
   });
 
   const sendFeedback = async () => {

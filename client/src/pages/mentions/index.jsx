@@ -120,8 +120,6 @@ export default function Mentions() {
         toastType: toastType ?? 'info',
       });
     },
-    reconnectAttempts: 3,
-    shouldReconnect: () => true,
   });
 
   // Methods
