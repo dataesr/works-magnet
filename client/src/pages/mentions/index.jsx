@@ -94,7 +94,19 @@ export default function Mentions() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
-    onError: (event) => console.error(event),
+    onError: (event) => {
+      console.error(event);
+      toast({
+        autoDismissAfter: 0,
+        description: 'Error while sending mentions corrections.<br />'
+                    + 'Please reload the page.<br />'
+                    + 'If needed, deactivate your ad blocker.<br />'
+                    + 'If needed, contact the tech team <a href="mailto:bso@recherche.gouv.fr">bso@recherche.gouv.fr</a>',
+        id: 'websocket-mentions-error',
+        title: 'Error while sending feedback to OpenAlex',
+        toastType: 'error',
+      });
+    },
     onMessage: (event) => {
       const { autoDismissAfter, description, title, toastType } = JSON.parse(
         event.data,
@@ -102,11 +114,12 @@ export default function Mentions() {
       return toast({
         autoDismissAfter: autoDismissAfter ?? 10000,
         description: description ?? '',
-        id: 'websocket',
+        id: 'websocket-mentions-success',
         title: title ?? 'Message renvoyé par le WebSocket',
         toastType: toastType ?? 'info',
       });
     },
+    reconnectAttempts: 3,
     shouldReconnect: () => true,
   });
 
