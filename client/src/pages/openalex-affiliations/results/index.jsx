@@ -235,7 +235,7 @@ export default function Affiliations() {
     const getData = async () => {
       const queryParams = {
         endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
-        excludedRors: searchParams.get('excludedRors') ?? '',
+        excludedRors: searchParams.getAll('excludedRors') ?? [],
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
       };
@@ -548,7 +548,7 @@ export default function Affiliations() {
                           </span>
                         </div>
                         <div className="wm-content">
-                          {options.excludedRors.split(' ').map((excludedRor) => (
+                          {options.excludedRors.map((excludedRor) => (
                             <Tag
                               className="fr-mr-1w"
                               color="green-archipel"

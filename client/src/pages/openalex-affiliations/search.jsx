@@ -9,7 +9,6 @@ import {
   Row,
   Select,
   SelectOption,
-  TextInput,
 } from '@dataesr/dsfr-plus';
 import introJs from 'intro.js';
 import { useEffect, useState } from 'react';
@@ -37,35 +36,37 @@ export default function Search() {
 
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [deletedAffiliations, setDeletedAffiliations] = useState([]);
-  const [excludedRors, setExcludedRors] = useState('');
+  const [excludedMessage, setExcludedMessage] = useState('');
+  const [excludedMessageType, setExcludedMessageType] = useState('');
+  const [excludedRors, setExcludedRors] = useState([]);
+  const [excludedTags, setExcludedTags] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
   const [onInputAffiliationsHandler, setOnInputAffiliationsHandler] = useState(false);
   const [searchedAffiliations, setSearchedAffiliations] = useState([]);
-  const [tags, setTags] = useState([]);
+  const [searchedMessage, setSearchedMessage] = useState('');
+  const [searchedMessageType, setSearchedMessageType] = useState('');
+  const [searchedTags, setSearchedTags] = useState([]);
 
   const NB_TAGS_STICKY = 2;
-  const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
+  const searchedTagsDisplayed = searchedTags.slice(0, NB_TAGS_STICKY);
 
   const checkAndSendQuery = () => {
     if (onInputAffiliationsHandler) {
-      setMessageType('error');
-      setMessage(
+      setSearchedMessageType('error');
+      setSearchedMessage(
         "Don't forget to validate the Affiliations input by pressing the return key.",
       );
       return;
     }
     if (searchedAffiliations.length === 0) {
-      setMessageType('error');
-      setMessage('You must provide at least one affiliation.');
+      setSearchedMessageType('error');
+      setSearchedMessage('You must provide at least one affiliation.');
       return;
     }
-    setMessageType('');
-    setMessage('');
+    setSearchedMessageType('');
+    setSearchedMessage('');
     const _searchParams = new URLSearchParams(search);
-    _searchParams.set('excludedRors', excludedRors);
     navigate(`/openalex-affiliations/results?${_searchParams.toString()}`);
   };
 
@@ -74,17 +75,38 @@ export default function Search() {
       affiliations: [],
       deletedAffiliations: [],
       endYear: VITE_APP_DEFAULT_YEAR,
-      excludedRors: '',
+      excludedRors: [],
       getRorChildren: '0',
       startYear: VITE_APP_DEFAULT_YEAR,
     });
     setSearchedAffiliations([]);
+    setExcludedRors([]);
   };
 
-  const onTagsChange = async (_affiliations, _deletedAffiliations) => {
-    const affiliations = _affiliations
-      .filter((affiliation) => affiliation.source === 'user')
-      .map((affiliation) => affiliation.label);
+  const onExcludedTagsChange = (tags) => {
+    setExcludedMessage('');
+    setExcludedMessageType('');
+    const _excludedRors = tags
+      .filter((tag) => tag.source === 'user')
+      .map((tag) => cleanRor(tag.label))
+      .filter((tag) => {
+        if (isRor(tag)) {
+          return true;
+        }
+        setExcludedMessage('Please add a correct ROR');
+        setExcludedMessageType('error');
+        return false;
+      });
+    setSearchParams({
+      ...currentSearchParams,
+      excludedRors: _excludedRors,
+    });
+  };
+
+  const onSearchedTagsChange = async (tags, _deletedAffiliations) => {
+    const affiliations = tags
+      .filter((tag) => tag.source === 'user')
+      .map((tag) => tag.label);
     const deletedAffiliations1 = [
       ...new Set(
         _deletedAffiliations
@@ -92,7 +114,7 @@ export default function Search() {
           .concat(currentSearchParams.deletedAffiliations || []),
       ),
     ].filter(
-      (item) => !_affiliations.map((affiliation) => affiliation.label).includes(item),
+      (item) => !tags.map((tag) => tag.label).includes(item),
     );
     setSearchParams({
       ...currentSearchParams,
@@ -104,30 +126,31 @@ export default function Search() {
   const switchGetRorChildren = () => setSearchParams({ ...currentSearchParams, getRorChildren: currentSearchParams.getRorChildren === '1' ? '0' : '1' });
 
   useEffect(() => {
-    if (searchParams.size < 4) {
+    if (searchParams.size < 3) {
       // Set default params values
       setSearchParams({
         affiliations: searchParams.getAll('affiliations') ?? [],
         deletedAffiliations: searchParams.getAll('deletedAffiliations') ?? [],
         endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
-        excludedRors: searchParams.get('excludedRors') ?? '',
+        excludedRors: searchParams.getAll('excludedRors') ?? [],
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
       });
-      setTags([]);
+      setSearchedTags([]);
+      setExcludedTags([]);
     } else {
       setIsLoading(true);
       const affiliations = searchParams.getAll('affiliations') || [];
       const _deletedAffiliations = searchParams.getAll('deletedAffiliations') || [];
+      const _excludedRors = searchParams.getAll('excludedRors') || [];
       setCurrentSearchParams({
         affiliations,
         deletedAffiliations: _deletedAffiliations,
         endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
-        excludedRors: searchParams.get('excludedRors') ?? '',
+        excludedRors: _excludedRors,
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
       });
-      setExcludedRors(searchParams.get('excludedRors') ?? '');
       const newSearchedAffiliations = affiliations.filter(
         (affiliation) => !searchedAffiliations.includes(affiliation),
       );
@@ -143,9 +166,14 @@ export default function Search() {
       if (newDeletedAffiliations.length > 0) {
         setDeletedAffiliations(_deletedAffiliations);
       }
+      const newExcludedRors = _excludedRors.filter((ror) => !excludedRors.includes(ror))
+        + excludedRors.filter((ror) => !_excludedRors.includes(ror));
+      if (newExcludedRors.length > 0) {
+        setExcludedRors(_excludedRors);
+      }
       setIsLoading(false);
     }
-  }, [currentSearchParams.excludedRors, deletedAffiliations, searchedAffiliations, searchParams, setSearchParams]);
+  }, [deletedAffiliations, excludedRors, searchedAffiliations, searchParams, setSearchParams]);
 
   useEffect(() => {
     const getData = async () => {
@@ -159,20 +187,20 @@ export default function Search() {
         (rorName) => !deletedAffiliations.includes(rorName),
       );
 
-      const allTags = [];
       const knownTags = {};
+      const searchedTagsTmp = [];
 
       filteredSearchedAffiliation.forEach((affiliation) => {
         const label = cleanRor(affiliation);
         if (isRor(label)) {
-          allTags.push({
+          searchedTagsTmp.push({
             isDisabled: false,
             label,
             source: 'user',
             type: 'rorId',
           });
         } else {
-          allTags.push({
+          searchedTagsTmp.push({
             isDisabled: affiliation.length < VITE_APP_TAG_LIMIT,
             label: affiliation,
             source: 'user',
@@ -185,7 +213,7 @@ export default function Search() {
       rorNames.flat().forEach((rorElt) => {
         if (knownTags[rorElt.rorId.toLowerCase()] === undefined) {
           if (!deletedAffiliations.includes(rorElt.rorId)) {
-            allTags.push({
+            searchedTagsTmp.push({
               isDisabled: false,
               label: rorElt.rorId,
               source: 'ror',
@@ -199,7 +227,7 @@ export default function Search() {
           if (knownTags[rorName.toLowerCase()] === undefined) {
             if (!deletedAffiliations.includes(rorName)) {
               const isDangerous = rorName.length < 4;
-              allTags.push({
+              searchedTagsTmp.push({
                 isDisabled: rorName.length < VITE_APP_TAG_LIMIT,
                 isDangerous,
                 label: rorName,
@@ -213,12 +241,19 @@ export default function Search() {
         });
       });
 
-      setTags(allTags);
+      const excludedTagsTmp = excludedRors.map((excludedRor) => ({
+        isDisabled: false,
+        label: excludedRor,
+        source: 'user',
+        type: 'excludedRor',
+      }));
+      setSearchedTags(searchedTagsTmp);
+      setExcludedTags(excludedTagsTmp);
       setIsLoading(false);
     };
 
     getData();
-  }, [currentSearchParams.getRorChildren, deletedAffiliations, searchedAffiliations]);
+  }, [currentSearchParams.getRorChildren, deletedAffiliations, excludedRors, searchedAffiliations]);
 
   useEffect(() => {
     introJs().setOptions({
@@ -228,12 +263,12 @@ export default function Search() {
       steps: [
         {
           element: document.querySelector('.step-ror-to-add'),
-          intro: '<ul><li>Searched affiliations</li><li>Can be either ROR or string</li><li>Press ENTER to validate each seizure</li><li>OR boolean will be applied during the search</li></ul>',
+          intro: '<ul><li>Searched affiliations</li><li>Can be either ROR or string</li><li>Press ENTER to search for several terms / expressions.</li><li>If several, an OR operator is used.</li></ul>',
           title: 'Tutorial',
         },
         {
           element: document.querySelector('.step-ror-to-exclude'),
-          intro: '<ul><li>ROR to exclude</li><li>ROR only</li><li>Separate multiple ROR by space</li></ul>',
+          intro: '<ul><li>ROR to exclude</li><li>ROR only</li><li>Press ENTER to search for several terms / expressions.</li><li>If several, an OR operator is used.</li></ul>',
           title: 'Tutorial',
         },
         {
@@ -251,8 +286,8 @@ export default function Search() {
     document.getElementById('introjs-dontShowAgain')?.click();
   }, []);
 
-  if (tags.length > NB_TAGS_STICKY) {
-    tagsDisplayed.push({ label: '...' });
+  if (searchedTags.length > NB_TAGS_STICKY) {
+    searchedTagsDisplayed.push({ label: '...' });
   }
 
   return (
@@ -309,21 +344,29 @@ export default function Search() {
                   isLoading={isLoading}
                   isRequired
                   label="Affiliation name, ROR of your institution"
-                  message={message}
-                  messageType={messageType}
+                  message={searchedMessage}
+                  messageType={searchedMessageType}
                   onInputHandler={setOnInputAffiliationsHandler}
-                  onTagsChange={onTagsChange}
+                  onTagsChange={onSearchedTagsChange}
                   seeMoreAfter={0}
                   switchGetRorChildren={switchGetRorChildren}
-                  tags={tags}
+                  tags={searchedTags}
                 />
               </Col>
               <Col xs="12">
-                <TextInput
-                  hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
+                <TagInput
+                  hint={(
+                    <div>
+                      You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved.
+                      <br />
+                      Press ENTER to search for several terms / expressions. If several, an OR operator is used.
+                    </div>
+                  )}
                   label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
-                  onChange={(e) => setExcludedRors(e.target.value)}
-                  value={excludedRors}
+                  message={excludedMessage}
+                  messageType={excludedMessageType}
+                  onTagsChange={onExcludedTagsChange}
+                  tags={excludedTags}
                 />
               </Col>
               <Col xs="12">
@@ -352,23 +395,23 @@ export default function Search() {
       </Container>
       <Container as="section" className="filters fr-my-5w">
         <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
-          <Col className="step-ror-to-add" xs={12} md={8} style={{ minHeight: '200px' }}>
+          <Col className="step-ror-to-add" xs={12} md={8}>
             <TagInput
               getRorChildren={currentSearchParams.getRorChildren === '1'}
               hint="Press ENTER to search for several terms / expressions. If several, an OR operator is used."
               isLoading={isLoading}
               isRequired
               label="Affiliation name, ROR of your institution"
-              message={message}
-              messageType={messageType}
+              message={searchedMessage}
+              messageType={searchedMessageType}
               onInputHandler={setOnInputAffiliationsHandler}
-              onTagsChange={onTagsChange}
+              onTagsChange={onSearchedTagsChange}
               seeMoreAction={(e) => {
                 setIsOpen(true);
                 e.preventDefault();
               }}
               switchGetRorChildren={switchGetRorChildren}
-              tags={tags}
+              tags={searchedTags}
             />
           </Col>
           <Col offsetMd="1" className="fr-mt-4w" style={{ minHeight: '180px' }}>
@@ -414,12 +457,19 @@ export default function Search() {
         </Row>
         <Row className="fr-p-2w fr-pt-0" style={{ minHeight: '150px' }}>
           <Col className="step-ror-to-exclude" xs={12} md={8}>
-            <TextInput
-              hint="You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved. If several ROR to exclude, separate them by space."
+            <TagInput
+              hint={(
+                <div>
+                  You can focus on recall issues in OpenAlex (missing ROR). This way, only affiliation strings that are NOT matched in OpenAlex to this specific ROR will be retrieved.
+                  <br />
+                  Press ENTER to search for several terms / expressions. If several, an OR operator is used.
+                </div>
+              )}
               label="ROR to exclude: exclude affiliation strings already mapped to a specific ROR in OpenAlex"
-              messageType=""
-              onChange={(e) => { setExcludedRors(e.target.value); }}
-              value={excludedRors}
+              message={excludedMessage}
+              messageType={excludedMessageType}
+              onTagsChange={onExcludedTagsChange}
+              tags={excludedTags}
             />
           </Col>
         </Row>
@@ -428,7 +478,7 @@ export default function Search() {
             <Button
               aria-label="Clear search"
               className="fr-mr-md-1w"
-              disabled={searchParams.getAll('affiliations').length === 0}
+              disabled={searchParams.getAll('affiliations').length === 0 && searchParams.getAll('excludedRors').length === 0}
               icon="delete-line"
               onClick={clearSearch}
               title="Clear search"

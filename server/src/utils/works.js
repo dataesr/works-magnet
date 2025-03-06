@@ -370,7 +370,7 @@ const getOpenAlexWorksByYear = (options, cursor = '*', previousResponse = [], re
     url += `,${options.openAlexExclusions.map((institutionId) => `authorships.institutions.lineage:!${institutionId}`).join()}`;
   }
   if (options?.excludedRors?.length) {
-    url += `,${options.excludedRors.split(' ').map((excludedRor) => `institutions.ror:!${excludedRor}`).join()}`;
+    url += `,${options.excludedRors.map((excludedRor) => `institutions.ror:!${excludedRor}`).join()}`;
   }
   // Polite mode https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#the-polite-pool
   if (process?.env?.OPENALEX_KEY) {
