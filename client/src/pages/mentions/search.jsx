@@ -62,7 +62,7 @@ export default function MentionsSearch() {
   useEffect(() => {
     if (searchParams.get('advanced') === '1') {
       const advancedQueryTmp = [];
-      const searchedFields = (searchParams.get('search') || DEFAULT_SEARCH).toLowerCase().split(/( and | or )/).map((item) => item.trim().replace(/^(\()*/, '').replace(/(\))*$/, ''));
+      const searchedFields = (searchParams.get('search') || DEFAULT_SEARCH).toLowerCase().split(/( and not | and | or )/).map((item) => item.trim().replace(/^(\()*/, '').replace(/(\))*$/, ''));
       searchedFields.forEach((item, index) => {
         if (index % 2 === 0) {
           const [esField, valueTmp] = item.split(':');
@@ -89,8 +89,8 @@ export default function MentionsSearch() {
           if (index === 0) {
             advancedQueryTmp.push({ key: fieldTmp, value: valueTmp, operator: null, order: 0 });
           } else {
-            const operatorTmp = searchedFields[index - 1];
-            advancedQueryTmp.push({ key: fieldTmp, operator: operatorTmp.toUpperCase(), value: valueTmp, order: index / 2 });
+            const operatorTmp = searchedFields[index - 1].toLowerCase();
+            advancedQueryTmp.push({ key: fieldTmp, operator: operatorTmp, value: valueTmp, order: index / 2 });
           }
         }
       });
@@ -223,6 +223,7 @@ export default function MentionsSearch() {
                           >
                             <option value="and">AND</option>
                             <option value="or">OR</option>
+                            <option value="and not">NOT</option>
                           </select>
                         </Col>
                       )
