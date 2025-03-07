@@ -17,9 +17,9 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
+import ButtonDropdown from '../../components/button-dropdown';
 import useToast from '../../hooks/useToast';
 import Header from '../../layout/header';
-import ButtonDropdown from '../../components/button-dropdown';
 import CustomToggle from './components/custom-toggle/index';
 import MentionsList from './components/mentions-list.tsx';
 
@@ -318,8 +318,8 @@ export default function MentionsResults() {
                         onChange={(e) => setType(e.target.value)}
                         value={type}
                       >
-                        <option value="software">Software</option>
                         <option value="dataset">Dataset</option>
+                        <option value="software">Software</option>
                         <option value="none">None</option>
                       </select>
                       <CustomToggle
@@ -353,6 +353,7 @@ export default function MentionsResults() {
                   <Col className="text-right">
                     <ButtonDropdown data={mentions} label="mentions" searchParams={searchParams} size="sm" />
                     <Button
+                      className="fr-ml-1w"
                       color="blue-ecume"
                       disabled={mentionsWithCorrection.length === 0}
                       icon="send-plane-fill"

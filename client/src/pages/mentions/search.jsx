@@ -144,7 +144,7 @@ export default function MentionsSearch() {
                 </Title>
                 <Text className="fr-ml-1w">
                   <i>
-                    Search for mentions of software and datasets in the full-text of scientific articles.
+                    Search for mentions of software and datasets in the full-text of scientific articles
                   </i>
                 </Text>
               </Col>
@@ -179,7 +179,6 @@ export default function MentionsSearch() {
               <Col md={12} className="fr-mb-5w">
                 <Button
                   color="beige-gris-galet"
-                  className="fr-pl-0"
                   onClick={() => setShowAdvanced(true)}
                   title="Switch to advanced search"
                   variant="text"
@@ -228,11 +227,11 @@ export default function MentionsSearch() {
                         </Col>
                       )
                     }
-                    <Col className="fr-ml-5w">
-                      <FieldFromKey term={term} index={index} setAdvancedSearchTermValues={setAdvancedSearchTermValues} />
-                    </Col>
-                    <Col className="fr-mt-3w" md={term.order > 0 ? 2 : 13}>
+                    <Col className="fr-ml-5w fr-mt-3w" md={term.order > 0 ? 2 : 13}>
                       <FieldSelector term={term} index={index} setAdvancedSearchTermKeys={setAdvancedSearchTermKeys} />
+                    </Col>
+                    <Col className="fr-mt-0w">
+                      <FieldFromKey term={term} index={index} setAdvancedSearchTermValues={setAdvancedSearchTermValues} />
                     </Col>
                     <Col className="fr-pt-5w">
                       {
@@ -273,8 +272,8 @@ export default function MentionsSearch() {
               </Row>
 
               {(esQuery.length > 0) && (
-                <Row className="fr-ml-1w fr-mr-5w fr-mt-3w" gutters>
-                  <Col className="fr-mr-5w es-query">
+                <Row className="fr-mt-3w" gutters>
+                  <Col className="fr-ml-5w es-query">
                     <span className="title">
                       Query
                     </span>
@@ -288,7 +287,6 @@ export default function MentionsSearch() {
                 <Col md={10}>
                   <Button
                     color="beige-gris-galet"
-                    className="fr-pl-0"
                     onClick={() => setShowAdvanced(false)}
                     title="Switch to simple search"
                     variant="text"

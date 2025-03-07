@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
 import { TextInput } from '@dataesr/dsfr-plus';
+import PropTypes from 'prop-types';
+
 import CustomToggle from './custom-toggle';
 
 function FieldFromKey({ term, setAdvancedSearchTermValues }) {
@@ -68,7 +69,7 @@ function FieldSelector({ term, index, setAdvancedSearchTermKeys }) {
         term,
         index,
         e.target.value,
-        (e.target.value === 'used' || e.target.value === 'created' || e.target.value === 'shared') ? false : term.value,
+        (e.target.value === 'used' || e.target.value === 'created' || e.target.value === 'shared') ? false : (e.target.value === 'mentionType' ? 'dataset' : term.value),
       ))}
       value={term.key}
     >
