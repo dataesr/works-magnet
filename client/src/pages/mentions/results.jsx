@@ -44,6 +44,7 @@ export default function MentionsResults() {
   const [mentions, setMentions] = useState([]);
   const [mentionsWithCorrection, setMentionsWithCorrection] = useState([]);
   const [params, setParams] = useState({
+    advanced: DEFAULT_ADVANCED,
     from: DEFAULT_FROM,
     search: DEFAULT_SEARCH,
     size: DEFAULT_SIZE,
@@ -293,7 +294,7 @@ export default function MentionsResults() {
             <Row>
               <Breadcrumb className="fr-my-1w">
                 <Link href="/">Home</Link>
-                <Link href={`/mentions/search?search=${params.search}${params.advanced ? '&advanced=1' : ''}`}>Search software and dataset mentions in the full-text</Link>
+                <Link href={`/mentions/search?search=${params.search}&advanced=${params.advanced}`}>Search software and dataset mentions in the full-text</Link>
                 <Link current>See results and make corrections</Link>
               </Breadcrumb>
             </Row>

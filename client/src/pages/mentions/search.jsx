@@ -22,42 +22,42 @@ export default function MentionsSearch() {
     value: '',
   }]);
 
-  const updateQuery = () => {
-    let esQueryTmp = '';
-    terms.forEach((param, index) => {
-      if (index > 0) {
-        esQueryTmp = `(${esQueryTmp} ${param.operator.toUpperCase()} `;
-      }
-      if (param.key === 'all') {
-        esQueryTmp += '*';
-      } else if (param.key === 'mention') {
-        esQueryTmp += 'context';
-      } else if (param.key === 'doi') {
-        esQueryTmp += 'doi';
-      } else if (param.key === 'affiliation') {
-        esQueryTmp += 'affiliations.*';
-      } else if (param.key === 'author') {
-        esQueryTmp += 'authors.*';
-      } else if (param.key === 'used') {
-        esQueryTmp += 'mention_context.used';
-      } else if (param.key === 'created') {
-        esQueryTmp += 'mention_context.created';
-      } else if (param.key === 'shared') {
-        esQueryTmp += 'mention_context.shared';
-      } else if (param.key === 'mentionType') {
-        esQueryTmp += 'type';
-      }
-      esQueryTmp += `:${param.value}`;
-      if (index > 0) {
-        esQueryTmp += ')';
-      }
-    });
-    setEsQuery(esQueryTmp);
-  };
-
   useEffect(() => {
-    updateQuery();
-  }, [terms]);
+    if (showAdvanced) {
+      let esQueryTmp = '';
+      terms.forEach((param, index) => {
+        if (index > 0) {
+          esQueryTmp = `(${esQueryTmp} ${param.operator.toUpperCase()} `;
+        }
+        if (param.key === 'all') {
+          esQueryTmp += '*';
+        } else if (param.key === 'mention') {
+          esQueryTmp += 'context';
+        } else if (param.key === 'doi') {
+          esQueryTmp += 'doi';
+        } else if (param.key === 'affiliation') {
+          esQueryTmp += 'affiliations.*';
+        } else if (param.key === 'author') {
+          esQueryTmp += 'authors.*';
+        } else if (param.key === 'used') {
+          esQueryTmp += 'mention_context.used';
+        } else if (param.key === 'created') {
+          esQueryTmp += 'mention_context.created';
+        } else if (param.key === 'shared') {
+          esQueryTmp += 'mention_context.shared';
+        } else if (param.key === 'mentionType') {
+          esQueryTmp += 'type';
+        }
+        esQueryTmp += `:${param.value}`;
+        if (index > 0) {
+          esQueryTmp += ')';
+        }
+      });
+      setEsQuery(esQueryTmp);
+    } else {
+      setEsQuery('');
+    }
+  }, [searchInput, showAdvanced, terms]);
 
   useEffect(() => {
     if (searchParams.get('advanced') === '1') {
@@ -169,7 +169,7 @@ export default function MentionsSearch() {
                 <Button
                   color="blue-ecume"
                   icon="search-line"
-                  onClick={() => navigate(`/mentions/results?search=${esQuery}`)}
+                  onClick={() => navigate(`/mentions/results?search=${searchInput}&advanced=0`)}
                   style={{ width: '100%' }}
                   title="Search"
                 >
@@ -188,144 +188,143 @@ export default function MentionsSearch() {
               </Col>
             </Row>
           </>
-        )
-          : (
-            <>
-              <Row className="fr-mt-5w fr-ml-5w">
-                <Col>
-                  <Title as="h2" look="h6">
-                    Advanced search
-                  </Title>
-                  <Text className="fr-ml-1w">
-                    This advanced search replaces the search above.
-                    <br />
-                    You can add terms to refine an advanced search
-                  </Text>
-                </Col>
-              </Row>
-              {
-                terms.map((term, index) => (
-                  <Row gutters key={term.order}>
+        ) : (
+          <>
+            <Row className="fr-mt-5w fr-ml-5w">
+              <Col>
+                <Title as="h2" look="h6">
+                  Advanced search
+                </Title>
+                <Text className="fr-ml-1w">
+                  This advanced search replaces the search above.
+                  <br />
+                  You can add terms to refine an advanced search
+                </Text>
+              </Col>
+            </Row>
+            {
+              terms.map((term, index) => (
+                <Row gutters key={term.order}>
+                  {
+                    index > 0 && (
+                      <Col md={2}>
+                        <select
+                          className="fr-select fr-mt-4w fr-ml-5w"
+                          onChange={(e) => {
+                            setTerms(terms.map((t) => {
+                              if (t.order === term.order) {
+                                return { ...t, operator: e.target.value };
+                              }
+                              return t;
+                            }));
+                          }}
+                          value={term.operator}
+                        >
+                          <option value="and">AND</option>
+                          <option value="or">OR</option>
+                          <option value="and not">NOT</option>
+                        </select>
+                      </Col>
+                    )
+                  }
+                  <Col className="fr-ml-5w fr-mt-3w" md={term.order > 0 ? 2 : 13}>
+                    <FieldSelector term={term} index={index} setAdvancedSearchTermKeys={setAdvancedSearchTermKeys} />
+                  </Col>
+                  <Col className="fr-mt-0w">
+                    <FieldFromKey term={term} index={index} setAdvancedSearchTermValues={setAdvancedSearchTermValues} />
+                  </Col>
+                  <Col className="fr-pt-5w">
                     {
-                      index > 0 && (
-                        <Col md={2}>
-                          <select
-                            className="fr-select fr-mt-4w fr-ml-5w"
-                            onChange={(e) => {
-                              setTerms(terms.map((t) => {
-                                if (t.order === term.order) {
-                                  return { ...t, operator: e.target.value };
-                                }
-                                return t;
-                              }));
-                            }}
-                            value={term.operator}
-                          >
-                            <option value="and">AND</option>
-                            <option value="or">OR</option>
-                            <option value="and not">NOT</option>
-                          </select>
-                        </Col>
+                      (index !== 0) && (
+                        <Button
+                          color="beige-gris-galet"
+                          icon="delete-line"
+                          onClick={() => {
+                            const newTerms = terms.filter((t) => t.order !== term.order);
+                            setTerms(newTerms);
+                          }}
+                          variant="text"
+                        />
                       )
                     }
-                    <Col className="fr-ml-5w fr-mt-3w" md={term.order > 0 ? 2 : 13}>
-                      <FieldSelector term={term} index={index} setAdvancedSearchTermKeys={setAdvancedSearchTermKeys} />
-                    </Col>
-                    <Col className="fr-mt-0w">
-                      <FieldFromKey term={term} index={index} setAdvancedSearchTermValues={setAdvancedSearchTermValues} />
-                    </Col>
-                    <Col className="fr-pt-5w">
-                      {
-                        (index !== 0) && (
-                          <Button
-                            color="beige-gris-galet"
-                            icon="delete-line"
-                            onClick={() => {
-                              const newTerms = terms.filter((t) => t.order !== term.order);
-                              setTerms(newTerms);
-                            }}
-                            variant="text"
-                          />
-                        )
-                      }
-                    </Col>
-                  </Row>
-                ))
-              }
-              <Row className="fr-mt-3w">
-                <Col className="fr-ml-5w">
-                  <Button
-                    color="beige-gris-galet"
-                    onClick={() => {
-                      setTerms([...terms, {
-                        key: 'all',
-                        operator: 'and',
-                        order: terms.length,
-                        value: '',
-                      }]);
-                    }}
-                    size="sm"
-                    variant="tertiary"
-                  >
-                    + Add new criteria
-                  </Button>
-                </Col>
-              </Row>
-
-              {(esQuery.length > 0) && (
-                <Row className="fr-mt-3w" gutters>
-                  <Col className="fr-ml-5w es-query">
-                    <span className="title">
-                      Query
-                    </span>
-                    <div className="content">
-                      {esQuery}
-                    </div>
                   </Col>
                 </Row>
-              )}
-              <Row className="fr-mb-5w fr-mt-3w fr-mx-5w">
-                <Col md={10}>
-                  <Button
-                    color="beige-gris-galet"
-                    onClick={() => setShowAdvanced(false)}
-                    title="Switch to simple search"
-                    variant="text"
-                  >
-                    Switch to simple search
-                  </Button>
-                </Col>
-                <Col>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button
-                      className="fr-mr-1w"
-                      color="beige-gris-galet"
-                      icon="delete-line"
-                      onClick={() => {
-                        setTerms([{
-                          key: 'all',
-                          operator: 'and',
-                          order: 0,
-                          value: '',
-                        }]);
-                      }}
-                      title="Clear"
-                    >
-                      Clear
-                    </Button>
-                    <Button
-                      color="blue-ecume"
-                      icon="search-line"
-                      onClick={() => navigate(`/mentions/results?search=${esQuery}${showAdvanced ? '&advanced=1' : ''}`)}
-                      title="Search"
-                    >
-                      Search
-                    </Button>
+              ))
+            }
+            <Row className="fr-mt-3w">
+              <Col className="fr-ml-5w">
+                <Button
+                  color="beige-gris-galet"
+                  onClick={() => {
+                    setTerms([...terms, {
+                      key: 'all',
+                      operator: 'and',
+                      order: terms.length,
+                      value: '',
+                    }]);
+                  }}
+                  size="sm"
+                  variant="tertiary"
+                >
+                  + Add new criteria
+                </Button>
+              </Col>
+            </Row>
+
+            {(esQuery.length > 0) && (
+              <Row className="fr-mt-3w" gutters>
+                <Col className="fr-ml-5w es-query">
+                  <span className="title">
+                    Query
+                  </span>
+                  <div className="content">
+                    {esQuery}
                   </div>
                 </Col>
               </Row>
-            </>
-          )}
+            )}
+            <Row className="fr-mb-5w fr-mt-3w fr-mx-5w">
+              <Col md={10}>
+                <Button
+                  color="beige-gris-galet"
+                  onClick={() => setShowAdvanced(false)}
+                  title="Switch to simple search"
+                  variant="text"
+                >
+                  Switch to simple search
+                </Button>
+              </Col>
+              <Col>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    className="fr-mr-1w"
+                    color="beige-gris-galet"
+                    icon="delete-line"
+                    onClick={() => {
+                      setTerms([{
+                        key: 'all',
+                        operator: 'and',
+                        order: 0,
+                        value: '',
+                      }]);
+                    }}
+                    title="Clear"
+                  >
+                    Clear
+                  </Button>
+                  <Button
+                    color="blue-ecume"
+                    icon="search-line"
+                    onClick={() => navigate(`/mentions/results?search=${esQuery}&advanced=1`)}
+                    title="Search"
+                  >
+                    Search
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+          </>
+        )}
       </Container>
     </div>
   );
