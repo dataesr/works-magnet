@@ -22,7 +22,10 @@ const LimitedList = ({ list, max }) => {
           <li key={index}>{item}</li>
         ))}
       </ul>
-      <button onClick={() => setIsExpanded(!isExpanded)}>
+      <button onClick={(e) => {
+        e.preventDefault();
+        return setIsExpanded(!isExpanded);
+      }}>
         {isExpanded ? "Show less" : `Show ${list.length - max} more`}
       </button>
     </>
