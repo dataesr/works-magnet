@@ -88,6 +88,17 @@ export default function MainFooter() {
                     Tutorial [EN]
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    className="fr-footer__top-link"
+                    href="https://hal.science/hal-04990114"
+                    icon="compass-3-fill"
+                    iconPosition="left"
+                    target="_blank"
+                  >
+                    Guide [FR]
+                  </Link>
+                </li>
               </ul>
             </Col>
             <Col md={4} xs={12}>
