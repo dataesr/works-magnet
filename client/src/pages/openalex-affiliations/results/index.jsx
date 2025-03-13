@@ -196,8 +196,8 @@ export default function Affiliations() {
       const affiliationStrings = options.affiliations
         .filter((affiliation) => !affiliation.isDisabled)
         .map((affiliation) => {
-          const childernLabels = affiliation.children.filter((child) => !child.isDisabled).map((child) => child.label);
-          return [affiliation.label, ...childernLabels];
+          const childernLabels = affiliation.children.filter((child) => !child.isDisabled).map((child) => normalize(child.label));
+          return [normalize(affiliation.label), ...childernLabels];
         }).flat();
       return getOpenAlexAffiliations(
         {
@@ -243,7 +243,7 @@ export default function Affiliations() {
       queryParams.rorExclusions = [];
       queryParams.affiliations = await Promise.all(
         searchParams.getAll('affiliations').map(async (affiliation) => {
-          const label = normalize(affiliation);
+          const label = affiliation;
           const children = [];
           // Compute rorNames
           if (isRor(label)) {
