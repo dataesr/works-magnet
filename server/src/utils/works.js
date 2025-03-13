@@ -464,7 +464,7 @@ const groupByAffiliations = ({ options, works }) => {
     const { length } = affiliations;
     for (let i = 0; i < length; i += 1) {
       const affiliation = affiliations[i];
-      const normalizedAffiliation = affiliation.key;
+      const normalizedAffiliation = affiliation.key.split('##')[0];
       if (toKeep[normalizedAffiliation] === undefined) {
         let displayAffiliation = affiliation.label;
         const matches = regexp.exec(displayAffiliation);
