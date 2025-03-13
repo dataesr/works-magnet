@@ -199,10 +199,12 @@ export default function Affiliations() {
           const childernLabels = affiliation.children.filter((child) => !child.isDisabled).map((child) => normalize(child.label));
           return [normalize(affiliation.label), ...childernLabels];
         }).flat();
+      const deletedAffiliations = options.deletedAffiliations.map((deletedAffiliation) => normalize(deletedAffiliation));
       return getOpenAlexAffiliations(
         {
           ...options,
           affiliationStrings,
+          deletedAffiliations,
           rors: options.affiliations
             .filter((affiliation) => affiliation.isRor)
             .map((affiliation) => affiliation.label),
@@ -239,8 +241,15 @@ export default function Affiliations() {
         getRorChildren: searchParams.get('getRorChildren') ?? '0',
         startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
       };
-      queryParams.deletedAffiliations = [];
       queryParams.rorExclusions = [];
+      queryParams.deletedAffiliations = [];
+      searchParams.getAll('deletedAffiliations').forEach((item) => {
+        if (isRor(item)) {
+          queryParams.rorExclusions.push(item);
+        } else {
+          queryParams.deletedAffiliations.push(item);
+        }
+      });
       queryParams.affiliations = await Promise.all(
         searchParams.getAll('affiliations').map(async (affiliation) => {
           const label = affiliation;
@@ -251,12 +260,14 @@ export default function Affiliations() {
             rors
               .forEach((item) => {
                 item.names.forEach((name) => {
-                  children.push({
-                    isDisabled: name.length < VITE_APP_TAG_LIMIT,
-                    label: name,
-                    source: 'ror',
-                    type: 'affiliationString',
-                  });
+                  if (!queryParams.deletedAffiliations.includes(name)) {
+                    children.push({
+                      isDisabled: name.length < VITE_APP_TAG_LIMIT,
+                      label: name,
+                      source: 'ror',
+                      type: 'affiliationString',
+                    });
+                  }
                 });
               });
           }
@@ -269,14 +280,6 @@ export default function Affiliations() {
           };
         }),
       );
-
-      searchParams.getAll('deletedAffiliations').forEach((item) => {
-        if (isRor(item)) {
-          queryParams.rorExclusions.push(item);
-        } else {
-          queryParams.deletedAffiliations.push(normalize(item));
-        }
-      });
       setOptions(queryParams);
     };
     getData();
