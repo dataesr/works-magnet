@@ -3,13 +3,14 @@ import { Octokit } from '@octokit/rest';
 import crypto from 'crypto';
 
 const MyOctokit = Octokit.plugin(throttling);
-const auth = process.env.GITHUB_PAT;
+const auths = process.env.GITHUB_PATS.split(', ');
 
 const ALGORITHM = 'aes-256-ctr';
 const IV_LENGTH = 16;
 
 const octokit = new MyOctokit({
-  auth,
+  // Randomly pick one of the Github PATs
+  auth: auths[Math.floor(Math.random() * auths.length)],
   request: { retryAfter: 10 },
   throttle: {
     onRateLimit: (_, options) => {
