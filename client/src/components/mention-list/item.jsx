@@ -2,18 +2,10 @@ import { Badge, Button, Col, Row, Text } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-import { getIdLink } from '../../utils/works';
+import { getIdLinkDisplay } from '../../utils/works';
 
 export default function MentionListItem({ mention }) {
   const [expanded, setExpanded] = useState(false);
-
-  const getIdLinkDisplay = (idType, idValue) => {
-    const idLink = getIdLink(idType, idValue);
-    const html = idLink
-      ? `<a href="${idLink}" target="_blank">${idValue}</a>`
-      : `<span>${idValue}</span>`;
-    return html;
-  };
 
   return (
     <li key={mention.id}>

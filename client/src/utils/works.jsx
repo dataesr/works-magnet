@@ -62,6 +62,14 @@ const getIdLink = (type, id) => {
   return prefix !== null ? `${prefix}${id}` : false;
 };
 
+const getIdLinkDisplay = (idType, idValue, idLabel) => {
+  const idLink = getIdLink(idType, idValue);
+  const html = idLink
+    ? `<a href="${idLink}" target="_blank">${idLabel ?? idValue}</a>`
+    : `<span>${idLabel ?? idValue}</span>`;
+  return html;
+};
+
 const getMentions = async (options) => {
   const response = await fetch(`${VITE_API}/mentions`, {
     body: JSON.stringify(options),
@@ -193,6 +201,7 @@ const renderButtonDataset = (selected, fn, label, icon) => (
 
 export {
   getIdLink,
+  getIdLinkDisplay,
   getMentions,
   getOpenAlexAffiliations,
   getWorks,

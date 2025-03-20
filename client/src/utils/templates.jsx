@@ -5,7 +5,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Tooltip } from 'react-tooltip';
 
 import { status } from '../config';
-import { getIdLink } from './works';
+import { getIdLinkDisplay } from './works';
 
 const affiliationsTemplate = (rowData) => (
   <>
@@ -69,14 +69,6 @@ const statusRowFilterTemplate = (options) => (
   />
 );
 
-const getIdLinkDisplay = (idType, idValue) => {
-  const idLink = getIdLink(idType, idValue);
-  const html = idLink
-    ? `<a href="${idLink}" target="_blank">${idValue}</a>`
-    : `<span>${idValue}</span>`;
-  return html;
-};
-
 const getIdsTemplate = (ids) => {
   let html = '<ul>';
   ids.forEach((id) => {
@@ -119,10 +111,7 @@ const linkedORCIDTemplate = (rowData) => {
   const frOrcid = rowData.fr_authors_orcid || [];
   frOrcid.forEach((id) => {
     html += `<li key="${id.orcid}">`;
-    const idLink = getIdLink('orcid', id.orcid);
-    html += idLink
-      ? `<a target="_blank" href="${idLink}">${id.name}</a>`
-      : `<span>${id.name}</span>`;
+    html += getIdLinkDisplay('orcid', id.orcid, id.name);
     html += '</li>';
   });
   html += '</ul>';

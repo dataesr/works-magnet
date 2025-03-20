@@ -1,9 +1,34 @@
-import { cleanId, getAuthorOrcid, intersectArrays, removeDiacritics } from './utils';
+import {
+  cleanId,
+  getAuthorOrcid,
+  intersectArrays,
+  removeDiacritics,
+} from './utils';
 
 const MAX_FOSM = Number(process.env.ES_MAX_SIZE);
 const MAX_OPENALEX = Number(process.env.OPENALEX_MAX_SIZE);
 
-const datasetsType = ['audiovisual', 'collection', 'computationalnotebook', 'dataset', 'film', 'image', 'physicalobject', 'software', 'sound'];
+const datasetsType = [
+  'audiovisual',
+  'collection',
+  'computationalnotebook',
+  'dataset',
+  'film',
+  'image',
+  'physicalobject',
+  'software',
+  'sound',
+];
+
+const getIdFromWorks = (work) => {
+  let halId = work?.primary_location?.landing_page_url
+    ?.split('/')
+    ?.filter((item) => item)
+    ?.pop();
+  halId = halId?.startsWith('hal-') ? halId : null;
+  // Id is, by order of priority, DOI, hal-id or OpenAlex
+  return cleanId(work?.ids?.doi ?? halId ?? work?.ids?.openalex);
+};
 
 const getFormat = (formats) => {
   const formatsMapping = {
@@ -15,7 +40,9 @@ const getFormat = (formats) => {
   // Set format as unique
   let uniqueFormats = [...new Set(formats)];
   // Mapping
-  uniqueFormats = uniqueFormats.map((format) => formatsMapping?.[format] ?? format);
+  uniqueFormats = uniqueFormats.map(
+    (format) => formatsMapping?.[format] ?? format,
+  );
   return uniqueFormats.toString() ?? '';
 };
 
@@ -29,18 +56,32 @@ const getPublisher = (publisher) => {
 
 const mergePublications = (publication1, publication2) => {
   // Any publication from FOSM is prioritized among others
-  const priorityPublication = [publication1, publication2].some((publi) => publi.datasource === 'fosm')
+  const priorityPublication = [publication1, publication2].some(
+    (publi) => publi.datasource === 'fosm',
+  )
     ? [publication1, publication2].find((publi) => publi.datasource === 'fosm')
     : publication1;
-  return ({
+  return {
     ...priorityPublication,
-    affiliations: [...new Set([...publication1?.affiliations ?? [], ...publication2?.affiliations ?? []])].filter((aff) => aff.length > 0),
+    affiliations: [
+      ...new Set([
+        ...(publication1?.affiliations ?? []),
+        ...(publication2?.affiliations ?? []),
+      ]),
+    ].filter((aff) => aff.length > 0),
     // Filter allIds by unique values
-    allIds: Object.values([...publication1.allIds, ...publication2.allIds].reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
+    allIds: Object.values(
+      [...publication1.allIds, ...publication2.allIds].reduce(
+        (acc, obj) => ({ ...acc, [obj.id_value]: obj }),
+        {},
+      ),
+    ),
     // Filter authors by unique
     authors: [...new Set([...publication1.authors, ...publication2.authors])],
-    datasource: [...new Set([...publication1.datasource, ...publication2.datasource])].sort(),
-  });
+    datasource: [
+      ...new Set([...publication1.datasource, ...publication2.datasource]),
+    ].sort(),
+  };
 };
 
 const deduplicateWorks = (works) => {
@@ -48,7 +89,10 @@ const deduplicateWorks = (works) => {
     const { id } = work;
     // eslint-disable-next-line no-param-reassign
     if (deduplicatedWorksTmp[id]) {
-      deduplicatedWorksTmp.id = mergePublications(deduplicatedWorksTmp[id], work);
+      deduplicatedWorksTmp.id = mergePublications(
+        deduplicatedWorksTmp[id],
+        work,
+      );
     } else {
       deduplicatedWorksTmp[id] = work;
     }
@@ -59,23 +103,55 @@ const deduplicateWorks = (works) => {
 };
 
 const getFosmQuery = ({ options, pit, searchAfter }) => {
-  const query = { size: process.env.ES_SIZE, query: { bool: { filter: [], must: [], must_not: [], should: [] } } };
+  const query = {
+    size: process.env.ES_SIZE,
+    query: { bool: { filter: [], must: [], must_not: [], should: [] } },
+  };
   options.affiliationStrings.forEach((affiliation) => {
-    query.query.bool.should.push({ match: { 'affiliations.name': { query: `"${affiliation}"`, operator: 'and' } } });
+    query.query.bool.should.push({
+      match: {
+        'affiliations.name': { query: `"${affiliation}"`, operator: 'and' },
+      },
+    });
   });
   if (options.rors?.length > 0) {
     const fullRors = options.rors.map((r) => 'https://ror.org/'.concat(r));
     query.query.bool.should.push({ terms: { 'rors.keyword': options.rors } });
-    query.query.bool.should.push({ terms: { 'affiliations.affiliationIdentifier.keyword': fullRors } });
-    query.query.bool.should.push({ terms: { 'authors.affiliations.affiliationIdentifier.keyword': fullRors } });
+    query.query.bool.should.push({
+      terms: { 'affiliations.affiliationIdentifier.keyword': fullRors },
+    });
+    query.query.bool.should.push({
+      terms: { 'authors.affiliations.affiliationIdentifier.keyword': fullRors },
+    });
   }
-  query.query.bool.must.push({ range: { year: { gte: options.year, lte: options.year } } });
+  query.query.bool.must.push({
+    range: { year: { gte: options.year, lte: options.year } },
+  });
   // Exclude files and duplicates for Datacite
-  query.query.bool.must_not.push({ terms: { genre: ['file', 'version', 'file_', 'identical'] } });
+  query.query.bool.must_not.push({
+    terms: { genre: ['file', 'version', 'file_', 'identical'] },
+  });
   query.query.bool.minimum_should_match = 1;
   query._source = [
-    'affiliations', 'authors', 'doi', 'external_ids', 'genre', 'genre_raw', 'hal_id', 'id', 'publisher', 'format', 'client_id',
-    'publisher_dissemination', 'publisher_raw', 'title', 'year', 'fr_reasons_concat', 'fr_publications_linked', 'fr_authors_name', 'fr_authors_orcid',
+    'affiliations',
+    'authors',
+    'doi',
+    'external_ids',
+    'genre',
+    'genre_raw',
+    'hal_id',
+    'id',
+    'publisher',
+    'format',
+    'client_id',
+    'publisher_dissemination',
+    'publisher_raw',
+    'title',
+    'year',
+    'fr_reasons_concat',
+    'fr_publications_linked',
+    'fr_authors_name',
+    'fr_authors_orcid',
   ];
   query.sort = ['_shard_doc'];
   if (pit) {
@@ -99,7 +175,9 @@ const getFosmQuery = ({ options, pit, searchAfter }) => {
     });
   }
   if (options?.excludedRors?.length > 0) {
-    query.query.bool.must_not.push({ terms: { 'rors.keyword': options.excludedRors.split(' ') } });
+    query.query.bool.must_not.push({
+      terms: { 'rors.keyword': options.excludedRors.split(' ') },
+    });
   }
   return query;
 };
@@ -107,8 +185,13 @@ const getFosmQuery = ({ options, pit, searchAfter }) => {
 const getFosmAffiliation = (affiliation) => {
   const source = 'FOSM';
   let ror = null;
-  if (affiliation.affiliationIdentifierScheme?.toLowerCase() === 'ror' && affiliation?.affiliationIdentifier) {
-    ror = affiliation.affiliationIdentifier.replace('https://ror.org/', '').replace('ror.org/', '');
+  if (
+    affiliation.affiliationIdentifierScheme?.toLowerCase() === 'ror'
+    && affiliation?.affiliationIdentifier
+  ) {
+    ror = affiliation.affiliationIdentifier
+      .replace('https://ror.org/', '')
+      .replace('ror.org/', '');
   }
   let rawAffiliation = affiliation?.name ?? '';
   if (ror) {
@@ -119,7 +202,9 @@ const getFosmAffiliation = (affiliation) => {
 };
 
 const getLinkedDoi = (frPublicationsLinked, options) => {
-  const relevantPubli = frPublicationsLinked?.filter((el) => intersectArrays(el?.rors || [], options.rors).length > 0) || [];
+  const relevantPubli = frPublicationsLinked?.filter(
+    (el) => intersectArrays(el?.rors || [], options.rors).length > 0,
+  ) || [];
   const res = [];
   relevantPubli.forEach((p) => {
     res.push({ id_value: p.doi, id_type: 'doi' });
@@ -135,20 +220,31 @@ const getMatchingRoRs = (affiliations, options) => {
 const getAffiliationsHtmlField = ({ affiliations, id, regexp }) => {
   let affiliationsAll = affiliations.map((a) => a.rawAffiliation);
   if (regexp) {
-    affiliationsAll = affiliationsAll.map((a) => removeDiacritics(a))
-      .sort((a, b) => (regexp.exec(b)?.length ?? 0) - (regexp.exec(a)?.length ?? 0))
+    affiliationsAll = affiliationsAll
+      .map((a) => removeDiacritics(a))
+      .sort(
+        (a, b) => (regexp.exec(b)?.length ?? 0) - (regexp.exec(a)?.length ?? 0),
+      )
       .map((affiliation) => {
         let displayAffiliation = affiliation;
-        regexp.exec(affiliation)?.slice(1)?.forEach((match) => {
-          displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
-        });
+        regexp
+          .exec(affiliation)
+          ?.slice(1)
+          ?.forEach((match) => {
+            displayAffiliation = displayAffiliation.replace(match, '<b>$&</b>');
+          });
         return displayAffiliation;
       })
       .filter((affiliation) => affiliation?.length ?? 0);
   }
   affiliationsAll = [...new Set(affiliationsAll)];
   let html = `<ul data-tooltip-id="tooltip-affiliation-${id}">`;
-  html += affiliationsAll.slice(0, 3).map((affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`).join('');
+  html += affiliationsAll
+    .slice(0, 3)
+    .map(
+      (affiliation, index) => `<li key="affilition-${index}">${affiliation}</li>`,
+    )
+    .join('');
   if (affiliationsAll.length > 3) {
     html += `<li>and others (${affiliationsAll.length - 3})</li>`;
   }
@@ -158,7 +254,11 @@ const getAffiliationsHtmlField = ({ affiliations, id, regexp }) => {
 
 const getAffiliationsTooltipField = ({ affiliations, id }) => {
   let html = '<ul>';
-  html += (affiliations || []).map((affiliation, index) => `<li key="tooltip-affiliation-${id}-${index}">${affiliation.rawAffiliation}</li>`).join('');
+  html += (affiliations || [])
+    .map(
+      (affiliation, index) => `<li key="tooltip-affiliation-${id}-${index}">${affiliation.rawAffiliation}</li>`,
+    )
+    .join('');
   html += '</ul>';
   return html;
 };
@@ -168,21 +268,44 @@ const formatFosmResult = (result, options) => {
     affiliations: result._source.affiliations
       ?.map((affiliation) => getFosmAffiliation(affiliation))
       .filter((affiliation) => !!affiliation?.rawAffiliation),
-    allIds: Object.values((result?._source?.external_ids ?? []).reduce((acc, obj) => ({ ...acc, [obj.id_value]: obj }), {})),
+    allIds: Object.values(
+      (result?._source?.external_ids ?? []).reduce(
+        (acc, obj) => ({ ...acc, [obj.id_value]: obj }),
+        {},
+      ),
+    ),
     authors: (result._source?.authors ?? []).map((author) => author.full_name),
     client_id: result._source.client_id,
     datasource: ['fosm'],
     format: getFormat(result?._source?.format || []),
     fr_reasons: result?._source?.fr_reasons_concat?.toString() ?? '',
-    fr_publications_linked: getLinkedDoi(result?._source?.fr_publications_linked, options),
-    fr_authors_name: [...new Set(result?._source?.fr_authors_name
-      ?.filter((el) => intersectArrays(el?.rors || [], options.rors))
-      .map((el) => el.author.name))],
-    fr_authors_orcid: [...new Set(result?._source?.fr_authors_orcid
-      ?.filter((el) => intersectArrays(el?.rors || [], options.rors))
-      .map((el) => getAuthorOrcid(el)))],
-    id: cleanId(result._source?.doi ?? result._source?.hal_id ?? result._source.id),
-    publisher: getPublisher(result._source?.publisher_dissemination ?? result._source?.publisher ?? result._source?.publisher_raw ?? ''),
+    fr_publications_linked: getLinkedDoi(
+      result?._source?.fr_publications_linked,
+      options,
+    ),
+    fr_authors_name: [
+      ...new Set(
+        result?._source?.fr_authors_name
+          ?.filter((el) => intersectArrays(el?.rors || [], options.rors))
+          .map((el) => el.author.name),
+      ),
+    ],
+    fr_authors_orcid: [
+      ...new Set(
+        result?._source?.fr_authors_orcid
+          ?.filter((el) => intersectArrays(el?.rors || [], options.rors))
+          .map((el) => getAuthorOrcid(el)),
+      ),
+    ],
+    id: cleanId(
+      result._source?.doi ?? result._source?.hal_id ?? result._source.id,
+    ),
+    publisher: getPublisher(
+      result._source?.publisher_dissemination
+        ?? result._source?.publisher
+        ?? result._source?.publisher_raw
+        ?? '',
+    ),
     status: 'tobedecided',
     title: result._source.title,
     type: result._source?.genre_raw ?? result._source.genre,
@@ -203,20 +326,42 @@ const formatFosmResult = (result, options) => {
   answer.nbMatchingRoRs = answer.matchingRoRs.length;
   answer.nbAffiliations = answer.affiliations?.length || 0;
   let levelCertainty = '2.medium';
-  if (answer.nbMatchingRoRs > 0 || answer.nbPublicationsLinked > 0 || answer.nbOrcid >= 2 || answer.nbAuthorsName >= 3) {
+  if (
+    answer.nbMatchingRoRs > 0
+    || answer.nbPublicationsLinked > 0
+    || answer.nbOrcid >= 2
+    || answer.nbAuthorsName >= 3
+  ) {
     levelCertainty = '1.high';
-  } else if (answer.nbAuthorsName <= 1 && answer.nbOrcid <= 1 && answer.nbAffiliations === 0) {
+  } else if (
+    answer.nbAuthorsName <= 1
+    && answer.nbOrcid <= 1
+    && answer.nbAffiliations === 0
+  ) {
     levelCertainty = '3.low';
   }
   answer.levelCertainty = levelCertainty;
-  answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id });
+  answer.affiliationsHtml = getAffiliationsHtmlField({
+    affiliations: answer?.affiliations ?? [],
+    id: answer.id,
+  });
   answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
   answer.allInfos = JSON.stringify(answer);
   return answer;
 };
 
-const getFosmWorksByYear = async ({ options, pit, remainingTries = 3, results = [], searchAfter }) => {
-  console.log('getFosmWorksByYear', `MAX_FOSM = ${MAX_FOSM}`, `type = ${options?.type}`);
+const getFosmWorksByYear = async ({
+  options,
+  pit,
+  remainingTries = 3,
+  results = [],
+  searchAfter,
+}) => {
+  console.log(
+    'getFosmWorksByYear',
+    `MAX_FOSM = ${MAX_FOSM}`,
+    `type = ${options?.type}`,
+  );
   if (!pit) {
     const response = await fetch(
       `${process.env.ES_URL}/${process.env.ES_INDEX}/_pit?keep_alive=${process.env.ES_PIT_KEEP_ALIVE}`,
@@ -245,28 +390,35 @@ const getFosmWorksByYear = async ({ options, pit, remainingTries = 3, results = 
     .then((response) => {
       const hits = response?.hits?.hits ?? [];
       // eslint-disable-next-line no-param-reassign
-      results = results.concat(hits.map((result) => formatFosmResult(result, options))).filter((r) => r.levelCertainty !== '3.low');
+      results = results
+        .concat(hits.map((result) => formatFosmResult(result, options)))
+        .filter((r) => r.levelCertainty !== '3.low');
       if (hits.length > 0 && (MAX_FOSM === 0 || results.length < MAX_FOSM)) {
         // eslint-disable-next-line no-param-reassign
         searchAfter = hits.at('-1').sort;
         return getFosmWorksByYear({ options, pit, results, searchAfter });
       }
       if (pit) {
-        fetch(
-          `${process.env.ES_URL}/_pit`,
-          {
-            body: JSON.stringify({ id: pit }),
-            headers: { Authorization: process.env.ES_AUTH, 'Content-type': 'application/json' },
-            method: 'DELETE',
+        fetch(`${process.env.ES_URL}/_pit`, {
+          body: JSON.stringify({ id: pit }),
+          headers: {
+            Authorization: process.env.ES_AUTH,
+            'Content-type': 'application/json',
           },
-        );
+          method: 'DELETE',
+        });
       }
       return results;
     })
     .catch((error) => {
       if (remainingTries > 0) {
-        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000)))
-          .then(() => getFosmWorksByYear({ options, pit, remainingTries: remainingTries - 1, results, searchAfter }));
+        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getFosmWorksByYear({
+          options,
+          pit,
+          remainingTries: remainingTries - 1,
+          results,
+          searchAfter,
+        }));
       }
       console.error(`Error while fetching ${url} :`);
       console.error(error);
@@ -330,33 +482,63 @@ const getOpenAlexAffiliations = (work) => {
   const source = 'OpenAlex';
   const affiliations = work.authorships.map((author) => author.affiliations.map((affiliation) => {
     const rawAffiliation = affiliation.raw_affiliation_string;
-    let key = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
-    const label = removeDiacritics(rawAffiliation).concat(' [ source: ').concat(source).concat(' ]');
+    let key = removeDiacritics(rawAffiliation)
+      .concat(' [ source: ')
+      .concat(source)
+      .concat(' ]');
+    const label = removeDiacritics(rawAffiliation)
+      .concat(' [ source: ')
+      .concat(source)
+      .concat(' ]');
     const rors = [];
     const rorsToCorrect = [];
     const affiliationIds = affiliation.institution_ids;
     const matchedInstitutions = author.institutions.filter((institution) => affiliationIds.includes(institution.id));
     return matchedInstitutions.map((matchedInstitution) => {
       if (matchedInstitution?.ror) {
-        const rorId = (matchedInstitution.ror).replace('https://ror.org/', '').replace('ror.org/', '');
+        const rorId = matchedInstitution.ror
+          .replace('https://ror.org/', '')
+          .replace('ror.org/', '');
         key = `${label}##${rorId}`;
-        rors.push({ rorCountry: matchedInstitution.country_code, rorId, rorName: matchedInstitution.display_name });
-        rorsToCorrect.push({ rorCountry: matchedInstitution.country_code, rorId, rorName: matchedInstitution.display_name });
+        rors.push({
+          rorCountry: matchedInstitution.country_code,
+          rorId,
+          rorName: matchedInstitution.display_name,
+        });
+        rorsToCorrect.push({
+          rorCountry: matchedInstitution.country_code,
+          rorId,
+          rorName: matchedInstitution.display_name,
+        });
       }
       return { key, label, rawAffiliation, rors, rorsToCorrect, source };
     });
   }));
   // TODO: recursive flat
-  return affiliations.flat().flat().flat().filter((affiliation) => !!affiliation.rawAffiliation);
+  return affiliations
+    .flat()
+    .flat()
+    .flat()
+    .filter((affiliation) => !!affiliation.rawAffiliation);
 };
 
-const getOpenAlexWorksByYear = (options, cursor = '*', previousResponse = [], remainingTries = 3) => {
-  console.log('getOpenAlexWorksByYear', `MAX_OPENALEX = ${MAX_OPENALEX}, currentResponseLength = ${previousResponse.length}`);
+const getOpenAlexWorksByYear = (
+  options,
+  cursor = '*',
+  previousResponse = [],
+  remainingTries = 3,
+) => {
+  console.log(
+    'getOpenAlexWorksByYear',
+    `MAX_OPENALEX = ${MAX_OPENALEX}, currentResponseLength = ${previousResponse.length}`,
+  );
   let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
   if (options.affiliationStrings.length) {
-    url += `,raw_affiliation_strings.search:(${options.affiliationStrings.map((aff) => `"${encodeURIComponent(aff)}"`).join(' OR ')})`;
+    url += `,raw_affiliation_strings.search:(${options.affiliationStrings
+      .map((aff) => `"${encodeURIComponent(aff)}"`)
+      .join(' OR ')})`;
   }
   if (options.rors.length) {
     url += `,institutions.ror:${options.rors.join('|')}`;
@@ -367,10 +549,16 @@ const getOpenAlexWorksByYear = (options, cursor = '*', previousResponse = [], re
     url += ',type:!dataset';
   }
   if (options.openAlexExclusions.length) {
-    url += `,${options.openAlexExclusions.map((institutionId) => `authorships.institutions.lineage:!${institutionId}`).join()}`;
+    url += `,${options.openAlexExclusions
+      .map(
+        (institutionId) => `authorships.institutions.lineage:!${institutionId}`,
+      )
+      .join()}`;
   }
   if (options?.excludedRors?.length) {
-    url += `,${options.excludedRors.map((excludedRor) => `institutions.ror:!${excludedRor}`).join()}`;
+    url += `,${options.excludedRors
+      .map((excludedRor) => `institutions.ror:!${excludedRor}`)
+      .join()}`;
   }
   // Polite mode https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#the-polite-pool
   if (process?.env?.OPENALEX_KEY) {
@@ -378,7 +566,8 @@ const getOpenAlexWorksByYear = (options, cursor = '*', previousResponse = [], re
   } else {
     url += '&mailto=bso@recherche.gouv.fr';
   }
-  url += '&select=authorships,display_name,doi,id,ids,primary_location,publication_year,type';
+  url
+    += '&select=authorships,display_name,doi,id,ids,primary_location,publication_year,type';
   return fetch(`${url}&cursor=${cursor}`)
     .then((response) => {
       if (response.ok) return response.json();
@@ -392,36 +581,57 @@ const getOpenAlexWorksByYear = (options, cursor = '*', previousResponse = [], re
     })
     .then((response) => {
       const hits = response?.results ?? [];
-      const results = previousResponse.concat(hits.map((result) => {
-        const answer = {
-          affiliations: getOpenAlexAffiliations(result),
-          allIds: Object.keys(result.ids).map((key) => ({ id_type: key, id_value: cleanId(result.ids[key]) })),
-          authors: result?.authorships?.map((author) => author.author.display_name),
-          datasource: ['openalex'],
-          doi: cleanId(result?.doi),
-          id: cleanId(result?.ids?.doi
-            ?? result?.primary_location?.landing_page_url?.split('/')?.filter((item) => item)?.pop() ?? result?.ids?.openalex),
-          publisher: getPublisher(result?.primary_location?.source?.host_organization_name ?? result?.primary_location?.source?.display_name ?? ''),
-          status: 'tobedecided',
-          title: result?.display_name,
-          type: getTypeFromOpenAlex(result.type),
-          year: result?.publication_year?.toString() ?? '',
-        };
-        answer.affiliationsHtml = getAffiliationsHtmlField({ affiliations: answer?.affiliations ?? [], id: answer.id });
-        answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
-        answer.allInfos = JSON.stringify(answer);
-        return answer;
-      }));
+      const results = previousResponse.concat(
+        hits.map((result) => {
+          const answer = {
+            affiliations: getOpenAlexAffiliations(result),
+            allIds: Object.keys(result.ids).map((key) => ({
+              id_type: key,
+              id_value: cleanId(result.ids[key]),
+            })),
+            authors: result?.authorships?.map(
+              (author) => author.author.display_name,
+            ),
+            datasource: ['openalex'],
+            doi: cleanId(result?.doi),
+            id: getIdFromWorks(result),
+            publisher: getPublisher(
+              result?.primary_location?.source?.host_organization_name
+                ?? result?.primary_location?.source?.display_name
+                ?? '',
+            ),
+            status: 'tobedecided',
+            title: result?.display_name,
+            type: getTypeFromOpenAlex(result.type),
+            year: result?.publication_year?.toString() ?? '',
+          };
+          answer.affiliationsHtml = getAffiliationsHtmlField({
+            affiliations: answer?.affiliations ?? [],
+            id: answer.id,
+          });
+          answer.affiliationsTooltip = getAffiliationsTooltipField(answer);
+          answer.allInfos = JSON.stringify(answer);
+          return answer;
+        }),
+      );
       const nextCursor = response?.meta?.next_cursor;
-      if (nextCursor && hits.length > 0 && (MAX_OPENALEX === 0 || results.length < MAX_OPENALEX)) {
+      if (
+        nextCursor
+        && hits.length > 0
+        && (MAX_OPENALEX === 0 || results.length < MAX_OPENALEX)
+      ) {
         return getOpenAlexWorksByYear(options, nextCursor, results);
       }
       return results;
     })
     .catch((error) => {
       if (remainingTries > 0) {
-        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000)))
-          .then(() => getOpenAlexWorksByYear(options, cursor, previousResponse, remainingTries - 1));
+        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getOpenAlexWorksByYear(
+          options,
+          cursor,
+          previousResponse,
+          remainingTries - 1,
+        ));
       }
       console.error(`Error while fetching ${url} :`);
       console.error(error);
@@ -439,13 +649,13 @@ const groupByAffiliations = ({ options, works }) => {
   const pattern = options.affiliationStrings
     // Replace all accentuated characters, multiple spaces and toLowercase()
     .map((affiliation) => removeDiacritics(affiliation)
-      // Set universiteit, universitat, universite, university, universita, universidad and univ as synonyms
+    // Set universiteit, universitat, universite, university, universita, universidad and univ as synonyms
       .replaceAll(
         /\buniversiteit|universitat|universite|university|universita|universidad|univ\b/gi,
         'universiteit|universitat|universite|university|universita|universidad|univ',
       )
       .split(' ')
-      // Each word should be map at least one time, whatever the order
+    // Each word should be map at least one time, whatever the order
       .map((item) => `(?=.*?\\b(${item})\\b)`)
       .join(''))
     .join('|');
@@ -470,7 +680,10 @@ const groupByAffiliations = ({ options, works }) => {
         const matches = regexp.exec(displayAffiliation);
         // Set each matched word in bold
         matches?.slice(1)?.forEach((match) => {
-          displayAffiliation = displayAffiliation.replaceAll(match, '<b>$&</b>');
+          displayAffiliation = displayAffiliation.replaceAll(
+            match,
+            '<b>$&</b>',
+          );
         });
         let keepAffiliation = displayAffiliation.includes('</b>');
         const rorsInAffiliation = affiliation.rors?.map((a) => a.rorId) || [];
@@ -484,8 +697,13 @@ const groupByAffiliations = ({ options, works }) => {
       if (toKeep[normalizedAffiliation]?.keepAffiliation) {
         if (deduplicatedAffiliations?.[normalizedAffiliation]) {
           deduplicatedAffiliations[normalizedAffiliation].works.push(id);
-          if (deduplicatedAffiliations[normalizedAffiliation].worksExample.length < 999) {
-            deduplicatedAffiliations[normalizedAffiliation].worksExample.push(work.allIds);
+          if (
+            deduplicatedAffiliations[normalizedAffiliation].worksExample
+              .length < 999
+          ) {
+            deduplicatedAffiliations[normalizedAffiliation].worksExample.push(
+              work.allIds,
+            );
           }
         } else {
           // eslint-disable-next-line no-param-reassign
@@ -508,19 +726,23 @@ const groupByAffiliations = ({ options, works }) => {
     return deduplicatedAffiliations;
   }, {});
 
-  allAffiliationsTmp = Object.values(allAffiliationsTmp)
-    .map((affiliation, index) => {
+  allAffiliationsTmp = Object.values(allAffiliationsTmp).map(
+    (affiliation, index) => {
       const uniqueWorks = [...new Set(affiliation.works)];
       const uniqueWorksExample = [...new Set(affiliation.worksExample.flat())];
-      return ({
+      return {
         ...affiliation,
         id: index.toString(),
         works: uniqueWorks,
         worksExample: uniqueWorksExample.slice(0, 10),
         worksNumber: uniqueWorks.length,
-        worksOpenAlex: uniqueWorksExample.filter((w) => w.id_type === 'openalex').map((w) => w.id_value || 0).filter((w) => w !== 0),
-      });
-    });
+        worksOpenAlex: uniqueWorksExample
+          .filter((w) => w.id_type === 'openalex')
+          .map((w) => w.id_value || 0)
+          .filter((w) => w !== 0),
+      };
+    },
+  );
   return allAffiliationsTmp;
 };
 

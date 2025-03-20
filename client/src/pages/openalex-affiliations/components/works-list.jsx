@@ -12,6 +12,7 @@ export default function WorksList({ works }) {
   const getUrlFromWork = (work) => {
     if (work.startsWith('10.')) return `https://doi.org/${work}`;
     if (work.startsWith('hal-')) return `https://hal.science/${work}`;
+    if (work.startsWith('W')) return `https://openalex.org/works/${work}`;
     return work;
   };
 
@@ -21,15 +22,27 @@ export default function WorksList({ works }) {
         <span className="fr-mr-1w">
           Works:
         </span>
-        {displayedWorks.map((work) => (
-          <Link
-            className="fr-mr-1w"
-            href={getUrlFromWork(work)}
-            key={`works-list-${work}`}
-            target="_blank"
-          >
-            {work}
-          </Link>
+        {displayedWorks.map((work) => {
+          const workUrl = getUrlFromWork(work);
+          return { work, workUrl };
+        }).map(({ work, workUrl }) => (
+          (workUrl.startsWith('https') ? (
+            <Link
+              className="fr-mr-1w"
+              href={workUrl}
+              key={`works-list-${work}`}
+              target="_blank"
+            >
+              {work}
+            </Link>
+          ) : (
+            <span
+              className="fr-mr-1w"
+              key={`works-list-${work}`}
+            >
+              {work}
+            </span>
+          ))
         ))}
         {
           works.length > 5 && (
