@@ -412,7 +412,7 @@ const getFosmWorksByYear = async ({
     })
     .catch((error) => {
       if (remainingTries > 0) {
-        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getFosmWorksByYear({
+        return new Promise((resolve) => { setTimeout(resolve, Math.round(Math.random() * 3000)); }).then(() => getFosmWorksByYear({
           options,
           pit,
           remainingTries: remainingTries - 1,
@@ -573,7 +573,8 @@ const getOpenAlexWorksByYear = (
       if (response.ok) return response.json();
       if (response.status === 429) {
         console.log('Error 429', 'Getting error 429 from OpenAlex');
-        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getOpenAlexWorksByYear(options, cursor, previousResponse));
+        return new Promise((resolve) => { setTimeout(resolve, Math.round(Math.random() * 3000)); })
+          .then(() => getOpenAlexWorksByYear(options, cursor, previousResponse));
       }
       console.error(`Error while fetching ${url} :`);
       console.error(`${response.status} | ${response.statusText}`);
@@ -626,7 +627,7 @@ const getOpenAlexWorksByYear = (
     })
     .catch((error) => {
       if (remainingTries > 0) {
-        return new Promise((resolve) => setTimeout(resolve, Math.round(Math.random() * 1000))).then(() => getOpenAlexWorksByYear(
+        return new Promise((resolve) => { setTimeout(resolve, Math.round(Math.random() * 3000)); }).then(() => getOpenAlexWorksByYear(
           options,
           cursor,
           previousResponse,
