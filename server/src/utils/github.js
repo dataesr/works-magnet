@@ -55,9 +55,8 @@ const createIssueOpenAlexAffiliations = ({ email, issue }) => {
     worksOpenAlex = [],
   } = issue;
   let title = `Correction for raw affiliation ${name}`;
-  if (title.length > 1000) {
-    title = `${title.slice(0, 1000)}...`;
-  }
+  // Github issue title is maximum 256 characters long
+  title = `${title.slice(0, 250)}...`;
   let body = `Correction needed for raw affiliation ${name}\n`;
   body += `raw_affiliation_name: ${name}\n`;
   body += `new_rors: ${rors.map((ror) => ror.rorId).join(';')}\n`;
@@ -85,7 +84,9 @@ const createIssueOpenAlexAffiliations = ({ email, issue }) => {
 };
 
 const createIssueMentionsCharacterizations = ({ email, issue }) => {
-  const title = `Correction for mention ${issue.id}`;
+  let title = `Correction for mention ${issue.id}`;
+  // Github issue title is maximum 256 characters long
+  title = `${title.slice(0, 250)}...`;
   // eslint-disable-next-line no-param-reassign
   issue.user = `${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}`;
   // eslint-disable-next-line no-param-reassign
