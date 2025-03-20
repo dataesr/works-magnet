@@ -23,7 +23,7 @@ jobs:
       - name: 🔑 Login ghcr.io
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🏗️ Build app
+      - name: 🏗️ Build front app
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -33,7 +33,7 @@ jobs:
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository }}
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          docker build -t $IMAGE_ID:staging .
+          docker build -f Docker-staging -t $IMAGE_ID:staging .
 
       - name: 📦 Push Docker image
         run: |

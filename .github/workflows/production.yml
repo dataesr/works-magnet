@@ -27,7 +27,7 @@ jobs:
       - name: 🔑 Login ghcr.io
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🏗️ Build app
+      - name: 🏗️ Build front app
         uses: actions/setup-node@v4
         with:
           node-version: 20
