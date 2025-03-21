@@ -12,41 +12,32 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
-import useToast from '../../../hooks/useToast';
-
 const { VITE_APP_DEFAULT_YEAR, VITE_WS_HOST } = import.meta.env;
 
-export default function SendFeedbackButton({ className, corrections, resetCorrections }) {
+export default function SendFeedbackButton({ addNotice, className, corrections, resetCorrections }) {
   const [searchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(Cookies.get('works-magnet-user-email'), '');
   const [validEmail, setValidEmail] = useState(null);
-  const { toast } = useToast();
 
   const switchModal = () => setIsModalOpen((prev) => !prev);
 
   const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
     onError: (event) => {
       console.error(event);
-      toast({
-        autoDismissAfter: 0,
-        description: 'Error while sending affiliations corrections.<br />'
-                    + 'Please reload the page.<br />'
-                    + 'If needed, deactivate your ad blocker.<br />'
-                    + 'If needed, contact the tech team <a href="mailto:bso@recherche.gouv.fr">bso@recherche.gouv.fr</a>',
-        id: 'websocket-affiliations-error',
-        title: 'Error while sending feedback to OpenAlex',
-        toastType: 'error',
+      addNotice({
+        message: 'Error while sending affiliations corrections.<br />'
+          + 'Please reload the page.<br />'
+          + 'If needed, deactivate your ad blocker.<br />'
+          + 'If needed, contact the tech team <a href="mailto:bso@recherche.gouv.fr">bso@recherche.gouv.fr</a>',
+        type: 'error',
       });
     },
     onMessage: (event) => {
-      const { autoDismissAfter, description, title, toastType } = JSON.parse(event.data);
-      return toast({
-        autoDismissAfter: autoDismissAfter ?? 10000,
-        description: description ?? '',
-        id: 'websocket-affiliations-success',
-        title: title ?? 'Message renvoyé par le WebSocket',
-        toastType: toastType ?? 'info',
+      const { description, toastType } = JSON.parse(event.data);
+      addNotice({
+        message: description ?? '',
+        type: toastType ?? 'info',
       });
     },
   });
@@ -64,19 +55,15 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
         worksOpenAlex: correction.worksOpenAlex,
       }));
       sendJsonMessage({ data, email: userEmail, type: 'openalex-affiliations' });
-      toast({
-        autoDismissAfter: 5000,
-        description: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
-        id: 'initOpenAlex',
-        title: 'OpenAlex corrections submitted',
+      addNotice({
+        message: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
+        type: 'info',
       });
       resetCorrections();
     } catch (error) {
-      toast({
-        description: error.message,
-        id: 'errorOpenAlex',
-        title: 'Error while sending OpenAlex corrections',
-        toastType: 'error',
+      addNotice({
+        message: error.message,
+        type: 'error',
       });
     } finally {
       switchModal();
@@ -139,6 +126,7 @@ export default function SendFeedbackButton({ className, corrections, resetCorrec
 }
 
 SendFeedbackButton.propTypes = {
+  addNotice: PropTypes.func,
   className: PropTypes.string,
   corrections: PropTypes.arrayOf(PropTypes.shape({
     addList: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -172,5 +160,6 @@ SendFeedbackButton.propTypes = {
 };
 
 SendFeedbackButton.defaultProps = {
+  addNotice: () => { },
   className: '',
 };

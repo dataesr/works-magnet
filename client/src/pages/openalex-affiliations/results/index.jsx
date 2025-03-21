@@ -7,6 +7,7 @@ import {
   Modal,
   ModalContent,
   ModalTitle,
+  Notice,
   Row,
   Spinner,
   Tag,
@@ -51,6 +52,7 @@ export default function Affiliations() {
   const [isLoadingRor, setIsLoadingRor] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [notices, setNotices] = useState([]);
   const [options, setOptions] = useState({});
   const [ror, setRor] = useState('');
   const [rorMessage, setRorMessage] = useState('');
@@ -214,6 +216,16 @@ export default function Affiliations() {
     },
     enabled: false,
   });
+
+  const addNotice = (notice) => {
+    setNotices([...notices, notice]);
+  };
+
+  const removeNotice = (index) => {
+    if (index > -1) {
+      setNotices(notices.filter((_, i) => (i !== index)));
+    }
+  };
 
   useEffect(() => {
     const getUniquesRors = async () => {
@@ -408,6 +420,18 @@ export default function Affiliations() {
   return (
     <>
       <Header />
+      {notices.map((notice, index) => (
+        <Notice
+          closeMode="controlled"
+          className="fr-mb-2w"
+          // eslint-disable-next-line react/no-array-index-key
+          key={`notice-${index}`}
+          type={notice.type}
+          onClose={() => { removeNotice(index); }}
+        >
+          <span dangerouslySetInnerHTML={{ __html: notice.message }} />
+        </Notice>
+      ))}
       <Container fluid as="main" className="wm-bg">
         {(isFetching || isLoading) && (
           <Container
@@ -784,6 +808,7 @@ export default function Affiliations() {
                         corrections={affiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0)}
                       />
                       <SendFeedbackButton
+                        addNotice={addNotice}
                         className="step-action-feedback"
                         corrections={affiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0)}
                         resetCorrections={resetCorrections}
