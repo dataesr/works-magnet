@@ -10,7 +10,7 @@ webSocketServer.on('connection', (webSocket) => {
   webSocket.on('open', () => console.log('Opening websocket connexion'));
   webSocket.on('message', async (json) => {
     const { data, email, type } = JSON.parse(json);
-    const perChunk = 30;
+    const perChunk = 10;
     const results = [];
     let toast = {};
     for (const [i, d] of chunkArray({ array: data, perChunk }).entries()) {
