@@ -17,14 +17,14 @@ webSocketServer.on('connection', (webSocket) => {
       const promises = d.map((issue) => createIssue({ email, issue, type }).catch((error) => error));
       const r = await Promise.all(promises);
       results.push(...r);
-      toast = {
-        description: `${Math.min(data.length, (i + 1) * perChunk)} / ${
-          data.length
-        } issue${data.length > 1 ? 's' : ''} submitted`,
-        id: `processCorrections${i}`,
-        title: `${type.replace('-', ' ')} corrections are being processed`,
-      };
       if (data.length > perChunk) {
+        toast = {
+          description: `${Math.min(data.length, (i + 1) * perChunk)} / ${
+            data.length
+          } issue${data.length > 1 ? 's' : ''} submitted`,
+          id: `processCorrections${i}`,
+          title: `${type.replace('-', ' ')} corrections are being processed`,
+        };
         webSocket.send(JSON.stringify(toast));
       }
     }
@@ -34,7 +34,7 @@ webSocketServer.on('connection', (webSocket) => {
     );
     if (firstError?.status) {
       toast = {
-        description: `Error while submitting Github issues : ${firstError?.message}`,
+        description: `Error while submitting Github issues - Error ${firstError.status} - ${firstError?.message}`,
         id: 'errorCorrections',
         title: `Error ${firstError.status}`,
         toastType: 'error',

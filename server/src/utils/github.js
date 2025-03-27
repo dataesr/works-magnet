@@ -8,30 +8,6 @@ const auths = process.env.GITHUB_PATS.split(', ');
 const ALGORITHM = 'aes-256-ctr';
 const IV_LENGTH = 16;
 
-const octokit = new MyOctokit({
-  // Randomly pick one of the Github PATs
-  auth: auths[Math.floor(Math.random() * auths.length)],
-  request: { retryAfter: 10 },
-  throttle: {
-    onRateLimit: (_, options) => {
-      octokit.log.warn(
-        `Request quota exhausted for request ${options.method} ${options.url}`,
-      );
-    },
-    onSecondaryRateLimit: (_, options) => {
-      // Retry 5 times after hitting a rate limit error after 5 seconds
-      if (options.request.retryCount <= 5) {
-        return true;
-      }
-      // Then logs a warning
-      octokit.log.warn(
-        `Secondary quota detected for request ${options.method} ${options.url}`,
-      );
-      return false;
-    },
-  },
-});
-
 const encrypt = (text) => {
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv(
@@ -44,7 +20,7 @@ const encrypt = (text) => {
   return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
 };
 
-const createIssueOpenAlexAffiliations = ({ email, issue }) => {
+const createIssueOpenAlexAffiliations = async ({ email, issue, octokit }) => {
   const {
     endYear = '',
     name,
@@ -83,7 +59,7 @@ const createIssueOpenAlexAffiliations = ({ email, issue }) => {
   });
 };
 
-const createIssueMentionsCharacterizations = ({ email, issue }) => {
+const createIssueMentionsCharacterizations = ({ email, issue, octokit }) => {
   let title = `Correction for mention ${issue.id}`;
   // Github issue title is maximum 256 characters long
   title = `${title.slice(0, 250)}...`;
@@ -100,12 +76,41 @@ const createIssueMentionsCharacterizations = ({ email, issue }) => {
   });
 };
 
+const getOctokiConnection = (auth) => {
+  const octokit = new MyOctokit({
+    // Randomly pick one of the Github PATs
+    auth,
+    request: { retryAfter: 10 },
+    throttle: {
+      onRateLimit: (_, options) => {
+        octokit.log.warn(
+          `Request quota exhausted for request ${options.method} ${options.url}`,
+        );
+      },
+      onSecondaryRateLimit: (_, options) => {
+        // Retry 5 times after hitting a rate limit error after 5 seconds
+        if (options.request.retryCount <= 5) {
+          return true;
+        }
+        // Then logs a warning
+        octokit.log.warn(
+          `Secondary quota detected for request ${options.method} ${options.url}`,
+        );
+        return false;
+      },
+    },
+  });
+  return octokit;
+};
+
 const createIssue = ({ email, issue, type }) => {
+  // Create a new octokit for each issue in order to randomly choose a Github PAT to workaround Github API limitations
+  const octokit = getOctokiConnection(auths[Math.floor(Math.random() * auths.length)]);
   switch (type) {
     case 'mentions-characterizations':
-      return createIssueMentionsCharacterizations({ email, issue });
+      return createIssueMentionsCharacterizations({ email, issue, octokit });
     case 'openalex-affiliations':
-      return createIssueOpenAlexAffiliations({ email, issue });
+      return createIssueOpenAlexAffiliations({ email, issue, octokit });
     default:
       console.error(
         `Error wile creating Github issue as "type" should be one of ["mentions-characterizations", "openalex-affiliations"] instead of "${type}".`,
