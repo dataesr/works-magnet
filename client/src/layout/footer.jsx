@@ -69,7 +69,7 @@ export default function MainFooter() {
                 <li>
                   <Link
                     className="fr-footer__top-link"
-                    href="https://www.youtube.com/watch?v=zkLFj5Wnsy0"
+                    href="https://www.youtube.com/watch?v=2iBw3IV6ZDc"
                     icon="play-circle-fill"
                     iconPosition="left"
                     target="_blank"
