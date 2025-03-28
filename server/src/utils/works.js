@@ -480,7 +480,7 @@ const getTypeFromOpenAlex = (type) => {
 
 const getOpenAlexAffiliations = (work) => {
   const source = 'OpenAlex';
-  const affiliations = work.authorships.map((author) => author.affiliations.map((affiliation) => {
+  const affiliations = (work?.authorships ?? []).map((author) => (author?.affiliations ?? []).map((affiliation) => {
     const rawAffiliation = affiliation.raw_affiliation_string;
     let key = removeDiacritics(rawAffiliation)
       .concat(' [ source: ')

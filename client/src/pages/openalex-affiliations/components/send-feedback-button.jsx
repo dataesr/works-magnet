@@ -135,13 +135,13 @@ SendFeedbackButton.propTypes = {
     nameHtml: PropTypes.string.isRequired,
     removeList: PropTypes.arrayOf(PropTypes.string).isRequired,
     rors: PropTypes.arrayOf(PropTypes.shape({
-      rorCountry: PropTypes.string.isRequired,
+      rorCountry: PropTypes.string,
       rorId: PropTypes.string.isRequired,
       rorName: PropTypes.string.isRequired,
     })).isRequired,
     rorsNumber: PropTypes.number.isRequired,
     rorsToCorrect: PropTypes.arrayOf(PropTypes.shape({
-      rorCountry: PropTypes.string.isRequired,
+      rorCountry: PropTypes.string,
       rorId: PropTypes.string.isRequired,
       rorName: PropTypes.string.isRequired,
     })).isRequired,
