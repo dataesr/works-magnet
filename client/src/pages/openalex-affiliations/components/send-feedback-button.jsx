@@ -10,7 +10,7 @@ import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import useWebSocket from 'react-use-websocket';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 const { VITE_APP_DEFAULT_YEAR, VITE_WS_HOST } = import.meta.env;
 
@@ -22,7 +22,9 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
 
   const switchModal = () => setIsModalOpen((prev) => !prev);
 
-  const { sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
+  const { readyState, sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
+    onOpen: () => console.log('Websocket connexion opened.'),
+    onClose: () => console.log('Websocket connexion closed.'),
     onError: (event) => {
       console.error(event);
       addNotice({
@@ -42,6 +44,14 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
     },
   });
 
+  const connectionStatus = {
+    [ReadyState.CONNECTING]: 'Connecting',
+    [ReadyState.OPEN]: 'Open',
+    [ReadyState.CLOSING]: 'Closing',
+    [ReadyState.CLOSED]: 'Closed',
+    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+  }[readyState];
+
   const sendFeedback = async () => {
     try {
       Cookies.set('works-magnet-user-email', userEmail);
@@ -54,6 +64,7 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
         worksExample: correction.worksExample,
         worksOpenAlex: correction.worksOpenAlex,
       }));
+      console.log(sendJsonMessage);
       sendJsonMessage({ data, email: userEmail, type: 'openalex-affiliations' });
       addNotice({
         message: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
@@ -79,6 +90,11 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
 
   return (
     <>
+      <span>
+        The WebSocket is currently
+        {' '}
+        {connectionStatus}
+      </span>
       <Button
         aria-label="Send feedback to OpenAlex"
         className={className}

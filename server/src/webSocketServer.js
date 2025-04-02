@@ -6,6 +6,7 @@ import { chunkArray } from './utils/utils';
 const webSocketServer = new WebSocketServer({ noServer: true, path: '/ws' });
 
 webSocketServer.on('connection', (webSocket) => {
+  webSocket.on('close', () => console.log('Closing websocket connexion'));
   webSocket.on('error', console.error);
   webSocket.on('open', () => console.log('Opening websocket connexion'));
   webSocket.on('message', async (json) => {
