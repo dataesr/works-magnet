@@ -23,8 +23,28 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
   const switchModal = () => setIsModalOpen((prev) => !prev);
 
   const { readyState, sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
-    onOpen: () => console.log('Websocket connexion opened.'),
-    onClose: () => console.log('Websocket connexion closed.'),
+    onOpen: () => {
+      const currentdate = new Date();
+      const datetime = `Last Sync: ${ currentdate.getDate() }/${
+         currentdate.getMonth() + 1 }/${
+         currentdate.getFullYear() } @ ${
+         currentdate.getHours() }:${
+         currentdate.getMinutes() }:${
+         currentdate.getSeconds()}`;
+      console.log(datetime);
+      console.log('Websocket connexion opened.');
+    },
+    onClose: () => {
+      const currentdate = new Date();
+      const datetime = `Last Sync: ${ currentdate.getDate() }/${
+         currentdate.getMonth() + 1 }/${
+         currentdate.getFullYear() } @ ${
+         currentdate.getHours() }:${
+         currentdate.getMinutes() }:${
+         currentdate.getSeconds()}`;
+      console.log(datetime);
+      console.log('Websocket connexion closed.');
+    },
     onError: (event) => {
       console.error(event);
       addNotice({
