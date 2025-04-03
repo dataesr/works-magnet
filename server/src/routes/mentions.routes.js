@@ -14,29 +14,10 @@ const getMentionContext = (mention) => {
 };
 
 const getMentionsQuery = ({ options }) => {
-  const {
-    from, search, size, sortBy, sortOrder, type,
-  } = options;
-  let types = [];
-  if (type === 'software') {
-    types = ['software'];
-  } else if (type === 'datasets') {
-    types = ['dataset-implicit', 'dataset-name'];
-  }
+  const { from, search, size, sortBy, sortOrder } = options;
   const body = {
     from,
     size,
-    query: {
-      bool: {
-        must: [
-          {
-            terms: {
-              'type.keyword': types,
-            },
-          },
-        ],
-      },
-    },
     _source: [
       'authors',
       'affiliations',
@@ -54,13 +35,13 @@ const getMentionsQuery = ({ options }) => {
       require_field_match: 'true',
       fields: [
         {
-          context: { pre_tags: ['<b>'], post_tags: ['</b>'] },
+          context: { pre_tags: ['<strong>'], post_tags: ['</strong>'] },
         },
       ],
     },
   };
   if (search?.length > 0) {
-    body.query.bool.must.push({ simple_query_string: { query: search } });
+    body.query = { bool: { must: [{ query_string: { query: search.replaceAll('*', '\\*') } }] } };
   }
   if (sortBy && sortOrder) {
     let sortFields = sortBy;
@@ -153,16 +134,10 @@ const getMentionsCount = async ({ query }) => {
 router.route('/mentions').post(async (req, res) => {
   try {
     const options = req?.body ?? {};
-    if (!['datasets', 'software'].includes(options?.type)) {
-      res
-        .status(400)
-        .json({ message: 'Type should be either "datasets" or "software".' });
-    } else {
-      const query = getMentionsQuery({ options });
-      const mentions = await getMentions({ query });
-      const count = await getMentionsCount({ query });
-      res.status(200).json({ count, mentions });
-    }
+    const query = getMentionsQuery({ options });
+    const mentions = await getMentions({ query });
+    const count = await getMentionsCount({ query });
+    res.status(200).json({ count, mentions });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error.' });

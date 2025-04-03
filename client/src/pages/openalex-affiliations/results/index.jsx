@@ -622,6 +622,7 @@ export default function Affiliations() {
                       <Modal
                         isOpen={isAddModalOpen}
                         hide={() => setIsAddModalOpen((prev) => !prev)}
+                        size="lg"
                       >
                         <ModalTitle>
                           Add ROR to &nbsp;
@@ -713,6 +714,7 @@ export default function Affiliations() {
                       <Modal
                         isOpen={isRemoveModalOpen}
                         hide={() => setIsRemoveModalOpen((prev) => !prev)}
+                        size="lg"
                       >
                         <ModalTitle>
                           Remove ROR to
@@ -763,27 +765,30 @@ export default function Affiliations() {
                                             )
                                           }
                                           <br />
-                                          {
-                                            _ror.removed ? (
-                                              <strike>
-                                                <span className="fr-mx-1w">
-                                                  {_ror.rorName}
-                                                </span>
-                                                <span className="fr-ml-1w">
-                                                  {getFlagEmoji(_ror.rorCountry)}
-                                                </span>
-                                              </strike>
-                                            ) : (
-                                              <>
-                                                <span className="fr-mx-1w">
-                                                  {_ror.rorName}
-                                                </span>
-                                                <span className="fr-ml-1w">
-                                                  {getFlagEmoji(_ror.rorCountry)}
-                                                </span>
-                                              </>
-                                            )
-                                          }
+                                          <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
+                                          <i>
+                                            {
+                                              _ror.removed ? (
+                                                <strike>
+                                                  <span className="fr-mx-1w">
+                                                    {_ror.rorName}
+                                                  </span>
+                                                  <span className="fr-ml-1w">
+                                                    {getFlagEmoji(_ror.rorCountry)}
+                                                  </span>
+                                                </strike>
+                                              ) : (
+                                                <>
+                                                  <span className="fr-mx-1w">
+                                                    {_ror.rorName}
+                                                  </span>
+                                                  <span className="fr-ml-1w">
+                                                    {getFlagEmoji(_ror.rorCountry)}
+                                                  </span>
+                                                </>
+                                              )
+                                            }
+                                          </i>
                                         </li>
                                       ))}
                                     </ul>

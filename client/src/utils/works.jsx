@@ -77,11 +77,7 @@ const getMentions = async (options) => {
     method: 'POST',
     signal: timeout(1200).signal, // 20 minutes
   });
-  if (!response.ok) {
-    throw new Error('Oops... FOSM API request did not work for mentions !');
-  }
-  const mentions = await response.json();
-  return mentions;
+  return response.json();
 };
 
 const getOpenAlexAffiliations = async (body, toast) => {

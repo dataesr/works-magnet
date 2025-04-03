@@ -20,9 +20,9 @@ const getFileName = ({ extension, label, searchParams }) => {
   let fileName = 'works_magnet';
   fileName += label ? `_${label.replace(' ', '')}` : '';
   fileName += `_${Date.now()}`;
-  fileName += `_${searchParams.get('startYear')}`;
-  fileName += `_${searchParams.get('endYear')}`;
-  fileName += `_${hashCode(searchParams.get('affiliations'))}`;
+  if (searchParams.get('startYear')) fileName += `_${searchParams.get('startYear')}`;
+  if (searchParams.get('endYear')) fileName += `_${searchParams.get('endYear')}`;
+  if (searchParams.get('affiliations')) fileName += `_${hashCode(searchParams.get('affiliations'))}`;
   fileName += `.${extension}`;
   return fileName;
 };

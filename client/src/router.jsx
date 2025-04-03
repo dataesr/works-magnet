@@ -1,11 +1,12 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import About from './pages/about';
 import Layout from './layout';
+import About from './pages/about';
 import DatasetsResults from './pages/datasets/results';
 import DatasetsSearch from './pages/datasets/search';
 import Home from './pages/home';
-import Mentions from './pages/mentions';
+import MentionsResults from './pages/mentions/results';
+import MentionsSearch from './pages/mentions/search';
 import OpenalexAffiliationsCorrections from './pages/openalex-affiliations/corrections';
 import OpenalexaffiliationsResults from './pages/openalex-affiliations/results';
 import OpenalexAffiliationsSearch from './pages/openalex-affiliations/search';
@@ -13,47 +14,52 @@ import PublicationsResults from './pages/publications/results';
 import PublicationsSearch from './pages/publications/search';
 
 export default function Router() {
-  // TODO: Merge nested routes
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-        <Route
-          path="/openalex-affiliations"
-          element={<Navigate to="/openalex-affiliations/search" replace />}
-        />
-        <Route path="/openalex-affiliations/search" element={<OpenalexAffiliationsSearch />} />
-        <Route
-          path="/openalex-affiliations/results"
-          element={
-            <OpenalexaffiliationsResults />
-          }
-        />
-        <Route path="/openalex-affiliations/corrections" element={<OpenalexAffiliationsCorrections />} />
-        <Route
-          path="/publications"
-          element={<Navigate to="/publications/search" replace />}
-        />
-        <Route path="/publications/search" element={<PublicationsSearch />} />
-        <Route
-          path="/publications/results"
-          element={
-            <PublicationsResults />
-          }
-        />
-        <Route
-          path="/datasets"
-          element={<Navigate to="/datasets/search" replace />}
-        />
-        <Route path="/datasets/search" element={<DatasetsSearch />} />
-        <Route
-          path="/datasets/results"
-          element={
-            <DatasetsResults />
-          }
-        />
-        <Route path="mentions" element={<Mentions />} />
         <Route path="about" element={<About />} />
+        <Route
+          path="/datasets/*"
+          element={(
+            <Routes>
+              <Route path="/" element={<Navigate to="/datasets/search" replace />} />
+              <Route path="/results" element={<DatasetsResults />} />
+              <Route path="/search" element={<DatasetsSearch />} />
+            </Routes>
+          )}
+        />
+        <Route
+          path="/mentions/*"
+          element={(
+            <Routes>
+              <Route path="/" element={<Navigate to="/mentions/search" replace />} />
+              <Route path="/results" element={<MentionsResults />} />
+              <Route path="/search" element={<MentionsSearch />} />
+            </Routes>
+          )}
+        />
+        <Route
+          path="/openalex-affiliations/*"
+          element={(
+            <Routes>
+              <Route path="/" element={<Navigate to="/openalex-affiliations/search" replace />} />
+              <Route path="/corrections" element={<OpenalexAffiliationsCorrections />} />
+              <Route path="/results" element={<OpenalexaffiliationsResults />} />
+              <Route path="/search" element={<OpenalexAffiliationsSearch />} />
+            </Routes>
+          )}
+        />
+        <Route
+          path="/publications/*"
+          element={(
+            <Routes>
+              <Route path="/" element={<Navigate to="/publications/search" replace />} />
+              <Route path="/results" element={<PublicationsResults />} />
+              <Route path="/search" element={<PublicationsSearch />} />
+            </Routes>
+          )}
+        />
       </Route>
     </Routes>
   );
