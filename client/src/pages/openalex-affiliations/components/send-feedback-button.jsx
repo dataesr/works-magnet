@@ -23,29 +23,8 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
   const switchModal = () => setIsModalOpen((prev) => !prev);
 
   const { readyState, sendJsonMessage } = useWebSocket(`${VITE_WS_HOST}/ws`, {
-    onOpen: () => {
-      const currentdate = new Date();
-      const datetime = `Last Sync: ${ currentdate.getDate() }/${
-         currentdate.getMonth() + 1 }/${
-         currentdate.getFullYear() } @ ${
-         currentdate.getHours() }:${
-         currentdate.getMinutes() }:${
-         currentdate.getSeconds()}`;
-      console.log(datetime);
-      console.log('Websocket connexion opened.');
-    },
-    onClose: () => {
-      const currentdate = new Date();
-      const datetime = `Last Sync: ${ currentdate.getDate() }/${
-         currentdate.getMonth() + 1 }/${
-         currentdate.getFullYear() } @ ${
-         currentdate.getHours() }:${
-         currentdate.getMinutes() }:${
-         currentdate.getSeconds()}`;
-      console.log(datetime);
-      console.log('Websocket connexion closed.');
-    },
     onError: (event) => {
+      // eslint-disable-next-line no-console
       console.error(event);
       addNotice({
         message: 'Error while sending affiliations corrections.<br />'
@@ -62,6 +41,8 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
         type: toastType ?? 'info',
       });
     },
+    // Will attempt to reconnect on all close events, such as server shutting down
+    shouldReconnect: () => true,
   });
 
   const connectionStatus = {
@@ -74,6 +55,14 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
 
   const sendFeedback = async () => {
     try {
+      if (connectionStatus !== 'Open') {
+        // eslint-disable-next-line no-console
+        console.error('Web socket connection is not open !');
+        addNotice({
+          message: 'Your websocket connection is not open.',
+          type: 'error',
+        });
+      }
       Cookies.set('works-magnet-user-email', userEmail);
       const data = corrections.map((correction) => ({
         endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
@@ -84,7 +73,6 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
         worksExample: correction.worksExample,
         worksOpenAlex: correction.worksOpenAlex,
       }));
-      console.log(sendJsonMessage);
       sendJsonMessage({ data, email: userEmail, type: 'openalex-affiliations' });
       addNotice({
         message: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
@@ -110,11 +98,6 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
 
   return (
     <>
-      <span>
-        The WebSocket is currently
-        {' '}
-        {connectionStatus}
-      </span>
       <Button
         aria-label="Send feedback to OpenAlex"
         className={className}
