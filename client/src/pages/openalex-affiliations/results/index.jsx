@@ -426,8 +426,9 @@ export default function Affiliations() {
           className="fr-mb-2w"
           // eslint-disable-next-line react/no-array-index-key
           key={`notice-${index}`}
-          type={notice.type}
           onClose={() => { removeNotice(index); }}
+          style={{ overflow: 'hidden', position: 'fixed', top: index * 56, width: '100%', zIndex: 1001 }}
+          type={notice.type}
         >
           <span dangerouslySetInnerHTML={{ __html: notice.message }} />
         </Notice>
