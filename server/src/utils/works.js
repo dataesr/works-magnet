@@ -1,4 +1,5 @@
 import {
+  chunkArray,
   cleanId,
   getAuthorOrcid,
   intersectArrays,
@@ -641,9 +642,19 @@ const getOpenAlexWorksByYear = (
 };
 
 const getOpenAlexWorks = async ({ options }) => {
-  const promises = options.years.map((year) => getOpenAlexWorksByYear({ ...options, year }));
-  const results = await Promise.all(promises);
-  return results.flat();
+  // Query OpenAlex API by chunk of 10 years to avoid 429 errors
+  // See https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication
+  const yearsChunks = chunkArray({ array: options.years, perChunk: 10 });
+  const r = [];
+  for (let i = 0; i < yearsChunks.length; i += 1) {
+    const promises = yearsChunks[i].map((year) => getOpenAlexWorksByYear({ ...options, year }));
+    // eslint-disable-next-line no-await-in-loop
+    const results = await Promise.all(promises);
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise((resolve) => { setTimeout(resolve, 1000); }); // 1 sec
+    r.push(results.flat());
+  }
+  return r.flat();
 };
 
 const groupByAffiliations = ({ options, works }) => {
