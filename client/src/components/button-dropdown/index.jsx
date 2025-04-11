@@ -9,7 +9,7 @@ import { capitalize } from '../../utils/strings';
 
 import './index.scss';
 
-export default function ButtonDropdown({ className, data, label, searchParams, size }) {
+export default function ButtonDropdown({ className, data, label, searchParams, size, transformCsv }) {
   const { toast } = useToast();
 
   const _className = classNames(
@@ -19,9 +19,9 @@ export default function ButtonDropdown({ className, data, label, searchParams, s
   );
 
   const toastExport = (numberOfLines) => {
-    const size = numberOfLines ?? data.length;
+    const _size = numberOfLines ?? data.length;
     toast({
-      description: `${size} ${label} have been saved`,
+      description: `${_size} ${label} have been saved`,
       id: 'saveWork',
       title: `${capitalize(label)} saved`,
       toastType: 'success',
@@ -41,7 +41,7 @@ export default function ButtonDropdown({ className, data, label, searchParams, s
       <div className="dropdown-content">
         <Button
           color="blue-ecume"
-          onClick={() => { export2Csv({ data, label, searchParams }); toastExport(); }}
+          onClick={() => { export2Csv({ data, label, searchParams, transform: transformCsv }); toastExport(); }}
           size={size}
         >
           Export in CSV (minimal data)
@@ -73,6 +73,7 @@ export default function ButtonDropdown({ className, data, label, searchParams, s
 ButtonDropdown.defaultProps = {
   className: '',
   size: 'md',
+  transformCsv: (data) => data,
 };
 
 ButtonDropdown.propTypes = {
@@ -81,4 +82,5 @@ ButtonDropdown.propTypes = {
   label: PropTypes.string.isRequired,
   searchParams: PropTypes.object.isRequired,
   size: PropTypes.string,
+  transformCsv: PropTypes.func,
 };

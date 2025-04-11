@@ -192,6 +192,24 @@ export default function MentionsResults() {
     return {};
   });
 
+  const transformCsv = (items) => items.map((item) => {
+    const formattedItem = {
+      ...item,
+      mention_context_created: item.mention_context.created,
+      mention_context_shared: item.mention_context.shared,
+      mention_context_used: item.mention_context.used,
+      mention_context_original_created: item.mention_context_original.created,
+      mention_context_original_shared: item.mention_context_original.shared,
+      mention_context_original_used: item.mention_context_original.used,
+      software_name_normalizedForm: item['software-name'].normalizedForm,
+      software_name_rawForm: item['software-name'].rawForm,
+    };
+    delete formattedItem.mention_context;
+    delete formattedItem.mention_context_original;
+    delete formattedItem['software-name'];
+    return formattedItem;
+  });
+
   useEffect(() => {
     if (data && data.mentions && data.mentions.length > 0) {
       // first call
@@ -352,7 +370,7 @@ export default function MentionsResults() {
                     </div>
                   </Col>
                   <Col className="text-right">
-                    <ButtonDropdown data={mentions} label="mentions" searchParams={searchParams} size="sm" />
+                    <ButtonDropdown data={mentions} label="mentions" searchParams={searchParams} size="sm" transformCsv={transformCsv} />
                     <Button
                       className="fr-ml-1w"
                       color="blue-ecume"

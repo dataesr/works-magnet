@@ -59,9 +59,10 @@ const export2FosmCsv = ({ data, label, searchParams }) => {
   return csvFile.split('\n').length;
 };
 
-const export2Csv = ({ data, label, searchParams }) => {
+const export2Csv = ({ data, label, searchParams, transform }) => {
   // Deep copy of data
-  const dataCopy = JSON.parse(JSON.stringify(data));
+  let dataCopy = JSON.parse(JSON.stringify(data));
+  dataCopy = transform(dataCopy);
   const deletedFields = ['affiliations', 'affiliationsHtml', 'affiliationsTooltip', 'allIds', 'allInfos', 'authors', 'datasource', 'id', 'hasCorrection', 'key', 'nameHtml', 'selected'];
   const stringifiedFields = ['addList', 'fr_authors_orcid', 'fr_publications_linked', 'removeList', 'rors', 'rorsInOpenAlex', 'rorsToCorrect', 'worksExample'];
   dataCopy.forEach((work) => {
