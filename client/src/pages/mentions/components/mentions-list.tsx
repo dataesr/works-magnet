@@ -154,10 +154,9 @@ export default function MentionsList({
       </thead>
       <tbody>
         {mentions.map((mention) => (
-          <>
+          <React.Fragment key={mention.id}>
             <tr
               className="mention"
-              key={mention.id}
               onClick={() => {
                 setSelectedMentions(
                   mentions.map((m) =>
@@ -287,7 +286,7 @@ export default function MentionsList({
                 </tr>
               </>
             )}
-          </>
+          </React.Fragment>
         ))}
       </tbody>
     </table>

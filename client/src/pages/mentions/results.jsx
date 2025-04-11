@@ -201,12 +201,13 @@ export default function MentionsResults() {
       mention_context_original_created: item.mention_context_original.created,
       mention_context_original_shared: item.mention_context_original.shared,
       mention_context_original_used: item.mention_context_original.used,
-      software_name_normalizedForm: item['software-name'].normalizedForm,
-      software_name_rawForm: item['software-name'].rawForm,
     };
+    const _type = item.type_original === 'software' ? 'software-name' : 'dataset-name';
+    formattedItem.normalizedForm = item[_type]?.normalizedForm;
+    formattedItem.rawForm = item[_type]?.rawForm;
     delete formattedItem.mention_context;
     delete formattedItem.mention_context_original;
-    delete formattedItem['software-name'];
+    delete formattedItem[_type];
     return formattedItem;
   });
 
