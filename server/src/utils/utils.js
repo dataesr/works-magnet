@@ -34,9 +34,9 @@ const getAuthorOrcid = (elt) => {
   return { name, orcid };
 };
 
-const getSha1 = ({ options }) => {
+const getSha1 = ({ text }) => {
   const shasum = crypto.createHash('sha1');
-  shasum.update(JSON.stringify(options));
+  shasum.update(JSON.stringify(text));
   return shasum.digest('hex');
 };
 
