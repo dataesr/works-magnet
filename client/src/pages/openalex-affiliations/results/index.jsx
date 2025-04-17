@@ -817,6 +817,7 @@ export default function Affiliations() {
                         addNotice={addNotice}
                         className="step-action-feedback"
                         corrections={affiliations.filter((affiliation) => affiliation.addList.length > 0 || affiliation.removeList.length > 0)}
+                        options={options}
                         resetCorrections={resetCorrections}
                       />
                     </div>

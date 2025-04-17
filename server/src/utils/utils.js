@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 const chunkArray = ({ array, perChunk = 30 }) => array.reduce((all, one, i) => {
   const ch = Math.floor(i / perChunk);
   // eslint-disable-next-line no-param-reassign
@@ -30,6 +32,12 @@ const getAuthorOrcid = (elt) => {
   const orcidRaw = elt?.author?.nameIdentifiers?.filter((ident) => ident.nameIdentifierScheme === 'ORCID')[0].nameIdentifier;
   const orcid = orcidRaw.replace('https://orcid.org/', '').replace('http://orcid.org', '').replace('orcid.org/', '');
   return { name, orcid };
+};
+
+const getSha1 = ({ options }) => {
+  const shasum = crypto.createHash('sha1');
+  shasum.update(JSON.stringify(options));
+  return shasum.digest('hex');
 };
 
 const intersectArrays = (array1, array2) => {
@@ -156,6 +164,7 @@ export {
   cleanId,
   countUniqueValues,
   getAuthorOrcid,
+  getSha1,
   intersectArrays,
   range,
   removeDiacritics,

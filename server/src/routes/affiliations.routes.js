@@ -1,9 +1,8 @@
-import crypto from 'crypto';
 import express from 'express';
 
 import { getInstitutionIdFromRor } from '../utils/openalex';
 import { getCache, saveCache } from '../utils/s3';
-import { chunkArray, range } from '../utils/utils';
+import { chunkArray, getSha1, range } from '../utils/utils';
 import {
   deduplicateWorks,
   getOpenAlexWorks,
@@ -48,9 +47,7 @@ const chunkAndCompress = (data) => {
 };
 
 const getOpenAlexAffiliations = async ({ options, resetCache = false }) => {
-  const shasum = crypto.createHash('sha1');
-  shasum.update(JSON.stringify({ ...options, type: 'openalex-affiliations' }));
-  const searchId = shasum.digest('hex');
+  const searchId = getSha1({ text: { ...options, type: 'openalex-affiliations' } });
   const start = new Date();
   const queryId = start
     .toISOString()
@@ -166,8 +163,8 @@ router.route('/openalex-affiliations').post(async (req, res) => {
       const compressedResult = await getOpenAlexAffiliations({ options });
       res.status(200).json(compressedResult);
     }
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Internal Server Error.' });
   }
 });

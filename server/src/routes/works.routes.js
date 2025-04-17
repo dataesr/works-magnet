@@ -1,9 +1,8 @@
-import crypto from 'crypto';
 import express from 'express';
 
 import { getInstitutionIdFromRor } from '../utils/openalex';
 import { getCache, saveCache } from '../utils/s3';
-import { chunkArray, countUniqueValues, range } from '../utils/utils';
+import { chunkArray, countUniqueValues, getSha1, range } from '../utils/utils';
 import {
   deduplicateWorks,
   getFosmWorks,
@@ -49,9 +48,7 @@ const chunkAndCompress = (data) => {
 };
 
 const getWorks = async ({ options, resetCache = false }) => {
-  const shasum = crypto.createHash('sha1');
-  shasum.update(JSON.stringify(options));
-  const searchId = shasum.digest('hex');
+  const searchId = getSha1({ text: options });
   const start = new Date();
   const queryId = start
     .toISOString()

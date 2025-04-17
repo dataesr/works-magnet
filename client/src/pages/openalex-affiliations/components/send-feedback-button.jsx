@@ -14,7 +14,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 const { VITE_APP_DEFAULT_YEAR, VITE_WS_HOST } = import.meta.env;
 
-export default function SendFeedbackButton({ addNotice, className, corrections, resetCorrections }) {
+export default function SendFeedbackButton({ addNotice, className, corrections, options, resetCorrections }) {
   const [searchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(Cookies.get('works-magnet-user-email'), '');
@@ -73,7 +73,7 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
         worksExample: correction.worksExample,
         worksOpenAlex: correction.worksOpenAlex,
       }));
-      sendJsonMessage({ data, email: userEmail, type: 'openalex-affiliations' });
+      sendJsonMessage({ data, email: userEmail, options, type: 'openalex-affiliations' });
       addNotice({
         message: 'Your corrections are currently submitted to the <a href="https://github.com/dataesr/openalex-affiliations/issues" target="_blank">Github repository</a>',
         type: 'info',
@@ -175,6 +175,7 @@ SendFeedbackButton.propTypes = {
     worksNumber: PropTypes.number.isRequired,
     worksOpenAlex: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,
+  options: PropTypes.object.isRequired,
   resetCorrections: PropTypes.func.isRequired,
 };
 

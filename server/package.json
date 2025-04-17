@@ -11,6 +11,7 @@
   "author": "doad",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.787.0",
     "@octokit/core": "^6.1.2",
     "@octokit/plugin-throttling": "^9.3.1",
     "@octokit/rest": "^21.0.2",

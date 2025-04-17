@@ -20,7 +20,7 @@ const encrypt = (text) => {
   return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
 };
 
-const createIssueOpenAlexAffiliations = async ({ email, issue, octokit }) => {
+const formatIssueOpenAlexAffiliations = ({ email, issue }) => {
   const {
     endYear = '',
     name,
@@ -51,15 +51,10 @@ const createIssueOpenAlexAffiliations = async ({ email, issue, octokit }) => {
   body += `searched between: ${startYear} - ${endYear}\n`;
   body += `contact: ${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}\n`;
   body += `version: ${process.env.npm_package_version}-${process.env.NODE_ENV}`;
-  return octokit.rest.issues.create({
-    body,
-    owner: 'dataesr',
-    repo: 'openalex-affiliations',
-    title,
-  });
+  return { body, title };
 };
 
-const createIssueMentionsCharacterizations = ({ email, issue, octokit }) => {
+const formatIssueMentionsCharacterizations = ({ email, issue }) => {
   let title = `Correction for mention ${issue.id}`;
   // Github issue title is maximum 256 characters long
   title = `${title.slice(0, 250)}...`;
@@ -68,15 +63,10 @@ const createIssueMentionsCharacterizations = ({ email, issue, octokit }) => {
   // eslint-disable-next-line no-param-reassign
   issue.version = `${process.env.npm_package_version}-${process.env.NODE_ENV}`;
   const body = `\`\`\`\n${JSON.stringify(issue, null, 4)}\n\`\`\``;
-  return octokit.rest.issues.create({
-    body,
-    owner: 'dataesr',
-    repo: 'mentions-characterizations',
-    title,
-  });
+  return { body, title };
 };
 
-const getOctokiConnection = (auth) => {
+const getOctokitConnection = (auth) => {
   const octokit = new MyOctokit({
     // Randomly pick one of the Github PATs
     auth,
@@ -103,20 +93,16 @@ const getOctokiConnection = (auth) => {
   return octokit;
 };
 
-const createIssue = ({ email, issue, type }) => {
+const createGithubIssue = ({ body, title, type }) => {
   // Create a new octokit for each issue in order to randomly choose a Github PAT to workaround Github API limitations
-  const octokit = getOctokiConnection(auths[Math.floor(Math.random() * auths.length)]);
-  switch (type) {
-    case 'mentions-characterizations':
-      return createIssueMentionsCharacterizations({ email, issue, octokit });
-    case 'openalex-affiliations':
-      return createIssueOpenAlexAffiliations({ email, issue, octokit });
-    default:
-      console.error(
-        `Error wile creating Github issue as "type" should be one of ["mentions-characterizations", "openalex-affiliations"] instead of "${type}".`,
-      );
-      return false;
+  const octokit = getOctokitConnection(auths[Math.floor(Math.random() * auths.length)]);
+  if (['mentions-characterizations', 'openalex-affiliations'].includes(type)) {
+    return octokit.rest.issues.create({ body, owner: 'dataesr', repo: type, title });
   }
+  console.error(
+    `Error wile creating Github issue as "type" should be one of ["mentions-characterizations", "openalex-affiliations"] instead of "${type}".`,
+  );
+  return false;
 };
 
-export { createIssue };
+export { createGithubIssue, formatIssueMentionsCharacterizations, formatIssueOpenAlexAffiliations };

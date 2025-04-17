@@ -1,7 +1,22 @@
+import {
+  PutObjectCommand,
+  S3Client,
+  S3ServiceException,
+} from "@aws-sdk/client-s3";
 import fs from 'fs';
 import OVHStorage from 'node-ovh-objectstorage';
 
-const { OS_CONTAINER, OS_PASSWORD, OS_TENANT_ID, OS_TENANT_NAME, OS_USERNAME } = process.env;
+const {
+  OS_ACCESS_KEY_ID,
+  OS_CONTAINER,
+  OS_CONTAINER_CORRECTIONS_AFFILIATIONS,
+  OS_PASSWORD,
+  OS_REGION,
+  OS_SECRET_ACCESS_KEY,
+  OS_TENANT_ID,
+  OS_TENANT_NAME,
+  OS_USERNAME,
+} = process.env;
 
 const getStorage = async () => {
   const config = {
@@ -9,7 +24,7 @@ const getStorage = async () => {
     password: OS_PASSWORD,
     authURL: 'https://auth.cloud.ovh.net/v3/auth',
     tenantId: OS_TENANT_ID,
-    region: 'GRA',
+    region: OS_REGION,
   };
   const storage = new OVHStorage(config);
   await storage.connection();
@@ -83,4 +98,46 @@ const saveCache = async ({ result, searchId, queryId }) => {
   }
 };
 
-export { getCache, saveCache };
+const saveIssue = async ({ fileContent, fileName }) => {
+  const s3ClientConfig = {
+    region: OS_REGION.toLowerCase(),
+    credentials: {
+      accessKeyId: OS_ACCESS_KEY_ID,
+      secretAccessKey: OS_SECRET_ACCESS_KEY,
+    },
+    endpoint: {
+      url: `https://s3.${OS_REGION.toLowerCase()}.io.cloud.ovh.net`,
+    },
+  };
+  const client = new S3Client(s3ClientConfig);
+
+  const command = new PutObjectCommand({
+    Bucket: OS_CONTAINER_CORRECTIONS_AFFILIATIONS,
+    Key: fileName,
+    Body: fileContent,
+  });
+
+  try {
+    return client.send(command);
+  } catch (caught) {
+    if (
+      caught instanceof S3ServiceException
+      && caught.name === 'EntityTooLarge'
+    ) {
+      console.error(
+        `Error from S3 while uploading object to ${OS_CONTAINER_CORRECTIONS_AFFILIATIONS}. \
+        The object was too large. To upload objects larger than 5GB, use the S3 console (160GB max) \
+        or the multipart upload API (5TB max).`,
+      );
+    } else if (caught instanceof S3ServiceException) {
+      console.error(
+        `Error from S3 while uploading object to ${OS_CONTAINER_CORRECTIONS_AFFILIATIONS}.  ${caught.name}: ${caught.message}`,
+      );
+    } else {
+      throw caught;
+    }
+    return false;
+  }
+};
+
+export { getCache, saveCache, saveIssue };
