@@ -8,7 +8,7 @@ import OVHStorage from 'node-ovh-objectstorage';
 
 const {
   OS_ACCESS_KEY_ID,
-  OS_CONTAINER,
+  OS_CONTAINER_CACHE,
   OS_CONTAINER_CORRECTIONS_AFFILIATIONS,
   OS_PASSWORD,
   OS_REGION,
@@ -36,10 +36,10 @@ const getFileName = (searchId) => `${searchId}.json`;
 const getCache = async ({ searchId }) => {
   const fileName = getFileName(searchId);
   const storage = await getStorage();
-  const files = await storage.containers().list(OS_CONTAINER);
+  const files = await storage.containers().list(OS_CONTAINER_CACHE);
   const filteredFiles = files.filter((file) => file?.name === fileName);
   if (filteredFiles.length > 0) {
-    const remotePath = `/${OS_CONTAINER}/${fileName}`;
+    const remotePath = `/${OS_CONTAINER_CACHE}/${fileName}`;
     const localPath = `/tmp/${fileName}`;
     await storage.objects().download(remotePath, localPath);
     const data = fs.readFileSync(localPath, { encoding: 'utf8', flag: 'r' });
@@ -53,7 +53,7 @@ const getCache = async ({ searchId }) => {
 const saveCache = async ({ result, searchId, queryId }) => {
   console.log(queryId, 'start saving cache');
   const fileName = getFileName(searchId);
-  const remotePath = `${OS_CONTAINER}/${fileName}`;
+  const remotePath = `${OS_CONTAINER_CACHE}/${fileName}`;
 
   const body = {
     auth: {

@@ -179,17 +179,6 @@ export default function MainFooter() {
                   <li>
                     <Link
                       className="fr-footer__top-link"
-                      href="https://x.com/dataESR"
-                      icon="twitter-x-fill"
-                      iconPosition="left"
-                      target="_blank"
-                    >
-                      X
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="fr-footer__top-link"
                       href="https://www.linkedin.com/company/enseignementsup-recherche/mycompany/"
                       icon="linkedin-box-fill"
                       iconPosition="left"

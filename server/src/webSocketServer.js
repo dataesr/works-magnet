@@ -29,7 +29,10 @@ webSocketServer.on('connection', (webSocket) => {
         }
         if ((body?.length ?? 0) > 0) {
           // Open a GitHub issue and save file into OVH Object Storage
-          return [createGithubIssue({ body, title, type }), saveIssue({ fileContent: body, fileName: `${Date.now()}_${searchId}_${index1}_${index2}.txt` })];
+          return [
+            createGithubIssue({ body, title, type }),
+            saveIssue({ fileContent: body, fileName: `${Date.now()}_${searchId}_${index1}_${index2}.txt` }),
+          ];
         }
         return [];
       }).flat();
