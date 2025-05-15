@@ -10,33 +10,35 @@ webSocketServer.on('connection', (webSocket) => {
   webSocket.on('error', console.error);
   webSocket.on('message', async (json) => {
     const { data, email, options, type } = JSON.parse(json);
+    if (!['mentions-characterizations', 'openalex-affiliations'].includes(type)) {
+      throw new Error('Issue type should be one of "mentions-characterizations" of "openalex-affiliations"');
+    }
+    const searchId = getSha1({ text: options });
+    const promises = [];
+    // Parse all issues and save them into OVH OS
+    const issues = data.map((issue, index) => {
+      let body = '';
+      let title = '';
+      if (type === 'openalex-affiliations') {
+        ({ body, title } = formatIssueOpenAlexAffiliations({ email, issue }));
+      } else if (type === 'mentions-characterizations') {
+        ({ body, title } = formatIssueMentionsCharacterizations({ email, issue }));
+      }
+      if ((body?.length ?? 0) > 0) {
+        promises.push(saveIssue({ fileContent: body, fileName: `${Date.now()}_${searchId}_${index}.txt` }));
+        return { body, title };
+      }
+      return {};
+    });
+    await Promise.all(promises);
     const perChunk = 10;
     const results = [];
     let toast = {};
-    const searchId = getSha1({ text: options });
+    // For each issue, open it to Github, 10 by 10
     // eslint-disable-next-line no-restricted-syntax
-    for (const [index1, d] of chunkArray({ array: data, perChunk }).entries()) {
-      const promises = d.map((issue, index2) => {
-        let body;
-        let title;
-        // Format GitHub issue content
-        if (type === 'openalex-affiliations') {
-          ({ body, title } = formatIssueOpenAlexAffiliations({ email, issue }));
-        } else if (type === 'mentions-characterizations') {
-          ({ body, title } = formatIssueMentionsCharacterizations({ email, issue }));
-        } else {
-          console.error('Issue type should be one of "mentions-characterizations" of "openalex-affiliations"');
-        }
-        if ((body?.length ?? 0) > 0) {
-          // Open a GitHub issue and save file into OVH Object Storage
-          return [
-            createGithubIssue({ body, title, type }),
-            saveIssue({ fileContent: body, fileName: `${Date.now()}_${searchId}_${index1}_${index2}.txt` }),
-          ];
-        }
-        return [];
-      }).flat();
-      const r = await Promise.all(promises);
+    for (const [index1, d] of chunkArray({ array: issues, perChunk }).entries()) {
+      const promises2 = d.map(({ body, title }) => (body?.length ? createGithubIssue({ body, title, type }) : Promise.resolve()));
+      const r = await Promise.all(promises2);
       results.push(...r);
       if (data.length > perChunk) {
         toast = {

@@ -2,7 +2,7 @@ import {
   PutObjectCommand,
   S3Client,
   S3ServiceException,
-} from "@aws-sdk/client-s3";
+} from '@aws-sdk/client-s3';
 import fs from 'fs';
 import OVHStorage from 'node-ovh-objectstorage';
 
