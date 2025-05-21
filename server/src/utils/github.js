@@ -32,7 +32,9 @@ const formatIssueOpenAlexAffiliations = ({ email, issue }) => {
   } = issue;
   let title = `Correction for raw affiliation ${name}`;
   // Github issue title is maximum 256 characters long
-  title = `${title.slice(0, 250)}...`;
+  if (title.length > 250) {
+    title = `${title.slice(0, 250)}...`;
+  }
   let body = `Correction needed for raw affiliation ${name}\n`;
   body += `raw_affiliation_name: ${name}\n`;
   body += `new_rors: ${rors.map((ror) => ror.rorId).join(';')}\n`;
@@ -57,7 +59,9 @@ const formatIssueOpenAlexAffiliations = ({ email, issue }) => {
 const formatIssueMentionsCharacterizations = ({ email, issue }) => {
   let title = `Correction for mention ${issue.id}`;
   // Github issue title is maximum 256 characters long
-  title = `${title.slice(0, 250)}...`;
+  if (title.length > 250) {
+    title = `${title.slice(0, 250)}...`;
+  }
   // eslint-disable-next-line no-param-reassign
   issue.user = `${encrypt(email.split('@')[0])} @ ${email.split('@')[1]}`;
   // eslint-disable-next-line no-param-reassign
