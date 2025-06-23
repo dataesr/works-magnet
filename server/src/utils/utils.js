@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import crypto from 'crypto';
 
 const chunkArray = ({ array, perChunk = 30 }) => array.reduce((all, one, i) => {
@@ -28,9 +29,39 @@ const countUniqueValues = ({ data = [], field }) => {
 };
 
 const getAuthorOrcid = (elt) => {
-  const name = elt?.author?.name?.replace(',', ' ') || '';
-  const orcidRaw = elt?.author?.nameIdentifiers?.filter((ident) => ident.nameIdentifierScheme === 'ORCID')[0].nameIdentifier;
-  const orcid = orcidRaw.replace('https://orcid.org/', '').replace('http://orcid.org', '').replace('orcid.org/', '');
+  let name = null;
+  let orcid = null;
+
+  if (!elt || !elt.author) {
+    return { name, orcid };
+  }
+
+  if (elt.author.name) {
+    name = elt.author.name;
+  } else if (elt.author.familyName) {
+    name = elt.author.familyName;
+    if (elt.author.givenName) {
+      name = `${elt.author.familyName}, ${elt.author.givenName}`;
+    }
+  }
+
+  if (elt.author.nameIdentifiers) {
+    const identifiers = Array.isArray(elt.author.nameIdentifiers)
+      ? elt.author.nameIdentifiers
+      : [elt.author.nameIdentifiers];
+
+    const orcidIdentifier = identifiers.find((identifier) => (
+      identifier
+      && identifier.nameIdentifierScheme
+      && identifier.nameIdentifierScheme.toLowerCase() === 'orcid'
+      && identifier.nameIdentifier
+    ));
+
+    if (orcidIdentifier) {
+      orcid = orcidIdentifier.nameIdentifier.replace(/^https?:\/\/orcid\.org\//, '');
+    }
+  }
+
   return { name, orcid };
 };
 
