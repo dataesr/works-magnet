@@ -12,7 +12,7 @@ const getRorData = async (affiliation, getChildren = false) => {
   const affiliationId = cleanRor(affiliation);
   if (!isRor(affiliationId)) return [];
   let response = await fetch(
-    `https://api.ror.org/organizations/${affiliationId}`,
+    `https://api.ror.org/v1/organizations/${affiliationId}`,
     { cache: 'force-cache' },
   );
   response = await response.json();
