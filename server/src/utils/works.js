@@ -16,7 +16,7 @@ const datasetsType = [
   'dataset',
   'film',
   'image',
-  'physicalobject',
+  // 'physicalobject',
   'software',
   'sound',
 ];
@@ -569,6 +569,7 @@ const getOpenAlexWorksByYear = (
   }
   url
     += '&select=authorships,display_name,doi,id,ids,primary_location,publication_year,type';
+  console.log('ttt', url);
   return fetch(`${url}&cursor=${cursor}`)
     .then((response) => {
       if (response.ok) return response.json();
