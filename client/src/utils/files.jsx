@@ -66,9 +66,44 @@ const export2Csv = ({ data, label, searchParams, transform }) => {
   const deletedFields = ['affiliations', 'affiliationsHtml', 'affiliationsTooltip', 'allIds', 'allInfos', 'authors', 'datasource', 'id', 'hasCorrection', 'key', 'nameHtml', 'selected'];
   const stringifiedFields = ['addList', 'fr_authors_orcid', 'fr_publications_linked', 'removeList', 'rors', 'rorsInOpenAlex', 'rorsToCorrect', 'worksExample'];
   dataCopy.forEach((work) => {
+    // Extract all IDs first
+    const idMap = {};
     work.allIds?.forEach((id) => {
-      work[id.id_type] = id.id_value;
+      idMap[id.id_type] = id.id_value;
     });
+
+    // Initialize all potential ID columns to ensure they appear in CSV
+    work.doi = '';
+    work.crossref = '';
+    work.datacite = '';
+    work.hal_id = '';
+    work.openalex = '';
+    work.nnt_id = '';
+
+    // Apply DOI priority logic: if DOI exists and equals crossref or datacite, remove the duplicates
+    if (idMap.doi) {
+      work.doi = idMap.doi;
+      if (idMap.crossref === idMap.doi) {
+        // Don't set crossref, keep it empty
+      } else if (idMap.crossref) {
+        work.crossref = idMap.crossref;
+      }
+      if (idMap.datacite === idMap.doi) {
+        // Don't set datacite, keep it empty
+      } else if (idMap.datacite) {
+        work.datacite = idMap.datacite;
+      }
+    } else {
+      // No DOI, add crossref and datacite if they exist
+      if (idMap.crossref) work.crossref = idMap.crossref;
+      if (idMap.datacite) work.datacite = idMap.datacite;
+    }
+
+    // Add other IDs
+    if (idMap.hal_id) work.hal_id = idMap.hal_id;
+    if (idMap.openalex) work.openalex = idMap.openalex;
+    if (idMap.nnt_id) work.nnt_id = idMap.nnt_id;
+
     deletedFields.forEach((field) => delete work[field]);
     stringifiedFields.forEach((field) => {
       if ((work?.[field] ?? []).length > 0) {
