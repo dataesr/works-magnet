@@ -187,6 +187,7 @@ for (let i = 0; i < defaultDiacriticsRemovalMapLength; i += 1) {
 const removeDiacritics = (str) => str.replace(/[^\u0000-\u007E]/g, (a) => diacriticsMap[a] || a)
   .toLowerCase()
   .replace(/[,%().*:;"-]/g, ' ')
+  .replace(/\u00A0/g, ' ')
   .replaceAll(/  +/g, ' ')
   .trim();
 
