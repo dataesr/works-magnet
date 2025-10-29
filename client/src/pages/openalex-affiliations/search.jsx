@@ -223,7 +223,7 @@ export default function Search() {
           }
         }
 
-        rorElt.names.forEach((rorName) => {
+        rorElt.names.map((name) => name.value).forEach((rorName) => {
           if (knownTags[rorName.toLowerCase()] === undefined) {
             if (!deletedAffiliations.includes(rorName)) {
               const isDangerous = rorName.length < 4;

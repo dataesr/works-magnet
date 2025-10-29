@@ -185,7 +185,7 @@ export default function PublicationsSearch() {
             knownTags[rorElt.rorId.toLowerCase()] = 1;
           }
         }
-        rorElt.names.forEach((rorName) => {
+        rorElt.names.map((name) => name.value).forEach((rorName) => {
           if (knownTags[rorName.toLowerCase()] === undefined) {
             if (!deletedAffiliations.includes(rorName)) {
               const isDangerous = rorName.length < 4;

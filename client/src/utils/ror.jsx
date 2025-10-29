@@ -12,28 +12,23 @@ const getRorData = async (affiliation, getChildren = false) => {
   const affiliationId = cleanRor(affiliation);
   if (!isRor(affiliationId)) return [];
   let response = await fetch(
-    `https://api.ror.org/v1/organizations/${affiliationId}`,
+    `https://api.ror.org/organizations/${affiliationId}`,
     { cache: 'force-cache' },
   );
   response = await response.json();
   const topLevel = [
     {
-      names: [
-        response.name,
-        ...response.acronyms,
-        ...response.aliases,
-        ...response.labels.map((item) => item.label),
-      ],
-      rorCountry: response?.country?.country_code,
+      names: response.names,
+      rorCountry: response?.locations?.[0]?.geonames_details?.country_code,
       rorId: affiliationId,
-      rorName: response.name,
+      rorName: response.names.find((name) => name.types.includes('ror_display')).value,
     },
   ];
   if (!getChildren) {
     return topLevel;
   }
   const children = response.relationships.filter(
-    (relationship) => relationship.type === 'Child',
+    (relationship) => relationship.type === 'child',
   );
   let childrenRes = [];
   if (getChildren) {

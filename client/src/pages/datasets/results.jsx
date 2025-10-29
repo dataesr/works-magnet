@@ -87,15 +87,11 @@ export default function Affiliations() {
           queryParams.affiliationStrings.push(normalize(item));
         }
       });
-      const rorData = await Promise.all(queryParams.rors.map((ror) => getRorData(ror, searchParams.get('getRorChildren') === '1')));
-      const rorChildren = rorData
-        .flat()
-        .map((ror) => ror.rorId);
+      let rorData = await Promise.all(queryParams.rors.map((ror) => getRorData(ror, searchParams.get('getRorChildren') === '1')));
+      rorData = rorData.flat();
+      const rorChildren = rorData.map((ror) => ror.rorId);
       queryParams.rors = queryParams.rors.concat(rorChildren);
-      const rorNames = rorData
-        .flat()
-        .map((ror) => ror.names)
-        .flat();
+      const rorNames = rorData.map((ror) => ror.names.map((name) => name.value)).flat();
       queryParams.affiliationStrings = queryParams.affiliationStrings.concat(rorNames);
       if (
         queryParams.affiliationStrings.length === 0

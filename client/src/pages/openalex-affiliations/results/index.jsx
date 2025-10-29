@@ -271,7 +271,7 @@ export default function Affiliations() {
             const rors = await getRorData(label, queryParams.getRorChildren === '1');
             rors
               .forEach((item) => {
-                item.names.forEach((name) => {
+                item.names.map((name) => name.value).forEach((name) => {
                   if (!queryParams.deletedAffiliations.includes(name)) {
                     children.push({
                       isDisabled: name.length < VITE_APP_TAG_LIMIT,
