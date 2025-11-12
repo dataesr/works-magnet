@@ -532,7 +532,7 @@ const getOpenAlexWorksByYear = (
     'getOpenAlexWorksByYear',
     `MAX_OPENALEX = ${MAX_OPENALEX}, currentResponseLength = ${previousResponse.length}`,
   );
-  let url = `https://api.openalex.org/works?data-version=1&per_page=${process.env.OPENALEX_PER_PAGE}`;
+  let url = `https://api.openalex.org/works?per_page=${process.env.OPENALEX_PER_PAGE}`;
   url += '&filter=is_paratext:false';
   url += `,publication_year:${Number(options.year)}-${Number(options?.year)}`;
   if (options.affiliationStrings.length) {
