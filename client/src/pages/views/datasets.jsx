@@ -156,13 +156,19 @@ export default function Datasets({
                   <Col xs="6">
                     <DatasetsYearlyDistribution
                       allDatasets={allDatasets}
+                      field="size_cat"
+                    />
+                  </Col>
+                  <Col xs="6">
+                    <DatasetsYearlyDistribution
+                      allDatasets={allDatasets}
                       field="type"
                     />
                   </Col>
                   <Col xs="6">
                     <DatasetsYearlyDistribution
                       allDatasets={allDatasets}
-                      field="format"
+                      field="licenses"
                     />
                   </Col>
                   <Col xs="6">
