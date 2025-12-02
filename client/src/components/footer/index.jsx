@@ -70,7 +70,24 @@ export function FooterBody({
   return (
     <div className="fr-container fr-footer__body">
       {logo ? (
-        <div className="fr-footer__brand fr-enlarge-link">{logo}</div>
+        <>
+          <div className="fr-footer__brand fr-enlarge-link">{logo}</div>
+          <a
+            className="fr-footer__brand-link"
+            href="/"
+            label="Retour à l'accueil du site"
+            style={{ background: 'none' }}
+            title="Retour à l'accueil du site"
+          >
+            <svg aria-hidden="true" viewBox="0 0 1167.77 752.85" width="100%">
+              <use
+                className="fr-text-black-white--grey"
+                href="sies_logo_signature.svg#sies-logo-text"
+              />
+              <use href="sies_logo_signature.svg#sies-logo-artwork" />
+            </svg>
+          </a>
+        </>
       ) : null}
       <div className="fr-footer__content">
         {description ? (
