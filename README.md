@@ -1,6 +1,6 @@
 # Works-magnet
 
-[![Discord Follow](https://dcbadge.vercel.app/api/server/TudsqDqTqb?style=flat)](https://discord.gg/TudsqDqTqb)
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/TudsqDqTqb)
 ![license](https://img.shields.io/github/license/dataesr/works-magnet)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dataesr/works-magnet)
 [![deployment](https://github.com/dataesr/works-magnet/actions/workflows/production.yml/badge.svg)](https://github.com/dataesr/works-magnet/actions/workflows/production.yml)
