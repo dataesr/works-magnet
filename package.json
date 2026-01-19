@@ -11,14 +11,14 @@
     "extensionless": "^1.9.9"
   },
   "scripts": {
-    "build": "rm -rf server/dist && npm -w client run build -- --mode ${npm_config_mode} --emptyOutDir --outDir ../server/dist",
-    "client": "npm -w client run dev",
+    "build": "rm -rf server/dist && npm --workspace client run build -- --mode ${npm_config_mode} --emptyOutDir --outDir ../server/dist",
+    "client": "npm --workspace client run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "deploy": "npm version -ws",
+    "deploy": "npm version --workspaces",
     "postdeploy": "git add **/package.json package-lock.json && npm version $npm_config_level --include-workspace-root --force && git push origin main --tags && git switch staging && git merge origin main && git push",
     "predeploy": "git switch main && git pull origin main --rebase --tags && git merge origin staging",
-    "preview": "npm run build --mode=${npm_config_mode} && npm -w server start",
-    "server": "npm -w server run dev",
+    "preview": "npm run build --mode=${npm_config_mode} && npm --workspace server start",
+    "server": "npm --workspace server run dev",
     "start": "npm run dev"
   }
 }
