@@ -5,7 +5,6 @@ import { FormattedMessage } from 'react-intl';
 import DatasetsTile from '../components/tiles/datasets';
 import MentionsTile from '../components/tiles/mentions';
 import OpenalexTile from '../components/tiles/openalex';
-import OpenalexNewCurationToolTile from '../components/tiles/openalex-new-curation-tool';
 import PublicationsTile from '../components/tiles/publications';
 import Header from '../layout/header';
 
@@ -37,8 +36,7 @@ export default function Home() {
         </Row>
         <Row gutters className="fr-pl-3w">
           <Col sm={12} md={6}>
-            {/* <OpenalexTile /> */}
-            <OpenalexNewCurationToolTile />
+            <OpenalexTile />
           </Col>
           <Col sm={12} md={6}>
             <MentionsTile />

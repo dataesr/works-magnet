@@ -7,9 +7,9 @@ import DatasetsSearch from './pages/datasets/search';
 import Home from './pages/home';
 import MentionsResults from './pages/mentions/results';
 import MentionsSearch from './pages/mentions/search';
-// import OpenalexAffiliationsCorrections from './pages/openalex-affiliations/corrections';
-// import OpenalexaffiliationsResults from './pages/openalex-affiliations/results';
-// import OpenalexAffiliationsSearch from './pages/openalex-affiliations/search';
+import OpenalexAffiliationsCorrections from './pages/openalex-affiliations/corrections';
+import OpenalexaffiliationsResults from './pages/openalex-affiliations/results';
+import OpenalexAffiliationsSearch from './pages/openalex-affiliations/search';
 import PublicationsResults from './pages/publications/results';
 import PublicationsSearch from './pages/publications/search';
 
@@ -39,7 +39,7 @@ export default function Router() {
             </Routes>
           )}
         />
-        {/* <Route
+        <Route
           path="/openalex-affiliations/*"
           element={(
             <Routes>
@@ -49,7 +49,7 @@ export default function Router() {
               <Route path="/search" element={<OpenalexAffiliationsSearch />} />
             </Routes>
           )}
-        /> */}
+        />
         <Route
           path="/publications/*"
           element={(
