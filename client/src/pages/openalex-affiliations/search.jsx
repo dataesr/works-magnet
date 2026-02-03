@@ -394,9 +394,9 @@ export default function Search() {
             {' '}
             <a href="https://blog.openalex.org/openalex-2026-roadmap/#whats-coming-in-q1" rel="noreferrer" target="_blank">blog post of January 16, 2026</a>
             ,
-            an affiliation matching curation tool will be launched in February 2026. At this time, the curation feature of the Works-magnet will be unavailable.
+            an affiliation matching curation tool should be launched in February 2026. Therefore the curation feature of the Works-magnet is now deprecated.
             <br />
-            All the curations submitted before should be integrated by the OpenAlex team.
+            All the curations already submitted should be integrated by the OpenAlex team.
           </p>
         </div>
         <Breadcrumb className="fr-pt-4w fr-mt-0 fr-mb-2w">

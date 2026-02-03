@@ -99,16 +99,17 @@ export default function SendFeedbackButton({ addNotice, className, corrections, 
   return (
     <>
       <Button
-        aria-label="Send feedback to OpenAlex"
+        aria-label="[Deprecated] Send feedback to OpenAlex"
         className={className}
         color="blue-ecume"
-        disabled={!corrections.length > 0}
+        // disabled={!corrections.length > 0}
+        disabled
         icon="send-plane-fill"
         onClick={switchModal}
         size="sm"
-        title="Send feedback to OpenAlex"
+        title="[Deprecated] Send feedback to OpenAlex"
       >
-        Send feedback to OpenAlex
+        [Deprecated] Send feedback to OpenAlex
       </Button>
       <Modal isOpen={isModalOpen} hide={switchModal}>
         <ModalTitle>Improve OpenAlex data</ModalTitle>

@@ -1,6 +1,6 @@
 import { Col, Container, Link, Row, Spinner } from '@dataesr/dsfr-plus';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
