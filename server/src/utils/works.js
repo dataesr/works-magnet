@@ -660,7 +660,7 @@ const groupByAffiliations = ({ options, works }) => {
   const pattern = options.affiliationStrings
     // Replace all accentuated characters, multiple spaces and toLowercase()
     .map((affiliation) => removeDiacritics(affiliation)
-    // Set universiteit, universitat, universite, university, universita, universidad and univ as synonyms
+      // Set universiteit, universitat, universite, university, universita, universidad and univ as synonyms
       .replaceAll(
         /\buniversiteit|universitat|universite|university|universita|universidad|univ\b/gi,
         'universiteit|universitat|universite|university|universita|universidad|univ',
