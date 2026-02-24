@@ -1,3 +1,5 @@
+const { VITE_API } = import.meta.env;
+
 // https://ror.readme.io/docs/ror-identifier-pattern
 const rorRegex = /^0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$/;
 
@@ -11,10 +13,10 @@ const isRor = (affiliation) => (affiliation ? rorRegex.test(cleanRor(affiliation
 const getRorData = async (affiliation, getChildren = false) => {
   const affiliationId = cleanRor(affiliation);
   if (!isRor(affiliationId)) return [];
-  let response = await fetch(
-    `https://api.ror.org/organizations/${affiliationId}`,
-    { cache: 'force-cache' },
-  );
+  let response = await fetch(`${VITE_API}/ror-organizations/${affiliationId}`);
+  if (!response.ok) {
+    throw new Error('Oops... Error while computing ROR affiliations !');
+  }
   response = await response.json();
   const topLevel = [
     {
