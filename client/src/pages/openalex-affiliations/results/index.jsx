@@ -49,9 +49,10 @@ export default function Affiliations() {
   const [cleanRor, setCleanRor] = useState('');
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredAffiliations, setFilteredAffiliations] = useState([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingRor, setIsLoadingRor] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [notices, setNotices] = useState([]);
   const [options, setOptions] = useState({});
@@ -421,6 +422,20 @@ export default function Affiliations() {
   return (
     <>
       <Header />
+      <Modal isOpen={isModalOpen} hide={() => setIsModalOpen(!isModalOpen)}>
+        <ModalTitle>
+          New affiliation curation tool by OpenAlex
+        </ModalTitle>
+        <ModalContent>
+          As announced on the OpenAlex
+          {' '}
+          <a href="https://blog.openalex.org/affiliation-curation-is-coming-to-openalex/" rel="noreferrer" target="_blank">blog post of February 19, 2026</a>
+          ,
+          an affiliation curation tool is now available. Therefore the curation feature of the Works-magnet is now deprecated.
+          <br />
+          All the curations previously submitted have been integrated by the OpenAlex team.
+        </ModalContent>
+      </Modal>
       {notices.map((notice, index) => (
         <Notice
           closeMode="controlled"
@@ -475,16 +490,16 @@ export default function Affiliations() {
               <Col md="8" offsetMd="2">
                 <div className="fr-callout fr-callout--pink-tuile">
                   <Title as="h3" look="h6">
-                    New affiliation matching curation tool by OpenAlex
+                    New affiliation curation tool by OpenAlex
                   </Title>
                   <p className="fr-callout__text fr-text--sm">
-                    As mentionned in the OpenAlex roadmap, announced on the
+                    As announced on the OpenAlex
                     {' '}
-                    <a href="https://blog.openalex.org/openalex-2026-roadmap/#whats-coming-in-q1" rel="noreferrer" target="_blank">blog post of January 16, 2026</a>
+                    <a href="https://blog.openalex.org/affiliation-curation-is-coming-to-openalex/" rel="noreferrer" target="_blank">blog post of February 19, 2026</a>
                     ,
-                    an affiliation matching curation tool should be launched in February 2026. Therefore the curation feature of the Works-magnet is now deprecated.
+                    an affiliation curation tool is now available. Therefore the curation feature of the Works-magnet is now deprecated.
                     <br />
-                    All the curations already submitted should be integrated by the OpenAlex team.
+                    All the curations previously submitted have been integrated by the OpenAlex team.
                   </p>
                 </div>
               </Col>
