@@ -52,7 +52,7 @@ export default function Affiliations() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingRor, setIsLoadingRor] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [notices, setNotices] = useState([]);
   const [options, setOptions] = useState({});
@@ -218,6 +218,10 @@ export default function Affiliations() {
     },
     enabled: false,
   });
+
+  useEffect(() => {
+    if (isFetching) setIsModalOpen(true);
+  }, [isFetching]);
 
   const addNotice = (notice) => {
     setNotices([...notices, notice]);
