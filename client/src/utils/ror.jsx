@@ -18,7 +18,7 @@ const getRorData = async (affiliation, getChildren = false) => {
     throw new Error('Oops... Error while computing ROR affiliations !');
   }
   response = await response.json();
-  const topLevel = [
+  const rorData = [
     {
       names: response.names,
       rorCountry: response?.locations?.[0]?.geonames_details?.country_code,
@@ -27,22 +27,29 @@ const getRorData = async (affiliation, getChildren = false) => {
     },
   ];
   if (!getChildren) {
-    return topLevel;
+    return rorData;
   }
   const children = response.relationships.filter(
     (relationship) => relationship.type === 'child',
   );
-  let childrenRes = [];
-  if (getChildren) {
-    const childrenQueries = [];
-    children.forEach((child) => {
-      childrenQueries.push(getRorData(child.id, getChildren));
-    });
-    if (childrenQueries.length > 0) {
-      childrenRes = await Promise.all(childrenQueries);
-    }
+  const rorDataChildren = [];
+  const childrenQueries = children.map((child) => () => getRorData(child.id, getChildren));
+  // Chunk childrenQueries array in slices of 50
+  const childrenQueriesChunk = [];
+  for (let i = 0; i < childrenQueries.length; i += 50) {
+    childrenQueriesChunk.push(childrenQueries.slice(i, i + 50));
   }
-  return topLevel.concat(childrenRes.flat());
+  // eslint-disable-next-line no-restricted-syntax
+  for (const childrenQuery of childrenQueriesChunk) {
+    // eslint-disable-next-line no-await-in-loop
+    const rorNamesTmp = await Promise.allSettled(childrenQuery.map((fn) => fn()));
+    rorDataChildren.push(rorNamesTmp.map((item) => {
+      if (item.status === 'fulfilled') return item.value;
+      console.error(`getRorData query failed: ${item.reason}`);
+      return undefined;
+    }));
+  }
+  return rorData.concat(rorDataChildren.flat().flat());
 };
 
 export {

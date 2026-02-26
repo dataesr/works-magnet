@@ -15,8 +15,7 @@ router.route('/ror-organizations/:ror')
         const tmp = await response.json();
         res.status(200).json(tmp);
       } else {
-        console.error(`Error while fetching ${url} :`);
-        console.error(`${response.status} | ${response.statusText}`);
+        console.error(`${response.status} | While fetching ${url}`);
         res.status(500).json({ message: 'Internal Server Error.' })
       }
     } catch (error) {
