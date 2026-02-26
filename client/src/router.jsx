@@ -7,6 +7,7 @@ import DatasetsSearch from './pages/datasets/search';
 import Home from './pages/home';
 import MentionsResults from './pages/mentions/results';
 import MentionsSearch from './pages/mentions/search';
+import NotFount from './pages/notFound';
 import OpenalexAffiliationsCorrections from './pages/openalex-affiliations/corrections';
 import OpenalexaffiliationsResults from './pages/openalex-affiliations/results';
 import OpenalexAffiliationsSearch from './pages/openalex-affiliations/search';
@@ -61,6 +62,7 @@ export default function Router() {
           )}
         />
       </Route>
+      <Route path="*" element={<NotFount />} />
     </Routes>
   );
 }

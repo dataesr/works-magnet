@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import Header from '../layout/header';
 
-export default function Home() {
+export default function About() {
   return (
     <>
       <Header isExpanded />
