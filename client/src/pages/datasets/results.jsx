@@ -20,6 +20,7 @@ export default function Affiliations() {
   const [searchParams] = useSearchParams();
 
   const [affiliations, setAffiliations] = useState([]);
+  const [isLoading, setIsLoading] = useState({});
   const [options, setOptions] = useState({});
   const [selectedAffiliations, setSelectedAffiliations] = useState([]);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
@@ -72,6 +73,7 @@ export default function Affiliations() {
 
   useEffect(() => {
     const getData = async () => {
+      setIsLoading(true);
       const queryParams = {
         endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
         startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
@@ -103,6 +105,7 @@ export default function Affiliations() {
         return;
       }
       setOptions(queryParams);
+      setIsLoading(true);
     };
 
     getData();
@@ -120,7 +123,7 @@ export default function Affiliations() {
     <>
       <Header />
       <Container as="section" className="fr-mt-4w">
-        {isFetching && (
+        {(isFetching || isLoading) && (
           <Row>
             <Col xs="2" offsetXs="6">
               <Spinner size={48} />
@@ -139,7 +142,7 @@ export default function Affiliations() {
           </Row>
         )}
 
-        {!isFetching && isFetched && (
+        {!isFetching && isFetched && !isLoading && (
           <Datasets
             allAffiliations={affiliations}
             allDatasets={data?.datasets?.results ?? []}
