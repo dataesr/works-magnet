@@ -105,7 +105,7 @@ export default function Affiliations() {
         return;
       }
       setOptions(queryParams);
-      setIsLoading(true);
+      setIsLoading(false);
     };
 
     getData();
