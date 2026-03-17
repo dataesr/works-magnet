@@ -211,120 +211,119 @@ export default function MainFooter() {
         />
         <Link
           className="fr-footer__content-link"
-          target="_blank"
-          rel="noreferrer noopener external"
-          title="LégiFrance, the French public service for the dissemination of law - new window"
           href="https://legifrance.gouv.fr"
+          rel="noreferrer noopener external"
+          target="_blank"
+          title="LégiFrance, the French public service for the dissemination of law - new window"
         >
           legifrance.gouv.fr
         </Link>
         <Link
           className="fr-footer__content-link"
-          target="_blank"
-          rel="noreferrer noopener external"
-          title="InfoGouv, Website of the French government - new window"
           href="https://www.info.gouv.fr/"
+          rel="noreferrer noopener external"
+          target="_blank"
+          title="InfoGouv, Website of the French government - new window"
         >
           info.gouv.fr
         </Link>
         <Link
           className="fr-footer__content-link"
-          target="_blank"
-          rel="noreferrer noopener external"
-          title="ServicePublic, The official French administration website - new window"
           href="https://service-public.fr"
+          rel="noreferrer noopener external"
+          target="_blank"
+          title="ServicePublic, The official French administration website - new window"
         >
           service-public.fr
         </Link>
         <Link
           className="fr-footer__content-link"
-          target="_blank"
-          rel="noreferrer noopener external"
-          title="DataGouv, Open platform for French public data - new window"
           href="https://data.gouv.fr"
+          rel="noreferrer noopener external"
+          target="_blank"
+          title="DataGouv, Open platform for French public data - new window"
         >
           data.gouv.fr
         </Link>
       </FooterBody>
       <FooterBottom>
-        <div className="fr-footer__partners">
-          <h2 className="fr-footer__partners-title">See also</h2>
-          <div className="fr-footer__partners-logos">
-            <div className="fr-footer__partners-sub">
-              <ul>
-                {/* <li>
-                  <Link
-                    className="fr-footer__partners-link"
-                    href="https://github.com/dataesr"
-                    target="_blank"
-                  >
-                    GitHub
-                  </Link>
-                </li> */}
-                <li>
-                  <Link
-                    className="fr-footer__partners-link"
-                    href="https://frenchopensciencemonitor.esr.gouv.fr/"
-                    target="_blank"
-                  >
-                    French Open Science Monitor
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="fr-footer__partners-link"
-                    href="https://scanr.enseignementsup-recherche.gouv.fr/"
-                    target="_blank"
-                  >
-                    scanR, explore the world of French research & innovation
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="fr-footer__partners-link"
-                    href="https://curiexplore.enseignementsup-recherche.gouv.fr/"
-                    target="_blank"
-                  >
-                    CurieXplore
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="fr-footer__partners-link"
-                    href="https://data.enseignementsup-recherche.gouv.fr/pages/home/"
-                    target="_blank"
-                  >
-                    Open Data Platform
-                  </Link>
-                </li>
-                {/* <li>
-                  <Link
-                    className="fr-footer__partners-link"
-                    href="https://data.esr.gouv.fr/EN/"
-                    target="_blank"
-                  >
-                    #dataESR
-                  </Link>
-                </li> */}
-              </ul>
-            </div>
-
-          </div>
-        </div>
-        {/* <Link className="fr-footer__bottom-link" href="/about/accessibility">
-          Accessibility: currently being optimized
-        </Link>
-        <Link className="fr-footer__bottom-link" href="/about/legal-notices">
-          Legal notices
-        </Link> */}
         <Link
+          className="fr-footer__bottom-link"
+          href="https://github.com/dataesr/works-magnet"
+          rel="noreferrer noopener external"
           target="_blank"
-          rel="noreferer noopenner"
+          title="Github repository"
+        >
+          GitHub
+        </Link>
+        <Link
+          className="fr-footer__bottom-link"
+          href="https://frenchopensciencemonitor.esr.gouv.fr/"
+          rel="noreferrer noopener external"
+          target="_blank"
+        >
+          French Open Science Monitor
+        </Link>
+        <Link
+          className="fr-footer__bottom-link"
+          href="https://scanr.enseignementsup-recherche.gouv.fr/"
+          rel="noreferrer noopener external"
+          target="_blank"
+        >
+          scanR, explore the world of French research & innovation
+        </Link>
+        <Link
+          className="fr-footer__bottom-link"
+          href="https://curiexplore.enseignementsup-recherche.gouv.fr/"
+          rel="noreferrer noopener external"
+          target="_blank"
+        >
+          CurieXplore
+        </Link>
+        <Link
+          className="fr-footer__bottom-link"
+          href="https://data.enseignementsup-recherche.gouv.fr/pages/home/"
+          rel="noreferrer noopener external"
+          target="_blank"
+        >
+          Open Data Platform
+        </Link>
+        {/*
+          <Link
+            className="fr-footer__partners-link"
+            href="https://data.esr.gouv.fr/"
+            rel="noreferrer noopener external"
+            target="_blank"
+          >
+            #dataESR
+          </Link>
+        */}
+        <Link
           className="fr-footer__bottom-link"
           href={`https://github.com/dataesr/works-magnet/releases/tag/v${VITE_VERSION}`}
+          rel="noreferrer noopener external"
+          target="_blank"
         >
           {`App version v${VITE_VERSION}`}
         </Link>
+        {/*
+          <Link
+            className="fr-footer__bottom-link"
+            href="/about/accessibility"
+            rel="noreferrer noopener external"
+            target="_blank"
+          >
+            Accessibility: currently being optimized
+          </Link>
+          <Link
+            className="fr-footer__bottom-link"
+            href="/about/legal-notices"
+            rel="noreferrer noopener external"
+            target="_blank"
+          >
+            Legal notices
+          </Link>
+        */}
       </FooterBottom>
     </Footer>
   );
