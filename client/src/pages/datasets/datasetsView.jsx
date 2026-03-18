@@ -119,6 +119,12 @@ export default function DatasetsView({
         style={{ minWidth: '95px', maxWidth: '95px' }}
       />
       <Column
+        field="client_id"
+        header="client.id"
+        sortable
+        style={{ minWidth: '95px', maxWidth: '95px' }}
+      />
+      <Column
         body={affiliationsTemplate}
         field="affiliationsHtml"
         header="Affiliations"

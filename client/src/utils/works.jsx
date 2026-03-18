@@ -160,10 +160,8 @@ const getDatasets = async ({ options, toast, type }) => {
   if (!response.ok) {
     throw new Error('Oops... FOSM API request did not work for works !');
   }
-  const { affiliations, datasets, publications, warnings } = await response.json();
-  const resAffiliations = await unzipAll(affiliations);
+  const { datasets, warnings } = await response.json();
   datasets.results = await unzipAll(datasets.results);
-  publications.results = await unzipAll(publications.results);
   let warningMessage = '';
   if (warnings?.isMaxFosmReached) {
     warningMessage = warningMessage.concat(
@@ -182,8 +180,15 @@ const getDatasets = async ({ options, toast, type }) => {
       title: 'Too Many publications found',
       toastType: 'error',
     });
+  } else {
+    toast({
+      description: `${datasets.results.length} datasets from ${options.clientId} added.`,
+      id: 'getDatasetsByClientId',
+      title: 'Repository added',
+      toastType: 'success',
+    });
   }
-  return { affiliations: resAffiliations, datasets, publications, warnings };
+  return { datasets, warnings };
 };
 
 const normalizeName = (name) => name

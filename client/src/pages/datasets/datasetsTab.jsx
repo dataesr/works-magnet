@@ -1,10 +1,11 @@
-import { Button, Col, Container, Modal, ModalContent, Row, TextInput, Title } from '@dataesr/dsfr-plus';
+import { Button, Col, Container, Modal, ModalContent, Row, Spinner, TextInput, Title } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import Gauge from '../../components/gauge';
 import { datasources, status } from '../../config';
+import useToast from '../../hooks/useToast';
 import {
   getDatasets,
   normalizeName,
@@ -38,8 +39,10 @@ export default function DatasetsTab({
   const [filteredPublishers, setFilteredPublishers] = useState([]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState();
   const [fixedMenu] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     setFilteredDatasets(datasets);
@@ -90,13 +93,24 @@ export default function DatasetsTab({
   );
 
   const addDatasetsByClientId = async () => {
+    setIsLoading(true);
+    setIsModalOpen(!isModalOpen);
+    setClientId('');
     const options = { clientId, endYear: searchParams.get('endYear'), startYear: searchParams.get('startYear') };
-    const { datasets: ds } = await getDatasets({ options, type: 'datasets' });
+    const { datasets: ds } = await getDatasets({ options, toast, type: 'datasets' });
     setFilteredDatasets([...ds.results, ...filteredDatasets]);
+    setIsLoading(false);
   };
 
   return (
     <>
+      {isLoading && (
+        <Row>
+          <Col xs="2" offsetXs="6">
+            <Spinner size={48} />
+          </Col>
+        </Row>
+      )}
       <Modal isOpen={isModalOpen} hide={() => { setIsModalOpen(!isModalOpen); setClientId(''); }}>
         <ModalContent>
           <Title as="h2" look="h5">
@@ -115,11 +129,7 @@ export default function DatasetsTab({
                 <Button
                   data-tooltip-id="save-affiliations-button"
                   disabled={clientId.length === 0}
-                  onClick={() => {
-                    setIsModalOpen(!isModalOpen);
-                    setClientId('');
-                    addDatasetsByClientId();
-                  }}
+                  onClick={addDatasetsByClientId}
                 >
                   <i className="ri-save-line fr-mr-1w" />
                   Add
@@ -175,7 +185,7 @@ export default function DatasetsTab({
             onClick={() => setIsModalOpen(!isModalOpen)}
             size="sm"
           >
-            Add a full repository by client.id
+            Add a repository by client.id
           </Button>
         </Col>
         <Col xs="12">
