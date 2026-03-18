@@ -150,6 +150,42 @@ const getWorks = async ({ options, toast, type }) => {
   return { affiliations: resAffiliations, datasets, publications, warnings };
 };
 
+const getDatasets = async ({ options, toast, type }) => {
+  const response = await fetch(`${VITE_API}/datasets`, {
+    body: JSON.stringify({ ...options, type }),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    signal: timeout(1200).signal, // 20 minutes
+  });
+  if (!response.ok) {
+    throw new Error('Oops... FOSM API request did not work for works !');
+  }
+  const { affiliations, datasets, publications, warnings } = await response.json();
+  const resAffiliations = await unzipAll(affiliations);
+  datasets.results = await unzipAll(datasets.results);
+  publications.results = await unzipAll(publications.results);
+  let warningMessage = '';
+  if (warnings?.isMaxFosmReached) {
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxFosmValue} publications found in French OSM, only the first ${warnings.maxFosmValue} were retrieved.\n`,
+    );
+  }
+  if (warnings?.isMaxOpenalexReached) {
+    warningMessage = warningMessage.concat(
+      `More than ${warnings.maxOpenalexValue} publications found in OpenAlex, only the first ${warnings.maxOpenalexValue} were retrieved.\n`,
+    );
+  }
+  if (warningMessage) {
+    toast({
+      description: warningMessage,
+      id: 'tooManyPublications',
+      title: 'Too Many publications found',
+      toastType: 'error',
+    });
+  }
+  return { affiliations: resAffiliations, datasets, publications, warnings };
+};
+
 const normalizeName = (name) => name
   .toLowerCase()
   .normalize('NFD')
@@ -196,6 +232,7 @@ const renderButtonDataset = (selected, fn, label, icon) => (
 );
 
 export {
+  getDatasets,
   getIdLink,
   getIdLinkDisplay,
   getMentions,

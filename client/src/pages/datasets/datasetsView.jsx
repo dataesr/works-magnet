@@ -23,9 +23,9 @@ export default function DatasetsView({
   works,
 }) {
   const [filters] = useState({
-    publisher: { value: null, matchMode: FilterMatchMode.IN },
-    status: { value: null, matchMode: FilterMatchMode.IN },
-    type: { value: null, matchMode: FilterMatchMode.IN },
+    publisher: { matchMode: FilterMatchMode.IN, value: null },
+    status: { matchMode: FilterMatchMode.IN, value: null },
+    type: { matchMode: FilterMatchMode.IN, value: null },
   });
   const [selectionPageOnly, setSelectionPageOnly] = useState(true);
 

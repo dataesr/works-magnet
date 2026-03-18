@@ -47,6 +47,7 @@ const chunkAndCompress = (data) => {
   return Promise.all(chunks.map((c) => compressData(c)));
 };
 
+// options: { startYear, endYear, rorExclusions: str[], type ["datasets", "publications"], affiliationStrings: str[], rors: st[] }
 const getWorks = async ({ options, resetCache = false }) => {
   const searchId = getSha1({ text: options });
   const start = new Date();
@@ -227,6 +228,23 @@ router.route('/works').post(async (req, res) => {
       });
     } else {
       const compressedResult = await getWorks({ options });
+      res.status(200).json(compressedResult);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error.' });
+  }
+});
+
+router.route('/datasets').post(async (req, res) => {
+  try {
+    const options = req?.body ?? {};
+    if (!options.clientId || options.clientId.length === 0) {
+      res.status(400).json({
+        message: 'You must provide a not empty clientId.',
+      });
+    } else {
+      const compressedResult = await getWorks({ options: { ...options, type: 'datasets', rorExclusions: [], rors: [], affiliationStrings: [] } });
       res.status(200).json(compressedResult);
     }
   } catch (err) {

@@ -1,10 +1,12 @@
-import { Button, Col, Row } from '@dataesr/dsfr-plus';
+import { Button, Col, Container, Modal, ModalContent, Row, TextInput, Title } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import Gauge from '../../components/gauge';
 import { datasources, status } from '../../config';
 import {
+  getDatasets,
   normalizeName,
   renderButtonDataset,
   renderButtons,
@@ -20,6 +22,9 @@ export default function DatasetsTab({
   types,
   years,
 }) {
+  const [searchParams] = useSearchParams();
+  const [clientId, setClientId] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasets, setFilteredDatasets] = useState([]);
   const [filteredDatasources] = useState(
@@ -34,7 +39,7 @@ export default function DatasetsTab({
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
   const [timer, setTimer] = useState();
-  const [fixedMenu, setFixedMenu] = useState(false);
+  const [fixedMenu] = useState(false);
 
   useEffect(() => {
     setFilteredDatasets(datasets);
@@ -84,8 +89,46 @@ export default function DatasetsTab({
       && (d.nbAuthorsName >= 3 || d.nbOrcid >= 3),
   );
 
+  const addDatasetsByClientId = async () => {
+    const options = { clientId, endYear: searchParams.get('endYear'), startYear: searchParams.get('startYear') };
+    const { datasets: ds } = await getDatasets({ options, type: 'datasets' });
+    setFilteredDatasets([...ds.results, ...filteredDatasets]);
+  };
+
   return (
     <>
+      <Modal isOpen={isModalOpen} hide={() => { setIsModalOpen(!isModalOpen); setClientId(''); }}>
+        <ModalContent>
+          <Title as="h2" look="h5">
+            <i className="ri-save-line fr-mr-1w" />
+            Enter your client.id
+          </Title>
+          <Container className="fr-mb-5w">
+            <Row>
+              <Col>
+                <TextInput
+                  label="Please enter here the client.id of your repository"
+                  onChange={(e) => setClientId(e.target.value)}
+                  required
+                  value={clientId}
+                />
+                <Button
+                  data-tooltip-id="save-affiliations-button"
+                  disabled={clientId.length === 0}
+                  onClick={() => {
+                    setIsModalOpen(!isModalOpen);
+                    setClientId('');
+                    addDatasetsByClientId();
+                  }}
+                >
+                  <i className="ri-save-line fr-mr-1w" />
+                  Add
+                </Button>
+              </Col>
+            </Row>
+          </Container>
+        </ModalContent>
+      </Modal>
       <div
         className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`}
         title="actions"
@@ -127,6 +170,13 @@ export default function DatasetsTab({
             'without affiliations but at least 3 authors detected from my institution',
             'ri-team-line',
           )}
+          <Button
+            className="fr-mb-1w fr-mr-1w"
+            onClick={() => setIsModalOpen(!isModalOpen)}
+            size="sm"
+          >
+            Add a full repository by client.id
+          </Button>
         </Col>
         <Col xs="12">
           <Gauge

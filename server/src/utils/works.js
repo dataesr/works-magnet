@@ -107,13 +107,15 @@ const getFosmQuery = ({ options, pit, searchAfter }) => {
     size: process.env.ES_SIZE,
     query: { bool: { filter: [], must: [], must_not: [], should: [] } },
   };
-  options.affiliationStrings.forEach((affiliation) => {
-    query.query.bool.should.push({
-      match: {
-        'affiliations.name': { query: `"${affiliation}"`, operator: 'and' },
-      },
+  if (options.affiliationStrings.length > 0) {
+    options.affiliationStrings.forEach((affiliation) => {
+      query.query.bool.should.push({
+        match: {
+          'affiliations.name': { query: `"${affiliation}"`, operator: 'and' },
+        },
+      });
     });
-  });
+  }
   if (options.rors?.length > 0) {
     const fullRors = options.rors.map((r) => 'https://ror.org/'.concat(r));
     query.query.bool.should.push({ terms: { 'rors.keyword': options.rors } });
@@ -124,6 +126,14 @@ const getFosmQuery = ({ options, pit, searchAfter }) => {
       terms: { 'authors.affiliations.affiliationIdentifier.keyword': fullRors },
     });
   }
+  if (options.affiliationStrings.length > 0 || options.rors?.length > 0) {
+    query.query.bool.minimum_should_match = 1;
+  }
+  if (options?.clientId) {
+    query.query.bool.must.push({
+      term: { 'client_id.keyword': options.clientId },
+    });
+  }
   query.query.bool.must.push({
     range: { year: { gte: options.year, lte: options.year } },
   });
@@ -131,7 +141,6 @@ const getFosmQuery = ({ options, pit, searchAfter }) => {
   query.query.bool.must_not.push({
     terms: { genre: ['file', 'version', 'file_', 'identical'] },
   });
-  query.query.bool.minimum_should_match = 1;
   query._source = [
     'affiliations',
     'authors',
@@ -331,6 +340,7 @@ const formatFosmResult = (result, options) => {
     || answer.nbPublicationsLinked > 0
     || answer.nbOrcid >= 2
     || answer.nbAuthorsName >= 3
+    || answer.client_id === options.clientId
   ) {
     levelCertainty = '1.high';
   } else if (

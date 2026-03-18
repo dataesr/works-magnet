@@ -252,7 +252,7 @@ export default function MainFooter() {
           href="https://github.com/dataesr/works-magnet"
           rel="noreferrer noopener external"
           target="_blank"
-          title="Github repository"
+          title="Github code repository - new window"
         >
           GitHub
         </Link>
@@ -261,6 +261,7 @@ export default function MainFooter() {
           href="https://frenchopensciencemonitor.esr.gouv.fr/"
           rel="noreferrer noopener external"
           target="_blank"
+          title="French Open Science Monitor - new window"
         >
           French Open Science Monitor
         </Link>
@@ -269,6 +270,7 @@ export default function MainFooter() {
           href="https://scanr.enseignementsup-recherche.gouv.fr/"
           rel="noreferrer noopener external"
           target="_blank"
+          title="scanR, explore public data on French research and innovation - new window"
         >
           scanR, explore the world of French research & innovation
         </Link>
@@ -277,6 +279,7 @@ export default function MainFooter() {
           href="https://curiexplore.enseignementsup-recherche.gouv.fr/"
           rel="noreferrer noopener external"
           target="_blank"
+          title="curieXplore, explore international higher education, research and innovation systems - new window"
         >
           CurieXplore
         </Link>
@@ -285,6 +288,7 @@ export default function MainFooter() {
           href="https://data.enseignementsup-recherche.gouv.fr/pages/home/"
           rel="noreferrer noopener external"
           target="_blank"
+          title="dataESR, open data platform - new window"
         >
           Open Data Platform
         </Link>
@@ -294,6 +298,7 @@ export default function MainFooter() {
             href="https://data.esr.gouv.fr/"
             rel="noreferrer noopener external"
             target="_blank"
+            title="dataESR, open data platform - new window"
           >
             #dataESR
           </Link>
@@ -303,6 +308,7 @@ export default function MainFooter() {
           href={`https://github.com/dataesr/works-magnet/releases/tag/v${VITE_VERSION}`}
           rel="noreferrer noopener external"
           target="_blank"
+          title="App release version on Github - new window"
         >
           {`App version v${VITE_VERSION}`}
         </Link>
@@ -310,16 +316,14 @@ export default function MainFooter() {
           <Link
             className="fr-footer__bottom-link"
             href="/about/accessibility"
-            rel="noreferrer noopener external"
-            target="_blank"
+            title="Accessibility"
           >
             Accessibility: currently being optimized
           </Link>
           <Link
             className="fr-footer__bottom-link"
             href="/about/legal-notices"
-            rel="noreferrer noopener external"
-            target="_blank"
+            title="Legal notices"
           >
             Legal notices
           </Link>
