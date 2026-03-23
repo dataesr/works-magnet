@@ -179,25 +179,39 @@ export default function DatasetsTab({
       </div>
       <Row gutters>
         <Col xs="12" className="text-right">
-          {renderButtonDataset(
-            datasetLinkedArticle,
-            tagDatasets,
-            'without affiliations but linked to an article from my institution',
-            'ri-link',
-          )}
-          {renderButtonDataset(
-            datasetPerson,
-            tagDatasets,
-            'without affiliations but at least 3 authors detected from my institution',
-            'ri-team-line',
-          )}
-          <Button
-            className="fr-mb-1w fr-mr-1w"
-            onClick={() => setIsModalOpen(!isModalOpen)}
-            size="sm"
-          >
-            Add a repository by client.id
-          </Button>
+          <Row>
+            <Col>
+              {renderButtonDataset(
+                datasetLinkedArticle,
+                tagDatasets,
+                'without affiliations but linked to an article from my institution',
+                'ri-link',
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              {renderButtonDataset(
+                datasetPerson,
+                tagDatasets,
+                'without affiliations but at least 3 authors detected from my institution',
+                'ri-team-line',
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Button
+                className="fr-mb-1w fr-mr-1w"
+                onClick={() => setIsModalOpen(!isModalOpen)}
+                size="sm"
+              >
+                <i className="ri-database-2-line fr-mr-1w" />
+                Add a repository by client.id
+              </Button>
+            </Col>
+          </Row>
+
         </Col>
         <Col xs="12">
           <Gauge
