@@ -121,10 +121,20 @@ export default function DatasetsTab({
           <Container className="fr-mb-5w">
             <Row>
               <Col>
+                <p>
+                  To find your client.id, please open the
+                  {' '}
+                  <a href="https://api.datacite.org/dois/YOUR_DOI" rel="noreferrer" target="_blank">
+                    Datacite API link
+                  </a>
+                  {' '}
+                  and replace "YOUR_DOI" by a DOI of your repository, then look for the value of the field
+                  {' '}
+                  <i>relationships.client.data.id</i>
+                  .
+                </p>
                 <TextInput
-                  label="You can find the client.id of your repository in re3data"
                   onChange={(e) => setClientId(e.target.value)}
-                  required
                   value={clientId}
                 />
                 <Button
