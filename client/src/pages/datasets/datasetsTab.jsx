@@ -122,7 +122,7 @@ export default function DatasetsTab({
             <Row>
               <Col>
                 <TextInput
-                  label="Please enter here the client.id of your repository"
+                  label="You can find the client.id of your repository in re3data"
                   onChange={(e) => setClientId(e.target.value)}
                   required
                   value={clientId}
