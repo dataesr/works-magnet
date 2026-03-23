@@ -62,6 +62,7 @@ export default function Affiliations() {
         affiliations
           .map((affiliation) => {
             if (affiliationIds.includes(affiliation.id)) {
+              // eslint-disable-next-line no-param-reassign
               affiliation.status = action;
             }
             return affiliation;

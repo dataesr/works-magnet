@@ -98,7 +98,8 @@ export default function DatasetsTab({
     setClientId('');
     const options = { clientId, endYear: searchParams.get('endYear'), startYear: searchParams.get('startYear') };
     const { datasets: ds } = await getDatasets({ options, toast, type: 'datasets' });
-    setFilteredDatasets([...ds.results, ...filteredDatasets]);
+    const datasetsByClientId = ds.results.map((datasetByClientId) => ({ ...datasetByClientId, status: 'validated' }));
+    setFilteredDatasets([...datasetsByClientId, ...filteredDatasets]);
     setIsLoading(false);
   };
 
