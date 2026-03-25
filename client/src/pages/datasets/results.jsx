@@ -8,7 +8,7 @@ import useToast from '../../hooks/useToast';
 import Header from '../../layout/header';
 import { getRorData, isRor } from '../../utils/ror';
 import { normalize } from '../../utils/strings';
-import { getWorks } from '../../utils/works';
+import { getDatasets, getWorks } from '../../utils/works';
 import Datasets from '../views/datasets';
 
 import 'primereact/resources/primereact.min.css';
@@ -29,6 +29,16 @@ export default function Affiliations() {
   const { data, error, isFetched, isFetching, refetch } = useQuery({
     queryKey: ['datasets', JSON.stringify(options)],
     queryFn: () => getWorks({ options, toast, type: 'datasets' }),
+    enabled: false,
+  });
+
+  const { data: data2, error: error2, isFetched: isFetched2, isFetching: isFetching2, refetch: refetch2 } = useQuery({
+    queryKey: ['datasets-by-client-ids', JSON.stringify(options)],
+    queryFn: async () => {
+      const d = await getDatasets({ options, toast, type: 'datasets' });
+      d.datasets.results = (d?.datasets?.results ?? []).map((item) => ({ ...item, status: 'validated' }));
+      return d;
+    },
     enabled: false,
   });
 
@@ -78,6 +88,7 @@ export default function Affiliations() {
       const queryParams = {
         endYear: searchParams.get('endYear') ?? VITE_APP_DEFAULT_YEAR,
         startYear: searchParams.get('startYear') ?? VITE_APP_DEFAULT_YEAR,
+        clientId: searchParams.getAll('clientId') ?? [],
       };
       queryParams.affiliationStrings = [];
       queryParams.deletedAffiliations = [];
@@ -113,8 +124,11 @@ export default function Affiliations() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (Object.keys(options).length > 0) refetch();
-  }, [options, refetch]);
+    if (Object.keys(options).length > 0) {
+      refetch();
+      refetch2();
+    }
+  }, [options, refetch, refetch2]);
 
   useEffect(() => {
     setAffiliations(data?.affiliations ?? []);
@@ -124,7 +138,7 @@ export default function Affiliations() {
     <>
       <Header />
       <Container as="section" className="fr-mt-4w">
-        {(isFetching || isLoading) && (
+        {(isFetching || isFetching2 || isLoading) && (
           <Row>
             <Col xs="2" offsetXs="6">
               <Spinner size={48} />
@@ -132,7 +146,7 @@ export default function Affiliations() {
           </Row>
         )}
 
-        {error && (
+        {(error || error2) && (
           <Row gutters className="fr-mb-16w">
             <Col xs="12">
               <div>
@@ -143,10 +157,12 @@ export default function Affiliations() {
           </Row>
         )}
 
-        {!isFetching && isFetched && !isLoading && (
+        {isFetching}
+
+        {!isFetching && isFetched && !isFetching2 && isFetched2 && !isLoading && (
           <Datasets
             allAffiliations={affiliations}
-            allDatasets={data?.datasets?.results ?? []}
+            allDatasets={[...(data2?.datasets?.results ?? []), ...(data?.datasets?.results ?? [])]}
             data={data}
             options={options}
             selectedAffiliations={selectedAffiliations}

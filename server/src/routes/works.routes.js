@@ -227,7 +227,7 @@ router.route('/works').post(async (req, res) => {
         message: 'You must provide a type in ["datasets", "publications"]',
       });
     } else {
-      const compressedResult = await getWorks({ options });
+      const compressedResult = await getWorks({ options: { ...options, clientId: [] } });
       res.status(200).json(compressedResult);
     }
   } catch (err) {

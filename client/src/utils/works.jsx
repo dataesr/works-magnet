@@ -143,7 +143,7 @@ const getWorks = async ({ options, toast, type }) => {
     toast({
       description: warningMessage,
       id: 'tooManyPublications',
-      title: 'Too Many publications found',
+      title: 'Too many publications found',
       toastType: 'error',
     });
   }
@@ -151,6 +151,9 @@ const getWorks = async ({ options, toast, type }) => {
 };
 
 const getDatasets = async ({ options, toast, type }) => {
+  if ((options?.clientId?.length ?? 0) === 0) {
+    return { datasets: {} };
+  }
   const response = await fetch(`${VITE_API}/datasets`, {
     body: JSON.stringify({ ...options, type }),
     headers: { 'Content-Type': 'application/json' },
@@ -158,7 +161,13 @@ const getDatasets = async ({ options, toast, type }) => {
     signal: timeout(1200).signal, // 20 minutes
   });
   if (!response.ok) {
-    throw new Error('Oops... FOSM API request did not work for works !');
+    toast({
+      description: 'Error while adding repository by client.id',
+      id: 'getDatasetsByClientIdError',
+      title: 'Error',
+      toastType: 'error',
+    });
+    return { datasets: {}, warnings: {} };
   }
   const { datasets, warnings } = await response.json();
   datasets.results = await unzipAll(datasets.results);
@@ -176,14 +185,14 @@ const getDatasets = async ({ options, toast, type }) => {
   if (warningMessage) {
     toast({
       description: warningMessage,
-      id: 'tooManyPublications',
-      title: 'Too Many publications found',
+      id: 'tooManyDatasetsByClientId',
+      title: 'Too many datasets found',
       toastType: 'error',
     });
   } else {
     toast({
-      description: `${datasets.results.length} datasets from ${options.clientId} added.`,
-      id: 'getDatasetsByClientId',
+      description: `${datasets.results.length} datasets from ${options.clientId.join(', ')} added.`,
+      id: 'getDatasetsByClientIds',
       title: 'Repository added',
       toastType: 'success',
     });

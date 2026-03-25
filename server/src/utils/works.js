@@ -129,9 +129,9 @@ const getFosmQuery = ({ options, pit, searchAfter }) => {
   if (options.affiliationStrings.length > 0 || options.rors?.length > 0) {
     query.query.bool.minimum_should_match = 1;
   }
-  if (options?.clientId) {
+  if ((options?.clientId?.length ?? 0) > 0) {
     query.query.bool.must.push({
-      term: { 'client_id.keyword': options.clientId },
+      terms: { 'client_id.keyword': options.clientId },
     });
   }
   query.query.bool.must.push({
@@ -340,7 +340,7 @@ const formatFosmResult = (result, options) => {
     || answer.nbPublicationsLinked > 0
     || answer.nbOrcid >= 2
     || answer.nbAuthorsName >= 3
-    || answer.client_id === options.clientId
+    || options.clientId.includes(answer.client_id)
   ) {
     levelCertainty = '1.high';
   } else if (

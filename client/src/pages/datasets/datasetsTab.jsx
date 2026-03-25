@@ -1,13 +1,10 @@
-import { Button, Col, Container, Modal, ModalContent, Row, Spinner, TextInput, Title } from '@dataesr/dsfr-plus';
+import { Col, Row } from '@dataesr/dsfr-plus';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 
 import Gauge from '../../components/gauge';
 import { datasources, status } from '../../config';
-import useToast from '../../hooks/useToast';
 import {
-  getDatasets,
   normalizeName,
   renderButtonDataset,
   renderButtons,
@@ -23,9 +20,6 @@ export default function DatasetsTab({
   types,
   years,
 }) {
-  const [searchParams] = useSearchParams();
-  const [clientId, setClientId] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredAffiliationName, setFilteredAffiliationName] = useState('');
   const [filteredDatasets, setFilteredDatasets] = useState([]);
   const [filteredDatasources] = useState(
@@ -39,10 +33,8 @@ export default function DatasetsTab({
   const [filteredPublishers, setFilteredPublishers] = useState([]);
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState();
   const [fixedMenu] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     setFilteredDatasets(datasets);
@@ -92,64 +84,8 @@ export default function DatasetsTab({
       && (d.nbAuthorsName >= 3 || d.nbOrcid >= 3),
   );
 
-  const addDatasetsByClientId = async () => {
-    setIsLoading(true);
-    setIsModalOpen(!isModalOpen);
-    setClientId('');
-    const options = { clientId, endYear: searchParams.get('endYear'), startYear: searchParams.get('startYear') };
-    const { datasets: ds } = await getDatasets({ options, toast, type: 'datasets' });
-    const datasetsByClientId = ds.results.map((datasetByClientId) => ({ ...datasetByClientId, status: 'validated' }));
-    setFilteredDatasets([...datasetsByClientId, ...filteredDatasets]);
-    setIsLoading(false);
-  };
-
   return (
     <>
-      {isLoading && (
-        <Row>
-          <Col xs="2" offsetXs="6">
-            <Spinner size={48} />
-          </Col>
-        </Row>
-      )}
-      <Modal isOpen={isModalOpen} hide={() => { setIsModalOpen(!isModalOpen); setClientId(''); }}>
-        <ModalContent>
-          <Title as="h2" look="h5">
-            <i className="ri-save-line fr-mr-1w" />
-            Enter your client.id
-          </Title>
-          <Container className="fr-mb-5w">
-            <Row>
-              <Col>
-                <p>
-                  To find your client.id, please open the
-                  {' '}
-                  <a href="https://api.datacite.org/dois/YOUR_DOI" rel="noreferrer" target="_blank">
-                    Datacite API link
-                  </a>
-                  {' '}
-                  and replace "YOUR_DOI" by a DOI of your repository, then look for the value of the field
-                  {' '}
-                  <i>relationships.client.data.id</i>
-                  .
-                </p>
-                <TextInput
-                  onChange={(e) => setClientId(e.target.value)}
-                  value={clientId}
-                />
-                <Button
-                  data-tooltip-id="save-affiliations-button"
-                  disabled={clientId.length === 0}
-                  onClick={addDatasetsByClientId}
-                >
-                  <i className="ri-save-line fr-mr-1w" />
-                  Add
-                </Button>
-              </Col>
-            </Row>
-          </Container>
-        </ModalContent>
-      </Modal>
       <div
         className={`actions-menu ${fixedMenu ? 'action-menu-fixed' : ''}`}
         title="actions"
@@ -199,19 +135,6 @@ export default function DatasetsTab({
               )}
             </Col>
           </Row>
-          <Row>
-            <Col>
-              <Button
-                className="fr-mb-1w fr-mr-1w"
-                onClick={() => setIsModalOpen(!isModalOpen)}
-                size="sm"
-              >
-                <i className="ri-database-2-line fr-mr-1w" />
-                Add a repository by client.id
-              </Button>
-            </Col>
-          </Row>
-
         </Col>
         <Col xs="12">
           <Gauge

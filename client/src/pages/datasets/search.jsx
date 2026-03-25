@@ -9,6 +9,7 @@ import {
   Row,
   Select,
   SelectOption,
+  TextInput,
 } from '@dataesr/dsfr-plus';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -26,7 +27,13 @@ const years = [...Array(new Date().getFullYear() - Number(VITE_APP_START_YEAR) +
   .map((year) => ({ label: year, value: year }));
 
 export default function DatasetsSearch() {
+  // Hooks
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   // State
+  const [clientId, setClientId] = useState(searchParams.getAll('clientId').join(',') ?? '');
   const [currentSearchParams, setCurrentSearchParams] = useState({});
   const [deletedAffiliations, setDeletedAffiliations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,11 +47,6 @@ export default function DatasetsSearch() {
   const NB_TAGS_STICKY = 2;
   const tagsDisplayed = tags.slice(0, NB_TAGS_STICKY);
 
-  // Hooks
-  const { pathname, search } = useLocation();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
   const checkAndSendQuery = () => {
     if (onInputAffiliationsHandler) {
       setMessageType('error');
@@ -53,14 +55,17 @@ export default function DatasetsSearch() {
       );
       return;
     }
-    if (searchedAffiliations.length === 0) {
-      setMessageType('error');
-      setMessage('You must provide at least one affiliation.');
+    if (searchedAffiliations.length === 0 && clientId.length === 0) {
+      if (searchedAffiliations.length === 0) {
+        setMessageType('error');
+        setMessage('You must provide at least one affiliation.');
+      }
       return;
     }
     setMessageType('');
     setMessage('');
-    navigate(`/${pathname.split('/')[1]}/results${search}`);
+    const clientIds = clientId.length === 0 ? '' : `&${ clientId.replaceAll(', ', ',').split(',').map((c) => `clientId=${c}`).join('&')}`;
+    navigate(`/${pathname.split('/')[1]}/results${search}${clientIds}`);
   };
 
   const clearSearch = () => {
@@ -71,6 +76,7 @@ export default function DatasetsSearch() {
       getRorChildren: '0',
       startYear: VITE_APP_DEFAULT_YEAR,
     });
+    setClientId('');
     setSearchedAffiliations([]);
   };
 
@@ -296,7 +302,7 @@ export default function DatasetsSearch() {
             Home
           </Link>
           <Link current>
-            Build my corpus of datasets (from repositories)
+            Find the datasets affiliated to your institution
           </Link>
         </Breadcrumb>
       </Container>
@@ -362,12 +368,35 @@ export default function DatasetsSearch() {
             </Row>
           </Col>
         </Row>
+        <Row className="fr-pt-2w fr-pr-2w fr-pb-0 fr-pl-2w">
+          <Col xs="8">
+            <TextInput
+              hint={(
+                <>
+                  To find your client.id, please open the
+                  {' '}
+                  <a href="https://api.datacite.org/dois/YOUR_DOI" rel="noreferrer" target="_blank">
+                    Datacite API link
+                  </a>
+                  {' '}
+                  and replace "YOUR_DOI" by a DOI of your repository, then look for the value of the field
+                  {' '}
+                  <i>relationships.client.data.id</i>
+                  . Multiple values should be comma separated.
+                </>
+              )}
+              label="Client Id (to add a whole repository, in case of repository managed by your institution)"
+              onChange={(c) => setClientId(c.target.value)}
+              value={clientId}
+            />
+          </Col>
+        </Row>
         <Row className="fr-pt-0 fr-pr-2w fr-pb-2w fr-pl-2w">
           <Col offsetXs="1" className="text-right fr-pl-3w fr-mt-4w">
             <Button
               aria-label="Clear search"
               className="fr-mr-md-1w"
-              disabled={searchParams.getAll('affiliations').length === 0}
+              disabled={searchParams.getAll('affiliations').length === 0 && clientId?.length === 0}
               icon="delete-line"
               onClick={clearSearch}
               title="Clear search"
@@ -377,7 +406,7 @@ export default function DatasetsSearch() {
             <Button
               aria-label="Search datasets"
               className="fr-mt-2w"
-              disabled={searchParams.getAll('affiliations').length === 0}
+              disabled={searchParams.getAll('affiliations').length === 0 && clientId?.length === 0}
               icon="search-line"
               onClick={checkAndSendQuery}
               title="Search datasets"
