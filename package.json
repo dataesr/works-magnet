@@ -1,6 +1,6 @@
 {
   "name": "works-magnet",
-  "version": "0.11.12",
+  "version": "0.11.13",
   "private": true,
   "workspaces": [
     "client",
