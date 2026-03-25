@@ -117,13 +117,12 @@ const getFosmQuery = ({ options, pit, searchAfter }) => {
     });
   }
   if (options.rors?.length > 0) {
-    const fullRors = options.rors.map((r) => 'https://ror.org/'.concat(r));
     query.query.bool.should.push({ terms: { 'rors.keyword': options.rors } });
     query.query.bool.should.push({
-      terms: { 'affiliations.affiliationIdentifier.keyword': fullRors },
+      terms: { 'affiliations.affiliationIdentifier.keyword': options.rors },
     });
     query.query.bool.should.push({
-      terms: { 'authors.affiliations.affiliationIdentifier.keyword': fullRors },
+      terms: { 'authors.affiliations.affiliationIdentifier.keyword': options.rors },
     });
   }
   if (options.affiliationStrings.length > 0 || options.rors?.length > 0) {
