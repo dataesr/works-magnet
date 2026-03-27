@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './layout';
 import About from './pages/about';
 import DatasetsResults from './pages/datasets/results';
+import DatasetsResults2 from './pages/datasets/results2';
 import DatasetsSearch from './pages/datasets/search';
 import Home from './pages/home';
 import MentionsResults from './pages/mentions/results';
@@ -26,6 +27,7 @@ export default function Router() {
             <Routes>
               <Route path="/" element={<Navigate to="/datasets/search" replace />} />
               <Route path="/results" element={<DatasetsResults />} />
+              <Route path="/results2" element={<DatasetsResults2 />} />
               <Route path="/search" element={<DatasetsSearch />} />
             </Routes>
           )}
