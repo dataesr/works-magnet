@@ -29,7 +29,7 @@ const getFileName = ({ extension, label, searchParams }) => {
 
 const export2FosmCsv = ({ data, label, searchParams }) => {
   // For publications, DOI from Datacite will be ignored as it is not supported in the FOSM
-  let idsToExport = ['doi', 'hal_id', 'nnt_id', 'openalex'];
+  let idsToExport = ['doi', 'hal_id', 'nnt_id'];
   // For datasets
   if (label === 'datasets') {
     idsToExport = ['doi'];
