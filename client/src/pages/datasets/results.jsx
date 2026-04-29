@@ -110,9 +110,10 @@ export default function Affiliations() {
       if (
         queryParams.affiliationStrings.length === 0
         && queryParams.rors.length === 0
+        && queryParams.clientId.length === 0
       ) {
         console.error(
-          `You must provide at least one affiliation longer than ${VITE_APP_TAG_LIMIT} letters.`,
+          `You must provide at least one affiliation longer than ${VITE_APP_TAG_LIMIT} letters or a clientId.`,
         );
         return;
       }
