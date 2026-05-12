@@ -162,7 +162,7 @@ export default function Datasets({
                   <Col xs="6">
                     <DatasetsYearlyDistribution
                       allDatasets={allDatasets}
-                      field="type"
+                      field="format"
                     />
                   </Col>
                   <Col xs="6">
