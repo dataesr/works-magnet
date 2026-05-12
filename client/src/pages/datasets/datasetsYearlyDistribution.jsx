@@ -67,7 +67,7 @@ export default function DatasetsYearlyDistribution({ allDatasets, field, subfiel
       type: 'column',
       height: '600 px',
     },
-    credits: { text: 'French Open Science Monitor - CC-BY MESR', enabled: true },
+    credits: { text: 'French Open Science Monitor - CC-BY MESRE', enabled: true },
     legend: { reversed: true },
     plotOptions: {
       column: {
