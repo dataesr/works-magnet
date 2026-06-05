@@ -6,10 +6,13 @@ export default function MentionsTile() {
       <div className="fr-tile__body">
         <div className="fr-tile__content">
           <h3 className="fr-tile__title">
-            <a href="./mentions/search" label="Mentions search">
+            <a aria-disabled="true" rel="noopener external">
               <FormattedMessage id="mentions-tile-title" />
             </a>
           </h3>
+          <p className="fr-tile__desc">
+            <FormattedMessage id="mentions-tile-disable" />
+          </p>
           <p className="fr-tile__detail">
             <FormattedMessage id="mentions-tile-detail-1" />
             <br />
