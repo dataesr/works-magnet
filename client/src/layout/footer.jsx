@@ -91,17 +91,6 @@ export default function MainFooter() {
                 <li>
                   <Link
                     className="fr-footer__top-link"
-                    href="https://hal.science/hal-04990114"
-                    icon="compass-3-fill"
-                    iconPosition="left"
-                    target="_blank"
-                  >
-                    Tutoriel - Améliorer ses affiliations dans OpenAlex [FR]
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="fr-footer__top-link"
                     href="https://hal.univ-lorraine.fr/hal-05650417"
                     icon="compass-3-fill"
                     iconPosition="left"
