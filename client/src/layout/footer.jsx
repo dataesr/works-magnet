@@ -47,7 +47,7 @@ export default function MainFooter() {
                 </ul>
               </div>
             </Col>
-            <Col md={2} xs={12}>
+            <Col md={4} xs={12}>
               <Title
                 as="h3"
                 className="fr-footer__top-cat"
@@ -96,12 +96,34 @@ export default function MainFooter() {
                     iconPosition="left"
                     target="_blank"
                   >
-                    Guide [FR]
+                    Tutoriel - Améliorer ses affiliations dans OpenAlex [FR]
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="fr-footer__top-link"
+                    href="https://hal.univ-lorraine.fr/hal-05650417"
+                    icon="compass-3-fill"
+                    iconPosition="left"
+                    target="_blank"
+                  >
+                    Tutoriel - Retrouver ses publications [FR]
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="fr-footer__top-link"
+                    href="https://hal.univ-lorraine.fr/hal-05650426"
+                    icon="compass-3-fill"
+                    iconPosition="left"
+                    target="_blank"
+                  >
+                    Tutoriel - Retrouver ses jeux de données [FR]
                   </Link>
                 </li>
               </ul>
             </Col>
-            <Col md={4} xs={12}>
+            <Col md={2} xs={12}>
               <Title
                 as="h3"
                 className="fr-footer__top-cat"
