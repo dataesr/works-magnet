@@ -16,6 +16,22 @@ export default function Home() {
   return (
     <>
       <Header isExpanded />
+      <Container as="section" className="fr-my-4w fr-py-3w" style={{ backgroundColor: '#faedc4' }}>
+        <Row>
+          <Title as="h3">
+            <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
+            <FormattedMessage id="corpus-title" />
+          </Title>
+        </Row>
+        <Row gutters className=" fr-pl-3w">
+          <Col sm={12} md={6}>
+            <PublicationsTile />
+          </Col>
+          <Col sm={12} md={6}>
+            <DatasetsTile />
+          </Col>
+        </Row>
+      </Container>
       <Container as="section" className="fr-my-4w fr-py-3w" style={{ backgroundColor: '#c7eeea' }}>
         <Row className="fr-mb-3w">
           <Title as="h3">
@@ -40,22 +56,6 @@ export default function Home() {
           </Col>
           <Col sm={12} md={6}>
             <MentionsTile />
-          </Col>
-        </Row>
-      </Container>
-      <Container as="section" className="fr-my-4w fr-py-3w" style={{ backgroundColor: '#faedc4' }}>
-        <Row>
-          <Title as="h3">
-            <span className="fr-icon-arrow-right-s-fill" aria-hidden="true" />
-            <FormattedMessage id="corpus-title" />
-          </Title>
-        </Row>
-        <Row gutters className=" fr-pl-3w">
-          <Col sm={12} md={6}>
-            <PublicationsTile />
-          </Col>
-          <Col sm={12} md={6}>
-            <DatasetsTile />
           </Col>
         </Row>
       </Container>

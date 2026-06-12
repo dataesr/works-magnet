@@ -14,8 +14,6 @@ export default function OpenalexTile() {
             <FormattedMessage id="openalex-tile-detail-1" />
             <br />
             <FormattedMessage id="openalex-tile-detail-2" />
-            <br />
-            <FormattedMessage id="openalex-tile-detail-3" />
           </p>
         </div>
       </div>
