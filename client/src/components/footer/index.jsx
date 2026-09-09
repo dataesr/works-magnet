@@ -63,9 +63,19 @@ export function FooterBody({
   const links = React.Children.toArray(children).filter(
     (child) => React.isValidElement(child) && child.type === Link,
   );
+  const logo = React.Children.toArray(children).filter(
+    (child) => React.isValidElement(child) && child.type === Logo,
+  )?.[0];
 
   return (
     <div className="fr-container fr-footer__body">
+      {logo ? (
+        <div className="fr-footer__brand fr-enlarge-link">
+          <a id="brand-link" title="Retour à l'accueil du site - Works-magnet - Ministère de l'enseignement supérieur, de la recherche et de l'espace - République Française" href="/">
+            {logo}
+          </a>
+        </div>
+      ) : null}
       <div className="fr-footer__content">
         {description ? (
           <p className="fr-footer__content-desc">{description}</p>
